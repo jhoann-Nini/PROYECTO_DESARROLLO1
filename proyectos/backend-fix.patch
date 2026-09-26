@@ -1,0 +1,205 @@
+diff --git a/proyectos/backend/src/main/java/com/example/backend/controller/HealthController.java b/proyectos/backend/src/main/java/com/example/backend/controller/HealthController.java
+new file mode 100644
+index 0000000..953958e
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/controller/HealthController.java
+@@ -0,0 +1,20 @@
++package com.example.backend.controller;
++
++import java.util.Map;
++
++import org.springframework.web.bind.annotation.GetMapping;
++import org.springframework.web.bind.annotation.RestController;
++
++/**
++ * Endpoint mínimo de verificación, sin dependencia de base de datos.
++ * Útil para confirmar que el contexto de Spring Boot y Spring MVC
++ * arrancan correctamente.
++ */
++@RestController
++public class HealthController {
++
++    @GetMapping("/api/health")
++    public Map<String, String> health() {
++        return Map.of("status", "UP", "service", "backend");
++    }
++}
+diff --git a/proyectos/backend/src/main/java/com/example/backend/dto/ErrorResponse.java b/proyectos/backend/src/main/java/com/example/backend/dto/ErrorResponse.java
+new file mode 100644
+index 0000000..cefe5d2
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/dto/ErrorResponse.java
+@@ -0,0 +1,19 @@
++package com.example.backend.dto;
++
++import java.time.Instant;
++
++/**
++ * Estructura estándar de respuesta de error para toda la API REST de
++ * TecnoReview.
++ */
++public record ErrorResponse(
++        Instant timestamp,
++        int status,
++        String error,
++        String message,
++        String path) {
++
++    public static ErrorResponse of(int status, String error, String message, String path) {
++        return new ErrorResponse(Instant.now(), status, error, message, path);
++    }
++}
+diff --git a/proyectos/backend/src/main/java/com/example/backend/dto/package-info.java b/proyectos/backend/src/main/java/com/example/backend/dto/package-info.java
+new file mode 100644
+index 0000000..69f904e
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/dto/package-info.java
+@@ -0,0 +1,5 @@
++/**
++ * Objetos de transferencia de datos (DTOs) usados en las peticiones y
++ * respuestas de la API REST, para no exponer directamente las entidades JPA.
++ */
++package com.example.backend.dto;
+diff --git a/proyectos/backend/src/main/java/com/example/backend/entity/package-info.java b/proyectos/backend/src/main/java/com/example/backend/entity/package-info.java
+new file mode 100644
+index 0000000..5ee864e
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/entity/package-info.java
+@@ -0,0 +1,5 @@
++/**
++ * Entidades JPA (@Entity) que representan las tablas de la base de datos
++ * de TecnoReview en Supabase/PostgreSQL.
++ */
++package com.example.backend.entity;
+diff --git a/proyectos/backend/src/main/java/com/example/backend/exception/GlobalExceptionHandler.java b/proyectos/backend/src/main/java/com/example/backend/exception/GlobalExceptionHandler.java
+new file mode 100644
+index 0000000..6428dfc
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/exception/GlobalExceptionHandler.java
+@@ -0,0 +1,44 @@
++package com.example.backend.exception;
++
++import com.example.backend.dto.ErrorResponse;
++import jakarta.servlet.http.HttpServletRequest;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.MethodArgumentNotValidException;
++import org.springframework.web.bind.annotation.ExceptionHandler;
++import org.springframework.web.bind.annotation.RestControllerAdvice;
++
++/**
++ * Manejador global de excepciones. Traduce las excepciones lanzadas por
++ * controladores y servicios a respuestas HTTP consistentes usando
++ * {@link ErrorResponse}.
++ */
++@RestControllerAdvice
++public class GlobalExceptionHandler {
++
++    @ExceptionHandler(ResourceNotFoundException.class)
++    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
++        return build(HttpStatus.NOT_FOUND, ex.getMessage(), request);
++    }
++
++    @ExceptionHandler(MethodArgumentNotValidException.class)
++    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
++            HttpServletRequest request) {
++        String message = ex.getBindingResult().getFieldErrors().stream()
++                .findFirst()
++                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
++                .orElse("Error de validación");
++        return build(HttpStatus.BAD_REQUEST, message, request);
++    }
++
++    @ExceptionHandler(Exception.class)
++    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest request) {
++        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Ha ocurrido un error inesperado", request);
++    }
++
++    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, HttpServletRequest request) {
++        ErrorResponse body = ErrorResponse.of(status.value(), status.getReasonPhrase(), message,
++                request.getRequestURI());
++        return ResponseEntity.status(status).body(body);
++    }
++}
+diff --git a/proyectos/backend/src/main/java/com/example/backend/exception/ResourceNotFoundException.java b/proyectos/backend/src/main/java/com/example/backend/exception/ResourceNotFoundException.java
+new file mode 100644
+index 0000000..55e791d
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/exception/ResourceNotFoundException.java
+@@ -0,0 +1,11 @@
++package com.example.backend.exception;
++
++/**
++ * Excepción lanzada cuando un recurso solicitado no existe.
++ */
++public class ResourceNotFoundException extends RuntimeException {
++
++    public ResourceNotFoundException(String message) {
++        super(message);
++    }
++}
+diff --git a/proyectos/backend/src/main/java/com/example/backend/repository/package-info.java b/proyectos/backend/src/main/java/com/example/backend/repository/package-info.java
+new file mode 100644
+index 0000000..0c722f1
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/repository/package-info.java
+@@ -0,0 +1,5 @@
++/**
++ * Interfaces Spring Data JPA (JpaRepository) para el acceso a datos
++ * de las entidades de TecnoReview.
++ */
++package com.example.backend.repository;
+diff --git a/proyectos/backend/src/main/java/com/example/backend/service/package-info.java b/proyectos/backend/src/main/java/com/example/backend/service/package-info.java
+new file mode 100644
+index 0000000..a821d59
+--- /dev/null
++++ b/proyectos/backend/src/main/java/com/example/backend/service/package-info.java
+@@ -0,0 +1,5 @@
++/**
++ * Servicios con la lógica de negocio de TecnoReview, orquestando
++ * repositorios y aplicando reglas de dominio.
++ */
++package com.example.backend.service;
+diff --git a/proyectos/backend/src/main/resources/application.properties b/proyectos/backend/src/main/resources/application.properties
+index 3ca17a4..69faf09 100644
+--- a/proyectos/backend/src/main/resources/application.properties
++++ b/proyectos/backend/src/main/resources/application.properties
+@@ -1 +1,7 @@
+ spring.application.name=backend
++
++spring.datasource.url=${SUPABASE_DB_URL}
++spring.datasource.driver-class-name=org.postgresql.Driver
++
++spring.jpa.hibernate.ddl-auto=update
++spring.jpa.open-in-view=false
+diff --git a/proyectos/backend/src/test/java/com/example/backend/controller/HealthControllerTest.java b/proyectos/backend/src/test/java/com/example/backend/controller/HealthControllerTest.java
+new file mode 100644
+index 0000000..c6fccf3
+--- /dev/null
++++ b/proyectos/backend/src/test/java/com/example/backend/controller/HealthControllerTest.java
+@@ -0,0 +1,25 @@
++package com.example.backend.controller;
++
++import static org.hamcrest.Matchers.is;
++import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
++import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
++import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
++
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
++import org.springframework.test.web.servlet.MockMvc;
++
++@WebMvcTest(HealthController.class)
++class HealthControllerTest {
++
++    @Autowired
++    private MockMvc mockMvc;
++
++    @Test
++    void healthEndpointReturnsUp() throws Exception {
++        mockMvc.perform(get("/api/health"))
++                .andExpect(status().isOk())
++                .andExpect(jsonPath("$.status", is("UP")));
++    }
++}

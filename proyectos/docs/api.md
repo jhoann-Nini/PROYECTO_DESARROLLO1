@@ -419,7 +419,7 @@ GET /api/productos/{productoId}/resenas
 Ejemplo:
 
 GET /api/productos/1/resenas
-14.2 Crear reseña
+### 14.2 Crear reseña
 POST /api/productos/{productoId}/resenas
 
 Ejemplo:
@@ -431,7 +431,7 @@ Ejemplo:
 
 El usuario debe estar autenticado.
 
-14.3 Actualizar reseña
+### 14.3 Actualizar reseña
 PUT /api/resenas/{id}
 
 El backend debe verificar que el usuario tenga permiso para modificar la reseña.
@@ -441,7 +441,9 @@ DELETE /api/resenas/{id}
 
 La autorización deberá validarse en el backend.
 
-15. Valoraciones
+---
+
+# 15. Valoraciones
 
 Los usuarios podrán valorar los productos.
 
@@ -463,7 +465,9 @@ Ejemplo:
 
 El backend deberá validar que el valor recibido pertenezca a la escala establecida.
 
-16. Opiniones positivas y negativas
+---
+
+# 16. Opiniones positivas y negativas
 
 TecnoReview contempla el registro de aspectos positivos y negativos relacionados con un producto.
 
@@ -482,6 +486,8 @@ Una posibilidad sería:
 }
 
 La estructura final deberá mantenerse consistente con el modelo de datos y la interfaz definida para las reseñas.
+
+---
 
 17. Comparación de productos
 

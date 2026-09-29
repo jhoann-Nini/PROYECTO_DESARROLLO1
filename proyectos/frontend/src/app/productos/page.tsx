@@ -14,7 +14,11 @@ export default function ProductosPage() {
         setProductos(datos);
       })
       .catch((err) => {
-        setError(err.message);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Ocurrió un error inesperado al cargar los productos.",
+        );
       })
       .finally(() => {
         setCargando(false);
@@ -26,7 +30,11 @@ export default function ProductosPage() {
   }
 
   if (error) {
-    return <p className="p-6 text-red-600">Error: {error}</p>;
+    return (
+      <p className="p-6 text-red-600" role="alert">
+        Error: {error}
+      </p>
+    );
   }
 
   return (

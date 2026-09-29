@@ -67,7 +67,7 @@ backend/
                 └── config/
 
 ### Tabla inicial de endpoints
-| Recurso          | Método | Endpoint                           | Acceso             |  
+| Recurso          | Método | Endpoint                           | Acceso             |  Estado
 | Productos        | GET    | `/api/productos`                   | Público            |
 | Producto         | GET    | `/api/productos/{id}`              | Público            |
 | Productos        | POST   | `/api/productos`                   | Autorizado         |
@@ -863,32 +863,34 @@ HU-14 → Administrar productos
 HU-15 → Administrar categorías
 HU-16 → Administrar marcas
 HU-17 → Administrar establecimientos
+
 34. Estado de implementación
 
 Los siguientes elementos se consideran inicialmente planificados:
 
- Configuración de Spring Boot.
- Conexión con PostgreSQL/Supabase.
- Entidades.
- Repositories.
- Services.
- Controllers.
- DTOs.
- Validaciones.
- Manejo de excepciones.
- Autenticación.
- Autorización por roles.
- Endpoints de productos.
- Endpoints de categorías.
- Endpoints de marcas.
- Endpoints de usuarios.
- Endpoints de reseñas.
- Endpoints de valoraciones.
- Endpoint de comparación.
- Endpoints de establecimientos.
- Pruebas de API.
- Integración con Next.js.
- Documentación definitiva.
+ [x] Configuración de Spring Boot.
+ [x] Conexión con PostgreSQL/Supabase.
+ [x] Entidades. (las 9 de modelo-datos.md)
+ [x] Repositories. (las 9)
+ [x] Services. (Categoria, Marca, Producto — faltan Resena, Valoracion, Establecimiento, Usuario)
+ [x] Controllers. (Categoria, Marca, Producto)
+ [x] DTOs. (Categoria, Marca, Producto)
+ [x] Validaciones. (Categoria, Marca, Producto)
+ [x] Manejo de excepciones. (GlobalExceptionHandler general para toda la API)
+ [ ] Autenticación.
+ [ ] Autorización por roles.
+ [x] Endpoints de productos.
+ [x] Endpoints de categorías.
+ [x] Endpoints de marcas.
+ [ ] Endpoints de usuarios.
+ [ ] Endpoints de reseñas.
+ [ ] Endpoints de valoraciones.
+ [ ] Endpoint de comparación.
+ [ ] Endpoints de establecimientos.
+ [ ] Pruebas de API.
+ [ ] Integración con Next.js.
+ [ ] Documentación definitiva.
+
 35. Consideraciones de diseño
 
 La API debe mantener una estructura consistente.

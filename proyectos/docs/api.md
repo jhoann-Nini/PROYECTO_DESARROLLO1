@@ -213,11 +213,14 @@ Permite obtener el listado de productos disponibles.
 Respuesta esperada
 [
   {
-    "id": 1,
+    "idProducto": 1,
     "nombre": "Laptop Lenovo IdeaPad",
     "descripcion": "Computador portátil",
-    "marca": "Lenovo",
-    "categoria": "Portátiles"
+    "idCategoria": 1,
+    "idMarca": 1,
+    "imagen": null,
+    "precioReferencia": 2500000,
+    "estado": true
   }
 ]
 
@@ -240,8 +243,10 @@ Ejemplo:
 {
   "nombre": "Samsung Galaxy A55",
   "descripcion": "Teléfono inteligente",
-  "marcaId": 2,
-  "categoriaId": 1
+  "idMarca": 2,
+  "idCategoria": 1,
+  "imagen": null,
+  "precioReferencia": 1500000
 }
 
 El backend deberá validar los datos antes de almacenarlos.
@@ -262,6 +267,8 @@ Permite eliminar un producto cuando el usuario tenga los permisos correspondient
 
 ---
 
+> **Nota de implementación:** el listado actual devuelve únicamente productos activos (`estado=true`). La eliminación es lógica y responde `204 No Content`. Un producto inactivo se considera no encontrado al consultarlo o actualizarlo por ID.
+
 # 8. Búsqueda de productos
 
 La plataforma debe permitir buscar productos.
@@ -278,7 +285,7 @@ Marca.
 
 Ejemplo:
 
-GET /api/productos?categoria=portatiles
+GET /api/productos?idCategoria=1
 
 La implementación exacta de los parámetros podrá ajustarse durante el desarrollo.
 

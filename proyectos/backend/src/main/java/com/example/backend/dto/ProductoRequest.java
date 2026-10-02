@@ -1,22 +1,26 @@
 package com.example.backend.dto;
-import jakarta.validation.constraints.*;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
 public record ProductoRequest(
   @NotBlank(message = "El nombre es obligatorio")
   @Size(max = 150, message = "El nombre no puede superar 150 caracteres")
-
   String nombre,
+
   String descripcion,
 
-  @NotNull(message = "La categoria es Obligatoria")
-  long idCategoria,
+  @NotNull(message = "La categoría es obligatoria")
+  Long idCategoria,
 
-  @NotNull(message = "La marca es Obligatoria")
-  long idMarca,
+  @NotNull(message = "La marca es obligatoria")
+  Long idMarca,
 
-  @Size(max = 255, message = "La imagen no puede Superar 255 caracteres")
+  @Size(max = 255, message = "La imagen no puede superar 255 caracteres")
   String imagen,
 
   @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")

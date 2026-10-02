@@ -32,15 +32,14 @@ public class ProductoService {
 
   @Transactional(readOnly = true)
   public List<ProductoResponse> listarActivos() {
-    return productoRepository.findAll().stream()
-      .filter(Producto::getEstado)
+    return productoRepository.findByEstadoTrue().stream()
       .map(this::toResponse)
       .toList();
   }
 
   @Transactional(readOnly = true)
   public ProductoResponse obtenerPorId(Long id) {
-    Producto producto = buscarOFallar(id);
+    Producto producto = buscarActivoOFallar(id);
     return toResponse(producto);
   }
 
@@ -63,7 +62,7 @@ public class ProductoService {
 
   @Transactional
   public ProductoResponse actualizar(Long id, ProductoRequest request) {
-    Producto producto = buscarOFallar(id);
+    Producto producto = buscarActivoOFallar(id);
 
     Categoria categoria = buscarCategoriaOFallar(request.idCategoria());
     Marca marca = buscarMarcaOFallar(request.idMarca());
@@ -80,13 +79,14 @@ public class ProductoService {
 
   @Transactional
   public void eliminar(Long id) {
-    Producto producto = buscarOFallar(id);
+    Producto producto = buscarActivoOFallar(id);
     producto.setEstado(false);
     productoRepository.save(producto);
   }
 
-  private Producto buscarOFallar(Long id) {
+  private Producto buscarActivoOFallar(Long id) {
     return productoRepository.findById(id)
+      .filter(Producto::getEstado)
       .orElseThrow(() ->
         new ResourceNotFoundException(
           "Producto no encontrado con id " + id));

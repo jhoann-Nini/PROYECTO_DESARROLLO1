@@ -14,7 +14,15 @@ export default function ProductosPage() {
         setProductos(datos);
       })
       .catch((err) => {
+<<<<<<< HEAD
         setError(err.message);
+=======
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Ocurrió un error inesperado al cargar los productos.",
+        );
+>>>>>>> 8707861febdb112c5dd1479a28304c5754184889
       })
       .finally(() => {
         setCargando(false);
@@ -26,7 +34,15 @@ export default function ProductosPage() {
   }
 
   if (error) {
+<<<<<<< HEAD
     return <p className="p-6 text-red-600">Error: {error}</p>;
+=======
+    return (
+      <p className="p-6 text-red-600" role="alert">
+        Error: {error}
+      </p>
+    );
+>>>>>>> 8707861febdb112c5dd1479a28304c5754184889
   }
 
   return (
@@ -40,4 +56,8 @@ export default function ProductosPage() {
       </pre>
     </main>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 8707861febdb112c5dd1479a28304c5754184889

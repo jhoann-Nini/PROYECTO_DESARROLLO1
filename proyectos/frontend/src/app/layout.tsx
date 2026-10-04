@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "TecnoReview",
-  description: "Plataforma para consultar, comparar y reseñar productos tecnológicos.",
+  title: "NOTHING MOVIL // Hardware Benchmark & Price Engine",
+  description: "Plataforma de comparación de dispositivos y precios con diseño técnico Nothing OS y estructura Kimovil.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="es" className="dark">
+      <body className="bg-[#080808] text-[#f4f4f5] antialiased selection:bg-[#d71920] selection:text-white">
+        {children}
+      </body>
     </html>
   );
 }

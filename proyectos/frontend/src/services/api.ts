@@ -13,6 +13,7 @@ async function apiFetch<T>(endpoint: string): Promise<T> {
   }
 
   let respuesta: Response;
+
   try {
     respuesta = await fetch(`${API_URL.replace(/\/$/, "")}${endpoint}`);
   } catch {
@@ -31,7 +32,9 @@ async function apiFetch<T>(endpoint: string): Promise<T> {
   try {
     return (await respuesta.json()) as T;
   } catch {
-    throw new ApiError("El servidor respondió, pero los datos recibidos no son JSON válido.");
+    throw new ApiError(
+      "El servidor respondió, pero los datos recibidos no son JSON válido.",
+    );
   }
 }
 
@@ -39,7 +42,9 @@ export async function obtenerProductos<T = unknown>(): Promise<T[]> {
   const datos = await apiFetch<unknown>("/api/productos");
 
   if (!Array.isArray(datos)) {
-    throw new ApiError("La respuesta del servidor no tiene el formato esperado (lista de productos).");
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de productos).",
+    );
   }
 
   return datos as T[];

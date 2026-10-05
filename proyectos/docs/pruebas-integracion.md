@@ -65,3 +65,26 @@ Usa `@SpringBootTest` para cargar el contexto completo de Spring Boot. La prueba
 ## Alcance actual y siguiente cobertura
 
 La prueba de `HealthController` es una prueba de integración de la capa web; no es una prueba completa de extremo a extremo entre frontend, API y base de datos. Para cubrir el modelo inicial de datos se pueden agregar posteriormente pruebas de repositorios y entidades con H2, verificando las relaciones y claves definidas en el modelo.
+
+---
+
+## Pruebas de integración del frontend
+
+### `CP-05`: Consumir endpoint desde el frontend
+
+- **Responsable:** Adrian Caicedo (AC)
+- **Tareas vinculadas:** `TEC-22` (S1-13) y `TEC-44` (CP-05).
+- **Componentes involucrados:**
+  - `proyectos/frontend/src/services/api.ts` (función `obtenerProductos`).
+  - `proyectos/frontend/src/app/page.tsx` (consumo reactivo y renderizado).
+  - `proyectos/frontend/src/app/productos/page.tsx` (inspector de respuesta JSON).
+- **Procedimiento de ejecución:**
+  1. Configurar la URL base en `proyectos/frontend/.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8080`.
+  2. Iniciar el frontend con `npm run dev` en `http://localhost:3000`.
+  3. Navegar a la página principal y verificar la llamada HTTP asíncrona hacia `/api/productos`.
+- **Criterios de aceptación y resultados verificados:**
+  - **Solicitud HTTP correcta:** El cliente dispara la petición `GET` al endpoint configurado sin errores de sintaxis ni bloqueos.
+  - **Manejo de estado de carga:** Muestra indicadores esqueléticos / mensajes de carga mientras espera la respuesta.
+  - **Tolerancia a fallos y manejo de errores:** Si el backend está inactivo o responde con error HTTP, se captura mediante `ApiError` y se presenta un mensaje amigable o activación de datos de respaldo sin que la aplicación se caiga.
+  - **Calidad de código:** Pasa `npm run lint` con 0 errores y `npm run build` con código de salida 0.
+

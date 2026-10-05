@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.backend.dto.ProductoRequest;
 import com.example.backend.dto.ProductoResponse;
 import com.example.backend.service.ProductoService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +21,6 @@ class ProductoControllerTest {
 
     private MockMvc mockMvc;
     private ProductoService productoService;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +28,6 @@ class ProductoControllerTest {
         ProductoController controller = new ProductoController(productoService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        objectMapper = new ObjectMapper();
     }
 
     @Test
@@ -80,7 +77,16 @@ class ProductoControllerTest {
 
         mockMvc.perform(post("/api/productos")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content("""
+                                {
+                                    "nombre": "Laptop",
+                                    "descripcion": "Laptop de prueba",
+                                    "idCategoria": 1,
+                                    "idMarca": 1,
+                                    "imagen": null,
+                                    "precioReferencia": 2500000
+                                }
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idProducto").value(1))
                 .andExpect(jsonPath("$.nombre").value("Laptop"));

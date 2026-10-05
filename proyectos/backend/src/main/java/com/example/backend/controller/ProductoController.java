@@ -14,38 +14,49 @@ import java.util.List;
 @RequestMapping("/api/productos")
 public class ProductoController {
 
-  private final ProductoService productoService;
+    private final ProductoService productoService;
 
-  public ProductoController(ProductoService productoService) {
-    this.productoService = productoService;
-  }
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
+    }
 
-  @GetMapping
-  public List<ProductoResponse> listar() {
-    return productoService.listarActivos();
-  }
+    @GetMapping
+    public List<ProductoResponse> listar(
+            @RequestParam(required = false) Long idCategoria,
+            @RequestParam(required = false) Long idMarca) {
 
-  @GetMapping("/{id}")
-  public ProductoResponse obtener(@PathVariable Long id) {
-    return productoService.obtenerPorId(id);
-  }
+        if (idCategoria != null) {
+            return productoService.listarPorCategoria(idCategoria);
+        }
 
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public ProductoResponse crear(@Valid @RequestBody ProductoRequest request) {
-    return productoService.crear(request);
-  }
+        if (idMarca != null) {
+            return productoService.listarPorMarca(idMarca);
+        }
 
-  @PutMapping("/{id}")
-  public ProductoResponse actualizar(
-    @PathVariable Long id,
-    @Valid @RequestBody ProductoRequest request) {
-    return productoService.actualizar(id, request);
-  }
+        return productoService.listarActivos();
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-    productoService.eliminar(id);
-    return ResponseEntity.noContent().build();
-  }
+    @GetMapping("/{id}")
+    public ProductoResponse obtener(@PathVariable Long id) {
+        return productoService.obtenerPorId(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductoResponse crear(@Valid @RequestBody ProductoRequest request) {
+        return productoService.crear(request);
+    }
+
+    @PutMapping("/{id}")
+    public ProductoResponse actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductoRequest request) {
+        return productoService.actualizar(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        productoService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

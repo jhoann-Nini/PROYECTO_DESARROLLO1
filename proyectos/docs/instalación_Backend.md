@@ -36,12 +36,12 @@ git checkout nini
 
 Crear:
 
-backend/.env.local
+backend/.env
 
 Contenido:
 
-POSTGRES_USER=postgres.xxxxxxxxxxxxx
-POSTGRES_PASSWORD=tu_password
+POSTGRES_USER=postgres.xjepyqdynspdekuixuoe
+POSTGRES_PASSWORD=su_password
 POSTGRES_HOST=aws-0-us-east-1.pooler.supabase.com
 POSTGRES_PORT=5432
 POSTGRES_DATABASE=postgres
@@ -161,7 +161,7 @@ Solución:
 
 Verificar:
 
-.env.local
+.env
 
 está dentro de:
 
@@ -172,7 +172,7 @@ Cada integrante debe hacer:
 
 git clone
 ↓
-crear .env.local
+crear .env
 ↓
 ./mvnw clean install
 ↓
@@ -185,7 +185,7 @@ Antes de hacer Pull Request
 
 Checklist:
 
- No subir .env.local
+ No subir .env
  No subir contraseñas
  Pruebas pasan
  Backend inicia correctamente

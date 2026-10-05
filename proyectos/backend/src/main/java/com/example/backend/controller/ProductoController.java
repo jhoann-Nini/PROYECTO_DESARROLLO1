@@ -24,12 +24,15 @@ public class ProductoController {
     public List<ProductoResponse> listar(
             @RequestParam(required = false) Long idCategoria,
             @RequestParam(required = false) Long idMarca) {
+
         if (idCategoria != null) {
             return productoService.listarPorCategoria(idCategoria);
         }
+
         if (idMarca != null) {
             return productoService.listarPorMarca(idMarca);
         }
+
         return productoService.listarActivos();
     }
 
@@ -45,7 +48,9 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ProductoResponse actualizar(@PathVariable Long id, @Valid @RequestBody ProductoRequest request) {
+    public ProductoResponse actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody ProductoRequest request) {
         return productoService.actualizar(id, request);
     }
 

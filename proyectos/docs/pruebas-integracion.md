@@ -28,14 +28,20 @@ Para ejecutar únicamente la prueba de carga del contexto:
 .\mvnw.cmd -Dtest=BackendApplicationTests test
 ```
 
+Para ejecutar únicamente la prueba de los datos de productos con H2:
+
+```powershell
+.\mvnw.cmd -Dtest=ProductoFixtureIntegrationTest test
+```
+
 Una ejecución correcta termina con `BUILD SUCCESS`. Maven también guarda los resultados de cada prueba en `target/surefire-reports/`, dentro de `proyectos/backend`.
 
 ### Resultado de la última ejecución
 
-Ejecución realizada el 29 de septiembre de 2026:
+Ejecución realizada el 6 de octubre de 2026:
 
 ```text
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
@@ -52,19 +58,31 @@ Usa `@WebMvcTest(HealthController.class)` y `MockMvc` para probar la capa web si
 
 El controlador también devuelve `"service":"backend"`; la prueba actual no valida ese campo.
 
+### `ProductoControllerTest`
+
+Ubicación: `src/test/java/com/example/backend/controller/ProductoControllerTest.java`.
+
+Prueba con `MockMvc` el listado y la creación de un producto usando un servicio simulado. Comprueba respuestas HTTP y el JSON; no escribe en la base de datos.
+
 ### `BackendApplicationTests`
 
 Ubicación: `src/test/java/com/example/backend/BackendApplicationTests.java`.
 
 Usa `@SpringBootTest` para cargar el contexto completo de Spring Boot. La prueba `contextLoads` verifica que la aplicación pueda iniciar su contexto; no envía solicitudes HTTP ni valida operaciones de persistencia.
 
+### `ProductoFixtureIntegrationTest`
+
+Ubicación: `src/test/java/com/example/backend/ProductoFixtureIntegrationTest.java`.
+
+Lee los seis registros de `src/test/resources/fixtures/productos-prueba.json`, crea sus categorías y marcas en H2, envía cada producto por `POST /api/productos` con `MockMvc` y comprueba que queden seis productos activos persistidos. Usa el controlador y servicio reales. La transacción de prueba se revierte al terminar.
+
 ## Base de datos de pruebas
 
-`src/test/resources/application.properties` configura una base H2 en memoria (`jdbc:h2:mem:testdb`) y `spring.jpa.hibernate.ddl-auto=create-drop`. La base se crea para la ejecución de pruebas y se descarta al terminar. Las pruebas actuales no verifican repositorios, relaciones entre entidades ni conexión con Supabase/PostgreSQL.
+`src/test/resources/application.properties` configura una base H2 en memoria (`jdbc:h2:mem:testdb`) y `spring.jpa.hibernate.ddl-auto=create-drop`. La base se crea para la ejecución de pruebas y se descarta al terminar. `ProductoFixtureIntegrationTest` verifica el endpoint `POST /api/productos`, la persistencia y las referencias a categorías y marcas en H2. Ninguna prueba se conecta a Supabase/PostgreSQL.
 
 ## Alcance actual y siguiente cobertura
 
-La prueba de `HealthController` es una prueba de integración de la capa web; no es una prueba completa de extremo a extremo entre frontend, API y base de datos. Para cubrir el modelo inicial de datos se pueden agregar posteriormente pruebas de repositorios y entidades con H2, verificando las relaciones y claves definidas en el modelo.
+Las pruebas cubren salud, solicitudes al controlador y persistencia local en H2. Aún no son pruebas de extremo a extremo entre frontend, API y Supabase/PostgreSQL.
 
 ---
 

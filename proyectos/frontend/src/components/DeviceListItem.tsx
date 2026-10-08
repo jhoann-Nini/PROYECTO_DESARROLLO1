@@ -82,10 +82,10 @@ export default function DeviceListItem({ item, onVerDetalle }: DeviceListItemPro
           {item.especificaciones}
         </p>
 
-        {/* Puntuación Nothing Score */}
+        {/* Puntuación TecnoReview Score */}
         <div className="mt-1.5 flex items-center gap-2">
           <div className="inline-flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 border border-zinc-800 text-[10px] font-mono">
-            <span className="text-zinc-500 font-bold">NOTHING SCORE:</span>
+            <span className="text-zinc-500 font-bold">TECNO SCORE:</span>
             <span className="text-emerald-400 font-bold">{item.puntuacion}</span>
             <span className="text-zinc-600">/10</span>
           </div>

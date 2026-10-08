@@ -217,34 +217,16 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 font-bold tracking-wider text-zinc-300">
-              <span className="h-2 w-2 rounded-full bg-[#d71920] animate-ping"></span>
-              NOTHING (R) OS UI // CLONE KIMOVIL
+              <span className="h-2 w-2 rounded-full bg-[#d71920]"></span>
+              TECNOREVIEW
             </span>
             <span className="hidden md:inline text-zinc-600">|</span>
             <span className="hidden md:inline text-zinc-500">
-              SPEC INTELLIGENCE &amp; PRICE COMPARATOR
+              PLATAFORMA DE RESEÑAS &amp; HARDWARE SPECS
             </span>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Indicador del Backend de Spring Boot */}
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-500 hidden sm:inline">SPRING BOOT API:</span>
-              {estadoBackend === "online" ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  ONLINE (:8080)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-400">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
-                  STANDBY (MOCK DATA)
-                </span>
-              )}
-            </div>
-
-            <span className="text-zinc-600">|</span>
-
             {/* CONTROL DE SESIÓN / AUTENTICACIÓN SPRINT 1 */}
             {usuarioSesion ? (
               <div className="flex items-center gap-2">
@@ -273,7 +255,7 @@ export default function Home() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          HEADER BANNER (SUPERIOR) - ESTILO NOTHING PHONE
+          HEADER BANNER (SUPERIOR) - ESTILO INDUSTRIAL / TECH
       ───────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-zinc-800 bg-glyph-circuit py-12 px-4 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-[#d71920]/10 blur-3xl"></div>
@@ -281,7 +263,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           {/* Fila Superior del Banner: Logo & Navegación */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-10 border-b border-zinc-800/80">
-            {/* Logo Nothing Movil */}
+            {/* Logo TecnoReview */}
             <div className="flex items-center gap-3">
               <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-800 bg-black shadow-inner">
                 <div className="grid grid-cols-3 gap-1">
@@ -298,11 +280,11 @@ export default function Home() {
               </div>
 
               <div>
-                <h1 className="font-dot text-2xl sm:text-3xl font-bold tracking-wider text-white" aria-label="Nothing Móvil">
-                  NOTHING <span className="text-[#d71920]">MOVIL</span>
+                <h1 className="font-dot text-2xl sm:text-3xl font-bold tracking-wider text-white" aria-label="TecnoReview">
+                  TECNO <span className="text-[#d71920]">REVIEW</span>
                 </h1>
                 <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-                  HARDWARE BENCHMARK &amp; PRICE ENGINE
+                  PLATAFORMA DE RESEÑAS &amp; ESPECIFICACIONES TÉCNICAS
                 </p>
               </div>
             </div>
@@ -515,7 +497,7 @@ export default function Home() {
                   : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
               }`}
             >
-              [ 1. LO MÁS TOP - RANKINGS KIMOVIL ]
+              [ 1. LO MÁS TOP - DISPOSITIVOS DESTACADOS ]
             </button>
             <button
               onClick={() => setSeccionActiva("catalogo")}
@@ -755,7 +737,7 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="border-t border-zinc-900 bg-black py-10 px-4 font-mono text-xs text-zinc-500 text-center">
-        <p>© 2026 NOTHING MOVIL // PROYECTO DESARROLLO 1 - SPRINT 1 ENTREGABLE</p>
+        <p>© 2026 TECNOREVIEW // PROYECTO DESARROLLO 1 - SPRINT 1 ENTREGABLE</p>
       </footer>
     </div>
   );

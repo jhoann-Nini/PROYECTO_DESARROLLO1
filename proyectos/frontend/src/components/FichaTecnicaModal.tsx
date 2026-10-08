@@ -135,7 +135,7 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
               <div className="rounded-2xl border border-zinc-800 bg-[#121217] p-4.5 shadow-lg">
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-800 mb-3">
                   <span className="font-mono text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                    PUNTUACIÓN KIMOVIL / NOTHING
+                    PUNTUACIÓN TECNOREVIEW
                   </span>
                   <span className="font-dot text-lg font-bold text-emerald-400">
                     {ficha.puntuacionGlobal} / 10
@@ -206,43 +206,6 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
                   </div>
                 ))}
               </div>
-
-              {/* Comparador de Precios en Tiendas */}
-              <div className="rounded-xl border border-zinc-800 bg-black/70 p-3.5">
-                <span className="font-mono text-xs font-bold text-white block mb-2.5 uppercase tracking-wider">
-                  🛒 COMPARADOR DE PRECIOS EN TIENDAS ONLINE
-                </span>
-                <div className="space-y-2 font-mono text-xs">
-                  {ficha.tiendas.map((tienda, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between border-b border-zinc-900 pb-2 last:border-b-0 last:pb-0"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="text-zinc-300">{tienda.nombre}</span>
-                        {tienda.envioGratis && (
-                          <span className="text-[9px] bg-emerald-950 border border-emerald-500/40 text-emerald-400 px-1.5 py-0.2 rounded">
-                            Envío Gratis
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-emerald-400 font-bold">${tienda.precio} USD</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAlertaAccion(`Redirigiendo a tienda oficial: ${tienda.nombre}`);
-                            setTimeout(() => setAlertaAccion(""), 2000);
-                          }}
-                          className="rounded border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[10px] text-zinc-400 hover:border-[#d71920] hover:text-white transition-all cursor-pointer"
-                        >
-                          IR A TIENDA ↗
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -264,9 +227,9 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
 
           <button
             onClick={manejarComparador}
-            className="flex-1 rounded-xl border border-[#d71920] bg-[#d71920] px-4 py-3 font-dot text-xs font-bold text-white transition-all hover:bg-[#ff2a35] hover:shadow-[0_0_20px_rgba(215,25,32,0.5)] cursor-pointer"
+            className="flex-1 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 font-mono text-xs font-bold text-zinc-300 transition-all hover:border-[#d71920] hover:text-white cursor-pointer"
           >
-            COMPRAR AL MEJOR PRECIO (${ficha.precio} USD)
+            📊 AÑADIR A COMPARATIVA TÉCNICA
           </button>
         </div>
       </div>

@@ -26,20 +26,10 @@ public class ProductoService {
 
 
     @Transactional(readOnly = true)
-    public List<ProductoResponse> listarPorCategoria(Long idCategoria) {
-        return productoRepository.findByCategoriaIdCategoria(idCategoria)
-                .stream()
-                .filter(Producto::getEstado)
-                .map(this::toResponse)
-                .toList();
-    }
-
-
-    @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorMarca(Long idMarca) {
-        return productoRepository.findByMarcaIdMarca(idMarca)
+
+        return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
                 .stream()
-                .filter(Producto::getEstado)
                 .map(this::toResponse)
                 .toList();
     }

@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { obtenerProductos } from "@/services/api";
-import type { Producto } from "@/types/producto";
+import type { Producto, DispositivoKimovil, UsuarioSesion } from "@/types/producto";
 import {
   DISPOSITIVOS_VENDIDOS,
   DISPOSITIVOS_DESEADOS,
@@ -12,8 +12,10 @@ import {
 } from "@/data/mockProductos";
 import DeviceListItem from "@/components/DeviceListItem";
 import ProductCard from "@/components/ProductCard";
+import AuthModal from "@/components/AuthModal";
+import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 
-type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "tvs" | "wearables";
+type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares";
 
 export default function Home() {
   // Estado de backend
@@ -21,15 +23,45 @@ export default function Home() {
   const [cargandoApi, setCargandoApi] = useState(true);
   const [estadoBackend, setEstadoBackend] = useState<"online" | "offline">("offline");
 
+  // Estado de Autenticación (Sprint 1: Login / Registro)
+  const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(null);
+  const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
+
+  // Estado de Ficha Técnica Modal
+  const [productoSeleccionado, setProductoSeleccionado] = useState<DispositivoKimovil | Producto | null>(null);
+
   // Filtros interactivos del Header y Kimovil
   const [busqueda, setBusqueda] = useState("");
   const [tipoDispositivo, setTipoDispositivo] = useState<CategoriaDispositivo>("todos");
-  const [presupuestoMax, setPresupuestoMax] = useState<number>(450);
+  const [presupuestoMax, setPresupuestoMax] = useState<number>(1000);
 
   // Estados de vista
   const [mostrarTodosVendidos, setMostrarTodosVendidos] = useState(false);
   const [mostrarTodosDeseados, setMostrarTodosDeseados] = useState(false);
+  const [mostrarTodasOfertas, setMostrarTodasOfertas] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<"ranking" | "catalogo">("ranking");
+
+  // Sistema de feedback con filtro de contenido (Heurística y moderación)
+  const [comentario, setComentario] = useState("");
+  const [mensajes, setMensajes] = useState<{ id: number; texto: string; fecha: string; usuario?: string }[]>([
+    { id: 1, texto: "La ficha técnica del Nothing Phone (2a) es ultra detallada. Excelente comparador.", fecha: "05/10/2026", usuario: "TechFan" }
+  ]);
+  const [errorComentario, setErrorComentario] = useState("");
+
+  // Cargar usuario guardado en localStorage al iniciar
+  useEffect(() => {
+    try {
+      const sesionGuardada = localStorage.getItem("usuario_sesion");
+      if (sesionGuardada) {
+        const usuarioGuardado = JSON.parse(sesionGuardada) as UsuarioSesion;
+        queueMicrotask(() => {
+          setUsuarioSesion(usuarioGuardado);
+        });
+      }
+    } catch {
+      // Ignorar error de parsing
+    }
+  }, []);
 
   // Llamada al endpoint real del backend en Spring Boot
   useEffect(() => {
@@ -63,7 +95,7 @@ export default function Home() {
     };
   }, []);
 
-  // Filtrado de las listas según búsqueda y presupuesto del slider
+  // Filtrado de las listas según búsqueda, categoría y presupuesto del slider
   const vendidosFiltrados = useMemo(() => {
     return DISPOSITIVOS_VENDIDOS.filter((d) => {
       const matchBusqueda =
@@ -71,9 +103,10 @@ export default function Home() {
         d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
         d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
       const matchPrecio = d.precio <= presupuestoMax;
-      return matchBusqueda && matchPrecio;
+      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
+      return matchBusqueda && matchPrecio && matchCat;
     });
-  }, [busqueda, presupuestoMax]);
+  }, [busqueda, presupuestoMax, tipoDispositivo]);
 
   const deseadosFiltrados = useMemo(() => {
     return DISPOSITIVOS_DESEADOS.filter((d) => {
@@ -82,23 +115,103 @@ export default function Home() {
         d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
         d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
       const matchPrecio = d.precio <= presupuestoMax;
-      return matchBusqueda && matchPrecio;
+      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
+      return matchBusqueda && matchPrecio && matchCat;
     });
-  }, [busqueda, presupuestoMax]);
+  }, [busqueda, presupuestoMax, tipoDispositivo]);
 
   const ofertasFiltradas = useMemo(() => {
     return ULTIMAS_OFERTAS.filter((d) => {
       const matchBusqueda =
         d.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
         d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
-      return matchBusqueda && d.precio <= presupuestoMax;
+      const matchPrecio = d.precio <= presupuestoMax;
+      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
+      return matchBusqueda && matchPrecio && matchCat;
     });
-  }, [busqueda, presupuestoMax]);
+  }, [busqueda, presupuestoMax, tipoDispositivo]);
+
+  // Filtrado de productos del catálogo de Spring Boot
+  const productosBackendFiltrados = useMemo(() => {
+    return productosBackend.filter((p) => {
+      const matchBusqueda =
+        p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (p.descripcion && p.descripcion.toLowerCase().includes(busqueda.toLowerCase())) ||
+        (p.nombreMarca && p.nombreMarca.toLowerCase().includes(busqueda.toLowerCase()));
+      const matchPrecio = p.precioReferencia === null || p.precioReferencia <= presupuestoMax;
+
+      let matchCat = true;
+      if (tipoDispositivo !== "todos") {
+        const nomCat = (p.nombreCategoria || "").toLowerCase();
+        if (tipoDispositivo === "moviles") {
+          matchCat =
+            p.idCategoria === 1 ||
+            nomCat.includes("móvil") ||
+            nomCat.includes("movil") ||
+            nomCat.includes("celular");
+        } else if (tipoDispositivo === "tablets") {
+          matchCat = p.idCategoria === 2 || nomCat.includes("tablet");
+        } else if (tipoDispositivo === "laptops") {
+          matchCat =
+            p.idCategoria === 3 ||
+            nomCat.includes("laptop") ||
+            nomCat.includes("computador") ||
+            nomCat.includes("pc") ||
+            nomCat.includes("portatil") ||
+            nomCat.includes("portátil");
+        } else if (tipoDispositivo === "auriculares") {
+          matchCat =
+            p.idCategoria === 4 ||
+            nomCat.includes("auricular") ||
+            nomCat.includes("audífono") ||
+            nomCat.includes("audifono") ||
+            nomCat.includes("headphone") ||
+            nomCat.includes("ear");
+        }
+      }
+      return matchBusqueda && matchPrecio && matchCat;
+    });
+  }, [productosBackend, busqueda, presupuestoMax, tipoDispositivo]);
+
+  // Filtro de comentarios maliciosos automático (Heurística)
+  const palabrasMaliciosas = ["spam", "insulto", "estafa", "odio", "tonto", "idiota", "fraude", "mierda", "puta"];
+  const manejarEnvioComentario = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comentario.trim()) return;
+
+    const esMalicioso = palabrasMaliciosas.some((palabra) =>
+      comentario.toLowerCase().includes(palabra)
+    );
+
+    if (esMalicioso) {
+      setErrorComentario("El comentario contiene lenguaje inapropiado y ha sido bloqueado automáticamente.");
+      setComentario("");
+      return;
+    }
+
+    setMensajes([
+      {
+        id: Date.now(),
+        texto: comentario,
+        fecha: new Date().toLocaleDateString(),
+        usuario: usuarioSesion ? usuarioSesion.nombre : "Anónimo",
+      },
+      ...mensajes,
+    ]);
+    setComentario("");
+    setErrorComentario("");
+  };
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("usuario_sesion");
+    setUsuarioSesion(null);
+  };
 
   return (
     <div className="min-h-screen bg-[#080808] text-[#f4f4f5] font-tech selection:bg-[#d71920] selection:text-white">
       {/* ─────────────────────────────────────────────────────────────
-          TOPBAR TÉCNICA NOTIFICATION / SYSTEM STATUS
+          TOPBAR TÉCNICA NOTIFICATION / SYSTEM STATUS + USER AUTH BAR
       ───────────────────────────────────────────────────────────── */}
       <div className="border-b border-zinc-900 bg-black/90 px-4 py-2 text-xs font-mono text-zinc-400">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -129,8 +242,32 @@ export default function Home() {
                 </span>
               )}
             </div>
+
             <span className="text-zinc-600">|</span>
-            <span className="text-zinc-400 font-mono text-[11px]">v2.4.0</span>
+
+            {/* CONTROL DE SESIÓN / AUTENTICACIÓN SPRINT 1 */}
+            {usuarioSesion ? (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-white bg-zinc-900 border border-zinc-800 px-2.5 py-0.5 rounded-md flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+                  USER: {usuarioSesion.nombre}
+                </span>
+                <button
+                  onClick={cerrarSesion}
+                  className="text-[11px] text-zinc-400 hover:text-[#d71920] cursor-pointer"
+                  title="Cerrar sesión"
+                >
+                  [SALIR]
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setModalAuthAbierto(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#d71920] bg-[#d71920]/10 px-3 py-1 text-xs font-bold text-[#d71920] hover:bg-[#d71920] hover:text-white shadow-[0_0_12px_rgba(215,25,32,0.3)] transition-all cursor-pointer"
+              >
+                <span>🔑</span> LOGIN / REGISTRO
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -139,7 +276,6 @@ export default function Home() {
           HEADER BANNER (SUPERIOR) - ESTILO NOTHING PHONE
       ───────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-zinc-800 bg-glyph-circuit py-12 px-4 sm:px-6 lg:px-8">
-        {/* Glow sutil rojo en la esquina superior */}
         <div className="pointer-events-none absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-[#d71920]/10 blur-3xl"></div>
 
         <div className="mx-auto max-w-7xl">
@@ -148,7 +284,6 @@ export default function Home() {
             {/* Logo Nothing Movil */}
             <div className="flex items-center gap-3">
               <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-800 bg-black shadow-inner">
-                {/* Glyph dot matrix icon */}
                 <div className="grid grid-cols-3 gap-1">
                   <div className="h-1.5 w-1.5 rounded-full bg-[#d71920]"></div>
                   <div className="h-1.5 w-1.5 rounded-full bg-white"></div>
@@ -163,7 +298,7 @@ export default function Home() {
               </div>
 
               <div>
-                <h1 className="font-dot text-2xl sm:text-3xl font-bold tracking-wider text-white">
+                <h1 className="font-dot text-2xl sm:text-3xl font-bold tracking-wider text-white" aria-label="Nothing Móvil">
                   NOTHING <span className="text-[#d71920]">MOVIL</span>
                 </h1>
                 <p className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
@@ -177,9 +312,9 @@ export default function Home() {
               {[
                 { id: "todos" as const, label: "TODOS", icon: "⌗" },
                 { id: "moviles" as const, label: "MÓVILES", icon: "📱" },
-                { id: "tablets" as const, label: "TABLETS", icon: "💻" },
-                { id: "tvs" as const, label: "SMART TVS", icon: "📺" },
-                { id: "wearables" as const, label: "WEARABLES", icon: "⌚" },
+                { id: "tablets" as const, label: "TABLETS", icon: "📱" },
+                { id: "laptops" as const, label: "LAPTOPS / PCS", icon: "💻" },
+                { id: "auriculares" as const, label: "AURICULARES", icon: "🎧" },
               ].map((cat) => (
                 <button
                   key={cat.id}
@@ -202,7 +337,6 @@ export default function Home() {
             {/* Columna Izquierda / Central: Titular, Buscador y Slider de Precio (8 Cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between">
               <div>
-                {/* Titular Dot Matrix en Rojo */}
                 <span className="inline-block rounded border border-[#d71920]/40 bg-[#d71920]/10 px-2.5 py-1 text-[11px] font-mono text-[#d71920] tracking-wider mb-3">
                   [ SYSTEM READY // DATABASE EXPLORER ]
                 </span>
@@ -216,33 +350,39 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Barra de Búsqueda Superior Industrial */}
+              {/* Barra de Búsqueda Superior Industrial con Accesibilidad y Microcopy */}
               <div className="mt-8">
-                <label className="block text-[11px] font-mono text-zinc-400 mb-2 uppercase tracking-wider">
-                  {"// BÚSQUEDA RÁPIDA DE DISPOSITIVOS"}
+                <label htmlFor="buscador-principal" className="block text-[11px] font-mono text-zinc-400 mb-2 uppercase tracking-wider">
+                  {"// BÚSQUEDA RÁPIDA DE DISPOSITIVOS Y FICHA TÉCNICA"}
                 </label>
                 <div className="relative flex items-center">
-                  <div className="absolute left-4 flex items-center pointer-events-none text-[#d71920]">
+                  <div className="absolute left-4 flex items-center pointer-events-none text-[#d71920]" aria-hidden="true">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
                   <input
+                    id="buscador-principal"
                     type="text"
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    placeholder="BUSCAR DISPOSITIVOS... (EJ. POCO, NOTHING, SAMSUNG)"
+                    placeholder="Escribe para buscar (ej. Poco, Nothing, Samsung, Tablet, Laptop, Auriculares)"
+                    aria-label="Buscar dispositivos por nombre, marca o especificaciones"
                     className="w-full rounded-xl border border-zinc-700 bg-black/90 py-3.5 pl-12 pr-4 font-mono text-sm text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none focus:ring-2 focus:ring-[#d71920]/30 shadow-2xl transition-all"
                   />
                   {busqueda && (
                     <button
                       onClick={() => setBusqueda("")}
+                      aria-label="Limpiar búsqueda"
                       className="absolute right-4 text-xs font-mono text-zinc-500 hover:text-white cursor-pointer"
                     >
-                      [CLEAR]
+                      [LIMPIAR]
                     </button>
                   )}
                 </div>
+                <p className="mt-1.5 text-[10px] text-zinc-500 font-mono">
+                  Filtrando en vivo por categoría ({tipoDispositivo.toUpperCase()}) y presupuesto (≤ ${presupuestoMax} USD).
+                </p>
               </div>
 
               {/* Control Deslizante de Precio (Slider) + Panel Técnico Rojo */}
@@ -255,7 +395,7 @@ export default function Home() {
                     </span>
                   </div>
 
-                  {/* Panel Técnico Oscuro con Borde Rojo (Reemplazo de la burbuja púrpura) */}
+                  {/* Panel Técnico Oscuro con Borde Rojo */}
                   <div className="inline-flex items-center gap-2 rounded-lg border border-[#d71920] bg-black px-4 py-1.5 shadow-[0_0_15px_rgba(215,25,32,0.25)]">
                     <span className="font-mono text-xs text-zinc-400">HASTA:</span>
                     <span className="font-dot text-base font-bold text-[#d71920]">
@@ -264,11 +404,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Slider Minimalista Nothing (Línea blanca/oscura con thumb rojo) */}
+                {/* Slider Minimalista Nothing */}
                 <div className="space-y-2">
                   <input
                     type="range"
-                    min="100"
+                    min="50"
                     max="1500"
                     step="25"
                     value={presupuestoMax}
@@ -276,7 +416,7 @@ export default function Home() {
                     className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#d71920]"
                   />
                   <div className="flex justify-between text-[10px] font-mono text-zinc-500">
-                    <span>MIN: $100</span>
+                    <span>MIN: $50</span>
                     <span className="text-[#d71920] font-bold">FILTRO ACTIVO: ≤ ${presupuestoMax}</span>
                     <span>MAX: $1,500+</span>
                   </div>
@@ -295,17 +435,18 @@ export default function Home() {
                     </h3>
                   </div>
                   <span className="font-mono text-[10px] text-[#d71920] bg-[#d71920]/10 px-2 py-0.5 rounded border border-[#d71920]/30 font-bold">
-                    LIVE DEALS
+                    LIVE DEALS ({ofertasFiltradas.length})
                   </span>
                 </div>
 
                 {/* Lista de Ofertas en Paneles Segmentados */}
                 <div className="space-y-3 flex-1">
                   {ofertasFiltradas.length > 0 ? (
-                    ofertasFiltradas.map((oferta) => (
+                    (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
                       <div
                         key={oferta.id}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-zinc-800/90 bg-[#121216] p-3 transition-all hover:border-[#d71920]/70 hover:bg-[#16161b]"
+                        onClick={() => setProductoSeleccionado(oferta)}
+                        className="group flex items-center justify-between gap-3 rounded-xl border border-zinc-800/90 bg-[#121216] p-3 transition-all hover:border-[#d71920]/70 hover:bg-[#16161b] cursor-pointer"
                       >
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-black/50 p-1 flex items-center justify-center">
                           <img
@@ -338,17 +479,22 @@ export default function Home() {
                     ))
                   ) : (
                     <div className="py-8 text-center text-xs font-mono text-zinc-500">
-                      No hay ofertas dentro de este rango (${presupuestoMax}).
+                      No hay ofertas coincidentes con este filtro.
                     </div>
                   )}
                 </div>
 
-                {/* Enlace ver más ofertas */}
-                <div className="mt-4 pt-3 border-t border-zinc-800/70 text-center">
-                  <button className="font-dot text-[11px] text-zinc-400 hover:text-[#d71920] transition-colors tracking-wider cursor-pointer">
-                    {"// EXPLORAR TODAS LAS OFERTAS >"}
-                  </button>
-                </div>
+                {/* Botón interactivo para ver todas las ofertas */}
+                {ofertasFiltradas.length > 3 && (
+                  <div className="mt-4 pt-3 border-t border-zinc-800/70 text-center">
+                    <button
+                      onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
+                      className="font-dot text-[11px] text-zinc-400 hover:text-[#d71920] transition-colors tracking-wider cursor-pointer"
+                    >
+                      {mostrarTodasOfertas ? "// OCULTAR OFERTAS EXTRA" : "// EXPLORAR TODAS LAS OFERTAS >"}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -379,12 +525,12 @@ export default function Home() {
                   : "bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800"
               }`}
             >
-              [ 2. CATÁLOGO COMPLETO - API BACKEND ({productosBackend.length}) ]
+              [ 2. CATÁLOGO COMPLETO - API BACKEND ({productosBackendFiltrados.length}) ]
             </button>
           </div>
 
           <div className="hidden md:flex items-center gap-2 font-mono text-xs text-zinc-500">
-            <span>PRESUPUESTO ACTIVO: ≤ ${presupuestoMax}</span>
+            <span>FILTROS: {tipoDispositivo.toUpperCase()} | ≤ ${presupuestoMax}</span>
           </div>
         </div>
       </div>
@@ -397,41 +543,41 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* ── COLUMNA 1: LOS MÁS VENDIDOS ── */}
             <div className="rounded-2xl border border-zinc-800/90 bg-[#0c0c0f] p-6 shadow-2xl">
-              {/* Título de Columna con Línea de Subrayado Roja Técnica */}
               <div className="pb-4 border-b border-zinc-800 mb-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-tech text-xl font-bold uppercase tracking-wider text-white">
                     LOS MÁS VENDIDOS
                   </h3>
                   <span className="font-mono text-xs text-zinc-500">
-                    TOP {vendidosFiltrados.length}
+                    MOSTRANDO {vendidosFiltrados.length}
                   </span>
                 </div>
-                {/* Línea técnica de acento rojo */}
                 <div className="mt-2.5 h-0.5 w-16 bg-[#d71920]"></div>
               </div>
 
-              {/* Lista de Dispositivos */}
               <div className="space-y-3">
                 {vendidosFiltrados.length > 0 ? (
                   (mostrarTodosVendidos ? vendidosFiltrados : vendidosFiltrados.slice(0, 4)).map((item) => (
-                    <DeviceListItem key={item.id} item={item} />
+                    <DeviceListItem
+                      key={item.id}
+                      item={item}
+                      onVerDetalle={(item) => setProductoSeleccionado(item)}
+                    />
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-sm font-mono text-zinc-500">
-                    No hay dispositivos que coincidan con el presupuesto de ${presupuestoMax}.
+                    No hay dispositivos de la categoría &ldquo;{tipoDispositivo}&rdquo; hasta ${presupuestoMax}.
                   </div>
                 )}
               </div>
 
-              {/* Botón "VER LISTA COMPLETA": Fondo negro y borde fino Crimson Red */}
               {vendidosFiltrados.length > 4 && (
                 <div className="mt-6 pt-4 border-t border-zinc-800/70 text-center">
                   <button
                     onClick={() => setMostrarTodosVendidos(!mostrarTodosVendidos)}
                     className="w-full rounded-xl border border-[#d71920] bg-black py-3 font-dot text-xs text-white transition-all hover:bg-[#d71920] hover:shadow-[0_0_20px_rgba(215,25,32,0.4)] cursor-pointer"
                   >
-                    {mostrarTodosVendidos ? "[ OCULTAR LISTA ]" : "VER LISTA COMPLETA"}
+                    {mostrarTodosVendidos ? "OCULTAR LISTADO" : `EXPLORAR TODOS LOS MÁS VENDIDOS (${vendidosFiltrados.length})`}
                   </button>
                 </div>
               )}
@@ -439,41 +585,41 @@ export default function Home() {
 
             {/* ── COLUMNA 2: LOS MÁS DESEADOS ── */}
             <div className="rounded-2xl border border-zinc-800/90 bg-[#0c0c0f] p-6 shadow-2xl">
-              {/* Título de Columna con Línea de Subrayado Roja Técnica */}
               <div className="pb-4 border-b border-zinc-800 mb-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-tech text-xl font-bold uppercase tracking-wider text-white">
                     LOS MÁS DESEADOS
                   </h3>
                   <span className="font-mono text-xs text-zinc-500">
-                    TOP {deseadosFiltrados.length}
+                    MOSTRANDO {deseadosFiltrados.length}
                   </span>
                 </div>
-                {/* Línea técnica de acento rojo */}
                 <div className="mt-2.5 h-0.5 w-16 bg-[#d71920]"></div>
               </div>
 
-              {/* Lista de Dispositivos */}
               <div className="space-y-3">
                 {deseadosFiltrados.length > 0 ? (
                   (mostrarTodosDeseados ? deseadosFiltrados : deseadosFiltrados.slice(0, 4)).map((item) => (
-                    <DeviceListItem key={item.id} item={item} />
+                    <DeviceListItem
+                      key={item.id}
+                      item={item}
+                      onVerDetalle={(item) => setProductoSeleccionado(item)}
+                    />
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-zinc-800 p-8 text-center text-sm font-mono text-zinc-500">
-                    No hay dispositivos que coincidan con el presupuesto de ${presupuestoMax}.
+                    No hay dispositivos de la categoría &ldquo;{tipoDispositivo}&rdquo; hasta ${presupuestoMax}.
                   </div>
                 )}
               </div>
 
-              {/* Botón "VER LISTA COMPLETA": Fondo negro y borde fino Crimson Red */}
               {deseadosFiltrados.length > 4 && (
                 <div className="mt-6 pt-4 border-t border-zinc-800/70 text-center">
                   <button
                     onClick={() => setMostrarTodosDeseados(!mostrarTodosDeseados)}
                     className="w-full rounded-xl border border-[#d71920] bg-black py-3 font-dot text-xs text-white transition-all hover:bg-[#d71920] hover:shadow-[0_0_20px_rgba(215,25,32,0.4)] cursor-pointer"
                   >
-                    {mostrarTodosDeseados ? "[ OCULTAR LISTA ]" : "VER LISTA COMPLETA"}
+                    {mostrarTodosDeseados ? "OCULTAR LISTADO" : `EXPLORAR TODOS LOS MÁS DESEADOS (${deseadosFiltrados.length})`}
                   </button>
                 </div>
               )}
@@ -494,11 +640,10 @@ export default function Home() {
                   {"// SPRING BOOT REST SERVICE [/api/productos]"}
                 </span>
                 <h3 className="font-tech text-2xl font-bold text-white mt-1">
-                  Catálogo General del Sistema
+                  Catálogo General del Sistema ({productosBackendFiltrados.length} Dispositivos)
                 </h3>
               </div>
 
-              {/* Estado de conexión */}
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs text-zinc-400">ESTADO API:</span>
                 {estadoBackend === "online" ? (
@@ -514,16 +659,23 @@ export default function Home() {
             </div>
 
             {cargandoApi ? (
+              <div className="flex flex-col items-center justify-center py-20" aria-live="polite" aria-busy="true">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-zinc-800 border-t-[#d71920]" aria-hidden="true"></div>
+                <p className="mt-4 font-mono text-sm text-zinc-300">Sincronizando catálogo con el servidor...</p>
+              </div>
+            ) : productosBackendFiltrados.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-80 animate-pulse rounded-2xl bg-zinc-900 border border-zinc-800"></div>
+                {productosBackendFiltrados.map((producto) => (
+                  <ProductCard
+                    key={producto.idProducto}
+                    producto={producto}
+                    onVerDetalle={(prod) => setProductoSeleccionado(prod)}
+                  />
                 ))}
               </div>
             ) : (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {productosBackend.map((producto) => (
-                  <ProductCard key={producto.idProducto} producto={producto} />
-                ))}
+              <div className="rounded-xl border border-dashed border-zinc-800 p-12 text-center text-sm font-mono text-zinc-500">
+                No hay productos que coincidan con la búsqueda &ldquo;{busqueda}&rdquo; y presupuesto de ${presupuestoMax}.
               </div>
             )}
           </div>
@@ -531,24 +683,79 @@ export default function Home() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          FOOTER INDUSTRIAL NOTHING
+          SECCIÓN DE COMENTARIOS (CON FILTRO HEURÍSTICO)
       ───────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-zinc-900 bg-black py-10 px-4 sm:px-6 lg:px-8 mt-16 font-mono text-xs text-zinc-500">
-        <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <span className="font-dot text-sm font-bold text-white">
-              NOTHING <span className="text-[#d71920]">MOVIL</span>
-            </span>
-            <span>{"//"}</span>
-            <span>PROYECTO DESARROLLO 1 - TECNOREVIEW</span>
-          </div>
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-comentarios">
+        <div className="rounded-2xl border border-zinc-800 bg-[#0c0c0f] p-6 shadow-2xl">
+          <h3 id="seccion-comentarios" className="font-tech text-xl font-bold uppercase tracking-wider text-white mb-2">
+            Feedback de la Comunidad
+          </h3>
+          <p className="font-mono text-xs text-zinc-500 mb-6">
+            Déjanos tu opinión. Nuestro sistema de moderación automática filtra contenido malicioso en tiempo real.
+          </p>
 
-          <div className="flex items-center gap-6">
-            <span className="text-zinc-600">CLIENT: NEXT.JS 16</span>
-            <span className="text-zinc-600">SERVER: SPRING BOOT 4</span>
-            <span className="text-zinc-600">DB: SUPABASE POSTGRESQL</span>
+          <form onSubmit={manejarEnvioComentario} className="mb-8">
+            <label htmlFor="input-comentario" className="sr-only">Escribe tu comentario</label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                id="input-comentario"
+                type="text"
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+                placeholder={usuarioSesion ? `Comentar como ${usuarioSesion.nombre}...` : "Escribe tu opinión aquí..."}
+                className="flex-1 rounded-xl border border-zinc-700 bg-black/90 px-4 py-3 font-mono text-sm text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none focus:ring-2 focus:ring-[#d71920]/30 transition-all"
+              />
+              <button
+                type="submit"
+                className="rounded-xl border border-[#d71920] bg-[#d71920]/10 px-6 py-3 font-mono text-sm font-bold text-[#d71920] transition-all hover:bg-[#d71920] hover:text-white hover:shadow-[0_0_15px_rgba(215,25,32,0.4)] cursor-pointer"
+              >
+                PUBLICAR
+              </button>
+            </div>
+            {errorComentario && (
+              <p className="mt-2 text-xs font-mono text-[#d71920]" role="alert">
+                {errorComentario}
+              </p>
+            )}
+          </form>
+
+          <div className="space-y-3">
+            {mensajes.map((msg) => (
+              <div key={msg.id} className="rounded-xl border border-zinc-800/80 bg-[#121216] p-4 font-mono text-xs">
+                <div className="flex items-center justify-between text-zinc-400 mb-1">
+                  <span className="font-bold text-[#d71920]">@{msg.usuario || "Anónimo"}</span>
+                  <span className="text-[10px] text-zinc-500">{msg.fecha}</span>
+                </div>
+                <p className="text-zinc-200">{msg.texto}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
+
+      {/* MODAL DE AUTENTICACIÓN (LOGIN / REGISTRO) SPRINT 1 */}
+      <AuthModal
+        isOpen={modalAuthAbierto}
+        onClose={() => setModalAuthAbierto(false)}
+        onLoginSuccess={(usr) => setUsuarioSesion(usr)}
+      />
+
+      {/* MODAL DE FICHA TÉCNICA DEL PRODUCTO SPRINT 1 */}
+      <FichaTecnicaModal
+        key={
+          productoSeleccionado
+            ? "ranking" in productoSeleccionado
+              ? `kim_${productoSeleccionado.id}`
+              : `prod_${productoSeleccionado.idProducto}`
+            : "modal_cerrado"
+        }
+        producto={productoSeleccionado}
+        onClose={() => setProductoSeleccionado(null)}
+      />
+
+      {/* FOOTER */}
+      <footer className="border-t border-zinc-900 bg-black py-10 px-4 font-mono text-xs text-zinc-500 text-center">
+        <p>© 2026 NOTHING MOVIL // PROYECTO DESARROLLO 1 - SPRINT 1 ENTREGABLE</p>
       </footer>
     </div>
   );

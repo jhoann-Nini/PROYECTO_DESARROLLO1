@@ -1,3 +1,19 @@
+package com.example.backend.service;
+
+import com.example.backend.dto.ProductoRequest;
+import com.example.backend.dto.ProductoResponse;
+import com.example.backend.entity.Categoria;
+import com.example.backend.entity.Marca;
+import com.example.backend.entity.Producto;
+import com.example.backend.exception.ResourceNotFoundException;
+import com.example.backend.repository.CategoriaRepository;
+import com.example.backend.repository.MarcaRepository;
+import com.example.backend.repository.ProductoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @Service
 public class ProductoService {
 
@@ -26,8 +42,16 @@ public class ProductoService {
 
 
     @Transactional(readOnly = true)
-    public List<ProductoResponse> listarPorMarca(Long idMarca) {
+    public List<ProductoResponse> listarPorCategoria(Long idCategoria) {
+        return productoRepository.findByCategoriaIdCategoriaAndEstadoTrue(idCategoria)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
+
+    @Transactional(readOnly = true)
+    public List<ProductoResponse> listarPorMarca(Long idMarca) {
         return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
                 .stream()
                 .map(this::toResponse)

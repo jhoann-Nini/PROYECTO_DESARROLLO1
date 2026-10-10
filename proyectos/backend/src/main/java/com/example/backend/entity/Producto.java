@@ -26,7 +26,7 @@ public class Producto {
     @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
 
-    @Column(length = 255)
+    @Column(length = 1000)
     private String imagen;
 
     @Column(name = "precio_referencia", precision = 12, scale = 2)

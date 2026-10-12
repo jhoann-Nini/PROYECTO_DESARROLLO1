@@ -41,20 +41,19 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorCategoria(Long idCategoria) {
-        return productoRepository.findByCategoriaIdCategoria(idCategoria)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+      return productoRepository.findByCategoriaIdCategoriaAndEstadoTrue(idCategoria)
+        .stream()
+        .map(this::toResponse)
+        .toList();
     }
 
 
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorMarca(Long idMarca) {
-
-        return productoRepository.findByMarcaIdMarca(idMarca)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+      return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
+        .stream()
+        .map(this::toResponse)
+        .toList();
     }
 
 

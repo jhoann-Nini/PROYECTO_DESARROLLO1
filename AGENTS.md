@@ -56,9 +56,9 @@ proyectos/
 
 10. No modificar archivos de otros compañeros
     si no son necesarios para la tarea.
-11. leer la documentacion 
-12. actualizar dicumentacion 
-13. comunicar cualquier cambio que tengas 
+11. leer la documentacion del proyecto antes de realizar cambios.
+12. mantener la documentacion actualizada.
+13. comunicar cualquier cambio que tengas.
 
 # Git
 

@@ -52,6 +52,7 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorMarca(Long idMarca) {
+
         return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
                 .stream()
                 .map(this::toResponse)

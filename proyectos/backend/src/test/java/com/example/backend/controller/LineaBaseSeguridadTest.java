@@ -26,7 +26,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
  *
  * Hoy no existe autenticación ni autorización, así que las escrituras responden
  * con éxito sin credenciales. Cuando se añada Spring Security, las pruebas de
- * "sin credenciales" deben fallar: es la señal esperada. Entonces se sustituyen
+ * "sin autenticación" deben fallar: es la señal esperada. Entonces se
+ * sustituyen
  * por pruebas que esperen 401 (sin autenticar) y 403 (sin permisos).
  */
 class LineaBaseSeguridadTest {
@@ -38,8 +39,7 @@ class LineaBaseSeguridadTest {
         mockMvc = MockMvcBuilders.standaloneSetup(
                 new ProductoController(mock(ProductoService.class)),
                 new CategoriaController(mock(CategoriaService.class)),
-                new MarcaController(mock(MarcaService.class))
-        ).build();
+                new MarcaController(mock(MarcaService.class))).build();
     }
 
     private static final String PRODUCTO_JSON = """
@@ -49,6 +49,8 @@ class LineaBaseSeguridadTest {
     private static final String NOMBRE_JSON = """
             {"nombre":"Prueba","descripcion":"Prueba"}
             """;
+
+    // --- Productos ---
 
     @Test
     void productosEscrituraSinCredencialesHoyFunciona() throws Exception {
@@ -60,6 +62,8 @@ class LineaBaseSeguridadTest {
                 .andExpect(status().isNoContent());
     }
 
+    // --- Categorías ---
+
     @Test
     void categoriasEscrituraSinCredencialesHoyFunciona() throws Exception {
         mockMvc.perform(post("/api/categorias").contentType("application/json").content(NOMBRE_JSON))
@@ -69,6 +73,8 @@ class LineaBaseSeguridadTest {
         mockMvc.perform(delete("/api/categorias/1"))
                 .andExpect(status().isNoContent());
     }
+
+    // --- Marcas ---
 
     @Test
     void marcasEscrituraSinCredencialesHoyFunciona() throws Exception {
@@ -80,12 +86,16 @@ class LineaBaseSeguridadTest {
                 .andExpect(status().isNoContent());
     }
 
+    // --- Lecturas (deben seguir siendo públicas tras añadir seguridad) ---
+
     @Test
     void lecturasSinCredencialesResponden200() throws Exception {
         mockMvc.perform(get("/api/productos")).andExpect(status().isOk());
         mockMvc.perform(get("/api/categorias")).andExpect(status().isOk());
         mockMvc.perform(get("/api/marcas")).andExpect(status().isOk());
     }
+
+    // --- Datos sensibles: esta prueba debe seguir pasando siempre ---
 
     @Test
     void ningunDtoDeRespuestaExponePassword() {

@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { obtenerProductos } from "@/services/api";
 import Link from "next/link";
+import { Producto } from "@/types/producto";
+import { formatearCOP } from "@/data/specsHelper";
 
 export default function ProductosPage() {
-  const [productos, setProductos] = useState<unknown>(null);
+  const [productos, setProductos] = useState<Producto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    obtenerProductos()
+    obtenerProductos<Producto>()
       .then((datos) => {
         setProductos(datos);
       })
@@ -18,7 +20,7 @@ export default function ProductosPage() {
         setError(
           err instanceof Error
             ? err.message
-            : "Ocurrió un error inesperado al cargar los productos.",
+            : "No fue posible conectar con el catálogo de productos.",
         );
       })
       .finally(() => {
@@ -27,46 +29,64 @@ export default function ProductosPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#080808] p-6 text-[#f4f4f5] font-tech">
+    <main className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 text-slate-900 dark:text-slate-100 transition-colors">
       <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between pb-6 border-b border-zinc-800 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200 dark:border-slate-800 mb-8 gap-4">
           <div>
-            <span className="font-mono text-xs text-[#d71920] font-bold">
-              {"// RAW API INSPECTOR [/api/productos]"}
+            <span className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
+              Catálogo de Productos
             </span>
-            <h1 className="font-dot text-3xl font-bold tracking-wider text-white mt-1">
-              NOTHING <span className="text-[#d71920]">DEBUGGER</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
+              Tec<span className="text-blue-700 dark:text-blue-400">Review</span> Explorador
             </h1>
           </div>
           <Link
             href="/"
-            className="rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2 font-mono text-xs font-bold text-zinc-300 hover:border-[#d71920] hover:text-white transition-all"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition-colors"
           >
-            ← VOLVER AL PORTAL
+            ← Volver al inicio
           </Link>
         </div>
 
         {cargando && (
-          <div className="rounded-xl border border-zinc-800 bg-[#121216] p-6 font-mono text-sm text-zinc-400">
-            [SYS] Consultando backend en http://localhost:8080/api/productos...
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center text-sm text-slate-600 dark:text-slate-400 shadow-sm">
+            Consultando catálogo de productos en el servidor...
           </div>
         )}
 
         {error && (
-          <div className="rounded-xl border border-[#d71920]/40 bg-[#1a0c0e] p-6 font-mono text-sm text-[#ff6b75]">
-            <p className="font-bold text-[#ff2a35]">[ERROR_STATUS]: Conexión rechazada</p>
+          <div className="rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 p-6 text-sm text-red-800 dark:text-red-300 shadow-sm">
+            <p className="font-bold">Estado de conexión con el backend:</p>
             <p className="mt-1 text-xs">{error}</p>
           </div>
         )}
 
         {!cargando && !error && (
-          <div className="rounded-xl border border-zinc-800 bg-[#0c0c0f] p-4 shadow-2xl">
-            <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest block mb-2">
-              JSON PAYLOAD RESPONSE
-            </span>
-            <pre className="overflow-x-auto rounded-lg bg-black p-4 font-mono text-xs text-emerald-400">
-              {JSON.stringify(productos, null, 2)}
-            </pre>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span>{productos.length} productos registrados</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {productos.map((prod) => (
+                <div
+                  key={prod.idProducto}
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm"
+                >
+                  <h3 className="font-bold text-slate-900 dark:text-white line-clamp-1">
+                    {prod.nombre}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 line-clamp-2">
+                    {prod.descripcion || "Sin descripción disponible."}
+                  </p>
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span className="text-xs text-slate-500">Precio</span>
+                    <span className="text-sm font-bold text-blue-700 dark:text-blue-400">
+                      {formatearCOP(prod.precioReferencia)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

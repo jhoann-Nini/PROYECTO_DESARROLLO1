@@ -46,7 +46,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setExito("");
 
     if (!loginEmail.trim() || !loginPassword.trim()) {
-      setError("Por favor completa todos los campos de inicio de sesión.");
+      setError("Por favor completa tu correo y contraseña.");
       return;
     }
 
@@ -59,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     };
 
     localStorage.setItem("usuario_sesion", JSON.stringify(usuarioSimulado));
-    setExito("¡Sesión iniciada con éxito! Bienvenido al portal.");
+    setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
 
     setTimeout(() => {
       onLoginSuccess(usuarioSimulado);
@@ -73,7 +73,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setExito("");
 
     if (!regNombre.trim() || !regEmail.trim() || !regUsuario.trim() || !regPassword.trim()) {
-      setError("Todos los campos con (*) son obligatorios.");
+      setError("Todos los campos marcados con (*) son obligatorios.");
       return;
     }
 
@@ -83,7 +83,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     }
 
     if (!regTerminos) {
-      setError("Debes aceptar los términos y políticas de uso.");
+      setError("Debes aceptar los términos y condiciones de uso.");
       return;
     }
 
@@ -96,7 +96,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     };
 
     localStorage.setItem("usuario_sesion", JSON.stringify(nuevoUsuario));
-    setExito("¡Cuenta registrada con éxito! Iniciando sesión automáticamente...");
+    setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
 
     setTimeout(() => {
       onLoginSuccess(nuevoUsuario);
@@ -109,148 +109,153 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-xs animate-fadeIn"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="auth-modal-title"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-zinc-800 bg-[#0d0d10] p-6 shadow-2xl">
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
         {/* Cabecera modal */}
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#d71920] animate-ping"></span>
-            <h2 className="font-dot text-lg font-bold text-white tracking-wider">
-              AUTHENTICATION <span className="text-[#d71920]">{"// OS"}</span>
+            <h2 id="auth-modal-title" className="text-base font-bold text-slate-900 dark:text-white">
+              Acceso a <span className="text-blue-700 dark:text-blue-400">TecReview</span>
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1 font-mono text-xs text-zinc-400 hover:border-[#d71920] hover:text-white transition-all cursor-pointer"
+            className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            aria-label="Cerrar modal de autenticación"
           >
-            ✕ CERRAR
+            ✕ Cerrar
           </button>
         </div>
 
         {/* Pestañas de Login / Registro */}
-        <div className="my-5 flex rounded-xl border border-zinc-800 bg-black p-1">
+        <div className="my-5 flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
           <button
+            type="button"
             onClick={() => {
               setModo("login");
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 font-mono text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
               modo === "login"
-                ? "bg-[#d71920] text-white shadow-[0_0_12px_rgba(215,25,32,0.4)]"
-                : "text-zinc-400 hover:text-white"
+                ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            [ 1. INICIAR SESIÓN ]
+            Iniciar sesión
           </button>
           <button
+            type="button"
             onClick={() => {
               setModo("registro");
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 font-mono text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
               modo === "registro"
-                ? "bg-[#d71920] text-white shadow-[0_0_12px_rgba(215,25,32,0.4)]"
-                : "text-zinc-400 hover:text-white"
+                ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            [ 2. CREAR CUENTA ]
+            Crear cuenta
           </button>
         </div>
 
         {/* Notificaciones de error o éxito */}
         {error && (
-          <div className="mb-4 rounded-xl border border-[#d71920]/50 bg-[#1f0d0f] p-3 font-mono text-xs text-[#ff6b75]" role="alert">
-            🚨 {error}
+          <div className="mb-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/80 p-3 text-xs text-red-700 dark:text-red-300" role="alert">
+            ⚠️ {error}
           </div>
         )}
         {exito && (
-          <div className="mb-4 rounded-xl border border-emerald-500/50 bg-emerald-950 p-3 font-mono text-xs text-emerald-400" role="status">
+          <div className="mb-4 rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/80 p-3 text-xs text-emerald-800 dark:text-emerald-300" role="status">
             ✅ {exito}
           </div>
         )}
 
         {/* FORMULARIO INICIAR SESIÓN */}
         {modo === "login" && (
-          <form onSubmit={manejarLogin} className="space-y-4 font-mono text-xs">
+          <form onSubmit={manejarLogin} className="space-y-4 text-xs">
             <div>
-              <label className="block text-zinc-400 mb-1">CORREO O USUARIO (*)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Correo electrónico (*)</label>
               <input
                 type="text"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
-                placeholder="ejemplo@tecnoreview.com"
-                className="w-full rounded-xl border border-zinc-800 bg-black px-4 py-2.5 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none focus:ring-1 focus:ring-[#d71920]"
+                placeholder="ejemplo@tecreview.com"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-zinc-400 mb-1">CONTRASEÑA (*)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Contraseña (*)</label>
               <input
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-zinc-800 bg-black px-4 py-2.5 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none focus:ring-1 focus:ring-[#d71920]"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600"
                 required
               />
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-zinc-500">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="accent-[#d71920] rounded" />
+                <input type="checkbox" className="accent-blue-700 rounded" />
                 <span>Recordar sesión</span>
               </label>
-              <a href="#" className="hover:text-[#d71920] transition-colors">¿Olvidaste tu contraseña?</a>
+              <a href="#" className="hover:text-blue-700 dark:hover:text-blue-400 transition-colors">¿Olvidaste tu contraseña?</a>
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-xl border border-[#d71920] bg-[#d71920] py-3 font-dot text-xs font-bold text-white transition-all hover:bg-[#ff2a35] hover:shadow-[0_0_20px_rgba(215,25,32,0.5)] cursor-pointer"
+              className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs cursor-pointer"
             >
-              INGRESAR AL SISTEMA
+              Entrar a TecReview
             </button>
           </form>
         )}
 
         {/* FORMULARIO REGISTRO */}
         {modo === "registro" && (
-          <form onSubmit={manejarRegistro} className="space-y-3.5 font-mono text-xs">
+          <form onSubmit={manejarRegistro} className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-zinc-400 mb-1">NOMBRE COMPLETO (*)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Nombre completo (*)</label>
               <input
                 type="text"
                 value={regNombre}
                 onChange={(e) => setRegNombre(e.target.value)}
-                placeholder="Ej. Adrian Gomez"
-                className="w-full rounded-xl border border-zinc-800 bg-black px-4 py-2 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none"
+                placeholder="Ej. Adrian Gómez"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-zinc-400 mb-1">USUARIO (*)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Usuario (*)</label>
                 <input
                   type="text"
                   value={regUsuario}
                   onChange={(e) => setRegUsuario(e.target.value)}
                   placeholder="adriang"
-                  className="w-full rounded-xl border border-zinc-800 bg-black px-3 py-2 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-zinc-400 mb-1">CORREO (*)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Correo (*)</label>
                 <input
                   type="email"
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
                   placeholder="adrian@mail.com"
-                  className="w-full rounded-xl border border-zinc-800 bg-black px-3 py-2 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
                   required
                 />
               </div>
@@ -258,44 +263,44 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-zinc-400 mb-1">CONTRASEÑA (*)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Contraseña (*)</label>
                 <input
                   type="password"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-zinc-800 bg-black px-3 py-2 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-zinc-400 mb-1">CONFIRMAR (*)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Confirmar (*)</label>
                 <input
                   type="password"
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-zinc-800 bg-black px-3 py-2 text-white placeholder:text-zinc-600 focus:border-[#d71920] focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
                   required
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-[11px] text-zinc-400 cursor-pointer pt-1">
+            <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer pt-1">
               <input
                 type="checkbox"
                 checked={regTerminos}
                 onChange={(e) => setRegTerminos(e.target.checked)}
-                className="accent-[#d71920] rounded"
+                className="accent-blue-700 rounded"
               />
-              <span>Acepto los términos de servicio y moderación de contenido.</span>
+              <span>Acepto los términos de servicio y normas de la comunidad.</span>
             </label>
 
             <button
               type="submit"
-              className="w-full rounded-xl border border-[#d71920] bg-[#d71920] py-3 font-dot text-xs font-bold text-white transition-all hover:bg-[#ff2a35] hover:shadow-[0_0_20px_rgba(215,25,32,0.5)] cursor-pointer"
+              className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs cursor-pointer"
             >
-              REGISTRAR NUEVO USUARIO
+              Crear mi cuenta
             </button>
           </form>
         )}

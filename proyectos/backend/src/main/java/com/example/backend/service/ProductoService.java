@@ -17,105 +17,139 @@ import java.util.List;
 @Service
 public class ProductoService {
 
-  private final ProductoRepository productoRepository;
-  private final CategoriaRepository categoriaRepository;
-  private final MarcaRepository marcaRepository;
+    private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final MarcaRepository marcaRepository;
 
-  public ProductoService(
-    ProductoRepository productoRepository,
-    CategoriaRepository categoriaRepository,
-    MarcaRepository marcaRepository) {
-    this.productoRepository = productoRepository;
-    this.categoriaRepository = categoriaRepository;
-    this.marcaRepository = marcaRepository;
-  }
+    public ProductoService(
+            ProductoRepository productoRepository,
+            CategoriaRepository categoriaRepository,
+            MarcaRepository marcaRepository) {
 
-  @Transactional(readOnly = true)
-  public List<ProductoResponse> listarActivos() {
-    return productoRepository.findAll().stream()
-      .filter(Producto::getEstado)
+        this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.marcaRepository = marcaRepository;
+    }
+
+    public List<ProductoResponse> listarActivos() {
+    return productoRepository.findByEstadoTrue()
+      .stream()
       .map(this::toResponse)
       .toList();
   }
 
-  @Transactional(readOnly = true)
-  public ProductoResponse obtenerPorId(Long id) {
-    Producto producto = buscarOFallar(id);
-    return toResponse(producto);
-  }
 
-  @Transactional
-  public ProductoResponse crear(ProductoRequest request) {
-    Categoria categoria = buscarCategoriaOFallar(request.idCategoria());
-    Marca marca = buscarMarcaOFallar(request.idMarca());
+    @Transactional(readOnly = true)
+    public List<ProductoResponse> listarPorCategoria(Long idCategoria) {
+        return productoRepository.findByCategoriaIdCategoria(idCategoria)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
-    Producto producto = new Producto();
-    producto.setNombre(request.nombre());
-    producto.setDescripcion(request.descripcion());
-    producto.setCategoria(categoria);
-    producto.setMarca(marca);
-    producto.setImagen(request.imagen());
-    producto.setPrecioReferencia(request.precioReferencia());
-    producto.setEstado(true);
 
-    return toResponse(productoRepository.save(producto));
-  }
+    @Transactional(readOnly = true)
+    public List<ProductoResponse> listarPorMarca(Long idMarca) {
 
-  @Transactional
-  public ProductoResponse actualizar(Long id, ProductoRequest request) {
-    Producto producto = buscarOFallar(id);
+        return productoRepository.findByMarcaIdMarca(idMarca)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
-    Categoria categoria = buscarCategoriaOFallar(request.idCategoria());
-    Marca marca = buscarMarcaOFallar(request.idMarca());
 
-    producto.setNombre(request.nombre());
-    producto.setDescripcion(request.descripcion());
-    producto.setCategoria(categoria);
-    producto.setMarca(marca);
-    producto.setImagen(request.imagen());
-    producto.setPrecioReferencia(request.precioReferencia());
+    @Transactional(readOnly = true)
+    public ProductoResponse obtenerPorId(Long id) {
+        return toResponse(buscarActivoOFallar(id));
+    }
 
-    return toResponse(productoRepository.save(producto));
-  }
 
-  @Transactional
-  public void eliminar(Long id) {
-    Producto producto = buscarOFallar(id);
-    producto.setEstado(false);
-    productoRepository.save(producto);
-  }
+    @Transactional
+    public ProductoResponse crear(ProductoRequest request) {
 
-  private Producto buscarOFallar(Long id) {
-    return productoRepository.findById(id)
-      .orElseThrow(() ->
-        new ResourceNotFoundException(
-          "Producto no encontrado con id " + id));
-  }
+        Categoria categoria = buscarCategoriaOFallar(request.idCategoria());
+        Marca marca = buscarMarcaOFallar(request.idMarca());
 
-  private Categoria buscarCategoriaOFallar(Long idCategoria) {
-    return categoriaRepository.findById(idCategoria)
-      .orElseThrow(() ->
-        new ResourceNotFoundException(
-          "Categoría no encontrada con id " + idCategoria));
-  }
+        Producto producto = new Producto();
 
-  private Marca buscarMarcaOFallar(Long idMarca) {
-    return marcaRepository.findById(idMarca)
-      .orElseThrow(() ->
-        new ResourceNotFoundException(
-          "Marca no encontrada con id " + idMarca));
-  }
+        producto.setNombre(request.nombre());
+        producto.setDescripcion(request.descripcion());
+        producto.setCategoria(categoria);
+        producto.setMarca(marca);
+        producto.setImagen(request.imagen());
+        producto.setPrecioReferencia(request.precioReferencia());
+        producto.setEstado(true);
 
-  private ProductoResponse toResponse(Producto producto) {
-    return new ProductoResponse(
-      producto.getIdProducto(),
-      producto.getNombre(),
-      producto.getDescripcion(),
-      producto.getCategoria().getIdCategoria(),
-      producto.getMarca().getIdMarca(),
-      producto.getImagen(),
-      producto.getPrecioReferencia(),
-      producto.getEstado()
-    );
-  }
+        return toResponse(productoRepository.save(producto));
+    }
+
+
+    @Transactional
+    public ProductoResponse actualizar(Long id, ProductoRequest request) {
+
+        Producto producto = buscarActivoOFallar(id);
+
+        producto.setNombre(request.nombre());
+        producto.setDescripcion(request.descripcion());
+        producto.setCategoria(buscarCategoriaOFallar(request.idCategoria()));
+        producto.setMarca(buscarMarcaOFallar(request.idMarca()));
+        producto.setImagen(request.imagen());
+        producto.setPrecioReferencia(request.precioReferencia());
+
+        return toResponse(productoRepository.save(producto));
+    }
+
+
+    @Transactional
+    public void eliminar(Long id) {
+
+        Producto producto = buscarActivoOFallar(id);
+
+        producto.setEstado(false);
+
+        productoRepository.save(producto);
+    }
+
+
+    private Producto buscarActivoOFallar(Long id) {
+
+        return productoRepository.findById(id)
+                .filter(Producto::getEstado)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException(
+                    "Producto no encontrado con id " + id));
+    }
+
+
+    private Categoria buscarCategoriaOFallar(Long idCategoria) {
+
+        return categoriaRepository.findById(idCategoria)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException(
+                    "Categoría no encontrada con id " + idCategoria));
+    }
+
+
+    private Marca buscarMarcaOFallar(Long idMarca) {
+
+        return marcaRepository.findById(idMarca)
+                .orElseThrow(() ->
+                    new ResourceNotFoundException(
+                    "Marca no encontrada con id " + idMarca));
+    }
+
+
+    private ProductoResponse toResponse(Producto producto) {
+
+        return new ProductoResponse(
+                producto.getIdProducto(),
+                producto.getNombre(),
+                producto.getDescripcion(),
+                producto.getCategoria().getIdCategoria(),
+                producto.getMarca().getIdMarca(),
+                producto.getImagen(),
+                producto.getPrecioReferencia(),
+                producto.getEstado()
+        );
+    }
 }

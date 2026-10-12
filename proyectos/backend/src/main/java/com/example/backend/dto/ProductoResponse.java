@@ -1,18 +1,19 @@
 package com.example.backend.dto;
 
+import java.math.BigDecimal;
+
 /**
- * Datos de la Api devuelve al consultar un Producto
-**/
-
+ * Datos que la API devuelve al consultar un producto.
+ * Se exponen los IDs relacionados para mantener la respuesta simple.
+ */
 public record ProductoResponse(
-  long idProducto,
-  String nombre,
-  String descripcion,
-  long idCategoria,
-  long idMarca,
-  String imagen,
-  java.math.BigDecimal precioReferencia,
-  Boolean estado
-
+        Long idProducto,
+        String nombre,
+        String descripcion,
+        Long idCategoria,
+        Long idMarca,
+        String imagen,
+        BigDecimal precioReferencia,
+        Boolean estado
 ) {
 }

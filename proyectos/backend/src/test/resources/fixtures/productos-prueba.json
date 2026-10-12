@@ -1,0 +1,68 @@
+[
+  {
+    "caso": "celular-completo",
+    "categoria": "Celulares",
+    "marca": "Samsung",
+    "producto": {
+      "nombre": "Celular Demo A1",
+      "descripcion": "Equipo de prueba con datos generales completos.",
+      "imagen": null,
+      "precioReferencia": 1200000
+    }
+  },
+  {
+    "caso": "computador-con-imagen",
+    "categoria": "Computadores",
+    "marca": "Lenovo",
+    "producto": {
+      "nombre": "Computador Demo B1",
+      "descripcion": "Portátil de prueba para validar la clasificación como computador.",
+      "imagen": "https://example.com/imagenes/computador-demo-b1.jpg",
+      "precioReferencia": 2800000
+    }
+  },
+  {
+    "caso": "tablet-sin-precio",
+    "categoria": "Tablets",
+    "marca": "Samsung",
+    "producto": {
+      "nombre": "Tablet Demo C1",
+      "descripcion": "Caso con precio de referencia opcional sin informar.",
+      "imagen": null,
+      "precioReferencia": null
+    }
+  },
+  {
+    "caso": "audifonos-basicos",
+    "categoria": "Audífonos",
+    "marca": "Sony",
+    "producto": {
+      "nombre": "Audífonos Demo D1",
+      "descripcion": "Accesorio de audio para probar otra categoría de producto.",
+      "imagen": null,
+      "precioReferencia": 180000
+    }
+  },
+  {
+    "caso": "smartwatch-con-imagen",
+    "categoria": "Smartwatch",
+    "marca": "Xiaomi",
+    "producto": {
+      "nombre": "Reloj Demo E1",
+      "descripcion": "Reloj inteligente de prueba con imagen de ejemplo.",
+      "imagen": "https://example.com/imagenes/reloj-demo-e1.jpg",
+      "precioReferencia": 350000
+    }
+  },
+  {
+    "caso": "accesorio-sin-descripcion",
+    "categoria": "Accesorios",
+    "marca": "Logitech",
+    "producto": {
+      "nombre": "Accesorio Demo F1",
+      "descripcion": null,
+      "imagen": null,
+      "precioReferencia": 95000
+    }
+  }
+]

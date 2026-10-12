@@ -67,7 +67,7 @@ backend/
                 └── config/
 
 ### Tabla inicial de endpoints
-| Recurso          | Método | Endpoint                           | Acceso             |  
+| Recurso          | Método | Endpoint                           | Acceso             |  Estado
 | Productos        | GET    | `/api/productos`                   | Público            |
 | Producto         | GET    | `/api/productos/{id}`              | Público            |
 | Productos        | POST   | `/api/productos`                   | Autorizado         |
@@ -213,11 +213,14 @@ Permite obtener el listado de productos disponibles.
 Respuesta esperada
 [
   {
-    "id": 1,
+    "idProducto": 1,
     "nombre": "Laptop Lenovo IdeaPad",
     "descripcion": "Computador portátil",
-    "marca": "Lenovo",
-    "categoria": "Portátiles"
+    "idCategoria": 1,
+    "idMarca": 1,
+    "imagen": null,
+    "precioReferencia": 2500000,
+    "estado": true
   }
 ]
 
@@ -240,8 +243,10 @@ Ejemplo:
 {
   "nombre": "Samsung Galaxy A55",
   "descripcion": "Teléfono inteligente",
-  "marcaId": 2,
-  "categoriaId": 1
+  "idMarca": 2,
+  "idCategoria": 1,
+  "imagen": null,
+  "precioReferencia": 1500000
 }
 
 El backend deberá validar los datos antes de almacenarlos.
@@ -262,6 +267,8 @@ Permite eliminar un producto cuando el usuario tenga los permisos correspondient
 
 ---
 
+> **Nota de implementación:** el listado actual devuelve únicamente productos activos (`estado=true`). La eliminación es lógica y responde `204 No Content`. Un producto inactivo se considera no encontrado al consultarlo o actualizarlo por ID.
+
 # 8. Búsqueda de productos
 
 La plataforma debe permitir buscar productos.
@@ -278,7 +285,7 @@ Marca.
 
 Ejemplo:
 
-GET /api/productos?categoria=portatiles
+GET /api/productos?idCategoria=1
 
 La implementación exacta de los parámetros podrá ajustarse durante el desarrollo.
 
@@ -863,32 +870,34 @@ HU-14 → Administrar productos
 HU-15 → Administrar categorías
 HU-16 → Administrar marcas
 HU-17 → Administrar establecimientos
+
 34. Estado de implementación
 
 Los siguientes elementos se consideran inicialmente planificados:
 
- Configuración de Spring Boot.
- Conexión con PostgreSQL/Supabase.
- Entidades.
- Repositories.
- Services.
- Controllers.
- DTOs.
- Validaciones.
- Manejo de excepciones.
- Autenticación.
- Autorización por roles.
- Endpoints de productos.
- Endpoints de categorías.
- Endpoints de marcas.
- Endpoints de usuarios.
- Endpoints de reseñas.
- Endpoints de valoraciones.
- Endpoint de comparación.
- Endpoints de establecimientos.
- Pruebas de API.
- Integración con Next.js.
- Documentación definitiva.
+ [x] Configuración de Spring Boot.
+ [x] Conexión con PostgreSQL/Supabase.
+ [x] Entidades. (las 9 de modelo-datos.md)
+ [x] Repositories. (las 9)
+ [x] Services. (Categoria, Marca, Producto — faltan Resena, Valoracion, Establecimiento, Usuario)
+ [x] Controllers. (Categoria, Marca, Producto)
+ [x] DTOs. (Categoria, Marca, Producto)
+ [x] Validaciones. (Categoria, Marca, Producto)
+ [x] Manejo de excepciones. (GlobalExceptionHandler general para toda la API)
+ [ ] Autenticación.
+ [ ] Autorización por roles.
+ [x] Endpoints de productos.
+ [x] Endpoints de categorías.
+ [x] Endpoints de marcas.
+ [ ] Endpoints de usuarios.
+ [ ] Endpoints de reseñas.
+ [ ] Endpoints de valoraciones.
+ [ ] Endpoint de comparación.
+ [ ] Endpoints de establecimientos.
+ [ ] Pruebas de API.
+ [ ] Integración con Next.js.
+ [ ] Documentación definitiva.
+
 35. Consideraciones de diseño
 
 La API debe mantener una estructura consistente.

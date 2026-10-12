@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NOTHING MOVIL // Hardware Benchmark & Price Engine",
-  description: "Plataforma de comparación de dispositivos y precios con diseño técnico Nothing OS y estructura Kimovil.",
+  title: "TecnoReview // Plataforma de Reseñas & Especificaciones Técnicas",
+  description: "Plataforma web de reseñas, consulta de hardware y especificaciones técnicas de productos tecnológicos.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -1,18 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { DispositivoKimovil } from "@/data/mockProductos";
+import { DispositivoKimovil } from "@/types/producto";
 import { useState } from "react";
 
 interface DeviceListItemProps {
   item: DispositivoKimovil;
+  onVerDetalle?: (item: DispositivoKimovil) => void;
 }
 
-export default function DeviceListItem({ item }: DeviceListItemProps) {
+export default function DeviceListItem({ item, onVerDetalle }: DeviceListItemProps) {
   const [imgSrc, setImgSrc] = useState(item.imagen);
 
   return (
-    <article className="group relative flex items-center justify-between gap-4 rounded-xl border border-zinc-800/80 bg-[#101013] p-3.5 transition-all duration-200 hover:border-[#d71920]/60 hover:bg-[#151519] hover:shadow-[0_0_20px_rgba(215,25,32,0.12)]">
+    <article
+      onClick={() => onVerDetalle?.(item)}
+      className="group relative flex items-center justify-between gap-4 rounded-xl border border-zinc-800/80 bg-[#101013] p-3.5 transition-all duration-200 hover:border-[#d71920]/60 hover:bg-[#151519] hover:shadow-[0_0_20px_rgba(215,25,32,0.12)] cursor-pointer"
+    >
       {/* Columna Izquierda: Ranking y Tendencia */}
       <div className="flex flex-col items-center justify-center min-w-[36px] border-r border-zinc-800/70 pr-3">
         <span className="font-dot text-xl font-extrabold text-[#d71920]">
@@ -78,10 +82,10 @@ export default function DeviceListItem({ item }: DeviceListItemProps) {
           {item.especificaciones}
         </p>
 
-        {/* Puntuación Nothing Score */}
+        {/* Puntuación TecnoReview Score */}
         <div className="mt-1.5 flex items-center gap-2">
           <div className="inline-flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 border border-zinc-800 text-[10px] font-mono">
-            <span className="text-zinc-500 font-bold">NOTHING SCORE:</span>
+            <span className="text-zinc-500 font-bold">TECNO SCORE:</span>
             <span className="text-emerald-400 font-bold">{item.puntuacion}</span>
             <span className="text-zinc-600">/10</span>
           </div>
@@ -100,9 +104,13 @@ export default function DeviceListItem({ item }: DeviceListItemProps) {
         )}
         <button
           type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onVerDetalle?.(item);
+          }}
           className="mt-1.5 hidden sm:inline-flex items-center gap-1 rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-[10px] font-mono font-semibold text-zinc-300 transition-all hover:border-[#d71920] hover:text-white cursor-pointer"
         >
-          COMPROBAR
+          FICHA TÉCNICA
           <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>

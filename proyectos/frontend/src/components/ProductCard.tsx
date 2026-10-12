@@ -6,15 +6,19 @@ import { useState } from "react";
 
 interface ProductCardProps {
   producto: Producto;
+  onVerDetalle?: (producto: Producto) => void;
 }
 
-export default function ProductCard({ producto }: ProductCardProps) {
+export default function ProductCard({ producto, onVerDetalle }: ProductCardProps) {
   const [imgSrc, setImgSrc] = useState<string>(
     producto.imagen || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80"
   );
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800/90 bg-[#101013] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#d71920]/70 hover:shadow-[0_0_25px_rgba(215,25,32,0.15)]">
+    <article
+      onClick={() => onVerDetalle?.(producto)}
+      className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800/90 bg-[#101013] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#d71920]/70 hover:shadow-[0_0_25px_rgba(215,25,32,0.15)] cursor-pointer"
+    >
       {/* Imagen del Producto en contenedor dark Nothing */}
       <div className="relative h-48 w-full overflow-hidden bg-black/60 p-2 flex items-center justify-center border-b border-zinc-800/80">
         <img
@@ -74,9 +78,13 @@ export default function ProductCard({ producto }: ProductCardProps) {
 
           <button
             type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onVerDetalle?.(producto);
+            }}
             className="rounded-lg border border-[#d71920]/60 bg-black px-3.5 py-1.5 font-dot text-[11px] font-bold text-white transition-all hover:bg-[#d71920] hover:shadow-[0_0_15px_rgba(215,25,32,0.4)] cursor-pointer"
           >
-            DETALLE
+            FICHA TÉCNICA
           </button>
         </div>
       </div>

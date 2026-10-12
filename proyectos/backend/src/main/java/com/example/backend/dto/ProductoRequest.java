@@ -25,7 +25,7 @@ public record ProductoRequest(
         @NotNull(message = "La marca es obligatoria")
         Long idMarca,
 
-        @Size(max = 255, message = "La imagen no puede superar 255 caracteres")
+        @Size(max = 1000, message = "La imagen no puede superar 1000 caracteres")
         String imagen,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "El precio no puede ser negativo")

@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-zinc-900 bg-black py-8 px-4 font-mono text-xs text-zinc-500 text-center">
-      <p>© 2026 TECNOREVIEW - TODOS LOS DERECHOS RESERVADOS</p>
+    <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-8 px-4 text-xs text-slate-500 dark:text-slate-400 text-center transition-colors">
+      <p>© 2026 TecReview - Todos los derechos reservados</p>
     </footer>
   );
 }

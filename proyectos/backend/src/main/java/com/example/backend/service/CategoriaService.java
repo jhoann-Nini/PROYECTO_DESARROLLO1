@@ -22,7 +22,7 @@ public class CategoriaService {
     @Transactional(readOnly = true)
     public List<CategoriaResponse> listarActivas() {
         return categoriaRepository.findAll().stream()
-                .filter(Categoria::getEstado)
+                .filter(c -> Boolean.TRUE.equals(c.getEstado()))
                 .map(this::toResponse)
                 .toList();
     }

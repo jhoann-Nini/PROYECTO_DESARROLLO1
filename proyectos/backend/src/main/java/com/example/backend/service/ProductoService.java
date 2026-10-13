@@ -116,7 +116,7 @@ public class ProductoService {
     private Producto buscarActivoOFallar(Long id) {
 
         return productoRepository.findById(id)
-                .filter(Producto::getEstado)
+                .filter(p -> Boolean.TRUE.equals(p.getEstado()))
                 .orElseThrow(() ->
                     new ResourceNotFoundException(
                     "Producto no encontrado con id " + id));

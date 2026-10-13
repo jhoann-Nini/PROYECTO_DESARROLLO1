@@ -58,12 +58,12 @@ class ProductoFixtureIntegrationTest {
         for (JsonNode row : fixture) {
             JsonNode product = row.path("producto");
             Map<String, Object> request = new LinkedHashMap<>();
-            request.put("nombre", product.path("nombre").asText());
+            request.put("nombre", product.path("nombre").asString());
             request.put("descripcion", nullableText(product.get("descripcion")));
             request.put("idCategoria", categoryIds.computeIfAbsent(
-                    row.path("categoria").asText(), this::createCategory));
+                    row.path("categoria").asString(), this::createCategory));
             request.put("idMarca", brandIds.computeIfAbsent(
-                    row.path("marca").asText(), this::createBrand));
+                    row.path("marca").asString(), this::createBrand));
             request.put("imagen", nullableText(product.get("imagen")));
             request.put("precioReferencia", nullableNumber(product.get("precioReferencia")));
 
@@ -71,7 +71,7 @@ class ProductoFixtureIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.nombre").value(product.path("nombre").asText()))
+                    .andExpect(jsonPath("$.nombre").value(product.path("nombre").asString()))
                     .andExpect(jsonPath("$.estado").value(true));
             createdCount++;
         }
@@ -94,7 +94,7 @@ class ProductoFixtureIntegrationTest {
     }
 
     private String nullableText(JsonNode value) {
-        return value == null || value.isNull() ? null : value.asText();
+        return value == null || value.isNull() ? null : value.asString();
     }
 
     private Object nullableNumber(JsonNode value) {

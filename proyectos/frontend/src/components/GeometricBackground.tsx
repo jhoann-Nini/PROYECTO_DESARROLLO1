@@ -23,18 +23,17 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
     >
       {/* ─────────────────────────────────────────────────────────────
           1. CAPA BASE DE COLOR PRINCIPAL
-          Claro: Pizarra/perla ultra suave (#f8fafc)
-          Oscuro: Carbón obsidiana profundo (#0a0e17)
+          Claro: Lavanda/perla tecnológico suave (#fbf9fe)
+          Oscuro: Noche índigo-violeta profunda (#090714)
       ───────────────────────────────────────────────────────────── */}
       <div
         className={`absolute inset-0 transition-colors duration-500 ${
-          esOscuro ? "bg-[#0a0e17]" : "bg-[#f8fafc]"
+          esOscuro ? "bg-[#090714]" : "bg-[#fbf9fe]"
         }`}
       />
 
       {/* ─────────────────────────────────────────────────────────────
-          2. SVG CON CORTE DIAGONAL BICOLOR (Inspirado en la foto de referencia)
-          Divide la pantalla de forma angular entre el plano base y el plano secundario
+          2. SVG CON CORTE DIAGONAL MORADO Y AZUL (Cromática Morado / Azul)
       ───────────────────────────────────────────────────────────── */}
       <svg
         className="absolute inset-0 h-full w-full"
@@ -43,21 +42,21 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
         viewBox="0 0 1000 1000"
       >
         <defs>
-          {/* Gradiente diagonal para Modo Claro: Azul cielo/hielo suave */}
+          {/* Gradiente diagonal para Modo Claro: Morado lavanda a Azul cielo suave */}
           <linearGradient id="tecGradienteClaro" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#bae6fd" stopOpacity="0.75" />
-            <stop offset="50%" stopColor="#dbeafe" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#eff6ff" stopOpacity="0.30" />
+            <stop offset="0%" stopColor="#d8b4fe" stopOpacity="0.65" />
+            <stop offset="50%" stopColor="#bfdbfe" stopOpacity="0.50" />
+            <stop offset="100%" stopColor="#ede9fe" stopOpacity="0.25" />
           </linearGradient>
 
-          {/* Gradiente diagonal para Modo Oscuro: Azul marino medianoche / zafiro */}
+          {/* Gradiente diagonal para Modo Oscuro: Púrpura/Morado a Azul Eléctrico y Medianoche */}
           <linearGradient id="tecGradienteOscuro" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.45" />
-            <stop offset="50%" stopColor="#172554" stopOpacity="0.30" />
-            <stop offset="100%" stopColor="#0a0e17" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.38" />
+            <stop offset="45%" stopColor="#2563eb" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="#090714" stopOpacity="0.10" />
           </linearGradient>
 
-          {/* Patrón de puntos tecnológicos (Tech Dot Matrix) para dar textura y evitar vacío */}
+          {/* Patrón de puntos tecnológicos (Tech Dot Matrix) con tono morado/azul */}
           <pattern
             id="tecDotGrid"
             x="0"
@@ -70,7 +69,7 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
               cx="2"
               cy="2"
               r="1"
-              className={esOscuro ? "fill-slate-600/35" : "fill-blue-600/15"}
+              className={esOscuro ? "fill-purple-400/25" : "fill-indigo-600/18"}
             />
           </pattern>
 
@@ -90,7 +89,7 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
               x2="0"
               y2="40"
               strokeWidth="1"
-              className={esOscuro ? "stroke-blue-400/5" : "stroke-blue-500/8"}
+              className={esOscuro ? "stroke-purple-400/10" : "stroke-blue-500/10"}
             />
           </pattern>
         </defs>
@@ -102,26 +101,26 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
           className="transition-all duration-700"
         />
 
-        {/* Segundo polígono geométrico angular más sutil en la esquina superior derecha */}
+        {/* Segundo polígono geométrico angular morado en la esquina superior derecha */}
         <polygon
           points="780,0 1000,0 1000,450"
-          fill={esOscuro ? "#1e40af" : "#93c5fd"}
-          fillOpacity={esOscuro ? 0.2 : 0.25}
+          fill={esOscuro ? "#6b21a8" : "#c084fc"}
+          fillOpacity={esOscuro ? 0.28 : 0.22}
           className="transition-all duration-700"
         />
 
-        {/* Línea divisoria diagonal de alta definición con bisel sutil */}
+        {/* Línea divisoria diagonal de alta definición con tono Morado eléctrico */}
         <line
           x1="520"
           y1="0"
           x2="180"
           y2="1000"
-          stroke={esOscuro ? "#60a5fa" : "#3b82f6"}
+          stroke={esOscuro ? "#a855f7" : "#8b5cf6"}
           strokeWidth="1.5"
-          strokeOpacity={esOscuro ? 0.35 : 0.4}
+          strokeOpacity={esOscuro ? 0.45 : 0.4}
         />
 
-        {/* Línea secundaria de acento tecnológico paralela */}
+        {/* Línea secundaria de acento tecnológico paralela con tono Azul */}
         <line
           x1="535"
           y1="0"
@@ -130,7 +129,7 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
           stroke={esOscuro ? "#3b82f6" : "#60a5fa"}
           strokeWidth="1"
           strokeDasharray="8 6"
-          strokeOpacity={esOscuro ? 0.2 : 0.25}
+          strokeOpacity={esOscuro ? 0.35 : 0.3}
         />
 
         {/* Capa de textura: Micro-puntos sobre el fondo para que no se vea vacío */}
@@ -150,35 +149,44 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
       </svg>
 
       {/* ─────────────────────────────────────────────────────────────
-          3. RESPLANDORES RADIALES SUAVES (Profundidad ambiental)
+          3. RESPLANDORES RADIALES SUAVES (Morado Superior y Azul Inferior)
       ───────────────────────────────────────────────────────────── */}
-      {/* Resplandor superior derecho (resalta la zona azul) */}
+      {/* Resplandor superior derecho: Morado / Púrpura vibrante */}
       <div
-        className={`absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full blur-3xl transition-opacity duration-700 ${
+        className={`absolute -top-32 -right-32 h-[520px] w-[520px] rounded-full blur-3xl transition-opacity duration-700 ${
           esOscuro
-            ? "bg-blue-600/20"
-            : "bg-sky-300/35"
+            ? "bg-purple-600/30"
+            : "bg-purple-300/40"
         }`}
       />
 
-      {/* Resplandor inferior izquierdo (equilibrio sutil) */}
+      {/* Resplandor inferior izquierdo: Azul eléctrico */}
       <div
-        className={`absolute -bottom-32 -left-32 h-[450px] w-[450px] rounded-full blur-3xl transition-opacity duration-700 ${
+        className={`absolute -bottom-32 -left-32 h-[480px] w-[480px] rounded-full blur-3xl transition-opacity duration-700 ${
           esOscuro
-            ? "bg-indigo-950/40"
-            : "bg-blue-100/60"
+            ? "bg-blue-600/30"
+            : "bg-blue-300/40"
         }`}
       />
 
-      {/* Acentos geométricos flotantes sutiles estilo "Tech / Hardware" */}
-      <div className="absolute top-36 right-16 hidden lg:flex flex-col gap-2 opacity-30 dark:opacity-20">
-        <div className="h-1.5 w-16 bg-blue-600 dark:bg-blue-400 rounded-full" />
-        <div className="h-1.5 w-8 bg-blue-500 dark:bg-blue-400 rounded-full ml-auto" />
+      {/* Resplandor ambiental central de mezcla Morado y Azul */}
+      <div
+        className={`absolute top-1/3 left-1/4 h-[350px] w-[350px] rounded-full blur-3xl transition-opacity duration-700 ${
+          esOscuro
+            ? "bg-indigo-600/15"
+            : "bg-indigo-200/30"
+        }`}
+      />
+
+      {/* Acentos geométricos flotantes estilo "Tech / Hardware" bicolor (Morado y Azul) */}
+      <div className="absolute top-36 right-16 hidden lg:flex flex-col gap-2 opacity-40 dark:opacity-30">
+        <div className="h-1.5 w-16 bg-purple-600 dark:bg-purple-400 rounded-full" />
+        <div className="h-1.5 w-8 bg-blue-600 dark:bg-blue-400 rounded-full ml-auto" />
       </div>
 
-      <div className="absolute bottom-24 left-12 hidden lg:flex flex-col gap-2 opacity-25 dark:opacity-20">
-        <div className="h-1.5 w-8 bg-blue-600 dark:bg-blue-400 rounded-full" />
-        <div className="h-1.5 w-16 bg-blue-500 dark:bg-blue-400 rounded-full" />
+      <div className="absolute bottom-24 left-12 hidden lg:flex flex-col gap-2 opacity-35 dark:opacity-30">
+        <div className="h-1.5 w-8 bg-purple-600 dark:bg-purple-400 rounded-full" />
+        <div className="h-1.5 w-16 bg-blue-600 dark:bg-blue-400 rounded-full" />
       </div>
     </div>
   );

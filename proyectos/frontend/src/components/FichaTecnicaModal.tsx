@@ -97,7 +97,7 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
                   {ficha.marca}
                 </span>
 
-                <span className="font-doto tracking-wide absolute bottom-3 right-3 rounded-md bg-blue-700 dark:bg-blue-600 px-3 py-1 text-sm font-black text-white shadow-xs">
+                <span className="font-sans font-extrabold tracking-tight absolute bottom-3 right-3 rounded-md bg-blue-700 dark:bg-blue-600 px-3 py-1 text-sm text-white shadow-xs">
                   {precioFormateado}
                 </span>
               </div>
@@ -108,14 +108,14 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
                   <span className="text-xs font-bold font-doto text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                     PUNTUACIÓN TECREVIEW
                   </span>
-                  <span className="text-xl font-black font-doto text-blue-700 dark:text-blue-400 tracking-wider">
+                  <span className="text-xl font-extrabold font-sans text-blue-700 dark:text-blue-400 tracking-tight">
                     {ficha.puntuacionGlobal} / 10
                   </span>
                 </div>
 
                 <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 flex items-center justify-between text-xs">
                   <span className="text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider font-doto text-[11px]">{ficha.benchmark.etiqueta}:</span>
-                  <span className="text-slate-900 dark:text-white font-bold font-doto tracking-wide">{ficha.benchmark.valor}</span>
+                  <span className="text-slate-900 dark:text-white font-bold font-sans tracking-tight">{ficha.benchmark.valor}</span>
                 </div>
 
                 <div className="space-y-3 text-xs">
@@ -123,7 +123,7 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
                     <div key={idx}>
                       <div className="flex justify-between text-slate-700 dark:text-slate-300 mb-1 font-medium">
                         <span>{metrica.nombre}</span>
-                        <span className="font-bold text-slate-900 dark:text-white font-doto">{metrica.puntos.toFixed(1)}</span>
+                        <span className="font-bold text-slate-900 dark:text-white font-sans">{metrica.puntos.toFixed(1)}</span>
                       </div>
                       <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div

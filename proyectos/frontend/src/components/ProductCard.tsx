@@ -71,10 +71,10 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
         {/* Sección de precio y acción principal */}
         <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3.5">
           <div>
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block uppercase tracking-wider font-doto text-[10px]">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">
               Precio estimado
             </span>
-            <span className="text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-doto">
+            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
               {precioFormateado}
             </span>
           </div>

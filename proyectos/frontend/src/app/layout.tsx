@@ -36,7 +36,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#0a0e17] text-slate-100 antialiased font-sans selection:bg-blue-600 selection:text-white">
+      <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-purple-600 selection:text-white">
         {children}
       </body>
     </html>

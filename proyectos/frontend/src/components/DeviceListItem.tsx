@@ -63,7 +63,7 @@ export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: Dev
           loading="lazy"
         />
         {item.descuento && (
-          <span className="absolute bottom-0 right-0 rounded-tl-md bg-blue-600 px-1 py-0.2 text-[8px] font-bold text-white leading-tight font-doto">
+          <span className="absolute bottom-0 right-0 rounded-tl-md bg-blue-600 px-1 py-0.2 text-[8px] font-bold text-white leading-tight font-sans">
             {item.descuento}
           </span>
         )}
@@ -96,7 +96,7 @@ export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: Dev
 
       {/* Columna Derecha: Precios en COP y Acción */}
       <div className="flex flex-col items-end justify-center text-right shrink-0 pl-1.5 sm:pl-2">
-        <span className="text-xs sm:text-sm md:text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-doto">
+        <span className="text-xs sm:text-sm md:text-base font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
           {formatearCOP(item.precio)}
         </span>
         {item.precioOriginal && (

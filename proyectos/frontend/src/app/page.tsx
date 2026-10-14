@@ -447,7 +447,7 @@ export default function Home() {
 
                   <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3.5 py-1.5">
                     <span className="text-xs font-medium text-slate-600 dark:text-slate-400 font-mono">Hasta:</span>
-                    <span className="text-sm font-black font-doto tracking-wider text-blue-700 dark:text-blue-300">
+                    <span className="text-sm font-extrabold font-sans tracking-tight text-blue-700 dark:text-blue-300">
                       {formatearCOP(presupuestoMax)}
                     </span>
                   </div>
@@ -466,7 +466,7 @@ export default function Home() {
                   />
                   <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
                     <span>Mínimo: $ 200.000 COP</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400 font-doto">
+                    <span className="font-bold text-blue-700 dark:text-blue-400 font-sans">
                       Límite: {formatearCOP(presupuestoMax)}
                     </span>
                     <span>Máximo: $ 6.000.000+ COP</span>

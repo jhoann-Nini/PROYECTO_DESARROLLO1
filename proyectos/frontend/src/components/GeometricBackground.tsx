@@ -23,12 +23,12 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
     >
       {/* ─────────────────────────────────────────────────────────────
           1. CAPA BASE DE COLOR PRINCIPAL
-          Claro: Pizarra/perla ultra suave (#f4f6fa)
-          Oscuro: Carbón obsidiana profundo (#030712)
+          Claro: Pizarra/perla ultra suave (#f8fafc)
+          Oscuro: Carbón obsidiana profundo (#0a0e17)
       ───────────────────────────────────────────────────────────── */}
       <div
         className={`absolute inset-0 transition-colors duration-500 ${
-          esOscuro ? "bg-[#030712]" : "bg-[#f4f7fb]"
+          esOscuro ? "bg-[#0a0e17]" : "bg-[#f8fafc]"
         }`}
       />
 
@@ -52,9 +52,9 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
 
           {/* Gradiente diagonal para Modo Oscuro: Azul marino medianoche / zafiro */}
           <linearGradient id="tecGradienteOscuro" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.55" />
-            <stop offset="50%" stopColor="#172554" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#0f172a" stopOpacity="0.25" />
+            <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.45" />
+            <stop offset="50%" stopColor="#172554" stopOpacity="0.30" />
+            <stop offset="100%" stopColor="#0a0e17" stopOpacity="0.15" />
           </linearGradient>
 
           {/* Patrón de puntos tecnológicos (Tech Dot Matrix) para dar textura y evitar vacío */}
@@ -62,15 +62,15 @@ export default function GeometricBackground({ tema = "claro" }: GeometricBackgro
             id="tecDotGrid"
             x="0"
             y="0"
-            width="32"
-            height="32"
+            width="28"
+            height="28"
             patternUnits="userSpaceOnUse"
           >
             <circle
               cx="2"
               cy="2"
               r="1"
-              className={esOscuro ? "fill-blue-400/20" : "fill-blue-600/15"}
+              className={esOscuro ? "fill-slate-600/35" : "fill-blue-600/15"}
             />
           </pattern>
 

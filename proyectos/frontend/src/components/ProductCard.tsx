@@ -20,10 +20,10 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md cursor-pointer"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg cursor-pointer"
     >
       {/* Contenedor de Fotografía */}
-      <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-slate-950 p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
+      <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-[#0a0e17] p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800/80">
         <img
           src={imgSrc}
           alt={`Fotografía oficial de ${producto.nombre}`}
@@ -36,31 +36,31 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
           loading="lazy"
         />
 
-        {/* Etiquetas informativas */}
+        {/* Etiquetas informativas con estilo técnico */}
         <div className="absolute top-3 left-3 flex gap-1.5 text-xs">
-          <span className="rounded-md bg-white/95 dark:bg-slate-900/90 px-2.5 py-1 font-medium text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-2xs">
-            Categoría {producto.idCategoria}
+          <span className="rounded-md bg-white/95 dark:bg-[#111827]/90 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 shadow-2xs font-doto uppercase tracking-wider">
+            {producto.nombreCategoria || `CAT ${producto.idCategoria}`}
           </span>
-          <span className="rounded-md bg-blue-50/95 dark:bg-blue-950/80 px-2.5 py-1 font-semibold text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-2xs">
-            Marca {producto.idMarca}
+          <span className="rounded-md bg-blue-50/95 dark:bg-blue-950/80 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 shadow-2xs font-doto uppercase tracking-wider">
+            {producto.nombreMarca || `Marca ${producto.idMarca}`}
           </span>
         </div>
 
         {/* Indicador de disponibilidad */}
         {producto.estado ? (
-          <span className="absolute top-3 right-3 rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            Disponible
+          <span className="absolute top-3 right-3 rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-doto uppercase">
+            • DISPONIBLE
           </span>
         ) : (
-          <span className="absolute top-3 right-3 rounded-md bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-            No disponible
+          <span className="absolute top-3 right-3 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 font-doto uppercase">
+            NO DISPONIBLE
           </span>
         )}
       </div>
 
       {/* Contenido descriptivo del producto */}
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
+        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-500 transition-colors font-doto uppercase tracking-wide">
           {producto.nombre}
         </h3>
 
@@ -69,12 +69,12 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
         </p>
 
         {/* Sección de precio y acción principal */}
-        <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3.5">
+        <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3.5">
           <div>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-              Precio estimado (COP)
+            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block uppercase tracking-wider font-doto text-[10px]">
+              Precio estimado
             </span>
-            <span className="text-base font-bold text-slate-900 dark:text-white">
+            <span className="text-base font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-doto">
               {precioFormateado}
             </span>
           </div>
@@ -86,7 +86,7 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+            className="rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-3.5 py-2 text-xs font-bold text-white shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
           >
             Ver ficha técnica
           </button>

@@ -4,6 +4,7 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-doto: 'Doto', monospace;
 
   /* Superficies y Fondos */
   --color-surface-base: #f8fafc;
@@ -39,14 +40,21 @@ html {
   font-size: 16px;
   line-height: 1.5;
   scroll-behavior: smooth;
-  color-scheme: light;
+  color-scheme: dark light;
 }
 
 body {
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #0a0e17;
+  color: #f8fafc;
   font-family: var(--font-sans);
+}
+
+/* Tipografía de Matriz de Puntos (Estilo Nothing Tech NDot / Doto) */
+.font-doto {
+  font-family: var(--font-doto, 'Doto', monospace, sans-serif);
+  font-variation-settings: 'ROND' 100;
+  letter-spacing: 0.08em;
 }
 
 /* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
@@ -55,21 +63,26 @@ body {
   outline-offset: 2px;
 }
 
-/* Barra de desplazamiento accesible y discreta */
+/* Barra de desplazamiento accesible estilo Nothing Tech */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0d131f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #1e293b;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #334155;
+}
+
+.dark body {
+  background-color: #0a0e17;
+  color: #f8fafc;
 }

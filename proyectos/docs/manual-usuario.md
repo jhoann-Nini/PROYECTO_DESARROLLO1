@@ -1,4 +1,4 @@
-# Manual de Usuario - TecnoReview
+# Manual de Usuario - TecReview
 
 ## 1. Información general
 
@@ -126,7 +126,7 @@ Seleccionar el botón correspondiente.
 Ejemplo:
 
 Correo:
-usuario@example.com
+<usuario@example.com>
 
 Contraseña:
 ********
@@ -302,9 +302,8 @@ Ejemplo:
 
 Aspectos positivos
 
-+ Buena batería
-+ Buena pantalla
-
+- Buena batería
+- Buena pantalla
 
 Aspectos negativos
 
@@ -487,6 +486,7 @@ Los mensajes definitivos dependerán de la implementación.
 ---
 
 # 28. Problemas comunes
+
 No puedo iniciar sesión
 
 Verificar:
@@ -589,6 +589,7 @@ Un usuario típico puede utilizar TecnoReview de la siguiente manera:
             Fin
 
 # 32. Flujo para un usuario registrado
+
 Registro
    ↓
 Inicio de sesión

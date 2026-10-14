@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Proyecto:** TecnoReview  
+**Proyecto:** TecReview  
 **Tipo de API:** REST  
 **Backend:** Spring Boot / Java  
 **Frontend:** Next.js + TypeScript  
@@ -46,12 +46,12 @@ Repository
    ↓
 PostgreSQL / Supabase
 ```
+
 ---
 
 # Organización propuesta del backend
 
 La estructura del backend puede organizarse de la siguiente manera:
-
 
 backend/
 └── src/
@@ -67,6 +67,7 @@ backend/
                 └── config/
 
 ### Tabla inicial de endpoints
+
 | Recurso          | Método | Endpoint                           | Acceso             |  Estado
 | Productos        | GET    | `/api/productos`                   | Público            |
 | Producto         | GET    | `/api/productos/{id}`              | Público            |
@@ -151,7 +152,7 @@ Establecimiento
 
 Durante el desarrollo se utilizará una URL local similar a:
 
-http://localhost:8080
+<http://localhost:8080>
 
 La API utilizará el prefijo:
 
@@ -159,7 +160,7 @@ La API utilizará el prefijo:
 
 Por lo tanto, un endpoint podría ser:
 
-http://localhost:8080/api/productos
+<http://localhost:8080/api/productos>
 
 La URL definitiva del backend se establecerá cuando se configure el entorno de despliegue.
 
@@ -167,7 +168,7 @@ El frontend no debe depender de una URL escrita directamente en los componentes.
 
 Ejemplo:
 
-NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_API_URL=<http://localhost:8080>
 
 ---
 
@@ -193,11 +194,11 @@ La estructura definitiva de los objetos dependerá del modelo de datos implement
 
 La API utilizará principalmente los siguientes métodos:
 
-Método	Uso
-GET	Consultar información
-POST	Crear información
-PUT	Actualizar información
-DELETE	Eliminar información
+Método Uso
+GET Consultar información
+POST Crear información
+PUT Actualizar información
+DELETE Eliminar información
 
 ---
 
@@ -206,6 +207,7 @@ DELETE	Eliminar información
 Los productos constituyen una de las entidades principales de TecnoReview.
 
 ## 7.1 Consultar productos
+
 GET /api/productos
 
 Permite obtener el listado de productos disponibles.
@@ -225,6 +227,7 @@ Respuesta esperada
 ]
 
 ## 7.2 Consultar un producto
+
 GET /api/productos/{id}
 
 Ejemplo:
@@ -234,6 +237,7 @@ GET /api/productos/1
 Permite consultar la información detallada de un producto.
 
 ## 7.3 Crear producto
+
 POST /api/productos
 
 Este endpoint será utilizado por los usuarios autorizados para registrar productos.
@@ -252,6 +256,7 @@ Ejemplo:
 El backend deberá validar los datos antes de almacenarlos.
 
 ## 7.4 Actualizar producto
+
 PUT /api/productos/{id}
 
 Ejemplo:
@@ -294,6 +299,7 @@ La implementación exacta de los parámetros podrá ajustarse durante el desarro
 # 9. Categorías
 
 ## 9.1 Consultar categorías
+
 GET /api/categorias
 
 Devuelve las categorías disponibles.
@@ -312,6 +318,7 @@ Ejemplo:
 ]
 
 ## 9.2 Crear categoría
+
 POST /api/categorias
 
 Ejemplo:
@@ -323,20 +330,29 @@ Ejemplo:
 La creación estará restringida a usuarios con permisos correspondientes.
 
 ## 9.3 Actualizar categoría
+
 PUT /api/categorias/{id}
 
 ## 9.4 Eliminar categoría
+
 DELETE /api/categorias/{id}
 
 # 10. Marcas
 
 ## 10.1 Consultar marcas
+
 GET /api/marcas
+
 ## 10.2 Crear marca
+
 POST /api/marcas
+
 ## 10.3 Actualizar marca
+
 PUT /api/marcas/{id}
+
 ## 10.4 Eliminar marca
+
 DELETE /api/marcas/{id}
 
 Las operaciones de modificación estarán restringidas según el sistema de roles.
@@ -348,13 +364,14 @@ Las operaciones de modificación estarán restringidas según el sistema de role
 La API debe permitir gestionar las operaciones relacionadas con los usuarios.
 
 ## 11.1 Registro
+
 POST /api/auth/register
 
 Ejemplo:
 
 {
   "nombre": "Juan",
-  "correo": "juan@example.com",
+  "correo": "<juan@example.com>",
   "password": "********"
 }
 
@@ -369,12 +386,13 @@ Información requerida.
 ---
 
 # 12. Inicio de sesión
+
 POST /api/auth/login
 
 Ejemplo:
 
 {
-  "correo": "juan@example.com",
+  "correo": "<juan@example.com>",
   "password": "********"
 }
 
@@ -421,12 +439,12 @@ si el usuario no tiene autorización.
 Los usuarios registrados podrán crear reseñas sobre productos.
 
 ### 14.1 Consultar reseñas de un producto
+
 GET /api/productos/{productoId}/resenas
 
 Ejemplo:
 
 GET /api/productos/1/resenas
-
 
 Ejemplo:
 
@@ -437,16 +455,12 @@ Ejemplo:
 
 El usuario debe estar autenticado.
 
-
-
 El backend debe verificar que el usuario tenga permiso para modificar la reseña.
 
 14.4 Eliminar reseña
 DELETE /api/resenas/{id}
 
 La autorización deberá validarse en el backend.
-
-
 
 Los usuarios podrán valorar los productos.
 
@@ -468,7 +482,6 @@ Ejemplo:
 
 El backend deberá validar que el valor recibido pertenezca a la escala establecida.
 
-
 TecnoReview contempla el registro de aspectos positivos y negativos relacionados con un producto.
 
 La estructura definitiva todavía debe definirse en función de la implementación de reseñas.
@@ -486,8 +499,6 @@ Una posibilidad sería:
 }
 
 La estructura final deberá mantenerse consistente con el modelo de datos y la interfaz definida para las reseñas.
-
-
 
 La plataforma permitirá comparar productos.
 
@@ -518,7 +529,7 @@ La estructura definitiva dependerá de las características que se definan para 
 
 La comparación no requiere necesariamente una tabla COMPARACION en la base de datos, ya que puede generarse mediante consultas sobre los productos.
 
-18. Establecimientos
+ 1. Establecimientos
 
 TecnoReview también contempla información sobre establecimientos relacionados con productos tecnológicos.
 
@@ -546,7 +557,7 @@ DELETE /api/establecimientos/{id}
 
 La operación deberá estar protegida mediante autorización.
 
-19. Productos y establecimientos
+ 1. Productos y establecimientos
 
 Un producto puede estar disponible en diferentes establecimientos.
 
@@ -565,7 +576,7 @@ PRODUCTO_ESTABLECIMIENTO
 
 La API podrá incorporar endpoints específicos para administrar esta relación cuando sea necesario.
 
-20. Google Maps
+ 1. Google Maps
 
 La plataforma utilizará Google Maps para mostrar la ubicación de los establecimientos.
 
@@ -597,20 +608,20 @@ Ejemplo:
 
 Las coordenadas y campos definitivos dependerán de la implementación seleccionada.
 
-21. Códigos de respuesta HTTP
+ 1. Códigos de respuesta HTTP
 
 La API utilizará códigos HTTP para indicar el resultado de las operaciones.
 
-Código	Significado
-200	Solicitud exitosa
-201	Recurso creado
-204	Operación exitosa sin contenido
-400	Solicitud incorrecta
-401	No autenticado
-403	Sin permisos
-404	Recurso no encontrado
-409	Conflicto
-500	Error interno del servidor
+Código Significado
+200 Solicitud exitosa
+201 Recurso creado
+204 Operación exitosa sin contenido
+400 Solicitud incorrecta
+401 No autenticado
+403 Sin permisos
+404 Recurso no encontrado
+409 Conflicto
+500 Error interno del servidor
 22. Ejemplo de respuesta exitosa
 
 Una consulta:
@@ -654,7 +665,7 @@ Con un mensaje:
 
 La estructura definitiva de los errores deberá mantenerse uniforme en toda la API.
 
-24. Validación
+ 1. Validación
 
 El backend debe validar los datos recibidos antes de realizar operaciones.
 
@@ -692,7 +703,7 @@ Validaciones únicamente en el frontend.
 
 Las credenciales y variables sensibles deberán manejarse mediante variables de entorno.
 
-26. Variables de entorno
+ 1. Variables de entorno
 
 El backend podrá utilizar variables de entorno para información sensible.
 
@@ -708,7 +719,7 @@ NEXT_PUBLIC_API_URL=
 
 Las variables reales no deben almacenarse directamente en el repositorio.
 
-27. Integración con el frontend
+ 1. Integración con el frontend
 
 Next.js consumirá la API mediante solicitudes HTTP.
 
@@ -734,7 +745,7 @@ frontend/
 
 Esto evita tener solicitudes HTTP dispersas por todos los componentes.
 
-28. Organización propuesta del backend
+ 1. Organización propuesta del backend
 
 La estructura del backend puede organizarse de la siguiente manera:
 
@@ -778,7 +789,7 @@ config
 
 Configuraciones del backend.
 
-30. Pruebas de la API
+ 1. Pruebas de la API
 
 Los endpoints deberán probarse antes de integrarse completamente con el frontend.
 
@@ -832,23 +843,23 @@ Público.
 
 La API permite implementar principalmente los siguientes requisitos:
 
-Requisito	Funcionalidad API
-RF-01	Registro
-RF-02	Login
-RF-03	Usuarios y roles
-RF-04	Consulta de productos
-RF-05	CRUD de productos
-RF-06	CRUD de categorías
-RF-07	CRUD de marcas
-RF-08	Búsqueda
-RF-09	Reseñas
-RF-10	Valoraciones
-RF-11	Opiniones positivas/negativas
-RF-12	Comparación
-RF-13	Establecimientos
-RF-14	Datos para ubicación
-RF-15	Comunicación REST
-RF-16	Persistencia
+Requisito Funcionalidad API
+RF-01 Registro
+RF-02 Login
+RF-03 Usuarios y roles
+RF-04 Consulta de productos
+RF-05 CRUD de productos
+RF-06 CRUD de categorías
+RF-07 CRUD de marcas
+RF-08 Búsqueda
+RF-09 Reseñas
+RF-10 Valoraciones
+RF-11 Opiniones positivas/negativas
+RF-12 Comparación
+RF-13 Establecimientos
+RF-14 Datos para ubicación
+RF-15 Comunicación REST
+RF-16 Persistencia
 33. Relación con las historias de usuario
 
 La API servirá como soporte técnico para historias como:
@@ -871,7 +882,7 @@ HU-15 → Administrar categorías
 HU-16 → Administrar marcas
 HU-17 → Administrar establecimientos
 
-34. Estado de implementación
+ 1. Estado de implementación
 
 Los siguientes elementos se consideran inicialmente planificados:
 
@@ -898,7 +909,7 @@ Los siguientes elementos se consideran inicialmente planificados:
  [ ] Integración con Next.js.
  [ ] Documentación definitiva.
 
-35. Consideraciones de diseño
+ 1. Consideraciones de diseño
 
 La API debe mantener una estructura consistente.
 

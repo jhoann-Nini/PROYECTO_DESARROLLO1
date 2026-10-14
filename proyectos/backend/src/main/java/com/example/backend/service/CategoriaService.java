@@ -19,6 +19,7 @@ public class CategoriaService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    
     @Transactional(readOnly = true)
     public List<CategoriaResponse> listarActivas() {
         return categoriaRepository.findByEstadoTrue()
@@ -26,6 +27,7 @@ public class CategoriaService {
                 .map(this::toResponse)
                 .toList();
     }
+
 
     @Transactional(readOnly = true)
     public CategoriaResponse obtenerPorId(Long id) {

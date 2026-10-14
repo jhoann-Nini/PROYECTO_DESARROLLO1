@@ -1,94 +1,75 @@
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #080808;
-  --foreground: #f4f4f5;
-  --crimson: #d71920;
-  --crimson-bright: #ff2a35;
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Superficies y Fondos */
+  --color-surface-base: #f8fafc;
+  --color-surface-card: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-border: #e2e8f0;
+  --color-surface-border-strong: #cbd5e1;
+
+  /* Jerarquía Tipográfica y Contraste (WCAG 2.1 AA) */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+
+  /* Acentos de Acción y Enfoque */
+  --color-brand-primary: #1d4ed8;
+  --color-brand-hover: #1e40af;
+  --color-brand-light: #eff6ff;
+  --color-brand-focus: #2563eb;
+
+  /* Estados Semánticos Accesibles */
+  --color-status-success: #15803d;
+  --color-status-success-bg: #f0fdf4;
+  --color-status-error: #b91c1c;
+  --color-status-error-bg: #fef2f2;
 }
 
+/* Estilos base de Accesibilidad Universal */
 * {
   box-sizing: border-box;
 }
 
-html,
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
 body {
-  min-height: 100%;
-  background-color: #080808;
-  color: #f4f4f5;
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow-x: hidden;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: var(--font-sans);
 }
 
-/* Tipografía Nothing Dot Matrix */
-.font-dot {
-  font-family: 'Silkscreen', monospace;
-  letter-spacing: 0.08em;
+/* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
-.font-tech {
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-.font-mono-tech {
-  font-family: 'Space Mono', monospace;
-}
-
-/* Patrones de fondo técnicos y Glyph Nothing */
-.bg-nothing-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.bg-glyph-circuit {
-  background-color: #0a0a0c;
-  background-image: 
-    radial-gradient(circle at 80% 20%, rgba(215, 25, 32, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-}
-
-/* Borde y efectos Glyph rojos Nothing */
-.border-crimson {
-  border-color: #d71920;
-}
-
-.text-crimson {
-  color: #d71920;
-}
-
-.bg-crimson {
-  background-color: #d71920;
-}
-
-.shadow-crimson-glow {
-  box-shadow: 0 0 25px rgba(215, 25, 32, 0.35);
-}
-
-.shadow-glyph-subtle {
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.07);
-}
-
-/* Estilo para sliders técnicos */
-input[type="range"] {
-  accent-color: #d71920;
-}
-
-/* Scrollbar técnica */
+/* Barra de desplazamiento accesible y discreta */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #080808;
+  background: #f1f5f9;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 3px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #d71920;
+  background: #94a3b8;
 }

@@ -2,13 +2,14 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:** TecReview
 
 **Tipo de sistema:** Plataforma web de reseñas y comparación tecnológica.
 
 **Contexto:** Tuluá, Valle del Cauca.
 
 **Tecnologías principales:**
+
 - Frontend: Next.js + TypeScript
 - Backend: Spring Boot
 - Base de datos: PostgreSQL + Supabase
@@ -26,11 +27,13 @@ Los requisitos funcionales describen las acciones y funcionalidades que el siste
 El sistema debe permitir que una persona cree una cuenta mediante un formulario de registro.
 
 **Datos iniciales considerados:**
+
 - Nombre
 - Correo electrónico
 - Contraseña
 
 **Criterio de aceptación:**
+
 - El sistema debe validar los datos ingresados.
 - No debe permitir registrar un correo que ya exista.
 - La cuenta debe quedar almacenada en la base de datos.
@@ -42,6 +45,7 @@ El sistema debe permitir que una persona cree una cuenta mediante un formulario 
 El sistema debe permitir a los usuarios registrados iniciar sesión.
 
 **Criterio de aceptación:**
+
 - El usuario debe ingresar sus credenciales.
 - El sistema debe validar la información.
 - Si las credenciales son correctas, debe permitir el acceso.
@@ -60,6 +64,7 @@ Los roles contemplados son:
 - Propietario o representante de establecimiento
 
 **Criterio de aceptación:**
+
 - El sistema debe identificar el rol del usuario.
 - Las funciones disponibles deben depender de los permisos correspondientes.
 
@@ -82,6 +87,7 @@ La información del producto podrá incluir:
 - Precio de referencia, si se define para la versión final
 
 **Criterio de aceptación:**
+
 - El usuario debe poder visualizar la información disponible del producto.
 - Los productos deben obtenerse desde la base de datos.
 
@@ -101,6 +107,7 @@ Las operaciones contempladas son:
 Estas operaciones estarán sujetas a los permisos definidos para cada rol.
 
 **Criterio de aceptación:**
+
 - Los datos deben almacenarse correctamente.
 - El sistema debe validar la información antes de realizar cambios.
 - Las operaciones restringidas solo deben estar disponibles para usuarios autorizados.
@@ -121,6 +128,7 @@ Ejemplos de categorías:
 - Otros productos tecnológicos
 
 **Criterio de aceptación:**
+
 - Cada producto debe poder asociarse a una categoría.
 - Las categorías deben poder consultarse desde el catálogo.
 
@@ -131,6 +139,7 @@ Ejemplos de categorías:
 El sistema debe permitir asociar los productos con sus respectivas marcas.
 
 **Criterio de aceptación:**
+
 - Un producto debe poder relacionarse con una marca.
 - La marca debe poder utilizarse como criterio de consulta o filtrado cuando esta función sea implementada.
 
@@ -147,6 +156,7 @@ La búsqueda podrá realizarse utilizando información como:
 - Categoría
 
 **Criterio de aceptación:**
+
 - El sistema debe devolver los productos relacionados con los criterios ingresados.
 - Si no existen coincidencias, debe informar al usuario.
 
@@ -163,6 +173,7 @@ Una reseña podrá contener:
 - Información relacionada con la experiencia del usuario
 
 **Criterio de aceptación:**
+
 - Solo los usuarios autorizados pueden publicar reseñas.
 - La reseña debe quedar asociada al usuario y al producto.
 - El sistema debe almacenar la información en la base de datos.
@@ -176,6 +187,7 @@ El sistema debe permitir que los usuarios valoren productos tecnológicos median
 La escala exacta de valoración será definida durante el desarrollo.
 
 **Criterio de aceptación:**
+
 - La valoración debe estar asociada al producto y al usuario.
 - El sistema debe validar que la puntuación se encuentre dentro de los valores permitidos.
 
@@ -186,6 +198,7 @@ La escala exacta de valoración será definida durante el desarrollo.
 El sistema debe permitir representar aspectos positivos y negativos relacionados con la experiencia de los usuarios sobre un producto.
 
 **Criterio de aceptación:**
+
 - La información debe quedar asociada a la reseña correspondiente.
 - Debe poder visualizarse junto con la información del producto.
 
@@ -205,6 +218,7 @@ La comparación podrá considerar características como:
 - Precio de referencia, si está disponible
 
 **Criterio de aceptación:**
+
 - El usuario debe poder seleccionar los productos que desea comparar.
 - El sistema debe mostrar sus características de manera organizada.
 - La información utilizada debe corresponder a los datos registrados en la plataforma.
@@ -224,6 +238,7 @@ La información podrá incluir:
 - Ubicación geográfica
 
 **Criterio de aceptación:**
+
 - Los establecimientos deben almacenarse en la base de datos.
 - Los usuarios deben poder consultar la información disponible.
 
@@ -234,6 +249,7 @@ La información podrá incluir:
 El sistema debe integrar información de ubicación mediante Google Maps.
 
 **Criterio de aceptación:**
+
 - El usuario debe poder consultar la ubicación de un establecimiento.
 - La ubicación debe corresponder a la información registrada.
 - La integración debe funcionar desde la interfaz web.
@@ -245,6 +261,7 @@ El sistema debe integrar información de ubicación mediante Google Maps.
 El frontend debe comunicarse con el backend mediante una API REST.
 
 **Criterio de aceptación:**
+
 - El frontend debe poder consultar información del backend.
 - Las operaciones permitidas deben enviarse mediante los endpoints correspondientes.
 - Las respuestas de la API deben ser procesadas correctamente por el frontend.
@@ -267,6 +284,7 @@ La información podrá incluir:
 - Establecimientos
 
 **Criterio de aceptación:**
+
 - La información debe permanecer almacenada después de cerrar o reiniciar la aplicación.
 - Las relaciones entre las entidades deben mantenerse correctamente.
 
@@ -344,6 +362,7 @@ Backend
    ↓
 Base de datos
 ```
+
 El frontend será desarrollado con Next.js y TypeScript, mientras que el backend será desarrollado con Spring Boot.
 
 ### RNF-07 - Base de datos
@@ -401,11 +420,12 @@ Manual técnico
 
 Para organizar el desarrollo se utilizará una prioridad inicial:
 
-Prioridad	Descripción
-Alta	Funcionalidad necesaria para el funcionamiento principal del sistema
-Media	Funcionalidad importante que complementa el sistema
-Baja	Funcionalidad complementaria que puede desarrollarse posteriormente
+Prioridad Descripción
+Alta Funcionalidad necesaria para el funcionamiento principal del sistema
+Media Funcionalidad importante que complementa el sistema
+Baja Funcionalidad complementaria que puede desarrollarse posteriormente
 Requisitos de prioridad alta
+
 - RF-01 Registro de usuarios
 - RF-02 Inicio de sesión
 - RF-03 Usuarios y roles

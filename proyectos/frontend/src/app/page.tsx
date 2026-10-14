@@ -350,7 +350,7 @@ export default function Home() {
                   Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
                 </h1>
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
-                  // Guía de compra y especificaciones técnicas
+                  {"//"} Guía de compra y especificaciones técnicas
                 </p>
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function Home() {
                   )}
                 </div>
                 <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                  // Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
+                  {"//"} Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
                 </p>
               </div>
 
@@ -580,7 +580,7 @@ export default function Home() {
           </div>
 
           <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
-            <span>// Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
+            <span>{"//"} Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
           </div>
         </div>
       </div>
@@ -691,7 +691,7 @@ export default function Home() {
                   <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
-                  // Productos verificados en la plataforma ({productosBackendFiltrados.length} disponibles)
+                  {"//"} Productos verificados en la plataforma ({productosBackendFiltrados.length} disponibles)
                 </p>
               </div>
 

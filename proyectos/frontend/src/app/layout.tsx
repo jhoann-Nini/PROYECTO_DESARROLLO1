@@ -28,14 +28,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${inter.variable} ${doto.variable} dark`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Doto:wght@600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-purple-600 selection:text-white">
         {children}
       </body>

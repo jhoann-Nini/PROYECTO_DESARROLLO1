@@ -141,7 +141,7 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
             <div className="lg:col-span-7 flex flex-col gap-5">
               <div>
                 <span className="text-xs text-blue-700 dark:text-blue-400 font-bold font-doto uppercase tracking-wider">
-                  {ficha.marca} // ESPECIFICACIONES TÉCNICAS
+                  {ficha.marca} {"//"} ESPECIFICACIONES TÉCNICAS
                 </span>
                 <h2 id="modal-titulo-dispositivo" className="text-2xl sm:text-3xl font-black font-doto text-slate-900 dark:text-white mt-1 leading-tight uppercase tracking-wide">
                   {ficha.nombre}

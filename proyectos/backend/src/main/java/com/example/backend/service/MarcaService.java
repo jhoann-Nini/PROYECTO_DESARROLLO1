@@ -22,7 +22,7 @@ public class MarcaService {
     @Transactional(readOnly = true)
     public List<MarcaResponse> listarActivas() {
         return marcaRepository.findAll().stream()
-                .filter(Marca::getEstado)
+                .filter(m -> Boolean.TRUE.equals(m.getEstado()))
                 .map(this::toResponse)
                 .toList();
     }

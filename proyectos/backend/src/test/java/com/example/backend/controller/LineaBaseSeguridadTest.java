@@ -101,8 +101,9 @@ class LineaBaseSeguridadTest {
     void ningunDtoDeRespuestaExponePassword() {
         for (Class<?> dto : new Class<?>[] {
                 ProductoResponse.class, CategoriaResponse.class, MarcaResponse.class }) {
-            boolean expone = Arrays.stream(dto.getRecordComponents())
-                    .map(RecordComponent::getName)
+            RecordComponent[] components = dto.getRecordComponents();
+            boolean expone = components != null && Arrays.stream(components)
+                    .map(rc -> rc.getName())
                     .anyMatch(n -> n.toLowerCase().contains("password"));
             assertTrue(!expone, dto.getSimpleName() + " no debe exponer un campo password");
         }

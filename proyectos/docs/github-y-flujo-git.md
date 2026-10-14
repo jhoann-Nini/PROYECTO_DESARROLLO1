@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Proyecto:** TecnoReview  
+**Proyecto:** TecReview  
 **Repositorio:** PROYECTO_DESARROLLO1  
 **Plataforma:** GitHub  
 **Sistema de control de versiones:** Git  
@@ -11,7 +11,7 @@
 
 Repositorio oficial:
 
-https://github.com/jhoann-Nini/PROYECTO_DESARROLLO1.git
+<https://github.com/jhoann-Nini/PROYECTO_DESARROLLO1.git>
 
 ---
 

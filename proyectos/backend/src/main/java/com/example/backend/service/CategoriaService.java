@@ -7,7 +7,7 @@ import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.example.backend.exception.ConflictException;
 import java.util.List;
 
 @Service
@@ -19,17 +19,22 @@ public class CategoriaService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    
     @Transactional(readOnly = true)
     public List<CategoriaResponse> listarActivas() {
-        return categoriaRepository.findAll().stream()
-                .filter(Categoria::getEstado)
+        return categoriaRepository.findByEstadoTrue()
+                .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
+
     @Transactional(readOnly = true)
     public CategoriaResponse obtenerPorId(Long id) {
         Categoria categoria = buscarOFallar(id);
+        if (Boolean.FALSE.equals(categoria.getEstado())) {
+            throw new ResourceNotFoundException("Categoría no encontrada con id " + id);
+        }
         return toResponse(categoria);
     }
 
@@ -50,9 +55,14 @@ public class CategoriaService {
         return toResponse(categoriaRepository.save(categoria));
     }
 
+
+
     @Transactional
     public void eliminar(Long id) {
         Categoria categoria = buscarOFallar(id);
+        if (Boolean.FALSE.equals(categoria.getEstado())) {
+            throw new ConflictException("Categoría ya está inactiva");
+        }
         // Eliminación lógica: se conserva el registro pero se marca inactivo,
         // ya que otras entidades (Producto) pueden referenciarlo.
         categoria.setEstado(false);

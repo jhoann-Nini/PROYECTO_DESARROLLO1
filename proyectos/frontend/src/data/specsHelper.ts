@@ -29,11 +29,12 @@ export interface FichaNormalizada {
 export function formatearCOP(valor: number | null | undefined): string {
   if (valor === null || valor === undefined) return "Consultar disponibilidad";
   const monto = valor < 10000 ? Math.round(valor * 4000) : Math.round(valor);
-  return new Intl.NumberFormat("es-CO", {
+  const formateado = new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
     maximumFractionDigits: 0,
   }).format(monto);
+  return formateado.includes("COP") ? formateado : `${formateado} COP`;
 }
 
 export function detectarCategoria(

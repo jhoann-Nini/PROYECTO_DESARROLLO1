@@ -118,16 +118,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         {/* Cabecera modal */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <h2 id="auth-modal-title" className="text-base font-bold text-slate-900 dark:text-white">
-              Acceso a <span className="text-blue-700 dark:text-blue-400">TecReview</span>
+            <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
+            <h2 id="auth-modal-title" className="font-doto text-base font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+              ACCESO A <span className="text-blue-700 dark:text-blue-400">TECREVIEW</span>.
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             aria-label="Cerrar modal de autenticación"
           >
-            ✕ Cerrar
+            ✕ CERRAR
           </button>
         </div>
 
@@ -140,13 +141,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
               modo === "login"
                 ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Iniciar sesión
+            INICIAR SESIÓN
           </button>
           <button
             type="button"
@@ -155,13 +156,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
               modo === "registro"
                 ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Crear cuenta
+            CREAR CUENTA
           </button>
         </div>
 

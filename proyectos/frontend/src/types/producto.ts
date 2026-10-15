@@ -73,6 +73,8 @@ export interface DispositivoKimovil {
   imagen: string;
   tipo: "vendido" | "deseado" | "oferta";
   categoria?: string;
+  chipInfo?: string;
+  vendedor?: string;
   detalleSpecs?: EspecificacionesDetalladas;
 }
 

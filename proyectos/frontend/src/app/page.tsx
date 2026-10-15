@@ -421,9 +421,10 @@ export default function Home() {
       <nav aria-label="Navegación superior" className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2.5 text-xs shadow-2xs sticky top-0 z-20">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-sm tracking-tight">
-              <span className="h-2 w-2 rounded-full bg-blue-700 dark:bg-blue-500"></span>
+            <span className="font-doto font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base tracking-widest uppercase">
+              <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
               Tec<span className="text-blue-700 dark:text-blue-400">Review</span>
+              <span className="text-red-500">.</span>
             </span>
             <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
             <span className="hidden md:inline text-slate-600 dark:text-slate-400 font-medium">
@@ -531,20 +532,20 @@ export default function Home() {
             {/* Título de Marca Limpio */}
             <div className="flex items-center">
               <div>
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white" aria-label="TecReview">
-                  Tec<span className="text-blue-700 dark:text-blue-500">Review</span>
+                <h1 className="font-doto text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-slate-900 dark:text-white uppercase" aria-label="TecReview">
+                  Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
                 </h1>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-0.5">
-                  Guía de compra y especificaciones técnicas
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
+                  {"//"} Guía de compra y especificaciones técnicas
                 </p>
               </div>
             </div>
 
-            {/* Selector de Categorías Accesible */}
+            {/* Selector de Categorías Accesible con estilo de Matriz Nothing Tech */}
             <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por categoría">
               {[
                 { id: "todos" as const, label: "Todos", icon: "📱" },
-                { id: "moviles" as const, label: "Celulares", icon: "📱" },
+                { id: "moviles" as const, label: "Teléfonos", icon: "📱" },
                 { id: "tablets" as const, label: "Tablets", icon: "📱" },
                 { id: "laptops" as const, label: "Portátiles / PC", icon: "💻" },
                 { id: "auriculares" as const, label: "Auriculares", icon: "🎧" },
@@ -552,7 +553,7 @@ export default function Home() {
                 <button
                   key={cat.id}
                   onClick={() => setTipoDispositivo(cat.id)}
-                  className={`flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-semibold transition-all cursor-pointer ${
+                  className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
                     tipoDispositivo === cat.id
                       ? "border-blue-700 bg-blue-700 text-white shadow-xs"
                       : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
@@ -571,12 +572,13 @@ export default function Home() {
             {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between gap-6">
               <div>
-                <span className="inline-block rounded-md bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3 py-1 text-xs font-semibold text-blue-800 dark:text-blue-300 mb-3 shadow-2xs">
-                  Catálogo y comparador de tecnología
+                <span className="inline-flex items-center gap-2 rounded-md bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 px-3 py-1 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 dark:text-blue-300 mb-3 shadow-2xs">
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  CATÁLOGO Y COMPARADOR DE TECNOLOGÍA
                 </span>
 
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-                  Encuentra y compara tu próximo dispositivo
+                <h2 className="font-doto text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-wide uppercase leading-tight">
+                  Encuentra y compara tu próximo dispositivo.
                 </h2>
 
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
@@ -586,7 +588,7 @@ export default function Home() {
 
               {/* Buscador Rápido Accesible */}
               <div>
-                <label htmlFor="buscador-principal" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                <label htmlFor="buscador-principal" className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                   Buscar dispositivos tecnológicos
                 </label>
                 <div className="relative flex items-center">
@@ -608,14 +610,14 @@ export default function Home() {
                     <button
                       onClick={() => setBusqueda("")}
                       aria-label="Borrar texto de búsqueda"
-                      className="absolute right-4 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                      className="absolute right-4 text-xs font-bold font-doto uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
                     >
                       Limpiar
                     </button>
                   )}
                 </div>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                  Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  {"//"} Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
                 </p>
               </div>
 
@@ -623,15 +625,15 @@ export default function Home() {
               <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-blue-700"></span>
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+                    <span className="h-2 w-2 rounded-full bg-red-600"></span>
+                    <span className="text-xs font-bold font-doto text-slate-700 dark:text-slate-200 uppercase tracking-wider">
                       Presupuesto máximo
                     </span>
                   </div>
 
                   <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3.5 py-1.5">
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Hasta:</span>
-                    <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400 font-mono">Hasta:</span>
+                    <span className="text-sm font-extrabold font-sans tracking-tight text-blue-700 dark:text-blue-300">
                       {formatearCOP(presupuestoMax)}
                     </span>
                   </div>
@@ -648,10 +650,10 @@ export default function Home() {
                     aria-label="Ajustar presupuesto máximo en pesos colombianos"
                     className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-700"
                   />
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
                     <span>Mínimo: $ 200.000 COP</span>
-                    <span className="font-semibold text-blue-700 dark:text-blue-400">
-                      Límite activo: {formatearCOP(presupuestoMax)}
+                    <span className="font-bold text-blue-700 dark:text-blue-400 font-sans">
+                      Límite: {formatearCOP(presupuestoMax)}
                     </span>
                     <span>Máximo: $ 6.000.000+ COP</span>
                   </div>
@@ -664,12 +666,12 @@ export default function Home() {
               <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm flex flex-col h-full">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 bg-blue-700 rounded-full"></span>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                      Ofertas destacadas
+                    <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
+                    <h3 className="text-xs font-bold font-doto uppercase tracking-wider text-slate-900 dark:text-white">
+                      Ofertas destacadas.
                     </h3>
                   </div>
-                  <span className="text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
+                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
                     En promoción ({ofertasFiltradas.length})
                   </span>
                 </div>
@@ -743,7 +745,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSeccionActiva("ranking")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 seccionActiva === "ranking"
                   ? "bg-blue-700 text-white shadow-xs"
                   : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
@@ -753,7 +755,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setSeccionActiva("catalogo")}
-              className={`rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 seccionActiva === "catalogo"
                   ? "bg-blue-700 text-white shadow-xs"
                   : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
@@ -763,8 +765,8 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-            <span>Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
+          <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
+            <span>{"//"} Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
           </div>
         </div>
       </div>
@@ -780,11 +782,11 @@ export default function Home() {
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
               <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Los más vendidos
+                  <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="text-red-500">/</span> Los más vendidos.
                   </h3>
-                  <span className="text-xs font-medium text-slate-500">
-                    {vendidosFiltrados.length} dispositivos
+                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    ({vendidosFiltrados.length} dispositivos)
                   </span>
                 </div>
                 <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
@@ -810,7 +812,7 @@ export default function Home() {
                 <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
                   <button
                     onClick={() => setMostrarTodosVendidos(!mostrarTodosVendidos)}
-                    className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
                   >
                     {mostrarTodosVendidos ? "Ocultar listado" : `Ver lista completa (${vendidosFiltrados.length})`}
                   </button>
@@ -822,11 +824,11 @@ export default function Home() {
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
               <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    Los más deseados
+                  <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <span className="text-red-500">/</span> Los más deseados.
                   </h3>
-                  <span className="text-xs font-medium text-slate-500">
-                    {deseadosFiltrados.length} dispositivos
+                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    ({deseadosFiltrados.length} dispositivos)
                   </span>
                 </div>
                 <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
@@ -852,7 +854,7 @@ export default function Home() {
                 <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
                   <button
                     onClick={() => setMostrarTodosDeseados(!mostrarTodosDeseados)}
-                    className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
                   >
                     {mostrarTodosDeseados ? "Ocultar listado" : `Ver lista completa (${deseadosFiltrados.length})`}
                   </button>
@@ -871,22 +873,22 @@ export default function Home() {
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-8">
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Catálogo general de dispositivos
+                <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Productos verificados en la plataforma ({productosBackendFiltrados.length} disponibles)
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
+                  {"//"} Productos verificados en la plataforma ({productosBackendFiltrados.length} disponibles)
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 {estadoBackend === "online" ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 text-xs text-emerald-800 dark:text-emerald-300 font-medium">
+                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 text-xs text-emerald-800 dark:text-emerald-300 font-bold">
                     <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                     Servidor conectado
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 text-xs text-amber-800 dark:text-amber-300 font-medium">
+                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 text-xs text-amber-800 dark:text-amber-300 font-bold">
                     <span className="h-2 w-2 rounded-full bg-amber-500"></span>
                     Modo local
                   </span>
@@ -897,7 +899,7 @@ export default function Home() {
             {cargandoApi ? (
               <div className="flex flex-col items-center justify-center py-20" aria-live="polite" aria-busy="true">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" aria-hidden="true"></div>
-                <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">Cargando catálogo de dispositivos...</p>
+                <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 font-doto uppercase tracking-wider">Cargando catálogo de dispositivos...</p>
               </div>
             ) : productosBackendFiltrados.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -910,7 +912,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm text-slate-500">
+              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm text-slate-500 font-mono">
                 No hay productos que coincidan con la búsqueda &ldquo;{busqueda}&rdquo; y presupuesto de {formatearCOP(presupuestoMax)}.
               </div>
             )}
@@ -924,8 +926,8 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <div className="mb-6">
-            <h3 id="seccion-opiniones" className="text-xl font-bold text-slate-900 dark:text-white">
-              Opiniones de la comunidad
+            <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="text-red-500">/</span> Opiniones de la comunidad.
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
@@ -945,7 +947,7 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors shadow-2xs cursor-pointer"
+                className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer"
               >
                 Publicar opinión
               </button>

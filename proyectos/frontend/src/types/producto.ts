@@ -82,4 +82,8 @@ export interface UsuarioSesion {
   usuario: string;
   email: string;
   avatar?: string;
+  rol?: string;
+  idUsuario?: number;
+  activo?: boolean;
+  fechaRegistro?: string;
 }

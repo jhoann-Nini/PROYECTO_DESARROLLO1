@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { obtenerProductos } from "@/services/api";
+import { obtenerProductos, obtenerMiPerfil, mapearPerfilABusinessSession, ApiError } from "@/services/api";
 import type { Producto, DispositivoKimovil, UsuarioSesion } from "@/types/producto";
 import {
   DISPOSITIVOS_VENDIDOS,
@@ -16,6 +16,8 @@ import AuthModal from "@/components/AuthModal";
 import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 import GeometricBackground from "@/components/GeometricBackground";
 import { formatearCOP } from "@/data/specsHelper";
+import { createClient } from "@/lib/supabase/client";
+import type { Session } from "@supabase/supabase-js";
 
 type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares";
 
@@ -30,6 +32,8 @@ export default function Home() {
 
   // Estado de Autenticación
   const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(null);
+  const [cargandoAuth, setCargandoAuth] = useState(true);
+  const [errorSesion, setErrorSesion] = useState<string | null>(null);
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
 
   // Estado de Ficha Técnica Modal
@@ -64,7 +68,7 @@ export default function Home() {
   ]);
   const [errorComentario, setErrorComentario] = useState("");
 
-  // Cargar preferencia de tema y sesión al montar
+  // Cargar preferencia de tema y sincronizar sesión real de Supabase al montar
   useEffect(() => {
     try {
       const temaGuardado = localStorage.getItem("tecreview_tema") as "claro" | "oscuro" | null;
@@ -80,15 +84,122 @@ export default function Home() {
       document.documentElement.classList.remove("dark");
     }
 
-    try {
-      const sesionGuardada = localStorage.getItem("usuario_sesion");
-      if (sesionGuardada) {
-        const usuarioGuardado = JSON.parse(sesionGuardada) as UsuarioSesion;
-        queueMicrotask(() => {
-          setUsuarioSesion(usuarioGuardado);
-        });
+    // Sincronización con Supabase Auth y aprovisionamiento de perfil en Spring Boot
+    let montado = true;
+    let ultimoTokenProcesado: string | null = null;
+    let peticionEnVuelo: Promise<void> | null = null;
+    let suscripcion: { unsubscribe: () => void } | null = null;
+
+    async function sincronizarPerfil(session: Session | null) {
+      if (!session?.access_token || !session.user) {
+        ultimoTokenProcesado = null;
+        if (montado) {
+          setUsuarioSesion(null);
+          setCargandoAuth(false);
+        }
+        return;
       }
-    } catch {}
+
+      // Evitar peticiones duplicadas cuando onAuthStateChange y getSession coincidan
+      if (session.access_token === ultimoTokenProcesado) {
+        if (peticionEnVuelo) {
+          await peticionEnVuelo;
+        }
+        return;
+      }
+
+      ultimoTokenProcesado = session.access_token;
+      if (montado) {
+        setCargandoAuth(true);
+        setErrorSesion(null);
+      }
+
+      const tarea = (async () => {
+        try {
+          const perfil = await obtenerMiPerfil(session.access_token);
+          if (montado) {
+            setUsuarioSesion(mapearPerfilABusinessSession(perfil, session.user));
+            setErrorSesion(null);
+          }
+        } catch (err) {
+          const esErrorDefinitivo =
+            err instanceof ApiError &&
+            (err.status === 401 || err.status === 403 || err.status === 409);
+
+          const mensaje =
+            err instanceof Error
+              ? err.message
+              : "No fue posible verificar tu perfil en el servidor.";
+
+          if (esErrorDefinitivo) {
+            // Rechazo definitivo de identidad o autorización (H-02):
+            ultimoTokenProcesado = null;
+            if (montado) {
+              setUsuarioSesion(null);
+              setErrorSesion(mensaje);
+            }
+            // Revocar sesión local en Supabase para evitar bucles o sesiones huérfanas
+            try {
+              const supabase = createClient();
+              await supabase.auth.signOut({ scope: "local" });
+            } catch {}
+          } else {
+            // Error transitorio (ej. microcorte de red o indisponibilidad del backend) (H-04):
+            // Preservar el perfil previamente validado si ya existía para no expulsar al usuario
+            if (montado) {
+              setErrorSesion(mensaje);
+              setUsuarioSesion((prev) => (prev ? prev : null));
+            }
+          }
+        } finally {
+          if (montado) {
+            setCargandoAuth(false);
+          }
+        }
+      })();
+
+      peticionEnVuelo = tarea;
+      await tarea;
+      if (peticionEnVuelo === tarea) {
+        peticionEnVuelo = null;
+      }
+    }
+
+    try {
+      const supabase = createClient();
+
+      // 1. Suscribirse prioritariamente a los eventos de autenticación
+      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (!montado) return;
+        sincronizarPerfil(session);
+      });
+      suscripcion = authListener.subscription;
+
+      // 2. getSession() de respaldo si onAuthStateChange aún no sincronizó
+      supabase.auth
+        .getSession()
+        .then(({ data: { session }, error }) => {
+          if (!montado || error) return;
+          sincronizarPerfil(session);
+        })
+        .catch(() => {
+          if (montado) {
+            setCargandoAuth(false);
+          }
+        });
+    } catch {
+      // Si las variables de Supabase no están configuradas en el entorno
+      queueMicrotask(() => {
+        if (montado) {
+          setCargandoAuth(false);
+        }
+      });
+    }
+
+    return () => {
+      montado = false;
+      suscripcion?.unsubscribe();
+    };
   }, []);
 
   const cambiarTema = (nuevoTema: "claro" | "oscuro") => {
@@ -243,9 +354,59 @@ export default function Home() {
     setErrorComentario("");
   };
 
-  const cerrarSesion = () => {
-    localStorage.removeItem("usuario_sesion");
-    setUsuarioSesion(null);
+  const cerrarSesion = async () => {
+    setErrorSesion(null);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error("Error al revocar sesión en Supabase:", error.message);
+        // Respaldo: intentar revocación local para que los tokens del navegador no queden huérfanos
+        try {
+          const { error: errorLocal } = await supabase.auth.signOut({ scope: "local" });
+          if (errorLocal) {
+            setErrorSesion("No fue posible cerrar la sesión. Inténtalo de nuevo.");
+            return;
+          }
+          // El cierre local de respaldo tuvo éxito
+          setUsuarioSesion(null);
+        } catch {
+          setErrorSesion("Error de conexión al cerrar la sesión.");
+          return;
+        }
+      } else {
+        // Cierre exitoso tanto en servidor como localmente
+        setUsuarioSesion(null);
+      }
+    } catch (err) {
+      console.error("Error al conectar con Supabase:", err);
+      setErrorSesion("Error al conectar con el servicio de autenticación.");
+    }
+  };
+
+  const reintentarSincronizacion = async () => {
+    setErrorSesion(null);
+    setCargandoAuth(true);
+    try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        const perfil = await obtenerMiPerfil(session.access_token);
+        setUsuarioSesion(mapearPerfilABusinessSession(perfil, session.user));
+        setErrorSesion(null);
+      } else {
+        setUsuarioSesion(null);
+      }
+    } catch (err) {
+      const mensaje =
+        err instanceof Error ? err.message : "Error al reintentar la conexión.";
+      setErrorSesion(mensaje);
+    } finally {
+      setCargandoAuth(false);
+    }
   };
 
   return (
@@ -308,11 +469,33 @@ export default function Home() {
             </div>
 
             {/* Control de sesión */}
-            {usuarioSesion ? (
+            {errorSesion && (
+              <span className="text-[11px] text-red-600 dark:text-red-400 font-medium mr-1 inline-flex items-center gap-1.5" role="alert">
+                <span>⚠️ {errorSesion}</span>
+                <button
+                  type="button"
+                  onClick={reintentarSincronizacion}
+                  className="underline hover:no-underline font-bold text-blue-700 dark:text-blue-400 cursor-pointer"
+                  title="Reintentar verificación con el servidor"
+                >
+                  Reintentar
+                </button>
+              </span>
+            )}
+            {cargandoAuth ? (
+              <span className="text-xs text-slate-400 dark:text-slate-500 animate-pulse px-2 py-1">
+                Verificando...
+              </span>
+            ) : usuarioSesion ? (
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                   {usuarioSesion.nombre}
+                  {usuarioSesion.rol && (
+                    <span className="text-[10px] text-blue-700 dark:text-blue-400 font-normal">
+                      • {usuarioSesion.rol}
+                    </span>
+                  )}
                 </span>
                 <button
                   onClick={cerrarSesion}
@@ -324,7 +507,10 @@ export default function Home() {
               </div>
             ) : (
               <button
-                onClick={() => setModalAuthAbierto(true)}
+                onClick={() => {
+                  setErrorSesion(null);
+                  setModalAuthAbierto(true);
+                }}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3 py-1 text-xs font-semibold text-white shadow-2xs transition-colors cursor-pointer"
               >
                 <span>🔑</span> Iniciar sesión

@@ -65,7 +65,7 @@ export default function Home() {
   ]);
   const [errorComentario, setErrorComentario] = useState("");
 
-  // Asegurar modo oscuro permanente y sincronizar sesión real de Supabase al montar
+  // Cargar preferencia de tema y sincronizar sesión real de Supabase al montar
   useEffect(() => {
     try {
       document.documentElement.classList.add("dark");

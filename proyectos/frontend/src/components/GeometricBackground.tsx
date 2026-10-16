@@ -16,7 +16,7 @@ interface GeometricBackgroundProps {
  * esquina superior derecha y azul en la inferior izquierda, atravesado por sutiles líneas
  * de contorno topográfico con opacidad calibrada para no comprometer la legibilidad (WCAG AA).
  */
-export default function GeometricBackground({ tema = "claro" }: GeometricBackgroundProps) {
+export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgroundProps) {
   const esOscuro = tema === "oscuro";
 
   // Colección de curvas de nivel topográficas onduladas que recorren la pantalla

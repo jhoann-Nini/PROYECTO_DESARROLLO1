@@ -221,7 +221,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 102,
+    id: 106,
     ranking: 2,
     nombre: "Nothing Phone (2a) Plus",
     marca: "Nothing",
@@ -284,7 +284,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 103,
+    id: 107,
     ranking: 3,
     nombre: "Redmi Note 14 Pro+ 5G",
     marca: "Xiaomi",
@@ -345,7 +345,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 104,
+    id: 108,
     ranking: 4,
     nombre: "OnePlus Pad 2 Snapdragon",
     marca: "OnePlus",
@@ -408,7 +408,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 105,
+    id: 109,
     ranking: 5,
     nombre: "Sony WH-1000XM5 Noise Cancelling",
     marca: "Sony",
@@ -472,7 +472,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 106,
+    id: 110,
     ranking: 6,
     nombre: "ASUS ROG Zephyrus G16 OLED Laptop",
     marca: "ASUS",
@@ -743,7 +743,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 202,
+    id: 206,
     ranking: 2,
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
@@ -804,7 +804,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 203,
+    id: 207,
     ranking: 3,
     nombre: "OnePlus 13 Pro 5G",
     marca: "OnePlus",
@@ -865,7 +865,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 204,
+    id: 208,
     ranking: 4,
     nombre: "Apple iPad Pro 11'' M4 OLED",
     marca: "Apple",
@@ -926,7 +926,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 205,
+    id: 209,
     ranking: 5,
     nombre: "Apple MacBook Pro 16'' M3 Max",
     marca: "Apple",
@@ -987,7 +987,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 206,
+    id: 210,
     ranking: 6,
     nombre: "Bose QuietComfort Ultra Headphones",
     marca: "Bose",

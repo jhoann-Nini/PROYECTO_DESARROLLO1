@@ -22,9 +22,6 @@ import type { Session } from "@supabase/supabase-js";
 type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares";
 
 export default function Home() {
-  // Estado de tema claro / oscuro (por defecto claro)
-  const [tema, setTema] = useState<"claro" | "oscuro">("claro");
-
   // Estado de backend
   const [productosBackend, setProductosBackend] = useState<Producto[]>([]);
   const [cargandoApi, setCargandoApi] = useState(true);
@@ -68,21 +65,11 @@ export default function Home() {
   ]);
   const [errorComentario, setErrorComentario] = useState("");
 
-  // Cargar preferencia de tema y sincronizar sesión real de Supabase al montar
+  // Asegurar modo oscuro permanente y sincronizar sesión real de Supabase al montar
   useEffect(() => {
     try {
-      const temaGuardado = localStorage.getItem("tecreview_tema") as "claro" | "oscuro" | null;
-      if (temaGuardado === "oscuro") {
-        queueMicrotask(() => {
-          setTema("oscuro");
-        });
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    } catch {
-      document.documentElement.classList.remove("dark");
-    }
+      document.documentElement.classList.add("dark");
+    } catch {}
 
     // Sincronización con Supabase Auth y aprovisionamiento de perfil en Spring Boot
     let montado = true;
@@ -202,17 +189,6 @@ export default function Home() {
     };
   }, []);
 
-  const cambiarTema = (nuevoTema: "claro" | "oscuro") => {
-    setTema(nuevoTema);
-    try {
-      localStorage.setItem("tecreview_tema", nuevoTema);
-    } catch {}
-    if (nuevoTema === "oscuro") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   // Consulta al backend en Spring Boot
   useEffect(() => {
@@ -410,13 +386,13 @@ export default function Home() {
   };
 
   return (
-    <div className={`relative min-h-screen transition-colors duration-300 ${tema === "oscuro" ? "dark text-slate-100" : "text-slate-900"}`}>
+    <div className="relative min-h-screen dark text-slate-100 transition-colors duration-300">
       
-      {/* FONDO GEOMÉTRICO BICOLOR (MODO CLARO Y MODO OSCURO) */}
-      <GeometricBackground tema={tema} />
+      {/* FONDO GEOMÉTRICO BICOLOR (MODO OSCURO) */}
+      <GeometricBackground tema="oscuro" />
 
       {/* ─────────────────────────────────────────────────────────────
-          BARRA SUPERIOR CON SELECTOR CLARO/OSCURO Y SESIÓN
+          BARRA SUPERIOR Y SESIÓN
       ───────────────────────────────────────────────────────────── */}
       <nav aria-label="Navegación superior" className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2.5 text-xs shadow-2xs sticky top-0 z-20">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -433,41 +409,6 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Toggle segmentado Modo Claro / Modo Oscuro funcional */}
-            <div
-              role="radiogroup"
-              aria-label="Seleccionar tema visual"
-              className="flex items-center rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-semibold"
-            >
-              <button
-                type="button"
-                role="radio"
-                aria-checked={tema === "claro"}
-                onClick={() => cambiarTema("claro")}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-all cursor-pointer ${
-                  tema === "claro"
-                    ? "bg-white text-blue-700 shadow-xs font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <span aria-hidden="true">☀️</span>
-                <span>Claro</span>
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={tema === "oscuro"}
-                onClick={() => cambiarTema("oscuro")}
-                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-all cursor-pointer ${
-                  tema === "oscuro"
-                    ? "bg-slate-900 text-blue-400 shadow-xs font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                }`}
-              >
-                <span aria-hidden="true">🌙</span>
-                <span>Oscuro</span>
-              </button>
-            </div>
 
             {/* Control de sesión */}
             {errorSesion && (
@@ -681,7 +622,7 @@ export default function Home() {
                   {ofertasFiltradas.length > 0 ? (
                     (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
                       <div
-                        key={oferta.id}
+                        key={`oferta-${oferta.id}`}
                         onClick={() => setProductoSeleccionado(oferta)}
                         className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
                       >
@@ -796,7 +737,7 @@ export default function Home() {
                 {vendidosFiltrados.length > 0 ? (
                   (mostrarTodosVendidos ? vendidosFiltrados : vendidosFiltrados.slice(0, 4)).map((item) => (
                     <DeviceListItem
-                      key={item.id}
+                      key={`vendido-${item.id}`}
                       item={item}
                       onVerDetalle={(item) => setProductoSeleccionado(item)}
                     />
@@ -838,7 +779,7 @@ export default function Home() {
                 {deseadosFiltrados.length > 0 ? (
                   (mostrarTodosDeseados ? deseadosFiltrados : deseadosFiltrados.slice(0, 4)).map((item) => (
                     <DeviceListItem
-                      key={item.id}
+                      key={`deseado-${item.id}`}
                       item={item}
                       onVerDetalle={(item) => setProductoSeleccionado(item)}
                     />
@@ -905,7 +846,7 @@ export default function Home() {
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {productosBackendFiltrados.map((producto) => (
                   <ProductCard
-                    key={producto.idProducto}
+                    key={`prod-${producto.idProducto}`}
                     producto={producto}
                     onVerDetalle={(prod) => setProductoSeleccionado(prod)}
                   />

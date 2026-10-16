@@ -151,33 +151,53 @@ export default function FichaTecnicaModal({ producto, onClose }: FichaTecnicaMod
                 </p>
               </div>
 
-              {/* Barra de pestañas accesible */}
-              <div
-                role="tablist"
-                aria-label="Categorías de especificaciones del dispositivo"
-                className="flex flex-wrap gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
-              >
-                {pestanas.map((p) => {
-                  const activa = pestanaActiva === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      role="tab"
-                      aria-selected={activa}
-                      aria-controls={`panel-${p.id}`}
-                      id={`tab-${p.id}`}
-                      onClick={() => setPestanaActiva(p.id)}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none ${
-                        activa
-                          ? "bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 shadow-2xs border border-slate-200 dark:border-slate-700"
-                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-700/60"
-                      }`}
-                    >
-                      <span aria-hidden="true">{p.icono}</span>
-                      <span>{p.etiqueta}</span>
-                    </button>
-                  );
-                })}
+              {/* Barra de pestañas accesible con indicadores claros de selección */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-doto font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-0.5">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" aria-hidden="true" />
+                    <span>Selecciona una categoría:</span>
+                  </span>
+                  <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold tracking-normal lowercase">
+                    (toca o haz clic para ver)
+                  </span>
+                </div>
+
+                <div
+                  role="tablist"
+                  aria-label="Categorías de especificaciones del dispositivo"
+                  className="flex flex-wrap gap-2 p-1.5 bg-slate-100/90 dark:bg-slate-950/70 rounded-xl border border-slate-200 dark:border-slate-800"
+                >
+                  {pestanas.map((p) => {
+                    const activa = pestanaActiva === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        role="tab"
+                        aria-selected={activa}
+                        aria-controls={`panel-${p.id}`}
+                        id={`tab-${p.id}`}
+                        onClick={() => setPestanaActiva(p.id)}
+                        className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold font-doto uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none ${
+                          activa
+                            ? "bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-500 shadow-sm"
+                            : "bg-white/60 dark:bg-slate-900/50 border border-slate-300/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-white dark:hover:bg-slate-800/80 shadow-2xs"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                            activa
+                              ? "bg-blue-600 dark:bg-blue-400 scale-125 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                              : "bg-slate-400 dark:bg-slate-600 group-hover:bg-blue-500 group-hover:scale-110"
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span aria-hidden="true">{p.icono}</span>
+                        <span>{p.etiqueta}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Panel de Contenido de Pestañas */}

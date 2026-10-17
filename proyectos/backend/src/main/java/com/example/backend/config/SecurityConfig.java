@@ -75,6 +75,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/marcas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
                 .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)

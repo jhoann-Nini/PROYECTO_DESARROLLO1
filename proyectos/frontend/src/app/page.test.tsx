@@ -21,6 +21,8 @@ vi.mock("@/lib/supabase/client", () => ({
 
 const mockObtenerProductos = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
+const mockObtenerResenas = vi.fn();
+const mockCrearResena = vi.fn();
 
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
@@ -28,6 +30,8 @@ vi.mock("@/services/api", async (importOriginal) => {
     ...actual,
     obtenerProductos: (...args: unknown[]) => mockObtenerProductos(...args),
     obtenerMiPerfil: (...args: unknown[]) => mockObtenerMiPerfil(...args),
+    obtenerResenas: (...args: unknown[]) => mockObtenerResenas(...args),
+    crearResena: (...args: unknown[]) => mockCrearResena(...args),
   };
 });
 
@@ -35,6 +39,7 @@ describe("Página principal / (Home)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    mockObtenerResenas.mockResolvedValue([]);
     mockOnAuthStateChange.mockReturnValue({
       data: {
         subscription: { unsubscribe: vi.fn() },
@@ -48,6 +53,7 @@ describe("Página principal / (Home)", () => {
 
   afterEach(() => {
     cleanup();
+
     localStorage.clear();
   });
 
@@ -470,4 +476,179 @@ describe("Página principal / (Home)", () => {
       });
     });
   });
+
+  describe("9. Opiniones de la comunidad persistidas", () => {
+    it("debe cargar y renderizar las reseñas devueltas por el backend al iniciar la página", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 101,
+          idProducto: 1,
+          nombreProducto: "Galaxy S25 Ultra",
+          idUsuario: 5,
+          nombreUsuario: "TechEnthusiast",
+          comentario: "Excelente cámara y procesador para juegos.",
+          fechaCreacion: "2026-10-16T14:30:00",
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Excelente cámara y procesador para juegos.")).toBeDefined();
+        expect(screen.getByText("@TechEnthusiast")).toBeDefined();
+        expect(screen.getByText("Galaxy S25 Ultra")).toBeDefined();
+      });
+    });
+
+    it("un usuario anónimo que intenta enviar un comentario recibe el aviso y se abre el modal de login", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      const inputComentario = screen.getByLabelText(/Escribe tu opinión/i);
+      fireEvent.change(inputComentario, { target: { value: "Intento anónimo de opinar" } });
+
+      const btnPublicar = screen.getByRole("button", { name: /Publicar opinión/i });
+      fireEvent.click(btnPublicar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Debes iniciar sesión para publicar una opinión/i),
+        ).toBeDefined();
+      });
+
+      // Debe abrirse el AuthModal
+      expect(screen.getByRole("dialog")).toBeDefined();
+      expect(screen.getByText(/ACCESO A/i)).toBeDefined();
+      expect(mockCrearResena).not.toHaveBeenCalled();
+    });
+
+    it("un usuario autenticado publica la reseña y la lista se actualiza", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        {
+          idProducto: 45,
+          nombre: "Nothing Phone (2a)",
+          descripcion: "Gama media transparente",
+          precioReferencia: 350,
+          idCategoria: 1,
+          idMarca: 2,
+          nombreCategoria: "Celulares",
+          nombreMarca: "Nothing",
+          imagen: null,
+          estado: true,
+        },
+      ]);
+
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.valido.opiniones",
+            user: { id: "user-op-1", email: "opina@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 77,
+        nombre: "Reviewer Pro",
+        correo: "opina@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-15T12:00:00",
+      });
+
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Reviewer Pro")).toBeDefined();
+      });
+
+      mockCrearResena.mockResolvedValueOnce({
+        idResena: 202,
+        idProducto: 45,
+        nombreProducto: "Nothing Phone (2a)",
+        idUsuario: 77,
+        nombreUsuario: "Reviewer Pro",
+        comentario: "Excelente diseño minimalista y batería.",
+        fechaCreacion: "2026-10-17T15:00:00",
+        estado: true,
+      });
+
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 202,
+          idProducto: 45,
+          nombreProducto: "Nothing Phone (2a)",
+          idUsuario: 77,
+          nombreUsuario: "Reviewer Pro",
+          comentario: "Excelente diseño minimalista y batería.",
+          fechaCreacion: "2026-10-17T15:00:00",
+          estado: true,
+        },
+      ]);
+
+      const inputComentario = screen.getByLabelText(/Escribe tu opinión/i);
+      fireEvent.change(inputComentario, { target: { value: "Excelente diseño minimalista y batería." } });
+
+      const btnPublicar = screen.getByRole("button", { name: /Publicar opinión/i });
+      fireEvent.click(btnPublicar);
+
+      await waitFor(() => {
+        expect(mockCrearResena).toHaveBeenCalledWith({
+          idProducto: 45,
+          comentario: "Excelente diseño minimalista y batería.",
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Excelente diseño minimalista y batería.")).toBeDefined();
+      });
+    });
+
+    it("el filtro de opiniones permite buscar dinámicamente por palabra clave", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 1,
+          idProducto: 1,
+          nombreProducto: "Galaxy S25",
+          idUsuario: 1,
+          nombreUsuario: "Andres",
+          comentario: "La pantalla AMOLED es brillante.",
+          fechaCreacion: "2026-10-16T10:00:00",
+          estado: true,
+        },
+        {
+          idResena: 2,
+          idProducto: 2,
+          nombreProducto: "MacBook Air",
+          idUsuario: 2,
+          nombreUsuario: "Sofia",
+          comentario: "Batería dura dos días enteros.",
+          fechaCreacion: "2026-10-16T11:00:00",
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("La pantalla AMOLED es brillante.")).toBeDefined();
+        expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
+      });
+
+      const inputFiltro = screen.getByLabelText(/Filtrar opiniones de la comunidad/i);
+      fireEvent.change(inputFiltro, { target: { value: "MacBook" } });
+
+      expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
+      expect(screen.queryByText("La pantalla AMOLED es brillante.")).toBeNull();
+    });
+  });
 });
+

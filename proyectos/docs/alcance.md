@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:** TecReview
 
 **Tipo de proyecto:** Plataforma web de reseñas y comparación de productos tecnológicos.
 
@@ -231,7 +231,9 @@ La solución estará compuesta inicialmente por los siguientes elementos:
                      │
                   Supabase
 ```
+
 ## Frontend
+
 Se desarrollará utilizando:
 
 Next.js.
@@ -240,6 +242,7 @@ Componentes reutilizables.
 Diseño responsive.
 
 ## Backend
+
 Se desarrollará utilizando:
 
 Java.
@@ -248,6 +251,7 @@ API REST.
 Arquitectura organizada por capas.
 
 ## Base de datos
+
 Se utilizará:
 
 PostgreSQL.
@@ -256,6 +260,7 @@ Supabase.
 La estructura definitiva de tablas y relaciones será documentada en 05-modelo-datos.md.
 
 ## Control de versiones
+
 El código será administrado mediante:
 
 Git.
@@ -271,6 +276,7 @@ docs/08-github-y-flujo-git.md
 ---
 
 # 8. Alcance de los usuarios
+
 El sistema contemplará diferentes tipos de usuarios.
 
 Inicialmente se consideran:
@@ -303,7 +309,8 @@ Las funciones y permisos exactos serán definidos posteriormente.
 
 Para evitar que el proyecto crezca de manera descontrolada, las siguientes funcionalidades no forman parte del alcance inicial salvo que posteriormente sean aprobadas por el equipo:
 
-## Procesamiento de pagos.
+## Procesamiento de pagos
+
 Compra directa de productos.
 Sistema completo de comercio electrónico.
 Gestión de envíos.

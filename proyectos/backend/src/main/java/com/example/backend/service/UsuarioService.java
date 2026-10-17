@@ -174,4 +174,28 @@ public class UsuarioService {
                 usuario.getFechaRegistro()
         );
     }
+
+    /**
+     * Obtiene la entidad Usuario autenticada a partir del token JWT validado por Spring Security,
+     * aprovisionándola JIT si es la primera vez que interactúa con el sistema.
+     *
+     * @param jwt Token JWT inyectado
+     * @return Entidad Usuario persistida
+     */
+    public Usuario obtenerUsuarioDesdeJwt(Jwt jwt) {
+        if (jwt == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT de Supabase requerido.");
+        }
+        String sub = jwt.getSubject();
+        if (sub == null || sub.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El claim 'sub' es obligatorio en el token.");
+        }
+        return usuarioRepository.findBySupabaseUid(sub)
+                .orElseGet(() -> {
+                    obtenerOProveerUsuario(jwt);
+                    return usuarioRepository.findBySupabaseUid(sub)
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No fue posible autenticar al usuario."));
+                });
+    }
 }
+

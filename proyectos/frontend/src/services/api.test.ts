@@ -430,4 +430,102 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(sesion.usuario).toBe("oficial_user");
     });
   });
+
+  describe("obtenerResenas", () => {
+    it("debe consultar /api/resenas sin parámetros cuando no se pasa idProducto", async () => {
+      const { obtenerResenas } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          {
+            idResena: 1,
+            idProducto: 10,
+            nombreProducto: "Galaxy S25",
+            idUsuario: 2,
+            nombreUsuario: "Juan",
+            comentario: "Excelente producto",
+            fechaCreacion: "2026-10-15T10:00:00",
+            estado: true,
+          },
+        ],
+      } as unknown as Response);
+
+      const resenas = await obtenerResenas();
+
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/resenas");
+      expect(resenas).toHaveLength(1);
+      expect(resenas[0].nombreProducto).toBe("Galaxy S25");
+    });
+
+    it("debe agregar query param ?idProducto=X cuando se proporciona idProducto", async () => {
+      const { obtenerResenas } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [],
+      } as unknown as Response);
+
+      await obtenerResenas(15);
+
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/resenas?idProducto=15");
+    });
+  });
+
+  describe("crearResena", () => {
+    it("debe enviar POST /api/resenas con encabezado Authorization Bearer", async () => {
+      const { crearResena } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-usuario-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({
+          idResena: 5,
+          idProducto: 12,
+          nombreProducto: "Nothing Phone (2a)",
+          idUsuario: 3,
+          nombreUsuario: "TechFan",
+          comentario: "Gran diseño transparente",
+          fechaCreacion: "2026-10-16T12:00:00",
+          estado: true,
+        }),
+      } as unknown as Response);
+
+      const resena = await crearResena({
+        idProducto: 12,
+        comentario: "Gran diseño transparente",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/resenas",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.any(Headers),
+          body: JSON.stringify({ idProducto: 12, comentario: "Gran diseño transparente" }),
+        }),
+      );
+
+      const headersEnviados = fetchMock.mock.calls[0][1]?.headers as Headers;
+      expect(headersEnviados.get("Authorization")).toBe("Bearer token-usuario-valido");
+      expect(headersEnviados.get("Content-Type")).toBe("application/json");
+      expect(resena.idResena).toBe(5);
+    });
+
+    it("debe rechazar la llamada si no hay sesión activa", async () => {
+      const { crearResena, ApiError } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: null },
+        error: null,
+      });
+
+      await expect(
+        crearResena({ idProducto: 10, comentario: "Intento anónimo" }),
+      ).rejects.toThrow(ApiError);
+    });
+  });
 });
+

@@ -220,3 +220,58 @@ export function mapearPerfilABusinessSession(
       : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
   };
 }
+
+/**
+ * Representación de una reseña devuelta por la API REST de TecReview.
+ */
+export interface ResenaResponse {
+  idResena: number;
+  idProducto: number;
+  nombreProducto: string;
+  idUsuario: number;
+  nombreUsuario: string;
+  comentario: string;
+  fechaCreacion: string;
+  estado: boolean;
+}
+
+/**
+ * Payload para crear una reseña en el backend.
+ */
+export interface CrearResenaRequest {
+  idProducto: number;
+  comentario: string;
+}
+
+/**
+ * Consulta las reseñas persistidas desde el backend de Spring Boot.
+ *
+ * @param idProducto Opcional. Si se provee, filtra las reseñas por el producto especificado.
+ * @returns Lista de reseñas activas ordenadas de forma descendente por fecha.
+ */
+export async function obtenerResenas(idProducto?: number): Promise<ResenaResponse[]> {
+  const query = idProducto ? `?idProducto=${idProducto}` : "";
+  const datos = await apiFetch<unknown>(`/api/resenas${query}`);
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de reseñas).",
+    );
+  }
+
+  return datos as ResenaResponse[];
+}
+
+/**
+ * Envía una nueva reseña al backend de Spring Boot requiriendo autenticación Bearer.
+ * La identidad del autor se valida en el backend exclusivamente a partir del token JWT.
+ *
+ * @param request Datos de la reseña (idProducto y comentario).
+ * @returns La reseña persistida en la base de datos.
+ */
+export async function crearResena(request: CrearResenaRequest): Promise<ResenaResponse> {
+  return apiFetchAutenticado<ResenaResponse>("/api/resenas", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}

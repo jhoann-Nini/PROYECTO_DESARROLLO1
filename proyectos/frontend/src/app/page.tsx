@@ -1,8 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { obtenerProductos, obtenerMiPerfil, mapearPerfilABusinessSession, ApiError } from "@/services/api";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  obtenerProductos,
+  obtenerMiPerfil,
+  mapearPerfilABusinessSession,
+  obtenerResenas,
+  crearResena,
+  type ResenaResponse,
+  ApiError,
+} from "@/services/api";
 import type { Producto, DispositivoKimovil, UsuarioSesion } from "@/types/producto";
 import {
   DISPOSITIVOS_VENDIDOS,
@@ -47,23 +55,15 @@ export default function Home() {
   const [mostrarTodasOfertas, setMostrarTodasOfertas] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<"ranking" | "catalogo">("ranking");
 
-  // Opiniones de la comunidad
+  // Opiniones de la comunidad persistidas
   const [comentario, setComentario] = useState("");
-  const [mensajes, setMensajes] = useState<{ id: number; texto: string; fecha: string; usuario?: string }[]>([
-    {
-      id: 1,
-      texto: "La ficha técnica del Nothing Phone (2a) es muy clara y completa. Excelente comparador.",
-      fecha: "05/10/2026",
-      usuario: "TechFan",
-    },
-    {
-      id: 2,
-      texto: "Los precios en pesos colombianos ayudan mucho a tomar la decisión de compra.",
-      fecha: "12/10/2026",
-      usuario: "CamiloR",
-    },
-  ]);
+  const [idProductoComentario, setIdProductoComentario] = useState<number | "">("");
+  const [resenas, setResenas] = useState<ResenaResponse[]>([]);
+  const [cargandoResenas, setCargandoResenas] = useState(false);
+  const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState("");
+  const [filtroComentarios, setFiltroComentarios] = useState("");
+
 
   // Cargar preferencia de tema y sincronizar sesión real de Supabase al montar
   useEffect(() => {
@@ -301,11 +301,44 @@ export default function Home() {
     });
   }, [productosBackend, busqueda, presupuestoMax, tipoDispositivo]);
 
-  // Manejo de opiniones
+  // Carga y consulta de opiniones persistidas
+  const cargarResenas = useCallback(async () => {
+    setCargandoResenas(true);
+    try {
+      const datos = await obtenerResenas();
+      setResenas(datos);
+    } catch {
+      // Si falla temporalmente la carga de reseñas, preservar lista vacía
+    } finally {
+      setCargandoResenas(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarResenas();
+  }, [cargarResenas]);
+
+  useEffect(() => {
+    if (productosBackend.length > 0 && idProductoComentario === "") {
+      setIdProductoComentario(productosBackend[0].idProducto);
+    }
+  }, [productosBackend, idProductoComentario]);
+
+  // Manejo de opiniones persistidas
   const palabrasMaliciosas = ["spam", "insulto", "estafa", "odio", "tonto", "idiota", "fraude", "mierda", "puta"];
-  const manejarEnvioComentario = (e: React.FormEvent) => {
+  const manejarEnvioComentario = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!comentario.trim()) return;
+
+    if (!usuarioSesion) {
+      setModalAuthAbierto(true);
+      setErrorComentario("Debes iniciar sesión para publicar una opinión.");
+      return;
+    }
+
+    if (!comentario.trim()) {
+      setErrorComentario("Por favor escribe tu opinión antes de publicar.");
+      return;
+    }
 
     const esMalicioso = palabrasMaliciosas.some((palabra) =>
       comentario.toLowerCase().includes(palabra)
@@ -317,18 +350,40 @@ export default function Home() {
       return;
     }
 
-    setMensajes([
-      {
-        id: Date.now(),
-        texto: comentario,
-        fecha: new Date().toLocaleDateString("es-CO"),
-        usuario: usuarioSesion ? usuarioSesion.nombre : "Usuario anónimo",
-      },
-      ...mensajes,
-    ]);
-    setComentario("");
+    const idProductoFinal = idProductoComentario || (productosBackend.length > 0 ? productosBackend[0].idProducto : 1);
+
+    setEnviandoComentario(true);
     setErrorComentario("");
+
+    try {
+      await crearResena({
+        idProducto: Number(idProductoFinal),
+        comentario: comentario.trim(),
+      });
+      setComentario("");
+      await cargarResenas();
+    } catch (err) {
+      setErrorComentario(
+        err instanceof Error
+          ? err.message
+          : "No fue posible guardar tu opinión. Inténtalo de nuevo más tarde."
+      );
+    } finally {
+      setEnviandoComentario(false);
+    }
   };
+
+  const resenasFiltradas = useMemo(() => {
+    if (!filtroComentarios.trim()) return resenas;
+    const term = filtroComentarios.toLowerCase();
+    return resenas.filter(
+      (r) =>
+        r.comentario.toLowerCase().includes(term) ||
+        (r.nombreUsuario && r.nombreUsuario.toLowerCase().includes(term)) ||
+        (r.nombreProducto && r.nombreProducto.toLowerCase().includes(term))
+    );
+  }, [resenas, filtroComentarios]);
+
 
   const cerrarSesion = async () => {
     setErrorSesion(null);
@@ -862,36 +917,103 @@ export default function Home() {
       )}
 
       {/* ─────────────────────────────────────────────────────────────
-          SECCIÓN 3: OPINIONES DE LA COMUNIDAD
+          SECCIÓN 3: OPINIONES DE LA COMUNIDAD (PERSISTIDAS)
       ───────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <div className="mb-6">
-            <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="text-red-500">/</span> Opiniones de la comunidad.
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
-            </p>
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                <span className="text-red-500">/</span> Opiniones de la comunidad ({resenas.length}).
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={cargarResenas}
+              disabled={cargandoResenas}
+              className="self-start sm:self-auto font-doto uppercase tracking-wider rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+              title="Actualizar listado de opiniones desde el servidor"
+            >
+              {cargandoResenas ? "Actualizando..." : "🔄 Actualizar"}
+            </button>
           </div>
 
+          {/* Barra de Filtro de Opiniones */}
+          <div className="mb-6">
+            <label htmlFor="input-filtro-opiniones" className="sr-only">Filtrar opiniones de la comunidad</label>
+            <input
+              id="input-filtro-opiniones"
+              type="search"
+              value={filtroComentarios}
+              onChange={(e) => setFiltroComentarios(e.target.value)}
+              placeholder="Buscar por comentario, autor o producto..."
+              className="w-full sm:max-w-md rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+            />
+          </div>
+
+          {/* Mensaje de invitación para usuarios anónimos */}
+          {!usuarioSesion && (
+            <div className="mb-6 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <p className="text-blue-900 dark:text-blue-200">
+                <span className="font-bold">¿Tienes experiencia con algún dispositivo?</span> Inicia sesión con tu cuenta para publicar una opinión verificada.
+              </p>
+              <button
+                type="button"
+                onClick={() => setModalAuthAbierto(true)}
+                className="font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white transition-colors cursor-pointer shrink-0"
+              >
+                Identificarse para opinar
+              </button>
+            </div>
+          )}
+
+          {/* Formulario de publicación */}
           <form onSubmit={manejarEnvioComentario} className="mb-8">
             <label htmlFor="input-comentario" className="sr-only">Escribe tu opinión</label>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                id="input-comentario"
-                type="text"
-                value={comentario}
-                onChange={(e) => setComentario(e.target.value)}
-                placeholder={usuarioSesion ? `Comentar como ${usuarioSesion.nombre}...` : "Escribe tu opinión aquí..."}
-                className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
-              />
-              <button
-                type="submit"
-                className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer"
-              >
-                Publicar opinión
-              </button>
+            <div className="flex flex-col gap-3">
+              {productosBackend.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                  <label htmlFor="select-producto-comentario" className="font-semibold">
+                    Dispositivo a reseñar:
+                  </label>
+                  <select
+                    id="select-producto-comentario"
+                    value={idProductoComentario}
+                    onChange={(e) => setIdProductoComentario(Number(e.target.value))}
+                    className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-blue-700 focus:outline-none"
+                  >
+                    {productosBackend.map((p) => (
+                      <option key={p.idProducto} value={p.idProducto}>
+                        Dispositivo: {p.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  id="input-comentario"
+                  type="text"
+                  value={comentario}
+                  onChange={(e) => setComentario(e.target.value)}
+                  placeholder={
+                    usuarioSesion
+                      ? `Comentar como ${usuarioSesion.nombre}...`
+                      : "Inicia sesión para publicar tu opinión aquí..."
+                  }
+                  className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                />
+                <button
+                  type="submit"
+                  disabled={enviandoComentario}
+                  className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+                >
+                  {enviandoComentario ? "Publicando..." : "Publicar opinión"}
+                </button>
+              </div>
             </div>
             {errorComentario && (
               <p className="mt-2 text-xs text-red-600 dark:text-red-400" role="alert">
@@ -900,18 +1022,39 @@ export default function Home() {
             )}
           </form>
 
-          {/* Listado de opiniones */}
-          <div className="space-y-3">
-            {mensajes.map((msg) => (
-              <div key={msg.id} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 text-xs">
-                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
-                  <span className="font-semibold text-blue-700 dark:text-blue-400">@{msg.usuario || "Usuario anónimo"}</span>
-                  <span className="text-[11px]">{msg.fecha}</span>
+          {/* Listado de opiniones persistidas */}
+          {cargandoResenas && resenas.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-500 font-mono">
+              Cargando opiniones de la comunidad...
+            </div>
+          ) : resenasFiltradas.length > 0 ? (
+            <div className="space-y-3">
+              {resenasFiltradas.map((r) => (
+                <div key={r.idResena} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 text-xs transition-colors">
+                  <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-blue-700 dark:text-blue-400">@{r.nombreUsuario || "Usuario"}</span>
+                      {r.nombreProducto && (
+                        <span className="text-[10px] font-doto uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md">
+                          {r.nombreProducto}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] font-mono">
+                      {new Date(r.fechaCreacion).toLocaleDateString("es-CO")}
+                    </span>
+                  </div>
+                  <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{r.comentario}</p>
                 </div>
-                <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{msg.texto}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-xs text-slate-500 font-mono">
+              {filtroComentarios.trim()
+                ? `No se encontraron opiniones que coincidan con "${filtroComentarios}".`
+                : "Aún no hay opiniones registradas. ¡Sé el primero en compartir tu experiencia!"}
+            </div>
+          )}
         </div>
       </section>
 

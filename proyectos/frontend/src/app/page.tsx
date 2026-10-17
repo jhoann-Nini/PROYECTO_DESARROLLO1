@@ -59,7 +59,7 @@ export default function Home() {
   const [comentario, setComentario] = useState("");
   const [idProductoComentario, setIdProductoComentario] = useState<number | "">("");
   const [resenas, setResenas] = useState<ResenaResponse[]>([]);
-  const [cargandoResenas, setCargandoResenas] = useState(false);
+  const [cargandoResenas, setCargandoResenas] = useState(true);
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState("");
   const [filtroComentarios, setFiltroComentarios] = useState("");
@@ -315,14 +315,33 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    cargarResenas();
-  }, [cargarResenas]);
+    let activo = true;
 
-  useEffect(() => {
-    if (productosBackend.length > 0 && idProductoComentario === "") {
-      setIdProductoComentario(productosBackend[0].idProducto);
+    async function cargarInicial() {
+      try {
+        const datos = await obtenerResenas();
+        if (activo) {
+          setResenas(datos);
+        }
+      } catch {
+        // Si falla temporalmente la carga de reseñas, preservar lista vacía
+      } finally {
+        if (activo) {
+          setCargandoResenas(false);
+        }
+      }
     }
-  }, [productosBackend, idProductoComentario]);
+
+    cargarInicial();
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  const idProductoEfectivo = idProductoComentario !== ""
+    ? idProductoComentario
+    : (productosBackend.length > 0 ? productosBackend[0].idProducto : "");
 
   // Manejo de opiniones persistidas
   const palabrasMaliciosas = ["spam", "insulto", "estafa", "odio", "tonto", "idiota", "fraude", "mierda", "puta"];
@@ -350,7 +369,9 @@ export default function Home() {
       return;
     }
 
-    const idProductoFinal = idProductoComentario || (productosBackend.length > 0 ? productosBackend[0].idProducto : 1);
+    const idProductoFinal = typeof idProductoEfectivo === "number"
+      ? idProductoEfectivo
+      : 1;
 
     setEnviandoComentario(true);
     setErrorComentario("");
@@ -981,7 +1002,7 @@ export default function Home() {
                   </label>
                   <select
                     id="select-producto-comentario"
-                    value={idProductoComentario}
+                    value={idProductoEfectivo}
                     onChange={(e) => setIdProductoComentario(Number(e.target.value))}
                     className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-blue-700 focus:outline-none"
                   >

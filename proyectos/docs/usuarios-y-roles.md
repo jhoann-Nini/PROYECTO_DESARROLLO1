@@ -2,9 +2,10 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:**
+ TecReview
 
-TecnoReview manejará diferentes tipos de usuarios con permisos y responsabilidades específicas.
+TecReview manejará diferentes tipos de usuarios con permisos y responsabilidades específicas.
 
 La definición de roles permite controlar el acceso a las funcionalidades de la plataforma y establecer qué operaciones puede realizar cada usuario.
 

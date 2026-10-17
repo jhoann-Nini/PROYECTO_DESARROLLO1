@@ -5,6 +5,160 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
   {
     id: 101,
     ranking: 1,
+    nombre: "Redmi Note 13 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    especificaciones: "Dimensity 7200 Ultra · 200MP OIS · 12GB RAM · 120Hz Curved AMOLED",
+    puntuacion: 9.1,
+    precio: 437.25, // $ 1.749.000 COP
+    precioOriginal: 524.75,
+    descuento: "-17%",
+    tendencia: "sube",
+    cambioRanking: 2,
+    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Dimensity 7200 Ultra · 200MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "800,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA & DISEÑO CURVO",
+          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K · 120Hz · 1800 nits pico · Dolby Vision · IP68.",
+        },
+        {
+          icono: "⚡",
+          titulo: "PROCESADOR & RENDIMIENTO",
+          descripcion: "MediaTek Dimensity 7200 Ultra (4nm TSMC) Octa-Core con refrigeración líquida VC.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.1 },
+        { nombre: "Cámara 200MP OIS", puntos: 9.2 },
+        { nombre: "Pantalla AMOLED 1.5K", puntos: 9.3 },
+        { nombre: "Batería y Carga 120W", puntos: 9.4 },
+      ],
+      tiendas: [
+        { nombre: "Éxito Colombia Oficial", precio: 437.25, envioGratis: true },
+        { nombre: "Falabella Colombia", precio: 445, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 102,
+    ranking: 2,
+    nombre: "Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "Exynos 1480 · 5000 mAh · Super AMOLED 120Hz · 8GB RAM",
+    puntuacion: 8.8,
+    precio: 397.25, // $ 1.589.000 COP
+    precioOriginal: 450,
+    descuento: "-12%",
+    tendencia: "igual",
+    cambioRanking: 0,
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Exynos 1480 · 50MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "715,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER AMOLED",
+          descripcion: "6.6'' Super AMOLED FHD+ · 120Hz · Vision Booster · Gorilla Glass Victus+.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento", puntos: 8.7 },
+        { nombre: "Pantalla", puntos: 9.1 },
+        { nombre: "Batería", puntos: 9.2 },
+        { nombre: "Cámaras", puntos: 8.6 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia", precio: 397.25, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 103,
+    ranking: 3,
+    nombre: "Edge 50 Pro",
+    marca: "Motorola",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 7 Gen 3 · Carga 125W TurboPower · Pantone Validated",
+    puntuacion: 8.9,
+    precio: 574.975, // $ 2.299.900 COP
+    precioOriginal: 649.75,
+    descuento: "-11%",
+    tendencia: "baja",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Snapdragon 7 Gen 3 · 50MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "850,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA CURVA P-OLED",
+          descripcion: "6.7'' pOLED 1.5K 144Hz · Certificación de color Pantone y piel vegana premium.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento", puntos: 8.9 },
+        { nombre: "Pantalla", puntos: 9.3 },
+      ],
+      tiendas: [
+        { nombre: "Motorola Colombia Oficial", precio: 574.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 104,
+    ranking: 4,
+    nombre: "iPhone 13 (128GB)",
+    marca: "Apple",
+    categoria: "moviles",
+    especificaciones: "A15 Bionic · Super Retina XDR · iOS 18 · Modo Cine",
+    puntuacion: 8.6,
+    precio: 662.25, // $ 2.649.000 COP
+    precioOriginal: 749.75,
+    descuento: "-12%",
+    tendencia: "sube",
+    cambioRanking: 3,
+    imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Apple A15 Bionic · 12MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
+      benchmarkValor: "4,750 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER RETINA XDR",
+          descripcion: "6.1'' OLED Super Retina XDR · HDR10 · Dolby Vision · Ceramic Shield.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento iOS", puntos: 9.2 },
+        { nombre: "Calidad de Cámaras", puntos: 8.9 },
+      ],
+      tiendas: [
+        { nombre: "iShop Colombia", precio: 662.25, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 105,
+    ranking: 5,
     nombre: "POCO X8 Pro 5G",
     marca: "Xiaomi POCO",
     categoria: "moviles",
@@ -67,7 +221,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 102,
+    id: 106,
     ranking: 2,
     nombre: "Nothing Phone (2a) Plus",
     marca: "Nothing",
@@ -130,7 +284,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 103,
+    id: 107,
     ranking: 3,
     nombre: "Redmi Note 14 Pro+ 5G",
     marca: "Xiaomi",
@@ -191,7 +345,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 104,
+    id: 108,
     ranking: 4,
     nombre: "OnePlus Pad 2 Snapdragon",
     marca: "OnePlus",
@@ -254,7 +408,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 105,
+    id: 109,
     ranking: 5,
     nombre: "Sony WH-1000XM5 Noise Cancelling",
     marca: "Sony",
@@ -318,7 +472,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 106,
+    id: 110,
     ranking: 6,
     nombre: "ASUS ROG Zephyrus G16 OLED Laptop",
     marca: "ASUS",
@@ -386,6 +540,150 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 201,
     ranking: 1,
+    nombre: "iPhone 15 Pro Max (256GB)",
+    marca: "Apple",
+    categoria: "moviles",
+    especificaciones: "A17 Pro 3nm · Teleobjetivo Tetraprisma 5X · Titanio Grado 5 · iOS 18",
+    puntuacion: 9.6,
+    precio: 1297.5, // $ 5.190.000 COP
+    precioOriginal: 1475,
+    descuento: "-12%",
+    tendencia: "sube",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Apple A17 Pro · 48MP ProRAW",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
+      benchmarkValor: "7,450 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER RETINA XDR PROMOTION",
+          descripcion: "6.7'' OLED con ProMotion 120Hz adaptativo · Dynamic Island · 2000 nits pico exterior.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento Global", puntos: 9.8 },
+        { nombre: "Cámaras y Zoom 5X", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Apple Colombia Store", precio: 1297.5, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 202,
+    ranking: 2,
+    nombre: "Galaxy S24 Ultra",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 8 Gen 3 for Galaxy · S-Pen · 200MP · Marco de Titanio",
+    puntuacion: 9.4,
+    precio: 1049.975, // $ 4.199.900 COP
+    precioOriginal: 1349.975, // $ 5.399.900 COP
+    descuento: "-22%",
+    tendencia: "sube",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · 200MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,050,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "DYNAMIC AMOLED 2X PLANO",
+          descripcion: "6.8'' Dynamic AMOLED 2X 120Hz · 2600 nits pico · Corning Gorilla Armor antirreflejos.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.6 },
+        { nombre: "Cámaras 200MP Quad Tele", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia Oficial", precio: 1049.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 203,
+    ranking: 3,
+    nombre: "ROG Phone 8 Pro (16GB)",
+    marca: "Asus ROG",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 8 Gen 3 · 165Hz AMOLED · AirTrigger · AniMe Vision LED",
+    puntuacion: 9.3,
+    precio: 1174.75, // $ 4.699.000 COP
+    precioOriginal: 1250,
+    descuento: "-6%",
+    tendencia: "igual",
+    cambioRanking: 0,
+    imagen: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · 165Hz",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,240,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA GAMING SAMSUNG E6",
+          descripcion: "6.78'' Flexible AMOLED 165Hz · Tasa de muestreo táctil 720Hz · 2500 nits.",
+        },
+      ],
+      metricas: [
+        { nombre: "Potencia Gaming Extrema", puntos: 9.9 },
+        { nombre: "Pantalla 165Hz", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Asus Colombia Oficial", precio: 1174.75, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 204,
+    ranking: 4,
+    nombre: "Xiaomi 14 Ultra (512GB)",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    especificaciones: "Sensor Leica 1 pulgada LYT-900 · 90W HyperCharge · Cuádruple 50MP",
+    puntuacion: 9.3,
+    precio: 1237.5, // $ 4.950.000 COP
+    precioOriginal: 1350,
+    descuento: "-8%",
+    tendencia: "sube",
+    cambioRanking: 2,
+    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · Ópticas Leica",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "DxOMark Calidad de Cámara",
+      benchmarkValor: "155 Puntos",
+      secciones: [
+        {
+          icono: "📸",
+          titulo: "ÓPTICAS LEICA SUMMILUX",
+          descripcion: "Cuádruple cámara de 50MP con sensor LYT-900 de 1 pulgada.",
+        },
+      ],
+      metricas: [
+        { nombre: "Fotografía Profesional", puntos: 9.9 },
+        { nombre: "Rendimiento Snapdragon", puntos: 9.5 },
+      ],
+      tiendas: [
+        { nombre: "Xiaomi Store Colombia", precio: 1237.5, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 205,
+    ranking: 5,
     nombre: "Nothing Phone (3) Ultra Concept",
     marca: "Nothing",
     categoria: "moviles",
@@ -445,7 +743,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 202,
+    id: 206,
     ranking: 2,
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
@@ -506,7 +804,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 203,
+    id: 207,
     ranking: 3,
     nombre: "OnePlus 13 Pro 5G",
     marca: "OnePlus",
@@ -567,7 +865,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 204,
+    id: 208,
     ranking: 4,
     nombre: "Apple iPad Pro 11'' M4 OLED",
     marca: "Apple",
@@ -628,7 +926,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 205,
+    id: 209,
     ranking: 5,
     nombre: "Apple MacBook Pro 16'' M3 Max",
     marca: "Apple",
@@ -689,7 +987,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 206,
+    id: 210,
     ranking: 6,
     nombre: "Bose QuietComfort Ultra Headphones",
     marca: "Bose",
@@ -753,8 +1051,45 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
 
 export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
   {
-    id: 301,
+    id: 300,
     ranking: 1,
+    nombre: "Galaxy S24 Ultra (512GB)",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "12GB RAM · Dynamic AMOLED 2X 120Hz · 5000 mAh",
+    chipInfo: "Snapdragon 8 Gen 3 · 200MP",
+    puntuacion: 9.6,
+    precio: 1049.975, // $ 4.199.900 COP
+    precioOriginal: 1349.975, // $ 5.399.900 COP
+    descuento: "-22% DTO",
+    tendencia: "sube",
+    cambioRanking: 1,
+    vendedor: "Vendido por Samsung Store Colombia Oficial",
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "oferta",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,050,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "DYNAMIC AMOLED 2X PLANO",
+          descripcion: "6.8'' Dynamic AMOLED 2X 120Hz · 2600 nits pico · Corning Gorilla Armor antirreflejos.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.6 },
+        { nombre: "Cámaras 200MP Quad Tele", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia Oficial", precio: 1049.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 301,
+    ranking: 2,
     nombre: "Nothing Ear (a) Black Edition",
     marca: "Nothing",
     categoria: "auriculares",

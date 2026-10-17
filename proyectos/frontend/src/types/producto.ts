@@ -73,6 +73,8 @@ export interface DispositivoKimovil {
   imagen: string;
   tipo: "vendido" | "deseado" | "oferta";
   categoria?: string;
+  chipInfo?: string;
+  vendedor?: string;
   detalleSpecs?: EspecificacionesDetalladas;
 }
 
@@ -82,4 +84,8 @@ export interface UsuarioSesion {
   usuario: string;
   email: string;
   avatar?: string;
+  rol?: string;
+  idUsuario?: number;
+  activo?: boolean;
+  fechaRegistro?: string;
 }

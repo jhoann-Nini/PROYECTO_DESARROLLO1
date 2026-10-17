@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:** TecReview
 
 **Tipo de sistema:** Plataforma web de reseñas y comparación tecnológica.
 
@@ -101,6 +101,7 @@ PostgreSQL
 # 4. Frontend
 
 ## 4.1 Tecnología
+
 El frontend será desarrollado utilizando:
 
 Next.js
@@ -301,7 +302,7 @@ Un ejemplo de consulta de productos será:
 10. Frontend recibe los datos
             ↓
 11. Usuario visualiza los productos
-10. Comunicación mediante API REST
+12. Comunicación mediante API REST
 
 El frontend y backend se comunicarán mediante una API REST.
 
@@ -580,19 +581,20 @@ La arquitectura debe permitir incorporar nuevas funcionalidades posteriormente.
 ---
 
 # 21. Tecnologías
-Componente	Tecnología
-Frontend	Next.js
-Lenguaje frontend	TypeScript
-Backend	Spring Boot
-Lenguaje backend	Java
-API	REST
-ORM	Spring Data JPA
-Base de datos	PostgreSQL
-Servicio de base de datos	Supabase
-Mapas	Google Maps
-Control de versiones	Git
-Repositorio	GitHub
-Despliegue frontend	Vercel
+
+Componente Tecnología
+Frontend Next.js
+Lenguaje frontend TypeScript
+Backend Spring Boot
+Lenguaje backend Java
+API REST
+ORM Spring Data JPA
+Base de datos PostgreSQL
+Servicio de base de datos Supabase
+Mapas Google Maps
+Control de versiones Git
+Repositorio GitHub
+Despliegue frontend Vercel
 
 ---
 
@@ -632,7 +634,7 @@ La arquitectura general de TecnoReview será:
                            ▼
                     Google Maps
                   (establecimientos)
---- 
+---
 
 # 23. Estado del documento
 

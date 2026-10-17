@@ -33,18 +33,18 @@ export default function ProductosPage() {
       <div className="mx-auto max-w-5xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200 dark:border-slate-800 mb-8 gap-4">
           <div>
-            <span className="text-xs font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-              Catálogo de Productos
+            <span className="font-doto text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest">
+              CATÁLOGO DE PRODUCTOS
             </span>
-            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">
-              Tec<span className="text-blue-700 dark:text-blue-400">Review</span> Explorador
+            <h1 className="font-doto text-3xl font-black uppercase tracking-wider text-slate-900 dark:text-white mt-1">
+              Tec<span className="text-blue-700 dark:text-blue-400">Review</span> Explorador.
             </h1>
           </div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition-colors"
+            className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white shadow-2xs transition-colors"
           >
-            ← Volver al inicio
+            ← VOLVER AL INICIO
           </Link>
         </div>
 

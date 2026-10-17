@@ -1,4 +1,4 @@
-# CRUD implementado — TecnoReview Backend
+# CRUD implementado — TecReview Backend
 
 Este documento describe los endpoints **realmente implementados y probados** contra Supabase, a diferencia de `api.md` que recoge el diseño planeado. Se actualiza a medida que se agregan entidades.
 
@@ -31,7 +31,7 @@ Este documento describe los endpoints **realmente implementados y probados** con
 ## Categoria
 
 | Método | Endpoint | Body | Respuesta |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GET | `/api/categorias` | — | `200` — lista de `CategoriaResponse` |
 | GET | `/api/categorias/{id}` | — | `200` / `404` |
 | POST | `/api/categorias` | `CategoriaRequest` | `201` — `CategoriaResponse` |
@@ -39,15 +39,18 @@ Este documento describe los endpoints **realmente implementados y probados** con
 | DELETE | `/api/categorias/{id}` | — | `204` / `404` (eliminación lógica) |
 
 **CategoriaRequest**
+
 ```json
 {
   "nombre": "Celulares",
   "descripcion": "Smartphones y accesorios"
 }
 ```
+
 `nombre`: obligatorio, máx. 100 caracteres. `descripcion`: opcional.
 
 **CategoriaResponse**
+
 ```json
 {
   "idCategoria": 1,
@@ -64,7 +67,7 @@ Este documento describe los endpoints **realmente implementados y probados** con
 Misma estructura que Categoria (sin relaciones).
 
 | Método | Endpoint | Body | Respuesta |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GET | `/api/marcas` | — | `200` — lista de `MarcaResponse` |
 | GET | `/api/marcas/{id}` | — | `200` / `404` |
 | POST | `/api/marcas` | `MarcaRequest` | `201` — `MarcaResponse` |
@@ -72,6 +75,7 @@ Misma estructura que Categoria (sin relaciones).
 | DELETE | `/api/marcas/{id}` | — | `204` / `404` (eliminación lógica) |
 
 **MarcaRequest**
+
 ```json
 {
   "nombre": "Samsung",
@@ -80,6 +84,7 @@ Misma estructura que Categoria (sin relaciones).
 ```
 
 **MarcaResponse**
+
 ```json
 {
   "idMarca": 1,
@@ -96,7 +101,7 @@ Misma estructura que Categoria (sin relaciones).
 Primera entidad con relaciones: referencia `Categoria` y `Marca` por `id`. El servicio resuelve ambas referencias antes de guardar — si el `idCategoria` o `idMarca` enviado no existe, responde `404` con el mensaje correspondiente (`"Categoría no encontrada con id X"` o `"Marca no encontrada con id X"`), en vez de un error crudo de base de datos.
 
 | Método | Endpoint | Body | Respuesta |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GET | `/api/productos` | — | `200` — todos los activos |
 | GET | `/api/productos?idCategoria={id}` | — | `200` — filtrados por categoría |
 | GET | `/api/productos?idMarca={id}` | — | `200` — filtrados por marca |
@@ -106,6 +111,7 @@ Primera entidad con relaciones: referencia `Categoria` y `Marca` por `id`. El se
 | DELETE | `/api/productos/{id}` | — | `204` / `404` (eliminación lógica) |
 
 **ProductoRequest**
+
 ```json
 {
   "nombre": "Galaxy S25",
@@ -116,11 +122,13 @@ Primera entidad con relaciones: referencia `Categoria` y `Marca` por `id`. El se
   "precioReferencia": 3500000
 }
 ```
+
 `nombre`: obligatorio, máx. 150 caracteres. `idCategoria`, `idMarca`: obligatorios, deben existir. `precioReferencia`: opcional, no negativo. `imagen`, `descripcion`: opcionales.
 
 **ProductoResponse**
 
 La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto completo), para no sobrecargar el payload:
+
 ```json
 {
   "idProducto": 1,
@@ -172,4 +180,15 @@ Entidades documentadas en `modelo-datos.md` que **todavía no tienen CRUD**, por
 - **Valoracion** — requiere confirmar la escala de puntuación (¿1–5? ¿1–10?).
 - **ProductoEstablecimiento** — requiere confirmar la cardinalidad usuario–establecimiento (relación N:N con precio/disponibilidad por par).
 
-No hay autenticación ni autorización implementada todavía — todos los endpoints actuales son de acceso público, a diferencia de lo que marca `api.md` como objetivo ("Autorizado" para POST/PUT/DELETE).
+## Seguridad y Autorización Implementada
+
+- **Lecturas públicas:** `GET /api/productos/**`, `GET /api/categorias/**` y `GET /api/marcas/**` son de libre acceso para cualquier visitante (`200 OK`).
+- **Aprovisionamiento JIT:** `GET /api/usuarios/me` requiere autenticación Bearer con token JWT válido de Supabase (`200 OK`).
+- **Escrituras restringidas:** `POST`, `PUT` y `DELETE` sobre productos, categorías y marcas están estrictamente protegidos mediante `AdminAuthorizationManager`.
+  - Peticiones anónimas devuelven `401 Unauthorized` con cabecera `WWW-Authenticate: Bearer`.
+  - Peticiones de usuarios autenticados sin rol `"Administrador"` en `public.usuario`/`public.rol` devuelven `403 Forbidden` en POST, PUT y DELETE, sin alterar ni eliminar ningún recurso en base de datos.
+  - Peticiones de administradores activos verificados en base de datos proceden con éxito en el ciclo completo CRUD:
+    - Creación con POST (`201 Created`).
+    - Actualización con PUT (`200 OK`).
+    - Eliminación lógica con DELETE (`204 No Content`).
+  - Fallos de base de datos durante la verificación de autorización deniegan la solicitud (`403 Forbidden`) y garantizan la ausencia total de modificaciones en los recursos (*Fail-Closed*).

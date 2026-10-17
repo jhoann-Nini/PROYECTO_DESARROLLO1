@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:** TecReview
 
 **Tipo de sistema:** Plataforma web de reseñas y comparación tecnológica.
 
@@ -451,7 +451,7 @@ Cada historia incluye:
 # 3. Resumen de historias
 
 | ID | Historia | Rol principal | Prioridad |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | HU-01 | Registro de usuario | Usuario no registrado | Alta |
 | HU-02 | Inicio de sesión | Usuario registrado | Alta |
 | HU-03 | Consultar productos | Usuario | Alta |
@@ -478,7 +478,7 @@ Cada historia incluye:
 # 4. Relación entre historias y requisitos
 
 | Historia | Requisito relacionado |
-|---|---|
+| --- | --- |
 | HU-01 | RF-01 |
 | HU-02 | RF-02 |
 | HU-03 | RF-04 |

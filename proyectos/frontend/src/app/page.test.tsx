@@ -23,6 +23,8 @@ const mockObtenerProductos = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
 const mockObtenerResenas = vi.fn();
 const mockCrearResena = vi.fn();
+const mockObtenerCategorias = vi.fn().mockResolvedValue([]);
+const mockObtenerMarcas = vi.fn().mockResolvedValue([]);
 
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
@@ -32,6 +34,8 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerMiPerfil: (...args: unknown[]) => mockObtenerMiPerfil(...args),
     obtenerResenas: (...args: unknown[]) => mockObtenerResenas(...args),
     crearResena: (...args: unknown[]) => mockCrearResena(...args),
+    obtenerCategorias: (...args: unknown[]) => mockObtenerCategorias(...args),
+    obtenerMarcas: (...args: unknown[]) => mockObtenerMarcas(...args),
   };
 });
 
@@ -40,6 +44,8 @@ describe("Página principal / (Home)", () => {
     vi.clearAllMocks();
     localStorage.clear();
     mockObtenerResenas.mockResolvedValue([]);
+    mockObtenerCategorias.mockResolvedValue([]);
+    mockObtenerMarcas.mockResolvedValue([]);
     mockOnAuthStateChange.mockReturnValue({
       data: {
         subscription: { unsubscribe: vi.fn() },
@@ -648,6 +654,156 @@ describe("Página principal / (Home)", () => {
 
       expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
       expect(screen.queryByText("La pantalla AMOLED es brillante.")).toBeNull();
+    });
+  });
+
+  describe("9. Control de acceso y navegación por roles (Hallazgo 2 - Fase 2)", () => {
+    it("Visitante: consulta catálogo pero NO visualiza enlace de administración ni opciones de sesión", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: null },
+        error: null,
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /Iniciar sesión/i })).toBeDefined();
+      });
+
+      // El visitante no debe ver enlace de administración ni botón de cerrar sesión
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+      expect(screen.queryByRole("button", { name: /Cerrar sesión/i })).toBeNull();
+    });
+
+    it("Usuario registrado: ve su perfil y reseñas pero NO tiene acceso a opciones administrativas", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.registrado.jwt",
+            user: { id: "usr-reg-1", email: "registrado@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 10,
+        nombre: "Carlos Usuario",
+        correo: "registrado@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-15T10:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Carlos Usuario")).toBeDefined();
+        expect(screen.getByText(/• Usuario registrado/i)).toBeDefined();
+      });
+
+      // Debe ver cerrar sesión pero NO el enlace de administración
+      expect(screen.getByRole("button", { name: /Cerrar sesión/i })).toBeDefined();
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+    });
+
+    it("Administrador: muestra enlace de administración confirmado por el backend e interactúa con el modal preparatorio", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.admin.jwt",
+            user: { id: "usr-admin-1", email: "admin@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 99,
+        nombre: "Super Admin",
+        correo: "admin@tecreview.com",
+        rol: "Administrador",
+        activo: true,
+        fechaRegistro: "2026-10-10T10:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Super Admin")).toBeDefined();
+        expect(screen.getByText(/• Administrador/i)).toBeDefined();
+      });
+
+      // El administrador SÍ debe ver el enlace de administración
+      const enlaceAdmin = screen.getByRole("link", { name: /Administración/i });
+      expect(enlaceAdmin).toBeDefined();
+
+      // Al hacer clic, se abre el modal preparatorio para Fase 3
+      fireEvent.click(enlaceAdmin);
+
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeDefined();
+        expect(screen.getByText(/Panel de Administración/i)).toBeDefined();
+        expect(screen.getByText(/Gestión de Catálogo de Productos/i)).toBeDefined();
+      });
+
+      // Cerrar el modal
+      const btnCerrar = screen.getByRole("button", { name: /Cerrar panel de administración/i });
+      fireEvent.click(btnCerrar);
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Panel de Administración/i)).toBeNull();
+      });
+    });
+
+    it("Representante de establecimiento: visualiza su distintivo de rol pero NO ve opciones administrativas", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.repre.jwt",
+            user: { id: "usr-repre-1", email: "tienda@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 33,
+        nombre: "Tienda Oficial",
+        correo: "tienda@tecreview.com",
+        rol: "Representante de establecimiento",
+        activo: true,
+        fechaRegistro: "2026-10-16T12:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Tienda Oficial")).toBeDefined();
+        expect(screen.getByText(/• Representante de establecimiento/i)).toBeDefined();
+      });
+
+      // El representante NO debe tener acceso ni ver la opción de administración
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+      expect(screen.getByRole("button", { name: /Cerrar sesión/i })).toBeDefined();
+    });
+
+    it("Estado de carga: muestra 'Verificando...' sin conceder opciones de privilegios mientras se consulta el perfil", () => {
+      mockObtenerProductos.mockImplementation(() => new Promise(() => {}));
+      mockGetSession.mockImplementation(() => new Promise(() => {}));
+
+      render(<Home />);
+
+      expect(screen.getByText("Verificando...")).toBeDefined();
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
     });
   });
 });

@@ -11,6 +11,60 @@ export interface Producto {
   nombreMarca?: string;
 }
 
+/**
+ * DTO para la creación y actualización de productos (ProductoRequest en Spring Boot).
+ */
+export interface ProductoRequest {
+  nombre: string;
+  descripcion?: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen?: string | null;
+  precioReferencia?: number | null;
+}
+
+/**
+ * DTO de respuesta para productos (ProductoResponse en Spring Boot).
+ */
+export type ProductoResponse = Producto;
+
+/**
+ * DTO para la creación y actualización de categorías (CategoriaRequest en Spring Boot).
+ */
+export interface CategoriaRequest {
+  nombre: string;
+  descripcion?: string | null;
+}
+
+/**
+ * DTO de respuesta para categorías (CategoriaResponse en Spring Boot).
+ */
+export interface CategoriaResponse {
+  idCategoria: number;
+  nombre: string;
+  descripcion: string | null;
+  estado: boolean;
+}
+
+/**
+ * DTO para la creación y actualización de marcas (MarcaRequest en Spring Boot).
+ */
+export interface MarcaRequest {
+  nombre: string;
+  descripcion?: string | null;
+}
+
+/**
+ * DTO de respuesta para marcas (MarcaResponse en Spring Boot).
+ */
+export interface MarcaResponse {
+  idMarca: number;
+  nombre: string;
+  descripcion: string | null;
+  estado: boolean;
+}
+
+
 export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares";
 
 export interface SeccionHardware {
@@ -88,4 +142,37 @@ export interface UsuarioSesion {
   idUsuario?: number;
   activo?: boolean;
   fechaRegistro?: string;
+}
+
+export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento";
+
+export const ROLES_SISTEMA = {
+  USUARIO_REGISTRADO: "Usuario registrado",
+  ADMINISTRADOR: "Administrador",
+  REPRESENTANTE: "Representante de establecimiento",
+} as const;
+
+/**
+ * Valida si la sesión tiene rol de Administrador confirmado por el backend.
+ * Compara de forma estricta e insensible a mayúsculas/minúsculas.
+ */
+export function esAdministrador(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "administrador";
+}
+
+/**
+ * Valida si la sesión tiene rol de Representante de establecimiento confirmado por el backend.
+ */
+export function esRepresentante(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "representante de establecimiento";
+}
+
+/**
+ * Valida si la sesión tiene rol de Usuario registrado confirmado por el backend.
+ */
+export function esUsuarioRegistrado(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "usuario registrado";
 }

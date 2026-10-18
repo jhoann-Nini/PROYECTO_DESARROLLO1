@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
+import Link from "next/link";
 import {
   obtenerProductos,
   obtenerMiPerfil,
@@ -11,7 +12,13 @@ import {
   type ResenaResponse,
   ApiError,
 } from "@/services/api";
-import type { Producto, DispositivoKimovil, UsuarioSesion } from "@/types/producto";
+import {
+  type Producto,
+  type DispositivoKimovil,
+  type UsuarioSesion,
+  esAdministrador,
+  esRepresentante,
+} from "@/types/producto";
 import {
   DISPOSITIVOS_VENDIDOS,
   DISPOSITIVOS_DESEADOS,
@@ -22,6 +29,7 @@ import DeviceListItem from "@/components/DeviceListItem";
 import ProductCard from "@/components/ProductCard";
 import AuthModal from "@/components/AuthModal";
 import FichaTecnicaModal from "@/components/FichaTecnicaModal";
+import AdminPanelModal from "@/components/AdminPanelModal";
 import GeometricBackground from "@/components/GeometricBackground";
 import { formatearCOP } from "@/data/specsHelper";
 import { createClient } from "@/lib/supabase/client";
@@ -35,11 +43,16 @@ export default function Home() {
   const [cargandoApi, setCargandoApi] = useState(true);
   const [estadoBackend, setEstadoBackend] = useState<"online" | "offline">("offline");
 
-  // Estado de Autenticación
+  // Estado de Autenticación y Roles
   const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(null);
   const [cargandoAuth, setCargandoAuth] = useState(true);
   const [errorSesion, setErrorSesion] = useState<string | null>(null);
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
+  const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
+
+  // Verificación estricta de roles desde los datos confirmados por el backend
+  const esAdmin = useMemo(() => esAdministrador(usuarioSesion), [usuarioSesion]);
+  const esRepre = useMemo(() => esRepresentante(usuarioSesion), [usuarioSesion]);
 
   // Estado de Ficha Técnica Modal
   const [productoSeleccionado, setProductoSeleccionado] = useState<DispositivoKimovil | Producto | null>(null);
@@ -189,6 +202,23 @@ export default function Home() {
     };
   }, []);
 
+
+  // Consulta y actualización del catálogo de productos del backend
+  const recargarProductosCatalogo = useCallback(async () => {
+    try {
+      const datos = await obtenerProductos<Producto>();
+      if (datos && datos.length > 0) {
+        setProductosBackend(datos);
+        setEstadoBackend("online");
+      } else {
+        setProductosBackend(PRODUCTOS_MOCK);
+        setEstadoBackend("offline");
+      }
+    } catch {
+      setProductosBackend(PRODUCTOS_MOCK);
+      setEstadoBackend("offline");
+    }
+  }, []);
 
   // Consulta al backend en Spring Boot
   useEffect(() => {
@@ -485,6 +515,31 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Enlace Explorador API disponible para navegación rápida */}
+            <Link
+              href="/productos"
+              className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-600 hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+              title="Explorar catálogo directo del backend"
+            >
+              Catálogo API
+            </Link>
+
+            {/* Enlace de Administración: visible ÚNICAMENTE para Administradores confirmados por el backend */}
+            {esAdmin && (
+              <a
+                href="#administracion"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setModalAdminAbierto(true);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/60 bg-red-950/40 text-red-400 hover:bg-red-900/50 hover:text-red-300 px-2.5 py-1 text-xs font-semibold font-mono tracking-wider transition-colors cursor-pointer shadow-2xs"
+                aria-label="Panel de administración"
+                title="Panel de administración (Rol verificado en servidor)"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden="true"></span>
+                Administración
+              </a>
+            )}
 
             {/* Control de sesión */}
             {errorSesion && (
@@ -506,11 +561,35 @@ export default function Home() {
               </span>
             ) : usuarioSesion ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-md flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                <span
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1.5 border ${
+                    esAdmin
+                      ? "text-red-200 bg-red-950/40 border-red-800/60"
+                      : esRepre
+                      ? "text-amber-200 bg-amber-950/40 border-amber-800/60"
+                      : "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                  }`}
+                >
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      esAdmin
+                        ? "bg-red-500"
+                        : esRepre
+                        ? "bg-amber-500"
+                        : "bg-emerald-500"
+                    }`}
+                  ></span>
                   {usuarioSesion.nombre}
                   {usuarioSesion.rol && (
-                    <span className="text-[10px] text-blue-700 dark:text-blue-400 font-normal">
+                    <span
+                      className={`text-[10px] font-normal ${
+                        esAdmin
+                          ? "text-red-400 font-mono"
+                          : esRepre
+                          ? "text-amber-400 font-mono"
+                          : "text-blue-700 dark:text-blue-400"
+                      }`}
+                    >
                       • {usuarioSesion.rol}
                     </span>
                   )}
@@ -1097,6 +1176,16 @@ export default function Home() {
         }
         producto={productoSeleccionado}
         onClose={() => setProductoSeleccionado(null)}
+      />
+
+      {/* ─────────────────────────────────────────────────────────────
+          MODAL MODULAR DEL PANEL DE ADMINISTRACIÓN (FASE 3.1)
+      ───────────────────────────────────────────────────────────── */}
+      <AdminPanelModal
+        isOpen={modalAdminAbierto}
+        onClose={() => setModalAdminAbierto(false)}
+        usuarioSesion={usuarioSesion}
+        onProductoCambiado={recargarProductosCatalogo}
       />
 
       {/* PIE DE PÁGINA */}

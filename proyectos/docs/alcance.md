@@ -550,4 +550,3 @@ Salvo aprobación posterior del equipo, no se incluyen:
 
 - **Versión 1.0:** borrador inicial del alcance.
 - **Versión 1.1:** aclaración propuesta del Sprint 2, tiendas virtuales, roles, criterios de aceptación, exclusiones y dependencias.
-

@@ -430,4 +430,361 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(sesion.usuario).toBe("oficial_user");
     });
   });
+
+  describe("obtenerResenas", () => {
+    it("debe consultar /api/resenas sin parámetros cuando no se pasa idProducto", async () => {
+      const { obtenerResenas } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          {
+            idResena: 1,
+            idProducto: 10,
+            nombreProducto: "Galaxy S25",
+            idUsuario: 2,
+            nombreUsuario: "Juan",
+            comentario: "Excelente producto",
+            fechaCreacion: "2026-10-15T10:00:00",
+            estado: true,
+          },
+        ],
+      } as unknown as Response);
+
+      const resenas = await obtenerResenas();
+
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/resenas");
+      expect(resenas).toHaveLength(1);
+      expect(resenas[0].nombreProducto).toBe("Galaxy S25");
+    });
+
+    it("debe agregar query param ?idProducto=X cuando se proporciona idProducto", async () => {
+      const { obtenerResenas } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [],
+      } as unknown as Response);
+
+      await obtenerResenas(15);
+
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/resenas?idProducto=15");
+    });
+  });
+
+  describe("crearResena", () => {
+    it("debe enviar POST /api/resenas con encabezado Authorization Bearer", async () => {
+      const { crearResena } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-usuario-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({
+          idResena: 5,
+          idProducto: 12,
+          nombreProducto: "Nothing Phone (2a)",
+          idUsuario: 3,
+          nombreUsuario: "TechFan",
+          comentario: "Gran diseño transparente",
+          fechaCreacion: "2026-10-16T12:00:00",
+          estado: true,
+        }),
+      } as unknown as Response);
+
+      const resena = await crearResena({
+        idProducto: 12,
+        comentario: "Gran diseño transparente",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/resenas",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.any(Headers),
+          body: JSON.stringify({ idProducto: 12, comentario: "Gran diseño transparente" }),
+        }),
+      );
+
+      const headersEnviados = fetchMock.mock.calls[0][1]?.headers as Headers;
+      expect(headersEnviados.get("Authorization")).toBe("Bearer token-usuario-valido");
+      expect(headersEnviados.get("Content-Type")).toBe("application/json");
+      expect(resena.idResena).toBe(5);
+    });
+
+    it("debe rechazar la llamada si no hay sesión activa", async () => {
+      const { crearResena, ApiError } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: null },
+        error: null,
+      });
+
+      await expect(
+        crearResena({ idProducto: 10, comentario: "Intento anónimo" }),
+      ).rejects.toThrow(ApiError);
+    });
+  });
+
+  describe("Servicios CRUD de Productos (Fase 3.1)", () => {
+    it("obtenerProductoPorId debe consultar GET /api/productos/{id}", async () => {
+      const { obtenerProductoPorId } = await loadApi(DEFAULT_API_URL);
+      const mockProducto = {
+        idProducto: 15,
+        nombre: "Phone Pro",
+        descripcion: "Flagship",
+        idCategoria: 1,
+        idMarca: 2,
+        imagen: "https://example.com/phone.png",
+        precioReferencia: 899,
+        estado: true,
+      };
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => mockProducto,
+      } as unknown as Response);
+
+      const res = await obtenerProductoPorId(15);
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/productos/15");
+      expect(res.idProducto).toBe(15);
+      expect(res.nombre).toBe("Phone Pro");
+    });
+
+    it("crearProducto debe enviar POST /api/productos con token Bearer", async () => {
+      const { crearProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({ idProducto: 20, nombre: "Nuevo Phone", estado: true }),
+      } as unknown as Response);
+
+      const requestData = {
+        nombre: "Nuevo Phone",
+        descripcion: "Gama alta",
+        idCategoria: 1,
+        idMarca: 2,
+        imagen: null,
+        precioReferencia: 999,
+      };
+
+      const res = await crearProducto(requestData);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.any(Headers),
+          body: JSON.stringify(requestData),
+        }),
+      );
+
+      const headers = fetchMock.mock.calls[0][1]?.headers as Headers;
+      expect(headers.get("Authorization")).toBe("Bearer token-admin-valido");
+      expect(res.idProducto).toBe(20);
+    });
+
+    it("actualizarProducto debe enviar PUT /api/productos/{id} con token Bearer", async () => {
+      const { actualizarProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ idProducto: 20, nombre: "Phone Editado", estado: true }),
+      } as unknown as Response);
+
+      const requestData = {
+        nombre: "Phone Editado",
+        descripcion: "Gama alta v2",
+        idCategoria: 1,
+        idMarca: 2,
+        imagen: null,
+        precioReferencia: 1099,
+      };
+
+      const res = await actualizarProducto(20, requestData);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/20",
+        expect.objectContaining({
+          method: "PUT",
+          headers: expect.any(Headers),
+          body: JSON.stringify(requestData),
+        }),
+      );
+      expect(res.nombre).toBe("Phone Editado");
+    });
+
+    it("eliminarProducto debe enviar DELETE /api/productos/{id} y manejar HTTP 204 No Content", async () => {
+      const { eliminarProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      } as unknown as Response);
+
+      await expect(eliminarProducto(20)).resolves.toBeUndefined();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/20",
+        expect.objectContaining({
+          method: "DELETE",
+          headers: expect.any(Headers),
+        }),
+      );
+    });
+
+    it("maneja error 403 Forbidden cuando el backend rechaza la operación administrativa", async () => {
+      const { crearProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-usuario-no-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: async () => ({ message: "Acceso denegado: se requiere rol Administrador." }),
+      } as unknown as Response);
+
+      await expect(
+        crearProducto({ nombre: "Intento no autorizado", idCategoria: 1, idMarca: 1 }),
+      ).rejects.toMatchObject({
+        name: "ApiError",
+        status: 403,
+        message: "Acceso denegado: se requiere rol Administrador.",
+      });
+    });
+  });
+
+  describe("Servicios CRUD de Categorías y Marcas (Fase 3.1)", () => {
+    it("obtenerCategorias debe consultar GET /api/categorias y validar formato de arreglo", async () => {
+      const { obtenerCategorias } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          { idCategoria: 1, nombre: "Móviles", descripcion: "Teléfonos", estado: true },
+        ],
+      } as unknown as Response);
+
+      const cats = await obtenerCategorias();
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/categorias");
+      expect(cats).toHaveLength(1);
+      expect(cats[0].nombre).toBe("Móviles");
+    });
+
+    it("crearCategoria debe enviar POST /api/categorias con token", async () => {
+      const { crearCategoria } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({ idCategoria: 5, nombre: "Smartwatches", estado: true }),
+      } as unknown as Response);
+
+      const cat = await crearCategoria({ nombre: "Smartwatches", descripcion: "Relojes inteligentes" });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/categorias",
+        expect.objectContaining({ method: "POST" }),
+      );
+      expect(cat.idCategoria).toBe(5);
+    });
+
+    it("eliminarCategoria debe enviar DELETE /api/categorias/{id}", async () => {
+      const { eliminarCategoria } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      } as unknown as Response);
+
+      await expect(eliminarCategoria(5)).resolves.toBeUndefined();
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/categorias/5",
+        expect.objectContaining({ method: "DELETE" }),
+      );
+    });
+
+    it("obtenerMarcas debe consultar GET /api/marcas", async () => {
+      const { obtenerMarcas } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          { idMarca: 1, nombre: "Nothing", descripcion: "Industrial", estado: true },
+        ],
+      } as unknown as Response);
+
+      const marcas = await obtenerMarcas();
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/marcas");
+      expect(marcas).toHaveLength(1);
+      expect(marcas[0].nombre).toBe("Nothing");
+    });
+
+    it("crearMarca debe enviar POST /api/marcas con token", async () => {
+      const { crearMarca } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({ idMarca: 8, nombre: "Google", estado: true }),
+      } as unknown as Response);
+
+      const marca = await crearMarca({ nombre: "Google", descripcion: "Pixel" });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/marcas",
+        expect.objectContaining({ method: "POST" }),
+      );
+      expect(marca.idMarca).toBe(8);
+    });
+
+    it("eliminarMarca debe enviar DELETE /api/marcas/{id}", async () => {
+      const { eliminarMarca } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+      } as unknown as Response);
+
+      await expect(eliminarMarca(8)).resolves.toBeUndefined();
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/marcas/8",
+        expect.objectContaining({ method: "DELETE" }),
+      );
+    });
+  });
 });
+

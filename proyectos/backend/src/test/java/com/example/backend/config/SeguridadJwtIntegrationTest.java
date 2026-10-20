@@ -13,8 +13,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.backend.entity.Categoria;
 import com.example.backend.entity.Marca;
+import com.example.backend.entity.Rol;
+import com.example.backend.entity.Usuario;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
+import com.example.backend.repository.RolRepository;
+import com.example.backend.repository.UsuarioRepository;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -33,6 +37,7 @@ import java.security.KeyPairGenerator;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
+import java.time.LocalDateTime;
 import java.util.Date;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +70,7 @@ class SeguridadJwtIntegrationTest {
     private static final String TEST_ISSUER = "https://xjepyqdynspdekuixuoe.supabase.co/auth/v1";
     private static final String TEST_AUDIENCE = "authenticated";
     private static final String ALLOWED_ORIGIN = "http://localhost:3000";
+    private static final String TEST_SUB = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d";
 
     private static ECPublicKey testPublicKey;
     private static ECPrivateKey testPrivateKey;
@@ -80,6 +86,12 @@ class SeguridadJwtIntegrationTest {
 
     @Autowired
     private MarcaRepository marcaRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private RolRepository rolRepository;
 
     private MockMvc mockMvc;
     private Long idCategoriaValida;
@@ -141,7 +153,7 @@ class SeguridadJwtIntegrationTest {
 
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
                 .issuer(issuer)
-                .subject("usr_test_supabase_sub_12345")
+                .subject(TEST_SUB)
                 .issueTime(new Date())
                 .expirationTime(expiration);
 
@@ -286,11 +298,40 @@ class SeguridadJwtIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // --- 4. Token ES256 Válido Atraviesa Seguridad ---
+    // --- 4. Token ES256 Válido y Autorización Administrativa ---
 
     @Test
-    @DisplayName("Solicitud con token ES256 válido atraviesa la autenticación y crea el recurso (201 Created)")
-    void tokenEs256ValidoAtraviesaSeguridad() throws Exception {
+    @DisplayName("Solicitud con token válido pero sin rol Administrador es rechazada con 403 Forbidden")
+    void tokenValidoSinRolAdminEsRechazadoCon403() throws Exception {
+        String tokenValido = generarTokenValido();
+
+        mockMvc.perform(post("/api/productos")
+                .header("Authorization", "Bearer " + tokenValido)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(buildProductoJson("Producto No Autorizado")))
+                .andExpect(status().isForbidden())
+                .andExpect(header().string("WWW-Authenticate", containsString("insufficient_scope")));
+    }
+
+    @Test
+    @DisplayName("Solicitud con token ES256 válido y rol Administrador en base de datos crea el recurso (201 Created)")
+    void tokenEs256ValidoConRolAdminCreaElRecurso() throws Exception {
+        Rol rolAdmin = rolRepository.findByNombre("Administrador").orElseGet(() -> {
+            Rol r = new Rol();
+            r.setNombre("Administrador");
+            r.setDescripcion("Rol administrativo");
+            return rolRepository.save(r);
+        });
+
+        Usuario admin = new Usuario();
+        admin.setNombre("Admin Test");
+        admin.setCorreo("admin.test@tecreview.com");
+        admin.setSupabaseUid(TEST_SUB);
+        admin.setRol(rolAdmin);
+        admin.setEstado(true);
+        admin.setFechaRegistro(LocalDateTime.now());
+        usuarioRepository.save(admin);
+
         String tokenValido = generarTokenValido();
 
         mockMvc.perform(post("/api/productos")

@@ -21,6 +21,10 @@ vi.mock("@/lib/supabase/client", () => ({
 
 const mockObtenerProductos = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
+const mockObtenerResenas = vi.fn();
+const mockCrearResena = vi.fn();
+const mockObtenerCategorias = vi.fn().mockResolvedValue([]);
+const mockObtenerMarcas = vi.fn().mockResolvedValue([]);
 
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
@@ -28,6 +32,10 @@ vi.mock("@/services/api", async (importOriginal) => {
     ...actual,
     obtenerProductos: (...args: unknown[]) => mockObtenerProductos(...args),
     obtenerMiPerfil: (...args: unknown[]) => mockObtenerMiPerfil(...args),
+    obtenerResenas: (...args: unknown[]) => mockObtenerResenas(...args),
+    crearResena: (...args: unknown[]) => mockCrearResena(...args),
+    obtenerCategorias: (...args: unknown[]) => mockObtenerCategorias(...args),
+    obtenerMarcas: (...args: unknown[]) => mockObtenerMarcas(...args),
   };
 });
 
@@ -35,6 +43,9 @@ describe("Página principal / (Home)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    mockObtenerResenas.mockResolvedValue([]);
+    mockObtenerCategorias.mockResolvedValue([]);
+    mockObtenerMarcas.mockResolvedValue([]);
     mockOnAuthStateChange.mockReturnValue({
       data: {
         subscription: { unsubscribe: vi.fn() },
@@ -48,6 +59,7 @@ describe("Página principal / (Home)", () => {
 
   afterEach(() => {
     cleanup();
+
     localStorage.clear();
   });
 
@@ -470,4 +482,329 @@ describe("Página principal / (Home)", () => {
       });
     });
   });
+
+  describe("9. Opiniones de la comunidad persistidas", () => {
+    it("debe cargar y renderizar las reseñas devueltas por el backend al iniciar la página", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 101,
+          idProducto: 1,
+          nombreProducto: "Galaxy S25 Ultra",
+          idUsuario: 5,
+          nombreUsuario: "TechEnthusiast",
+          comentario: "Excelente cámara y procesador para juegos.",
+          fechaCreacion: "2026-10-16T14:30:00",
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Excelente cámara y procesador para juegos.")).toBeDefined();
+        expect(screen.getByText("@TechEnthusiast")).toBeDefined();
+        expect(screen.getByText("Galaxy S25 Ultra")).toBeDefined();
+      });
+    });
+
+    it("un usuario anónimo que intenta enviar un comentario recibe el aviso y se abre el modal de login", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      const inputComentario = screen.getByLabelText(/Escribe tu opinión/i);
+      fireEvent.change(inputComentario, { target: { value: "Intento anónimo de opinar" } });
+
+      const btnPublicar = screen.getByRole("button", { name: /Publicar opinión/i });
+      fireEvent.click(btnPublicar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Debes iniciar sesión para publicar una opinión/i),
+        ).toBeDefined();
+      });
+
+      // Debe abrirse el AuthModal
+      expect(screen.getByRole("dialog")).toBeDefined();
+      expect(screen.getByText(/ACCESO A/i)).toBeDefined();
+      expect(mockCrearResena).not.toHaveBeenCalled();
+    });
+
+    it("un usuario autenticado publica la reseña y la lista se actualiza", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        {
+          idProducto: 45,
+          nombre: "Nothing Phone (2a)",
+          descripcion: "Gama media transparente",
+          precioReferencia: 350,
+          idCategoria: 1,
+          idMarca: 2,
+          nombreCategoria: "Celulares",
+          nombreMarca: "Nothing",
+          imagen: null,
+          estado: true,
+        },
+      ]);
+
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.valido.opiniones",
+            user: { id: "user-op-1", email: "opina@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 77,
+        nombre: "Reviewer Pro",
+        correo: "opina@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-15T12:00:00",
+      });
+
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Reviewer Pro")).toBeDefined();
+      });
+
+      mockCrearResena.mockResolvedValueOnce({
+        idResena: 202,
+        idProducto: 45,
+        nombreProducto: "Nothing Phone (2a)",
+        idUsuario: 77,
+        nombreUsuario: "Reviewer Pro",
+        comentario: "Excelente diseño minimalista y batería.",
+        fechaCreacion: "2026-10-17T15:00:00",
+        estado: true,
+      });
+
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 202,
+          idProducto: 45,
+          nombreProducto: "Nothing Phone (2a)",
+          idUsuario: 77,
+          nombreUsuario: "Reviewer Pro",
+          comentario: "Excelente diseño minimalista y batería.",
+          fechaCreacion: "2026-10-17T15:00:00",
+          estado: true,
+        },
+      ]);
+
+      const inputComentario = screen.getByLabelText(/Escribe tu opinión/i);
+      fireEvent.change(inputComentario, { target: { value: "Excelente diseño minimalista y batería." } });
+
+      const btnPublicar = screen.getByRole("button", { name: /Publicar opinión/i });
+      fireEvent.click(btnPublicar);
+
+      await waitFor(() => {
+        expect(mockCrearResena).toHaveBeenCalledWith({
+          idProducto: 45,
+          comentario: "Excelente diseño minimalista y batería.",
+        });
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Excelente diseño minimalista y batería.")).toBeDefined();
+      });
+    });
+
+    it("el filtro de opiniones permite buscar dinámicamente por palabra clave", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([
+        {
+          idResena: 1,
+          idProducto: 1,
+          nombreProducto: "Galaxy S25",
+          idUsuario: 1,
+          nombreUsuario: "Andres",
+          comentario: "La pantalla AMOLED es brillante.",
+          fechaCreacion: "2026-10-16T10:00:00",
+          estado: true,
+        },
+        {
+          idResena: 2,
+          idProducto: 2,
+          nombreProducto: "MacBook Air",
+          idUsuario: 2,
+          nombreUsuario: "Sofia",
+          comentario: "Batería dura dos días enteros.",
+          fechaCreacion: "2026-10-16T11:00:00",
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("La pantalla AMOLED es brillante.")).toBeDefined();
+        expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
+      });
+
+      const inputFiltro = screen.getByLabelText(/Filtrar opiniones de la comunidad/i);
+      fireEvent.change(inputFiltro, { target: { value: "MacBook" } });
+
+      expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
+      expect(screen.queryByText("La pantalla AMOLED es brillante.")).toBeNull();
+    });
+  });
+
+  describe("9. Control de acceso y navegación por roles (Hallazgo 2 - Fase 2)", () => {
+    it("Visitante: consulta catálogo pero NO visualiza enlace de administración ni opciones de sesión", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: null },
+        error: null,
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /Iniciar sesión/i })).toBeDefined();
+      });
+
+      // El visitante no debe ver enlace de administración ni botón de cerrar sesión
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+      expect(screen.queryByRole("button", { name: /Cerrar sesión/i })).toBeNull();
+    });
+
+    it("Usuario registrado: ve su perfil y reseñas pero NO tiene acceso a opciones administrativas", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.registrado.jwt",
+            user: { id: "usr-reg-1", email: "registrado@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 10,
+        nombre: "Carlos Usuario",
+        correo: "registrado@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-15T10:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Carlos Usuario")).toBeDefined();
+        expect(screen.getByText(/• Usuario registrado/i)).toBeDefined();
+      });
+
+      // Debe ver cerrar sesión pero NO el enlace de administración
+      expect(screen.getByRole("button", { name: /Cerrar sesión/i })).toBeDefined();
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+    });
+
+    it("Administrador: muestra enlace de administración confirmado por el backend e interactúa con el modal preparatorio", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.admin.jwt",
+            user: { id: "usr-admin-1", email: "admin@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 99,
+        nombre: "Super Admin",
+        correo: "admin@tecreview.com",
+        rol: "Administrador",
+        activo: true,
+        fechaRegistro: "2026-10-10T10:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Super Admin")).toBeDefined();
+        expect(screen.getByText(/• Administrador/i)).toBeDefined();
+      });
+
+      // El administrador SÍ debe ver el enlace de administración
+      const enlaceAdmin = screen.getByRole("link", { name: /Administración/i });
+      expect(enlaceAdmin).toBeDefined();
+
+      // Al hacer clic, se abre el modal preparatorio para Fase 3
+      fireEvent.click(enlaceAdmin);
+
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeDefined();
+        expect(screen.getByText(/Panel de Administración/i)).toBeDefined();
+        expect(screen.getByText(/Gestión de Catálogo de Productos/i)).toBeDefined();
+      });
+
+      // Cerrar el modal
+      const btnCerrar = screen.getByRole("button", { name: /Cerrar panel de administración/i });
+      fireEvent.click(btnCerrar);
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Panel de Administración/i)).toBeNull();
+      });
+    });
+
+    it("Representante de establecimiento: visualiza su distintivo de rol pero NO ve opciones administrativas", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.repre.jwt",
+            user: { id: "usr-repre-1", email: "tienda@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 33,
+        nombre: "Tienda Oficial",
+        correo: "tienda@tecreview.com",
+        rol: "Representante de establecimiento",
+        activo: true,
+        fechaRegistro: "2026-10-16T12:00:00",
+      });
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Tienda Oficial")).toBeDefined();
+        expect(screen.getByText(/• Representante de establecimiento/i)).toBeDefined();
+      });
+
+      // El representante NO debe tener acceso ni ver la opción de administración
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+      expect(screen.getByRole("button", { name: /Cerrar sesión/i })).toBeDefined();
+    });
+
+    it("Estado de carga: muestra 'Verificando...' sin conceder opciones de privilegios mientras se consulta el perfil", () => {
+      mockObtenerProductos.mockImplementation(() => new Promise(() => {}));
+      mockGetSession.mockImplementation(() => new Promise(() => {}));
+
+      render(<Home />);
+
+      expect(screen.getByText("Verificando...")).toBeDefined();
+      expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
+      expect(screen.queryByText(/Administración/i)).toBeNull();
+    });
+  });
 });
+

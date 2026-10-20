@@ -1,5 +1,13 @@
 import { createClient } from "@/lib/supabase/client";
-import type { UsuarioSesion } from "@/types/producto";
+import type {
+  UsuarioSesion,
+  ProductoRequest,
+  ProductoResponse,
+  CategoriaRequest,
+  CategoriaResponse,
+  MarcaRequest,
+  MarcaResponse,
+} from "@/types/producto";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -108,6 +116,10 @@ export async function apiFetch<T>(
       }
     }
     throw new ApiError(mensajeError, respuesta.status);
+  }
+
+  if (respuesta.status === 204) {
+    return undefined as unknown as T;
   }
 
   try {
@@ -219,4 +231,214 @@ export function mapearPerfilABusinessSession(
       ? String(metadata.avatar_url)
       : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
   };
+}
+
+/**
+ * Representación de una reseña devuelta por la API REST de TecReview.
+ */
+export interface ResenaResponse {
+  idResena: number;
+  idProducto: number;
+  nombreProducto: string;
+  idUsuario: number;
+  nombreUsuario: string;
+  comentario: string;
+  fechaCreacion: string;
+  estado: boolean;
+}
+
+/**
+ * Payload para crear una reseña en el backend.
+ */
+export interface CrearResenaRequest {
+  idProducto: number;
+  comentario: string;
+}
+
+/**
+ * Consulta las reseñas persistidas desde el backend de Spring Boot.
+ *
+ * @param idProducto Opcional. Si se provee, filtra las reseñas por el producto especificado.
+ * @returns Lista de reseñas activas ordenadas de forma descendente por fecha.
+ */
+export async function obtenerResenas(idProducto?: number): Promise<ResenaResponse[]> {
+  const query = idProducto ? `?idProducto=${idProducto}` : "";
+  const datos = await apiFetch<unknown>(`/api/resenas${query}`);
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de reseñas).",
+    );
+  }
+
+  return datos as ResenaResponse[];
+}
+
+/**
+ * Envía una nueva reseña al backend de Spring Boot requiriendo autenticación Bearer.
+ * La identidad del autor se valida en el backend exclusivamente a partir del token JWT.
+ *
+ * @param request Datos de la reseña (idProducto y comentario).
+ * @returns La reseña persistida en la base de datos.
+ */
+export async function crearResena(request: CrearResenaRequest): Promise<ResenaResponse> {
+  return apiFetchAutenticado<ResenaResponse>("/api/resenas", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+// ============================================================================
+// SERVICIOS DE PRODUCTOS (CRUD)
+// ============================================================================
+
+/**
+ * Consulta el detalle de un producto activo por su identificador.
+ */
+export async function obtenerProductoPorId(id: number): Promise<ProductoResponse> {
+  return apiFetch<ProductoResponse>(`/api/productos/${id}`);
+}
+
+/**
+ * Crea un nuevo producto en el catálogo. Requiere rol Administrador.
+ */
+export async function crearProducto(request: ProductoRequest): Promise<ProductoResponse> {
+  return apiFetchAutenticado<ProductoResponse>("/api/productos", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Actualiza un producto existente en el catálogo. Requiere rol Administrador.
+ */
+export async function actualizarProducto(
+  id: number,
+  request: ProductoRequest,
+): Promise<ProductoResponse> {
+  return apiFetchAutenticado<ProductoResponse>(`/api/productos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Ejecuta el borrado lógico de un producto en el catálogo. Requiere rol Administrador.
+ */
+export async function eliminarProducto(id: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/productos/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ============================================================================
+// SERVICIOS DE CATEGORÍAS (CRUD)
+// ============================================================================
+
+/**
+ * Consulta el listado público de categorías activas registradas en el backend.
+ */
+export async function obtenerCategorias(): Promise<CategoriaResponse[]> {
+  const datos = await apiFetch<unknown>("/api/categorias");
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de categorías).",
+    );
+  }
+  return datos as CategoriaResponse[];
+}
+
+/**
+ * Consulta una categoría por su identificador.
+ */
+export async function obtenerCategoriaPorId(id: number): Promise<CategoriaResponse> {
+  return apiFetch<CategoriaResponse>(`/api/categorias/${id}`);
+}
+
+/**
+ * Crea una nueva categoría en el sistema. Requiere rol Administrador.
+ */
+export async function crearCategoria(request: CategoriaRequest): Promise<CategoriaResponse> {
+  return apiFetchAutenticado<CategoriaResponse>("/api/categorias", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Actualiza una categoría existente. Requiere rol Administrador.
+ */
+export async function actualizarCategoria(
+  id: number,
+  request: CategoriaRequest,
+): Promise<CategoriaResponse> {
+  return apiFetchAutenticado<CategoriaResponse>(`/api/categorias/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Ejecuta el borrado lógico de una categoría. Requiere rol Administrador.
+ */
+export async function eliminarCategoria(id: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/categorias/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ============================================================================
+// SERVICIOS DE MARCAS (CRUD)
+// ============================================================================
+
+/**
+ * Consulta el listado público de marcas activas registradas en el backend.
+ */
+export async function obtenerMarcas(): Promise<MarcaResponse[]> {
+  const datos = await apiFetch<unknown>("/api/marcas");
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de marcas).",
+    );
+  }
+  return datos as MarcaResponse[];
+}
+
+/**
+ * Consulta una marca por su identificador.
+ */
+export async function obtenerMarcaPorId(id: number): Promise<MarcaResponse> {
+  return apiFetch<MarcaResponse>(`/api/marcas/${id}`);
+}
+
+/**
+ * Crea una nueva marca en el sistema. Requiere rol Administrador.
+ */
+export async function crearMarca(request: MarcaRequest): Promise<MarcaResponse> {
+  return apiFetchAutenticado<MarcaResponse>("/api/marcas", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Actualiza una marca existente. Requiere rol Administrador.
+ */
+export async function actualizarMarca(
+  id: number,
+  request: MarcaRequest,
+): Promise<MarcaResponse> {
+  return apiFetchAutenticado<MarcaResponse>(`/api/marcas/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Ejecuta el borrado lógico de una marca. Requiere rol Administrador.
+ */
+export async function eliminarMarca(id: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/marcas/${id}`, {
+    method: "DELETE",
+  });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useId } from "react";
+import { useEffect, useState, useCallback, useId, useMemo } from "react";
 import type {
   UsuarioSesion,
   ProductoResponse,
@@ -9,8 +9,10 @@ import type {
   CategoriaRequest,
   MarcaResponse,
   MarcaRequest,
+  CategoriaDispositivo,
 } from "@/types/producto";
 import { esAdministrador } from "@/types/producto";
+import { detectarCategoria, INFO_CATEGORIAS } from "@/data/specsHelper";
 import {
   obtenerProductos,
   obtenerCategorias,
@@ -43,7 +45,59 @@ interface ErroresFormularioProducto {
   idMarca?: string;
   imagen?: string;
   precioReferencia?: string;
+  caracteristicas?: string;
 }
+
+interface CampoEspecificacion {
+  clave: string;
+  etiqueta: string;
+  placeholder: string;
+  icono: string;
+}
+
+export const CAMPOS_POR_CATEGORIA: Record<CategoriaDispositivo, CampoEspecificacion[]> = {
+  moviles: [
+    { clave: "pantalla", etiqueta: "Pantalla & Panel", placeholder: "Ej: 6.7'' AMOLED FHD+ 120Hz", icono: "📱" },
+    { clave: "procesador", etiqueta: "Procesador & Chipset", placeholder: "Ej: Snapdragon 8 Gen 3 Octa-Core", icono: "⚡" },
+    { clave: "ram_almacenamiento", etiqueta: "Memoria RAM & Almacenamiento", placeholder: "Ej: 12GB RAM LPDDR5X + 256GB UFS 4.0", icono: "💾" },
+    { clave: "camaras", etiqueta: "Sistema de Cámaras", placeholder: "Ej: 50MP OIS + 50MP UW + 32MP Selfie", icono: "📸" },
+    { clave: "bateria", etiqueta: "Batería & Carga", placeholder: "Ej: 5000 mAh · Carga rápida 45W", icono: "🔋" },
+    { clave: "conectividad", etiqueta: "Conectividad & Redes", placeholder: "Ej: 5G Dual SIM · Wi-Fi 7 · NFC", icono: "🌐" },
+  ],
+  auriculares: [
+    { clave: "transductores", etiqueta: "Transductores / Drivers", placeholder: "Ej: Drivers dinámicos de 40mm Hi-Res", icono: "🎧" },
+    { clave: "cancelacion_ruido", etiqueta: "Cancelación de Ruido (ANC)", placeholder: "Ej: ANC activa adaptativa con procesador HD", icono: "🔇" },
+    { clave: "microfonos", etiqueta: "Micrófonos & Llamadas", placeholder: "Ej: 4 micrófonos con formación de haces", icono: "🎙️" },
+    { clave: "bateria", etiqueta: "Autonomía & Batería", placeholder: "Ej: Hasta 30 horas con ANC encendido", icono: "🔋" },
+    { clave: "codecs", etiqueta: "Códecs & Bluetooth", placeholder: "Ej: Bluetooth 5.3 · LDAC / AAC / SBC", icono: "📡" },
+    { clave: "software", etiqueta: "Software & Ecualización", placeholder: "Ej: App complementaria con ecualizador", icono: "⚙️" },
+  ],
+  laptops: [
+    { clave: "pantalla", etiqueta: "Pantalla & Panel", placeholder: "Ej: 16'' OLED 2.5K 120Hz 100% DCI-P3", icono: "🖥️" },
+    { clave: "procesador", etiqueta: "Procesador (CPU)", placeholder: "Ej: Intel Core Ultra 9 185H (16 núcleos)", icono: "⚡" },
+    { clave: "grafica", etiqueta: "Tarjeta Gráfica (GPU)", placeholder: "Ej: NVIDIA GeForce RTX 4070 8GB GDDR6", icono: "🎮" },
+    { clave: "ram", etiqueta: "Memoria RAM", placeholder: "Ej: 32GB LPDDR5X 7467MHz Dual Channel", icono: "💾" },
+    { clave: "almacenamiento", etiqueta: "Almacenamiento NVMe", placeholder: "Ej: 1TB SSD PCIe 4.0 NVMe M.2", icono: "💿" },
+    { clave: "bateria", etiqueta: "Batería & Refrigeración", placeholder: "Ej: Batería 90Wh con carga rápida 100W PD", icono: "🔋" },
+    { clave: "puertos", etiqueta: "Puertos & Conectividad", placeholder: "Ej: Thunderbolt 4, HDMI 2.1, Wi-Fi 6E", icono: "🌐" },
+  ],
+  tablets: [
+    { clave: "pantalla", etiqueta: "Pantalla & Experiencia Visual", placeholder: "Ej: 12.1'' LCD 3K 144Hz 900 nits", icono: "📱" },
+    { clave: "procesador", etiqueta: "Procesador & Rendimiento", placeholder: "Ej: Qualcomm Snapdragon 8 Gen 3 (4nm)", icono: "⚡" },
+    { clave: "ram_almacenamiento", etiqueta: "Memoria RAM & Almacenamiento", placeholder: "Ej: 12GB RAM + 256GB Almacenamiento", icono: "💾" },
+    { clave: "camaras", etiqueta: "Cámaras Trasera / Frontal", placeholder: "Ej: 13MP trasera + 8MP frontal centrada", icono: "📸" },
+    { clave: "bateria", etiqueta: "Batería & Autonomía", placeholder: "Ej: 9510 mAh · Carga ultra rápida 67W", icono: "🔋" },
+    { clave: "productividad", etiqueta: "Productividad & Stylus", placeholder: "Ej: Compatible con Stylus de baja latencia", icono: "✏️" },
+  ],
+  monitores: [
+    { clave: "panel", etiqueta: "Tecnología de Panel & Resolución", placeholder: "Ej: 27'' Fast IPS QHD (2560x1440)", icono: "🖥️" },
+    { clave: "tasa_refresco", etiqueta: "Tasa de Refresco", placeholder: "Ej: 180 Hz con FreeSync / G-Sync", icono: "⚡" },
+    { clave: "tiempo_respuesta", etiqueta: "Tiempo de Respuesta", placeholder: "Ej: 1ms GtG", icono: "⚡" },
+    { clave: "color_hdr", etiqueta: "Gamut de Color & HDR", placeholder: "Ej: 99% sRGB / 95% DCI-P3 · HDR400", icono: "🎨" },
+    { clave: "puertos", etiqueta: "Puertos & Conectividad", placeholder: "Ej: 2x HDMI 2.0, 1x DisplayPort 1.4", icono: "🔌" },
+    { clave: "ergonomia", etiqueta: "Ergonomía & Soporte", placeholder: "Ej: Ajuste de altura, inclinación y VESA", icono: "📐" },
+  ],
+};
 
 interface ErroresFormularioCategoria {
   nombre?: string;
@@ -88,6 +142,13 @@ export default function AdminPanelModal({
   const [formImagen, setFormImagen] = useState("");
   const [formPrecioReferencia, setFormPrecioReferencia] = useState("");
   const [erroresForm, setErroresForm] = useState<ErroresFormularioProducto>({});
+
+  // Estados de características técnicas dinámicas
+  const [formCaracteristicas, setFormCaracteristicas] = useState<Record<string, string>>({});
+  const [camposPersonalizados, setCamposPersonalizados] = useState<
+    Array<{ id: string; clave: string; valor: string }>
+  >([]);
+  const [clavesIncompatiblesDetectadas, setClavesIncompatiblesDetectadas] = useState<string[]>([]);
 
   // -------------------------------------------------------------
   // ESTADOS CRUD: CATEGORÍAS
@@ -195,6 +256,24 @@ export default function AdminPanelModal({
     };
   }, [isOpen, usuarioSesion, cargarDatos]);
 
+  // Categoría actual inferida para campos dinámicos
+  const categoriaActualTipo = useMemo<CategoriaDispositivo>(() => {
+    const cat = categorias.find((c) => c.idCategoria === Number(formIdCategoria));
+    return detectarCategoria({
+      idCategoria: Number(formIdCategoria),
+      nombreCategoria: cat?.nombre,
+      nombre: formNombre,
+    });
+  }, [categorias, formIdCategoria, formNombre]);
+
+  const infoCatActual = useMemo(() => {
+    return INFO_CATEGORIAS[categoriaActualTipo] || INFO_CATEGORIAS.moviles;
+  }, [categoriaActualTipo]);
+
+  const camposCategoriaActual = useMemo<CampoEspecificacion[]>(() => {
+    return CAMPOS_POR_CATEGORIA[categoriaActualTipo] || CAMPOS_POR_CATEGORIA.moviles;
+  }, [categoriaActualTipo]);
+
   // Principio de seguridad Zero-Trust:
   // El modal no se renderiza bajo ninguna circunstancia si el usuario
   // no cuenta con el rol 'Administrador' verificado por el backend.
@@ -214,8 +293,115 @@ export default function AdminPanelModal({
   };
 
   // -------------------------------------------------------------
-  // OPERACIONES PRODUCTOS
+  // OPERACIONES PRODUCTOS & CARACTERÍSTICAS DINÁMICAS
   // -------------------------------------------------------------
+
+  const actualizarCaracteristica = (clave: string, valor: string) => {
+    setFormCaracteristicas((prev) => ({
+      ...prev,
+      [clave]: valor,
+    }));
+  };
+
+  const agregarCampoPersonalizado = () => {
+    setCamposPersonalizados((prev) => [
+      ...prev,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        clave: "",
+        valor: "",
+      },
+    ]);
+  };
+
+  const actualizarCampoPersonalizado = (
+    id: string,
+    campo: "clave" | "valor",
+    valor: string,
+  ) => {
+    setCamposPersonalizados((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [campo]: valor } : item)),
+    );
+  };
+
+  const eliminarCampoPersonalizado = (id: string) => {
+    setCamposPersonalizados((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const manejarCambioCategoria = (nuevoIdCat: string) => {
+    const catAnterior = categorias.find((c) => c.idCategoria === Number(formIdCategoria));
+    const catNueva = categorias.find((c) => c.idCategoria === Number(nuevoIdCat));
+
+    const tipoAnterior = detectarCategoria({
+      idCategoria: Number(formIdCategoria),
+      nombreCategoria: catAnterior?.nombre,
+      nombre: formNombre,
+    });
+    const tipoNuevo = detectarCategoria({
+      idCategoria: Number(nuevoIdCat),
+      nombreCategoria: catNueva?.nombre,
+      nombre: formNombre,
+    });
+
+    setFormIdCategoria(nuevoIdCat);
+
+    if (tipoAnterior !== tipoNuevo) {
+      const camposPermitidosNuevo = new Set(
+        (CAMPOS_POR_CATEGORIA[tipoNuevo] || []).map((c) => c.clave),
+      );
+
+      const incompatibles: string[] = [];
+      Object.entries(formCaracteristicas).forEach(([clave, valor]) => {
+        if (
+          valor &&
+          typeof valor === "string" &&
+          valor.trim() !== "" &&
+          !camposPermitidosNuevo.has(clave)
+        ) {
+          incompatibles.push(clave);
+        }
+      });
+
+      setClavesIncompatiblesDetectadas(incompatibles);
+    } else {
+      setClavesIncompatiblesDetectadas([]);
+    }
+  };
+
+  const limpiarCaracteristicasIncompatibles = () => {
+    setFormCaracteristicas((prev) => {
+      const copia = { ...prev };
+      clavesIncompatiblesDetectadas.forEach((clave) => {
+        delete copia[clave];
+      });
+      return copia;
+    });
+    setClavesIncompatiblesDetectadas([]);
+  };
+
+  const conservarCaracteristicasComoPersonalizadas = () => {
+    const nuevosPersonalizados = [...camposPersonalizados];
+    clavesIncompatiblesDetectadas.forEach((clave) => {
+      const valor = formCaracteristicas[clave];
+      if (valor && typeof valor === "string" && valor.trim() !== "") {
+        nuevosPersonalizados.push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${clave}`,
+          clave,
+          valor: valor.trim(),
+        });
+      }
+    });
+    setCamposPersonalizados(nuevosPersonalizados);
+    setFormCaracteristicas((prev) => {
+      const copia = { ...prev };
+      clavesIncompatiblesDetectadas.forEach((clave) => {
+        delete copia[clave];
+      });
+      return copia;
+    });
+    setClavesIncompatiblesDetectadas([]);
+  };
+
   const abrirCrear = () => {
     setModoFormulario("crear");
     setProductoEditando(null);
@@ -225,6 +411,9 @@ export default function AdminPanelModal({
     setFormIdMarca(marcas.length > 0 ? String(marcas[0].idMarca) : "");
     setFormImagen("");
     setFormPrecioReferencia("");
+    setFormCaracteristicas({});
+    setCamposPersonalizados([]);
+    setClavesIncompatiblesDetectadas([]);
     setErroresForm({});
     setError(null);
     setMensajeExito(null);
@@ -243,6 +432,40 @@ export default function AdminPanelModal({
         ? String(prod.precioReferencia)
         : "",
     );
+
+    // Cargar características técnicas de manera segura
+    const cat = categorias.find((c) => c.idCategoria === prod.idCategoria);
+    const tipo = detectarCategoria({
+      idCategoria: prod.idCategoria,
+      nombreCategoria: cat?.nombre,
+      nombre: prod.nombre,
+    });
+    const camposPermitidos = new Set((CAMPOS_POR_CATEGORIA[tipo] || []).map((c) => c.clave));
+
+    const inicialCaracteristicas: Record<string, string> = {};
+    const inicialPersonalizados: Array<{ id: string; clave: string; valor: string }> = [];
+
+    if (prod.caracteristicas && typeof prod.caracteristicas === "object") {
+      Object.entries(prod.caracteristicas).forEach(([clave, valor]) => {
+        if (valor !== null && valor !== undefined) {
+          const valorStr = typeof valor === "string" ? valor : JSON.stringify(valor);
+          if (camposPermitidos.has(clave)) {
+            inicialCaracteristicas[clave] = valorStr;
+          } else {
+            inicialPersonalizados.push({
+              id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${clave}`,
+              clave,
+              valor: valorStr,
+            });
+          }
+        }
+      });
+    }
+
+    setFormCaracteristicas(inicialCaracteristicas);
+    setCamposPersonalizados(inicialPersonalizados);
+    setClavesIncompatiblesDetectadas([]);
+
     setErroresForm({});
     setError(null);
     setMensajeExito(null);
@@ -251,6 +474,9 @@ export default function AdminPanelModal({
   const cancelarFormulario = () => {
     setModoFormulario("ninguno");
     setProductoEditando(null);
+    setFormCaracteristicas({});
+    setCamposPersonalizados([]);
+    setClavesIncompatiblesDetectadas([]);
     setErroresForm({});
   };
 
@@ -284,6 +510,43 @@ export default function AdminPanelModal({
       }
     }
 
+    // Validar características estándar
+    for (const [clave, val] of Object.entries(formCaracteristicas)) {
+      if (val && val.length > 2000) {
+        errores.caracteristicas = `El valor de "${clave}" no puede superar 2000 caracteres.`;
+        break;
+      }
+    }
+
+    // Validar características personalizadas si no hay error previo
+    if (!errores.caracteristicas) {
+      const clavesVistas = new Set<string>(camposCategoriaActual.map((c) => c.clave.toLowerCase()));
+      for (const cp of camposPersonalizados) {
+        const cTrim = cp.clave.trim().toLowerCase();
+        const vTrim = cp.valor.trim();
+
+        if (!cTrim && vTrim) {
+          errores.caracteristicas = "Las características personalizadas deben tener un nombre de campo.";
+          break;
+        }
+        if (cTrim.length > 100) {
+          errores.caracteristicas = "El nombre de una característica no puede superar 100 caracteres.";
+          break;
+        }
+        if (cp.valor.length > 2000) {
+          errores.caracteristicas = "El valor de una característica no puede superar 2000 caracteres.";
+          break;
+        }
+        if (cTrim && vTrim) {
+          if (clavesVistas.has(cTrim)) {
+            errores.caracteristicas = `La característica "${cp.clave.trim()}" ya existe. Evita campos duplicados.`;
+            break;
+          }
+          clavesVistas.add(cTrim);
+        }
+      }
+    }
+
     setErroresForm(errores);
     return Object.keys(errores).length === 0;
   };
@@ -300,6 +563,24 @@ export default function AdminPanelModal({
     setError(null);
     setMensajeExito(null);
 
+    // Ensamblar mapa de características técnicas activas y coherentes con la categoría
+    const caracteristicasAEnviar: Record<string, string> = {};
+    const clavesValidas = new Set(camposCategoriaActual.map((c) => c.clave));
+
+    Object.entries(formCaracteristicas).forEach(([clave, valor]) => {
+      if (clavesValidas.has(clave) && typeof valor === "string" && valor.trim() !== "") {
+        caracteristicasAEnviar[clave] = valor.trim();
+      }
+    });
+
+    camposPersonalizados.forEach((cp) => {
+      const c = cp.clave.trim();
+      const v = cp.valor.trim();
+      if (c && v) {
+        caracteristicasAEnviar[c] = v;
+      }
+    });
+
     const request: ProductoRequest = {
       nombre: formNombre.trim(),
       descripcion: formDescripcion.trim() ? formDescripcion.trim() : null,
@@ -309,6 +590,16 @@ export default function AdminPanelModal({
       precioReferencia:
         formPrecioReferencia.trim() !== "" ? Number(formPrecioReferencia) : null,
     };
+
+    if (Object.keys(caracteristicasAEnviar).length > 0) {
+      request.caracteristicas = caracteristicasAEnviar;
+    } else if (
+      modoFormulario === "editar" &&
+      productoEditando?.caracteristicas &&
+      Object.keys(productoEditando.caracteristicas).length > 0
+    ) {
+      request.caracteristicas = {};
+    }
 
     try {
       if (modoFormulario === "crear") {
@@ -804,7 +1095,7 @@ export default function AdminPanelModal({
                         <select
                           id={idCatInput}
                           value={formIdCategoria}
-                          onChange={(e) => setFormIdCategoria(e.target.value)}
+                          onChange={(e) => manejarCambioCategoria(e.target.value)}
                           disabled={guardando}
                           className={`w-full rounded-lg bg-slate-900 border px-3 py-2 text-xs text-slate-100 focus:outline-none focus:ring-1 transition-colors cursor-pointer ${
                             erroresForm.idCategoria
@@ -912,6 +1203,161 @@ export default function AdminPanelModal({
                           className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors"
                         />
                       </div>
+
+                      {/* ========================================================= */}
+                      {/* SECCIÓN DE CARACTERÍSTICAS TÉCNICAS DINÁMICAS POR CATEGORÍA */}
+                      {/* ========================================================= */}
+                      <div className="sm:col-span-2 pt-3 border-t border-slate-800/80 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div>
+                            <h5 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-doto flex items-center gap-2">
+                              <span>⚙️ Especificaciones Técnicas</span>
+                              <span className="px-2 py-0.5 rounded text-[10px] bg-red-950/60 text-red-300 border border-red-900/40">
+                                {infoCatActual.icono} {infoCatActual.etiqueta}
+                              </span>
+                            </h5>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              Configura las especificaciones pertinentes para la ficha técnica del producto.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Alerta de cambio de categoría y claves incompatibles */}
+                        {clavesIncompatiblesDetectadas.length > 0 && (
+                          <div
+                            data-testid="alerta-cambio-categoria"
+                            className="p-3 rounded-lg border border-amber-500/40 bg-amber-950/30 text-amber-200 space-y-2"
+                          >
+                            <div className="flex items-start gap-2">
+                              <span className="text-sm">⚠️</span>
+                              <div>
+                                <p className="font-semibold text-amber-300 text-xs">
+                                  Cambio de categoría: Se detectaron {clavesIncompatiblesDetectadas.length} campos incompatibles
+                                </p>
+                                <p className="text-[11px] text-amber-200/80 mt-0.5">
+                                  Campos de la categoría anterior con datos:{" "}
+                                  <span className="font-mono font-bold text-amber-100">
+                                    {clavesIncompatiblesDetectadas.join(", ")}
+                                  </span>
+                                  .
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                              <button
+                                type="button"
+                                data-testid="btn-adaptar-categoria"
+                                onClick={limpiarCaracteristicasIncompatibles}
+                                className="px-2.5 py-1 rounded bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/50 text-[11px] font-semibold text-amber-100 transition-colors cursor-pointer"
+                              >
+                                Adaptar a {infoCatActual.etiqueta} (Descartar incompatibles)
+                              </button>
+                              <button
+                                type="button"
+                                data-testid="btn-conservar-personalizadas"
+                                onClick={conservarCaracteristicasComoPersonalizadas}
+                                className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-[11px] font-semibold text-slate-200 transition-colors cursor-pointer"
+                              >
+                                Conservar como personalizadas
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Error de validación de especificaciones */}
+                        {erroresForm.caracteristicas && (
+                          <p className="p-2 rounded bg-red-950/40 border border-red-900/60 text-[11px] text-red-400 font-medium">
+                            {erroresForm.caracteristicas}
+                          </p>
+                        )}
+
+                        {/* Campos estándar según la categoría actual */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {camposCategoriaActual.map((campo) => {
+                            const campoInputId = `${baseId}-spec-${campo.clave}`;
+                            const valorCampo = formCaracteristicas[campo.clave] || "";
+                            return (
+                              <div key={campo.clave}>
+                                <label
+                                  htmlFor={campoInputId}
+                                  className="block text-[11px] font-semibold text-slate-300 mb-1 flex items-center gap-1.5"
+                                >
+                                  <span>{campo.icono}</span>
+                                  <span>{campo.etiqueta}</span>
+                                </label>
+                                <input
+                                  id={campoInputId}
+                                  data-testid={`input-spec-${campo.clave}`}
+                                  type="text"
+                                  maxLength={2000}
+                                  value={valorCampo}
+                                  onChange={(e) => actualizarCaracteristica(campo.clave, e.target.value)}
+                                  disabled={guardando}
+                                  placeholder={campo.placeholder}
+                                  className="w-full rounded-lg bg-slate-900 border border-slate-800 px-3 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Especificaciones personalizadas adicionales */}
+                        <div className="pt-2 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-semibold text-slate-400">
+                              Características Adicionales / Personalizadas
+                            </span>
+                            <button
+                              type="button"
+                              data-testid="btn-agregar-spec-personalizada"
+                              onClick={agregarCampoPersonalizado}
+                              disabled={guardando}
+                              className="text-[11px] text-red-400 hover:text-red-300 font-semibold cursor-pointer transition-colors"
+                            >
+                              + Añadir característica personalizada
+                            </button>
+                          </div>
+
+                          {camposPersonalizados.map((cp, idx) => (
+                            <div key={cp.id} className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                maxLength={100}
+                                data-testid={`input-spec-personalizada-clave-${idx}`}
+                                placeholder="Nombre (ej: resistencia_agua)"
+                                value={cp.clave}
+                                onChange={(e) =>
+                                  actualizarCampoPersonalizado(cp.id, "clave", e.target.value)
+                                }
+                                disabled={guardando}
+                                className="w-1/3 rounded-lg bg-slate-900 border border-slate-800 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors font-mono"
+                              />
+                              <input
+                                type="text"
+                                maxLength={2000}
+                                data-testid={`input-spec-personalizada-valor-${idx}`}
+                                placeholder="Valor (ej: Certificación IP68)"
+                                value={cp.valor}
+                                onChange={(e) =>
+                                  actualizarCampoPersonalizado(cp.id, "valor", e.target.value)
+                                }
+                                disabled={guardando}
+                                className="grow rounded-lg bg-slate-900 border border-slate-800 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors"
+                              />
+                              <button
+                                type="button"
+                                data-testid={`btn-eliminar-spec-personalizada-${idx}`}
+                                onClick={() => eliminarCampoPersonalizado(cp.id)}
+                                disabled={guardando}
+                                title="Eliminar campo"
+                                className="px-2 py-1 rounded text-slate-400 hover:text-red-400 border border-slate-800 hover:border-red-900/60 transition-colors cursor-pointer text-xs"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
@@ -988,6 +1434,18 @@ export default function AdminPanelModal({
                             {prod.descripcion && (
                               <div className="text-[10px] text-slate-400 truncate max-w-xs">
                                 {prod.descripcion}
+                              </div>
+                            )}
+                            {prod.caracteristicas && Object.keys(prod.caracteristicas).length > 0 && (
+                              <div className="mt-1">
+                                <span
+                                  data-testid={`badge-specs-${prod.idProducto}`}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-950/60 text-cyan-300 border border-cyan-800/50"
+                                  title={`Especificaciones: ${Object.keys(prod.caracteristicas).join(", ")}`}
+                                >
+                                  <span>⚡</span>
+                                  <span>{Object.keys(prod.caracteristicas).length} specs</span>
+                                </span>
                               </div>
                             )}
                           </td>

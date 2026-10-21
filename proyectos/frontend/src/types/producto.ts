@@ -22,6 +22,7 @@ export interface ProductoRequest {
   idMarca: number;
   imagen?: string | null;
   precioReferencia?: number | null;
+  caracteristicas?: Record<string, unknown> | null;
 }
 
 /**
@@ -65,8 +66,69 @@ export interface MarcaResponse {
   estado: boolean;
 }
 
+// ============================================================================
+// DTOs DE RANKINGS (Fase 4.4 / 4.5)
+// ============================================================================
 
-export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares";
+export interface ProductoMejorValorado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  promedioPuntuacion: number;
+  cantidadValoraciones: number;
+  posicionRanking: number;
+}
+
+export interface ProductoDeseado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  cantidadDeseados: number;
+  posicionRanking: number;
+}
+
+export interface ProductoMasComentado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  cantidadResenas: number;
+  posicionRanking: number;
+}
+
+export interface ProductoOferta {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  caracteristicas?: Record<string, unknown> | null;
+  precioReferencia: number;
+  precioActual: number;
+  ahorroMonetario: number;
+  porcentajeDescuento: number;
+  idEstablecimiento: number;
+  nombreEstablecimiento: string;
+  posicionRanking: number;
+}
+
+
+export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares" | "monitores";
 
 export interface SeccionHardware {
   icono: string;

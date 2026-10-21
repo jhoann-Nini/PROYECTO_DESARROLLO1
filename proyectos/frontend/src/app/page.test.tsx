@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import Home from "./page";
 import { ApiError } from "@/services/api";
-import type { Producto } from "@/types/producto";
+import type {
+  Producto,
+  ProductoMejorValorado,
+  ProductoMasComentado,
+  ProductoOferta,
+} from "@/types/producto";
 
 const mockOnAuthStateChange = vi.fn();
 const mockGetSession = vi.fn();
@@ -25,6 +30,10 @@ const mockObtenerResenas = vi.fn();
 const mockCrearResena = vi.fn();
 const mockObtenerCategorias = vi.fn().mockResolvedValue([]);
 const mockObtenerMarcas = vi.fn().mockResolvedValue([]);
+const mockObtenerMejorValorados = vi.fn().mockResolvedValue([]);
+const mockObtenerMasDeseados = vi.fn().mockResolvedValue([]);
+const mockObtenerOfertas = vi.fn().mockResolvedValue([]);
+const mockObtenerMasComentados = vi.fn().mockResolvedValue([]);
 
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
@@ -36,6 +45,10 @@ vi.mock("@/services/api", async (importOriginal) => {
     crearResena: (...args: unknown[]) => mockCrearResena(...args),
     obtenerCategorias: (...args: unknown[]) => mockObtenerCategorias(...args),
     obtenerMarcas: (...args: unknown[]) => mockObtenerMarcas(...args),
+    obtenerMejorValorados: (...args: unknown[]) => mockObtenerMejorValorados(...args),
+    obtenerMasDeseados: (...args: unknown[]) => mockObtenerMasDeseados(...args),
+    obtenerOfertas: (...args: unknown[]) => mockObtenerOfertas(...args),
+    obtenerMasComentados: (...args: unknown[]) => mockObtenerMasComentados(...args),
   };
 });
 
@@ -46,6 +59,10 @@ describe("Página principal / (Home)", () => {
     mockObtenerResenas.mockResolvedValue([]);
     mockObtenerCategorias.mockResolvedValue([]);
     mockObtenerMarcas.mockResolvedValue([]);
+    mockObtenerMejorValorados.mockResolvedValue([]);
+    mockObtenerMasDeseados.mockResolvedValue([]);
+    mockObtenerOfertas.mockResolvedValue([]);
+    mockObtenerMasComentados.mockResolvedValue([]);
     mockOnAuthStateChange.mockReturnValue({
       data: {
         subscription: { unsubscribe: vi.fn() },
@@ -804,6 +821,213 @@ describe("Página principal / (Home)", () => {
       expect(screen.getByText("Verificando...")).toBeDefined();
       expect(screen.queryByRole("link", { name: /Administración/i })).toBeNull();
       expect(screen.queryByText(/Administración/i)).toBeNull();
+    });
+  });
+
+  describe("10. Rankings reales en la página principal (Fase 4.5)", () => {
+    it("solicita los 4 rankings al backend al iniciar la página principal con el parámetro limit=10", async () => {
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(mockObtenerMejorValorados).toHaveBeenCalledWith(10);
+        expect(mockObtenerMasDeseados).toHaveBeenCalledWith(10);
+        expect(mockObtenerOfertas).toHaveBeenCalledWith(10);
+        expect(mockObtenerMasComentados).toHaveBeenCalledWith(10);
+      });
+    });
+
+    it("representa los productos devueltos por el backend en 'Mejor valorados' con puntuaciones reales", async () => {
+      const mejorValorados: ProductoMejorValorado[] = [
+        {
+          idProducto: 201,
+          nombre: "Samsung Galaxy S24 Ultra",
+          descripcion: "Smartphone de gama alta con IA integrada",
+          precioReferencia: 3500000,
+          idCategoria: 1,
+          idMarca: 2,
+          imagen: null,
+          promedioPuntuacion: 4.8,
+          cantidadValoraciones: 35,
+          posicionRanking: 1,
+          caracteristicas: { ram: "12 GB", almacenamiento: "512 GB" },
+        },
+      ];
+
+      mockObtenerMejorValorados.mockResolvedValueOnce(mejorValorados);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy S24 Ultra")).toBeDefined();
+      });
+
+      expect(screen.getByText(/Mejor valorados/i)).toBeDefined();
+      expect(screen.getByText(/35 valoraciones/i)).toBeDefined();
+      expect(screen.getByText("4.8")).toBeDefined();
+      expect(screen.queryByText("Los más vendidos")).toBeNull();
+    });
+
+    it("representa los productos devueltos por el backend en 'Más comentados' con el conteo real de reseñas", async () => {
+      const masComentados: ProductoMasComentado[] = [
+        {
+          idProducto: 202,
+          nombre: "Sony WH-1000XM5",
+          descripcion: "Auriculares inalámbricos con cancelación activa de ruido",
+          precioReferencia: 1500000,
+          idCategoria: 4,
+          idMarca: 4,
+          imagen: null,
+          cantidadResenas: 42,
+          posicionRanking: 1,
+          caracteristicas: { tipo: "Over-ear", conectividad: "Bluetooth 5.2" },
+        },
+      ];
+
+      mockObtenerMasComentados.mockResolvedValueOnce(masComentados);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Sony WH-1000XM5")).toBeDefined();
+      });
+
+      expect(screen.getByText(/Más comentados/i)).toBeDefined();
+      expect(screen.getByText(/42 reseñas/i)).toBeDefined();
+    });
+
+    it("representa 'Ofertas destacadas' con precio actual, precio de referencia y descuento real", async () => {
+      const ofertas: ProductoOferta[] = [
+        {
+          idProducto: 203,
+          nombre: "MacBook Air M3",
+          descripcion: "Portátil ultraligero con chip Apple M3",
+          precioReferencia: 3800000,
+          idCategoria: 2,
+          idMarca: 1,
+          imagen: null,
+          idEstablecimiento: 3,
+          nombreEstablecimiento: "iShop Colombia",
+          precioActual: 3230000,
+          ahorroMonetario: 570000,
+          porcentajeDescuento: 15.0,
+          posicionRanking: 1,
+          caracteristicas: { ram: "16 GB" },
+        },
+      ];
+
+      mockObtenerOfertas.mockResolvedValueOnce(ofertas);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("MacBook Air M3")).toBeDefined();
+      });
+
+      expect(screen.getByText(/iShop Colombia/i)).toBeDefined();
+      expect(screen.getByText("-15%")).toBeDefined();
+    });
+
+    it("cuando 'Más deseados' devuelve lista vacía, muestra estado vacío informativo y NO genera productos ficticios", async () => {
+      mockObtenerMasDeseados.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Sin listas de deseos registradas")).toBeDefined();
+      });
+
+      expect(
+        screen.getByText(/La funcionalidad de listas de deseos y favoritos estará disponible/i)
+      ).toBeDefined();
+
+      // Verificar que NO se inventaron productos ficticios
+      expect(screen.queryByText("iPhone 15 Pro Max")).toBeNull();
+    });
+
+    it("un error en 'Mejor valorados' muestra el estado de error y no activa rankings ficticios", async () => {
+      mockObtenerMejorValorados.mockRejectedValueOnce(
+        new ApiError("Error de conexión al servidor de rankings", 500)
+      );
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Error de conexión al servidor de rankings/i)
+        ).toBeDefined();
+      });
+
+      const retryBtn = screen.getByRole("button", { name: "Reintentar valoraciones" });
+      expect(retryBtn).toBeDefined();
+
+      // No se muestran productos ficticios
+      expect(screen.queryByText("Sony WH-1000XM4")).toBeNull();
+    });
+
+    it("un error en 'Ofertas destacadas' muestra el estado de error y permite reintentar sin recurrir a mocks", async () => {
+      mockObtenerOfertas.mockRejectedValueOnce(
+        new ApiError("Fallo de red en el servicio de ofertas", 500)
+      );
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Fallo de red en el servicio de ofertas/i)
+        ).toBeDefined();
+      });
+
+      const retryBtn = screen.getByRole("button", { name: "Reintentar ofertas" });
+      expect(retryBtn).toBeDefined();
+
+      // Reintentar exitosamente con lista vacía
+      mockObtenerOfertas.mockResolvedValueOnce([]);
+      fireEvent.click(retryBtn);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Fallo de red en el servicio de ofertas/i)
+        ).toBeNull();
+      });
+    });
+
+    it("permite abrir el modal de ficha técnica desde un elemento de ranking", async () => {
+      const mejorValorados: ProductoMejorValorado[] = [
+        {
+          idProducto: 204,
+          nombre: "Monitor Gamer Asus ROG",
+          descripcion: "Monitor para eSports 240Hz",
+          precioReferencia: 2100000,
+          idCategoria: 3,
+          idMarca: 6,
+          imagen: null,
+          promedioPuntuacion: 4.9,
+          cantidadValoraciones: 18,
+          posicionRanking: 1,
+          caracteristicas: { tasaRefresco: "240 Hz", resolucion: "2560x1440" },
+        },
+      ];
+
+      mockObtenerMejorValorados.mockResolvedValueOnce(mejorValorados);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Monitor Gamer Asus ROG")).toBeDefined();
+      });
+
+      const btnFicha = screen.getByRole("button", {
+        name: "Ver ficha de Monitor Gamer Asus ROG",
+      });
+      fireEvent.click(btnFicha);
+
+      await waitFor(() => {
+        expect(screen.getByRole("dialog")).toBeDefined();
+        expect(screen.getByText("FICHA TÉCNICA")).toBeDefined();
+        expect(
+          screen.getByRole("heading", { level: 2, name: "Monitor Gamer Asus ROG" })
+        ).toBeDefined();
+      });
     });
   });
 });

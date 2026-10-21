@@ -112,4 +112,26 @@ class ProductoControllerValidationTest {
                 .andExpect(status().isBadRequest());
         verify(productoService, never()).crear(any(ProductoRequest.class));
     }
+
+    @Test
+    void caracteristicasNoObjetoDebeFallar() throws Exception {
+        ObjectNode node = baseNode();
+        node.put("caracteristicas", "no-es-objeto-json");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isBadRequest());
+        verify(productoService, never()).crear(any(ProductoRequest.class));
+    }
+
+    @Test
+    void caracteristicasNuloEsValidoYPermiteCrear() throws Exception {
+        ObjectNode node = baseNode();
+        node.putNull("caracteristicas");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isCreated());
+        verify(productoService, times(1)).crear(any(ProductoRequest.class));
+    }
 }

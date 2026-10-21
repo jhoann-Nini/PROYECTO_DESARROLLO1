@@ -73,6 +73,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/rankings/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/marcas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()

@@ -6,12 +6,16 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Map;
 
 import com.example.backend.dto.ProductoRequest;
 import com.example.backend.entity.Categoria;
@@ -332,5 +336,182 @@ class ProductoCrudIntegrationTest {
         Producto persistido = productoRepository.findById(producto.getIdProducto()).orElseThrow();
         assertEquals("Laptop Original Antes De Validacion", persistido.getNombre());
         assertEquals(0, new BigDecimal("1500000.00").compareTo(persistido.getPrecioReferencia()));
+    }
+
+    @Test
+    @DisplayName("12. Crear producto sin caracteristicas: responde 201 y persiste null")
+    void crearProductoSinCaracteristicasResponde201YPersisteNull() throws Exception {
+        ProductoRequest request = new ProductoRequest(
+                "Tablet Basica Sin Specs",
+                "Tablet de entrada",
+                defaultCategoria.getIdCategoria(),
+                defaultMarca.getIdMarca(),
+                "https://example.com/tablet.png",
+                new BigDecimal("600000.00"),
+                null
+        );
+
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nombre", is("Tablet Basica Sin Specs")))
+                .andExpect(jsonPath("$.caracteristicas", nullValue()));
+
+        Producto persistido = productoRepository.findByEstadoTrue().stream()
+                .filter(p -> "Tablet Basica Sin Specs".equals(p.getNombre()))
+                .findFirst().orElseThrow();
+        assertEquals(null, persistido.getCaracteristicas());
+    }
+
+    @Test
+    @DisplayName("13. Crear producto con caracteristicas estructuradas: responde 201 y persiste JSON")
+    void crearProductoConCaracteristicasResponde201YPersisteJson() throws Exception {
+        Map<String, Object> specs = Map.of(
+                "tipoDriver", "Dinámico 40mm",
+                "anc", true,
+                "bateriaHoras", 30,
+                "bluetooth", "5.3"
+        );
+
+        ProductoRequest request = new ProductoRequest(
+                "Auriculares Hi-Res ANC",
+                "Auriculares de diadema con cancelación activa",
+                defaultCategoria.getIdCategoria(),
+                defaultMarca.getIdMarca(),
+                "https://example.com/auriculares.png",
+                new BigDecimal("450000.00"),
+                specs
+        );
+
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nombre", is("Auriculares Hi-Res ANC")))
+                .andExpect(jsonPath("$.caracteristicas.tipoDriver", is("Dinámico 40mm")))
+                .andExpect(jsonPath("$.caracteristicas.anc", is(true)))
+                .andExpect(jsonPath("$.caracteristicas.bateriaHoras", is(30)))
+                .andExpect(jsonPath("$.caracteristicas.bluetooth", is("5.3")));
+
+        Producto persistido = productoRepository.findByEstadoTrue().stream()
+                .filter(p -> "Auriculares Hi-Res ANC".equals(p.getNombre()))
+                .findFirst().orElseThrow();
+        assertEquals("Dinámico 40mm", persistido.getCaracteristicas().get("tipoDriver"));
+        assertEquals(true, persistido.getCaracteristicas().get("anc"));
+    }
+
+    @Test
+    @DisplayName("14. Recuperar caracteristicas mediante GET /api/productos/{id}: responde 200 con el JSON exacto")
+    void consultarProductoRetornaCaracteristicasExactas() throws Exception {
+        Producto producto = crearProducto("Smartphone Pro Con Specs", true);
+        producto.setCaracteristicas(Map.of("pantalla", "6.7 AMOLED 120Hz", "ram", "12GB"));
+        producto = productoRepository.save(producto);
+
+        mockMvc.perform(get("/api/productos/{id}", producto.getIdProducto()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto", is(producto.getIdProducto().intValue())))
+                .andExpect(jsonPath("$.caracteristicas.pantalla", is("6.7 AMOLED 120Hz")))
+                .andExpect(jsonPath("$.caracteristicas.ram", is("12GB")));
+    }
+
+    @Test
+    @DisplayName("15. Actualizar caracteristicas de un producto existente: persiste los nuevos valores")
+    void actualizarCaracteristicasProductoPersisteNuevosValores() throws Exception {
+        Producto producto = crearProducto("Laptop Gaming Inicial", true);
+        producto.setCaracteristicas(Map.of("ram", "8GB", "ssd", "256GB"));
+        producto = productoRepository.save(producto);
+
+        Map<String, Object> nuevasSpecs = Map.of("ram", "16GB", "ssd", "1TB", "gpu", "RTX 4060");
+        ProductoRequest requestActualizado = new ProductoRequest(
+                "Laptop Gaming Upgrade",
+                "Laptop actualizada con mejores specs",
+                defaultCategoria.getIdCategoria(),
+                defaultMarca.getIdMarca(),
+                producto.getImagen(),
+                producto.getPrecioReferencia(),
+                nuevasSpecs
+        );
+
+        mockMvc.perform(put("/api/productos/{id}", producto.getIdProducto())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(requestActualizado)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.caracteristicas.ram", is("16GB")))
+                .andExpect(jsonPath("$.caracteristicas.ssd", is("1TB")))
+                .andExpect(jsonPath("$.caracteristicas.gpu", is("RTX 4060")));
+
+        Producto persistido = productoRepository.findById(producto.getIdProducto()).orElseThrow();
+        assertEquals("16GB", persistido.getCaracteristicas().get("ram"));
+        assertEquals("1TB", persistido.getCaracteristicas().get("ssd"));
+        assertEquals("RTX 4060", persistido.getCaracteristicas().get("gpu"));
+    }
+
+    @Test
+    @DisplayName("16. Actualizar producto eliminando caracteristicas al enviar null")
+    void actualizarProductoConCaracteristicasNullLimpiaElCampo() throws Exception {
+        Producto producto = crearProducto("Producto Con Specs A Limpiar", true);
+        producto.setCaracteristicas(Map.of("resolucion", "4K"));
+        producto = productoRepository.save(producto);
+
+        ProductoRequest request = new ProductoRequest(
+                "Producto Limpio",
+                "Sin specs",
+                defaultCategoria.getIdCategoria(),
+                defaultMarca.getIdMarca(),
+                producto.getImagen(),
+                producto.getPrecioReferencia(),
+                null
+        );
+
+        mockMvc.perform(put("/api/productos/{id}", producto.getIdProducto())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.caracteristicas", nullValue()));
+
+        Producto persistido = productoRepository.findById(producto.getIdProducto()).orElseThrow();
+        assertEquals(null, persistido.getCaracteristicas());
+    }
+
+    @Test
+    @DisplayName("17. Crear producto con clave vacía en caracteristicas: responde 400 Bad Request")
+    void crearProductoConClaveVaciaEnCaracteristicasResponde400() throws Exception {
+        ObjectNode node = mapper.createObjectNode();
+        node.put("nombre", "Producto Con Clave Invalida");
+        node.put("descripcion", "Prueba");
+        node.put("idCategoria", defaultCategoria.getIdCategoria());
+        node.put("idMarca", defaultMarca.getIdMarca());
+        node.put("precioReferencia", 100000);
+
+        ObjectNode specsNode = mapper.createObjectNode();
+        specsNode.put("", "valor sin clave");
+        node.set("caracteristicas", specsNode);
+
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.message", containsString("Las claves de las características no pueden estar vacías")));
+    }
+
+    @Test
+    @DisplayName("18. Crear producto con estructura inválida (no objeto) en caracteristicas: responde 400 Bad Request")
+    void crearProductoConEstructuraInvalidaNoObjetoResponde400() throws Exception {
+        ObjectNode node = mapper.createObjectNode();
+        node.put("nombre", "Producto Con Tipo Invalido");
+        node.put("descripcion", "Prueba");
+        node.put("idCategoria", defaultCategoria.getIdCategoria());
+        node.put("idMarca", defaultMarca.getIdMarca());
+        node.put("precioReferencia", 100000);
+        node.put("caracteristicas", "esto no es un objeto json");
+
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is(400)))
+                .andExpect(jsonPath("$.message", containsString("Cuerpo de la solicitud malformado o con estructura de datos inválida")));
     }
 }

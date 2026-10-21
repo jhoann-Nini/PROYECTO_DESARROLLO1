@@ -7,10 +7,6 @@ import type {
   CategoriaResponse,
   MarcaRequest,
   MarcaResponse,
-  ProductoMejorValorado,
-  ProductoDeseado,
-  ProductoMasComentado,
-  ProductoOferta,
 } from "@/types/producto";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -292,78 +288,6 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
   });
 }
 
-/**
- * Representación de una valoración devuelta por la API REST de TecReview.
- */
-export interface ValoracionResponse {
-  idValoracion: number;
-  idProducto: number;
-  nombreProducto: string;
-  idUsuario: number;
-  nombreUsuario: string;
-  puntuacion: number;
-  fechaCreacion: string;
-  estado: boolean;
-}
-
-/**
- * Payload para registrar o actualizar la valoración de un producto en el backend.
- */
-export interface CrearValoracionRequest {
-  idProducto: number;
-  puntuacion: number;
-}
-
-/**
- * Registra o actualiza la valoración de 1 a 5 estrellas de un producto en Spring Boot.
- * Requiere autenticación Bearer con token JWT válido de Supabase.
- *
- * @param request Datos de la valoración (idProducto y puntuacion de 1 a 5).
- * @returns La valoración guardada en la base de datos.
- */
-export async function crearValoracion(
-  request: CrearValoracionRequest,
-): Promise<ValoracionResponse> {
-  if (
-    !Number.isInteger(request.puntuacion) ||
-    request.puntuacion < 1 ||
-    request.puntuacion > 5
-  ) {
-    throw new ApiError(
-      "La puntuación debe ser un número entero entre 1 y 5.",
-      400,
-    );
-  }
-  return apiFetchAutenticado<ValoracionResponse>("/api/valoraciones", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
-}
-
-/**
- * Consulta la valoración activa del usuario autenticado para un producto específico.
- * Retorna null si el usuario no ha valorado este producto o no está autenticado.
- */
-export async function obtenerMiValoracion(
-  idProducto: number,
-): Promise<ValoracionResponse | null> {
-  try {
-    const token = await obtenerTokenAcceso();
-    if (!token) return null;
-    const res = await apiFetchAutenticado<ValoracionResponse>(
-      `/api/valoraciones/mi-valoracion?idProducto=${idProducto}`,
-      { method: "GET" },
-    );
-    return res || null;
-  } catch (err) {
-    if (err instanceof ApiError && (err.status === 204 || err.status === 401)) {
-      return null;
-    }
-    return null;
-  }
-}
-
-
 // ============================================================================
 // SERVICIOS DE PRODUCTOS (CRUD)
 // ============================================================================
@@ -517,99 +441,4 @@ export async function eliminarMarca(id: number): Promise<void> {
   return apiFetchAutenticado<void>(`/api/marcas/${id}`, {
     method: "DELETE",
   });
-}
-
-// ============================================================================
-// SERVICIOS DE RANKINGS (Fase 4.4 / 4.5)
-// ============================================================================
-
-/**
- * Valida y normaliza el parámetro de límite para los endpoints de ranking.
- * El backend acepta limit entre 1 y 100 (por defecto 10).
- */
-function normalizarParametroLimit(limit?: number): string {
-  if (limit === undefined || limit === null) {
-    return "";
-  }
-  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-    throw new ApiError(
-      "El parámetro limit debe ser un número entero entre 1 y 100.",
-      400,
-    );
-  }
-  return `?limit=${limit}`;
-}
-
-/**
- * Consulta el ranking de productos mejor valorados según las valoraciones reales almacenadas en la base de datos.
- *
- * @param limit Opcional. Cantidad máxima de productos a retornar (1 a 100).
- */
-export async function obtenerMejorValorados(limit?: number): Promise<ProductoMejorValorado[]> {
-  const query = normalizarParametroLimit(limit);
-  const datos = await apiFetch<unknown>(`/api/rankings/mejor-valorados${query}`);
-
-  if (!Array.isArray(datos)) {
-    throw new ApiError(
-      "La respuesta del servidor no tiene el formato esperado (lista de mejor valorados).",
-    );
-  }
-
-  return datos as ProductoMejorValorado[];
-}
-
-/**
- * Consulta el ranking de productos más deseados.
- * Actualmente el sistema no registra listas de deseos en la base de datos,
- * por lo que el backend devuelve un arreglo vacío sin inventar datos ficticios.
- *
- * @param limit Opcional. Cantidad máxima de productos a retornar (1 a 100).
- */
-export async function obtenerMasDeseados(limit?: number): Promise<ProductoDeseado[]> {
-  const query = normalizarParametroLimit(limit);
-  const datos = await apiFetch<unknown>(`/api/rankings/mas-deseados${query}`);
-
-  if (!Array.isArray(datos)) {
-    throw new ApiError(
-      "La respuesta del servidor no tiene el formato esperado (lista de más deseados).",
-    );
-  }
-
-  return datos as ProductoDeseado[];
-}
-
-/**
- * Consulta el ranking de ofertas destacadas comparando precios de establecimientos con el precio de referencia.
- *
- * @param limit Opcional. Cantidad máxima de ofertas a retornar (1 a 100).
- */
-export async function obtenerOfertas(limit?: number): Promise<ProductoOferta[]> {
-  const query = normalizarParametroLimit(limit);
-  const datos = await apiFetch<unknown>(`/api/rankings/ofertas${query}`);
-
-  if (!Array.isArray(datos)) {
-    throw new ApiError(
-      "La respuesta del servidor no tiene el formato esperado (lista de ofertas).",
-    );
-  }
-
-  return datos as ProductoOferta[];
-}
-
-/**
- * Consulta el ranking alternativo de interacción comunitaria basado en la cantidad real de reseñas publicadas.
- *
- * @param limit Opcional. Cantidad máxima de productos a retornar (1 a 100).
- */
-export async function obtenerMasComentados(limit?: number): Promise<ProductoMasComentado[]> {
-  const query = normalizarParametroLimit(limit);
-  const datos = await apiFetch<unknown>(`/api/rankings/mas-comentados${query}`);
-
-  if (!Array.isArray(datos)) {
-    throw new ApiError(
-      "La respuesta del servidor no tiene el formato esperado (lista de más comentados).",
-    );
-  }
-
-  return datos as ProductoMasComentado[];
 }

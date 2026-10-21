@@ -20,6 +20,13 @@ import {
   type Producto,
   type DispositivoKimovil,
   type UsuarioSesion,
+  esAdministrador,
+  esRepresentante,
+} from "@/types/producto";
+import {
+  type Producto,
+  type DispositivoKimovil,
+  type UsuarioSesion,
   type ProductoMejorValorado,
   type ProductoDeseado,
   type ProductoMasComentado,
@@ -1605,6 +1612,16 @@ export default function Home() {
         usuarioSesion={usuarioSesion}
         onPedirLogin={() => setModalAuthAbierto(true)}
         onValoracionGuardada={cargarMejorValorados}
+      />
+
+      {/* ─────────────────────────────────────────────────────────────
+          MODAL MODULAR DEL PANEL DE ADMINISTRACIÓN (FASE 3.1)
+      ───────────────────────────────────────────────────────────── */}
+      <AdminPanelModal
+        isOpen={modalAdminAbierto}
+        onClose={() => setModalAdminAbierto(false)}
+        usuarioSesion={usuarioSesion}
+        onProductoCambiado={recargarProductosCatalogo}
       />
 
       {/* ─────────────────────────────────────────────────────────────

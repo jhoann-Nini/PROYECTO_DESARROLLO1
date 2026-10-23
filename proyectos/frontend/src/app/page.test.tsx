@@ -1030,5 +1030,193 @@ describe("Página principal / (Home)", () => {
       });
     });
   });
+
+  describe("34. Comportamiento del Catálogo General, Búsqueda y Presupuesto", () => {
+    const catalogoProductosPrueba: Producto[] = [
+      {
+        idProducto: 23,
+        nombre: "Samsung Galaxy Tab S10 Ultra",
+        descripcion: "Tablet insignia con pantalla AMOLED de 14.6 pulgadas",
+        precioReferencia: 5209900,
+        idCategoria: 2,
+        idMarca: 1,
+        nombreCategoria: "Tablets",
+        nombreMarca: "Samsung",
+        imagen: "https://example.com/tab-s10-ultra.jpg",
+        estado: true,
+      },
+      {
+        idProducto: 24,
+        nombre: "Samsung Galaxy Buds FE",
+        descripcion: "Earbuds con cancelación activa de ruido",
+        precioReferencia: 289900,
+        idCategoria: 4,
+        idMarca: 1,
+        nombreCategoria: "Auriculares",
+        nombreMarca: "Samsung",
+        imagen: "https://example.com/buds-fe.jpg",
+        estado: true,
+      },
+      {
+        idProducto: 25,
+        nombre: "Samsung Galaxy Tab S10+",
+        descripcion: "Tablet premium de alto rendimiento con S-Pen",
+        precioReferencia: 4999990,
+        idCategoria: 2,
+        idMarca: 1,
+        nombreCategoria: "Tablets",
+        nombreMarca: "Samsung",
+        imagen: "https://example.com/tab-s10-plus.jpg",
+        estado: true,
+      },
+    ];
+
+    it("1. El catálogo general muestra todos los productos disponibles sin un presupuesto restrictivo", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+        expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+        expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      });
+    });
+
+    it("2. Con un presupuesto de $4.000.000 COP, los productos más caros siguen siendo localizables en el catálogo general", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      // Cambiar al catálogo general
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      // El presupuesto por defecto es 1000 ($4.000.000 COP).
+      // El producto más caro ($5.209.900) sigue visible y muestra su badge 'Supera presupuesto'
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.getAllByText("Supera presupuesto").length).toBeGreaterThanOrEqual(1);
+
+      // Y el producto económico ($289.900) muestra su badge '✓ En presupuesto'
+      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      expect(screen.getAllByText("✓ En presupuesto").length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("3. La búsqueda de 'Samsung Galaxy Tab S10 Ultra' permite localizar ese producto aunque su precio supere el presupuesto", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      // Escribir en el buscador
+      const inputBusqueda = screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca/i,
+      });
+      fireEvent.change(inputBusqueda, {
+        target: { value: "Samsung Galaxy Tab S10 Ultra" },
+      });
+
+      // Debe encontrarse y mostrarse
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.queryByText("Samsung Galaxy Buds FE")).toBeNull();
+    });
+
+    it("4. La búsqueda de 'Samsung Galaxy Tab S10+' muestra una coincidencia si existe, o mensaje de búsqueda sin resultados si no existe", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      });
+
+      const inputBusqueda = screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca/i,
+      });
+
+      // 4a. Coincidencia existente
+      fireEvent.change(inputBusqueda, {
+        target: { value: "Samsung Galaxy Tab S10+" },
+      });
+      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+
+      // 4b. Modelo inexistente
+      fireEvent.change(inputBusqueda, {
+        target: { value: "Modelo Inexistente XYZ 999" },
+      });
+      expect(
+        screen.getByText(/No se encontraron productos para “Modelo Inexistente XYZ 999”/i)
+      ).toBeDefined();
+      expect(screen.getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
+    });
+
+    it("5. El contador de productos totales y el contador de resultados filtrados no se confunden", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/3 productos verificados en la plataforma • 3 mostrados/i)
+        ).toBeDefined();
+      });
+
+      // Filtrar por texto
+      const inputBusqueda = screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca/i,
+      });
+      fireEvent.change(inputBusqueda, {
+        target: { value: "Buds" },
+      });
+
+      // El total de productos verificados en la plataforma sigue siendo 3, pero mostrados es 1
+      expect(
+        screen.getByText(/3 productos verificados en la plataforma • 1 mostrado/i)
+      ).toBeDefined();
+    });
+
+    it("6. Los filtros de búsqueda y presupuesto funcionan sin alterar los datos originales", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      const inputBusqueda = screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca/i,
+      });
+
+      // Aplicar filtro de búsqueda
+      fireEvent.change(inputBusqueda, { target: { value: "Ultra" } });
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.queryByText("Samsung Galaxy Buds FE")).toBeNull();
+
+      // Limpiar filtro de búsqueda
+      fireEvent.change(inputBusqueda, { target: { value: "" } });
+
+      // Todos los productos originales vuelven a estar visibles sin alteraciones
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+    });
+  });
 });
 

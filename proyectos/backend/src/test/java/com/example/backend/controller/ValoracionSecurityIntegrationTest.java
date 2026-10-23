@@ -439,4 +439,37 @@ class ValoracionSecurityIntegrationTest {
                 .andExpect(jsonPath("$[?(@.idProducto == " + idProductoValido + ")].promedioPuntuacion").value(5.0))
                 .andExpect(jsonPath("$[?(@.idProducto == " + idProductoValido + ")].cantidadValoraciones").value(1));
     }
+
+    @Test
+    @DisplayName("Endpoint público de estadísticas de valoración GET /api/productos/{idProducto}/valoracion-stats es accesible sin token y calcula datos independientes por producto")
+    void estadisticasValoracionPublicaPorProducto() throws Exception {
+        // 1. Producto sin valoraciones retorna cantidadValoraciones 0
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(0));
+
+        // 2. Crear dos usuarios y agregar valoraciones al producto
+        String token1 = generarToken(TEST_SUB, "user1@example.com", "Usuario Uno");
+        String token2 = generarToken(TEST_SUB_2, "user2@example.com", "Usuario Dos");
+
+        mockMvc.perform(post("/api/valoraciones")
+                        .header("Authorization", "Bearer " + token1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 4}"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/valoraciones")
+                        .header("Authorization", "Bearer " + token2)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 5}"))
+                .andExpect(status().isCreated());
+
+        // 3. Consultar estadísticas públicas (sin autenticación)
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.promedioPuntuacion").value(4.5))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(2));
+    }
 }

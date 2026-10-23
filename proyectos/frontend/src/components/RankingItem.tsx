@@ -3,11 +3,13 @@
 
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
+import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 
 export interface RankingItemProps {
   ranking: number;
   nombre: string;
   marca?: string | null;
+  categoria?: string | number | null;
   descripcion?: string | null;
   imagen?: string | null;
   precio?: number | null;
@@ -22,6 +24,7 @@ export default function RankingItem({
   ranking,
   nombre,
   marca,
+  categoria,
   descripcion,
   imagen,
   precio,
@@ -31,9 +34,8 @@ export default function RankingItem({
   cantidadResenas,
   onVerDetalle,
 }: RankingItemProps) {
-  const [imgSrc, setImgSrc] = useState(
-    imagen || "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80"
-  );
+  const [errorImagen, setErrorImagen] = useState(false);
+  const tieneImagenValida = Boolean(imagen && imagen.trim().length > 0 && !errorImagen);
 
   return (
     <article
@@ -52,17 +54,22 @@ export default function RankingItem({
 
       {/* Miniatura del producto */}
       <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0a0e17] p-1 flex items-center justify-center">
-        <img
-          src={imgSrc}
-          alt={`Imagen de ${nombre}`}
-          onError={() =>
-            setImgSrc(
-              "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80"
-            )
-          }
-          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
+        {tieneImagenValida ? (
+          <img
+            src={imagen!}
+            alt={`Imagen de ${nombre}`}
+            onError={() => setErrorImagen(true)}
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <ProductImagePlaceholder
+            categoria={categoria}
+            marca={marca}
+            nombre={nombre}
+            tamano="sm"
+          />
+        )}
       </div>
 
       {/* Información del Dispositivo */}

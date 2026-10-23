@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetSession = vi.fn();
@@ -1068,6 +1069,133 @@ describe("api.ts - Cliente API del frontend", () => {
 
       const resNoContent = await obtenerMiValoracion(5);
       expect(resNoContent).toBeNull();
+    });
+  });
+
+  describe("descargarCatalogoCsv - Exportación CSV", () => {
+    it("debe fallar si no hay sesión activa de Supabase", async () => {
+      const { descargarCatalogoCsv, ApiError } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: null },
+        error: null,
+      });
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(ApiError);
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No se encontró una sesión de autenticación activa",
+      );
+    });
+
+    it("debe enviar Authorization Bearer y descargar el Blob con nombre de Content-Disposition", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin-123" } },
+        error: null,
+      });
+
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Samsung"], { type: "text/csv" });
+      const headers = new Headers();
+      headers.set("Content-Disposition", 'attachment; filename="catalogo_productos_20261021.csv"');
+      headers.set("Content-Type", "text/csv; charset=UTF-8");
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers,
+        blob: async () => fakeBlob,
+      } as unknown as Response);
+
+      const resultado = await descargarCatalogoCsv();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/exportar-csv",
+        expect.objectContaining({
+          method: "GET",
+          headers: expect.objectContaining({
+            Authorization: "Bearer token-admin-123",
+          }),
+        }),
+      );
+
+      expect(resultado.nombreArchivo).toBe("catalogo_productos_20261021.csv");
+      expect(resultado.blob).toBe(fakeBlob);
+    });
+
+    it("debe usar nombre por defecto si no hay cabecera Content-Disposition", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin-123" } },
+        error: null,
+      });
+
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Samsung"], { type: "text/csv" });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        blob: async () => fakeBlob,
+      } as unknown as Response);
+
+      const resultado = await descargarCatalogoCsv();
+      expect(resultado.nombreArchivo).toBe("catalogo_productos.csv");
+    });
+
+    it("debe rechazar con mensaje adecuado si el servidor responde 403 Forbidden", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-no-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: async () => ({ message: "Acceso denegado" }),
+      } as unknown as Response);
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No tienes permisos de administrador para exportar el catálogo",
+      );
+    });
+
+    it("debe rechazar con mensaje adecuado si falla la red", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockRejectedValueOnce(new Error("Network connection error"));
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No fue posible conectarse con el servidor para exportar el catálogo",
+      );
+    });
+  });
+
+  describe("dispararDescargaArchivo", () => {
+    it("crea un enlace temporal y simula el click para descargar el archivo", async () => {
+      const { dispararDescargaArchivo } = await loadApi(DEFAULT_API_URL);
+      const fakeBlob = new Blob(["test"], { type: "text/csv" });
+
+      const createObjectURLMock = vi.fn().mockReturnValue("blob:http://localhost/test-uuid");
+      const revokeObjectURLMock = vi.fn();
+      vi.stubGlobal("URL", {
+        createObjectURL: createObjectURLMock,
+        revokeObjectURL: revokeObjectURLMock,
+      });
+
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+      const appendChildSpy = vi.spyOn(document.body, "appendChild");
+      const removeChildSpy = vi.spyOn(document.body, "removeChild");
+
+      dispararDescargaArchivo(fakeBlob, "test.csv");
+
+      expect(createObjectURLMock).toHaveBeenCalledWith(fakeBlob);
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+      expect(appendChildSpy).toHaveBeenCalled();
+      expect(removeChildSpy).toHaveBeenCalled();
+      expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:http://localhost/test-uuid");
     });
   });
 });

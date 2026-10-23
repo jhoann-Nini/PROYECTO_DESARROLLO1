@@ -1,6 +1,6 @@
 # Pruebas de integración del backend
 
-Este documento describe las pruebas automatizadas disponibles actualmente en el backend de TecnoReview y cómo ejecutarlas.
+Este documento describe las pruebas automatizadas disponibles actualmente en el backend de TecReview y cómo ejecutarlas.
 
 ## Requisitos
 
@@ -104,5 +104,49 @@ Las pruebas cubren salud, solicitudes al controlador y persistencia local en H2.
   - **Solicitud HTTP correcta:** El cliente dispara la petición `GET` al endpoint configurado sin errores de sintaxis ni bloqueos.
   - **Manejo de estado de carga:** Muestra indicadores esqueléticos / mensajes de carga mientras espera la respuesta.
   - **Tolerancia a fallos y manejo de errores:** Si el backend está inactivo o responde con error HTTP, se captura mediante `ApiError` y se presenta un mensaje amigable o activación de datos de respaldo sin que la aplicación se caiga.
-  - **Calidad de código:** Pasa `npm run lint` con 0 errores y `npm run build` con código de salida 0.
+  - **Calidad de código:** Pasa `npm test` (9/9 pruebas con Vitest), `npm run lint` con código de salida 0 y `npm run build` con código de salida 0.
 
+### Matriz de validación CP-S1-09 (Integración Frontend–Backend)
+
+| Escenario | Tipo | Pasos ejecutados | Resultado esperado | Resultado observado | Estado |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1. Carga del frontend en el navegador** | Automatizado + Manual | Iniciar `npm run dev` y abrir `http://localhost:3000` en el navegador. | Interfaz renderizada sin fallos de compilación ni errores de JavaScript. | El frontend carga en el navegador correctamente sin errores. | **APROBADO** |
+| **2. Petición GET a `/api/productos`** | Automatizado + Manual | Inspección de red en navegador hacia `http://localhost:8080/api/productos` con backend activo. | Petición recibida por Spring Boot; respuesta HTTP 200 con JSON. | `GET http://localhost:8080/api/productos` responde HTTP 200 con JSON de productos. | **APROBADO** |
+| **3. Validación de cabeceras CORS** | Automatizado + Manual | Verificación de cabeceras HTTP y consola del navegador (F12). | `Access-Control-Allow-Origin: http://localhost:3000` presente; consola limpia de bloqueos CORS. | La cabecera CORS permite `http://localhost:3000` y no se generan errores de origen cruzado. | **APROBADO** |
+| **4. Visualización de productos en el catálogo** | Automatizado + Manual | Carga de catálogo con backend conectado en `/` y `/productos`. | Renderizado dinámico de tarjetas con nombre, descripción y precio de productos. | Los productos recibidos aparecen correctamente en el catálogo. | **APROBADO** |
+| **5. Backend apagado / Desconexión del servidor** | Automatizado + Manual | Cargar frontend con el servicio Spring Boot apagado. | Captura de `ApiError`, activación de modo local y mensaje amigable de desconexión. | El frontend muestra mensaje de desconexión del servidor y activa modo local sin caerse. | **APROBADO** |
+| **6. Respuesta de API con lista vacía (`[]`)** | Automatizado + Manual | Simular respuesta HTTP 200 con `[]` en `http://localhost:8080/api/productos` con frontend activo en `http://localhost:3000`. | En `/` activa fallback `PRODUCTOS_MOCK` e indicador "Modo local"; en `/productos` indica "0 productos registrados". | En `/` activa modo local con catálogo de respaldo; en `/productos` muestra "0 productos registrados" sin tarjetas. | **APROBADO** |
+
+**Estado general de CP-S1-09:** **APROBADO**. Se completó la validación de los 6 escenarios de integración entre el frontend y el endpoint `/api/productos` (carga, comunicación HTTP, CORS, renderizado, tolerancia a desconexión y respuesta con lista vacía).
+
+---
+
+### `CP-S1-10`: Manejo de estados vacíos y errores del frontend
+
+- **Componentes involucrados:**
+  - `proyectos/frontend/src/services/api.ts` (cliente HTTP y manejo de excepciones `ApiError`).
+  - `proyectos/frontend/src/services/api.test.ts` (suite unitaria de 9 pruebas en entorno `node` con Vitest).
+  - `proyectos/frontend/src/app/productos/page.tsx` (vista de catálogo con diagnóstico e informe visual de errores).
+  - `proyectos/frontend/src/app/productos/page.test.tsx` (suite de 7 pruebas de componentes en entorno `happy-dom` con Testing Library).
+  - `proyectos/frontend/src/app/page.tsx` (página principal con consumo reactivo, degradación suave con fallback `PRODUCTOS_MOCK` e insignia "Modo local").
+  - `proyectos/frontend/src/app/page.test.tsx` (suite de 7 pruebas de componentes en entorno `happy-dom` con Testing Library).
+- **Criterios de calidad verificados:**
+  - **Pruebas unitarias y de componentes (`npm test`):** **23 pruebas aprobadas** en 3 archivos (`api.test.ts` [9], `productos/page.test.tsx` [7], `page.test.tsx` [7]).
+  - **Análisis estático (`npm run lint`):** Código de salida 0 (ejecución de ESLint finalizada exitosamente sin incidencias reportadas).
+  - **Compilación de producción (`npm run build`):** Código de salida 0 (Next.js Turbopack y comprobación TypeScript finalizados exitosamente en 5 rutas estáticas).
+  - **Aislamiento:** Las pruebas simulan respuestas de la API mediante mocks (`vi.mock("@/services/api")`) sin llamadas de red ni dependencias de Supabase o backend real.
+
+#### Matriz de validación CP-S1-10 (Cliente API, Vista `/productos` y Vista `/`)
+
+| Escenario | Capa / Tipo | Prueba existente | Evidencia de ejecución | Estado |
+| :--- | :--- | :--- | :--- | :---: |
+| **1. Respuesta HTTP 200 con lista vacía (`[]`)** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (retorno `[]`), `productos/page.test.tsx` (muestra "0 productos", sin tarjetas) y `page.test.tsx` (activa `PRODUCTOS_MOCK` y "Modo local"). | `npm test` aprobado (23/23 pruebas). | **APROBADO** |
+| **2. Backend no disponible / Error de red** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (captura `fetch` reject), `productos/page.test.tsx` (banner de error de conexión) y `page.test.tsx` (fallback a mock y "Modo local"). | Vitest aprobado + Verificado manualmente en navegador. | **APROBADO** |
+| **3. Respuesta HTTP 500 del backend** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (status 500), `productos/page.test.tsx` (banner con mensaje de error 500) y `page.test.tsx` (fallback a mock y "Modo local"). | Vitest aprobado en todas las suites. | **APROBADO** |
+| **4. Respuesta JSON malformado** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (SyntaxError), `productos/page.test.tsx` (banner con mensaje de JSON no válido) y `page.test.tsx` (fallback a mock y "Modo local"). | Vitest aprobado en todas las suites. | **APROBADO** |
+| **5. Estructura inesperada (no array)** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (objeto no array), `productos/page.test.tsx` (banner de formato no esperado) y `page.test.tsx` (fallback a mock y "Modo local"). | Vitest aprobado en todas las suites. | **APROBADO** |
+| **6. Estado de carga inicial** | Vistas (`/` y `/productos`) | `productos/page.test.tsx` (muestra "Consultando catálogo...") y `page.test.tsx` (muestra "Cargando catálogo de dispositivos..." e insignia inicial "Modo local"). | Vitest aprobado + Verificado visualmente en navegador. | **APROBADO** |
+| **7. Respuesta exitosa con productos** | Servicio API + Vistas (`/` y `/productos`) | `api.test.ts` (retorno tipado), `productos/page.test.tsx` (contador y tarjetas) y `page.test.tsx` (insignia "Servidor conectado" y productos recibidos). | Vitest aprobado en todas las suites. | **APROBADO** |
+| **8. Diferencias de resiliencia entre `/` y `/productos`** | Arquitectura / Interfaz | Validado mediante suites automatizadas independientes (`page.test.tsx` confirma resiliencia y fallback en Home; `productos/page.test.tsx` confirma diagnóstico explícito sin mock). | Vitest aprobado en ambas suites de componentes. | **APROBADO** |
+
+**Estado general de CP-S1-10:** **COMPLETADO — PRUEBAS AUTOMATIZADAS**. Se validaron satisfactoriamente los 23 casos de prueba automatizados distribuidos en 3 suites (9 en `api.test.ts`, 7 en `productos/page.test.tsx` y 7 en `page.test.tsx`) simulando respuestas mediante mocks sin dependencias externas de red ni Supabase. No se reclama una cobertura total del código, sino la aprobación y verificación estricta de los 23 escenarios reportados.

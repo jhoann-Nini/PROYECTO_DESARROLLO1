@@ -2,7 +2,7 @@
 
 ## 1. Información general
 
-**Nombre del proyecto:** TecnoReview
+**Nombre del proyecto:** TecReview
 
 **Tipo de proyecto:** Plataforma web de reseñas y comparación de productos tecnológicos.
 
@@ -231,7 +231,9 @@ La solución estará compuesta inicialmente por los siguientes elementos:
                      │
                   Supabase
 ```
+
 ## Frontend
+
 Se desarrollará utilizando:
 
 Next.js.
@@ -240,6 +242,7 @@ Componentes reutilizables.
 Diseño responsive.
 
 ## Backend
+
 Se desarrollará utilizando:
 
 Java.
@@ -248,6 +251,7 @@ API REST.
 Arquitectura organizada por capas.
 
 ## Base de datos
+
 Se utilizará:
 
 PostgreSQL.
@@ -256,6 +260,7 @@ Supabase.
 La estructura definitiva de tablas y relaciones será documentada en 05-modelo-datos.md.
 
 ## Control de versiones
+
 El código será administrado mediante:
 
 Git.
@@ -271,6 +276,7 @@ docs/08-github-y-flujo-git.md
 ---
 
 # 8. Alcance de los usuarios
+
 El sistema contemplará diferentes tipos de usuarios.
 
 Inicialmente se consideran:
@@ -303,7 +309,8 @@ Las funciones y permisos exactos serán definidos posteriormente.
 
 Para evitar que el proyecto crezca de manera descontrolada, las siguientes funcionalidades no forman parte del alcance inicial salvo que posteriormente sean aprobadas por el equipo:
 
-## Procesamiento de pagos.
+## Procesamiento de pagos
+
 Compra directa de productos.
 Sistema completo de comercio electrónico.
 Gestión de envíos.
@@ -467,3 +474,79 @@ Versión: 1.0
 Documento: Alcance del proyecto.
 
 Proyecto: TecnoReview.
+
+---
+
+# 16. Actualización del alcance — Sprint 2
+
+**Versión:** 1.1  
+**Estado:** Propuesta de alcance para revisión del equipo.
+
+## 16.1 Funcionalidades priorizadas
+
+Además de las funcionalidades base descritas anteriormente, el Sprint 2 prioriza la integración funcional entre el frontend y el backend para:
+
+- Consultar productos desde la base de datos real.
+- Mostrar imágenes, descripción y características disponibles de cada producto, sin presentar datos ficticios como si fueran reales.
+- Permitir reseñas y calificaciones únicamente a usuarios autenticados y registrados.
+- Aplicar permisos según el rol validado por el backend; ocultar una opción en la interfaz no sustituye la autorización del servidor.
+- Preparar el mantenimiento administrativo de productos, categorías y marcas, sujeto a los permisos existentes.
+- Definir y documentar el modelo para tiendas virtuales y ofertas de productos.
+
+## 16.2 Tiendas virtuales y ofertas
+
+Se propone ampliar el catálogo para registrar ofertas de productos disponibles en tiendas virtuales. Cada oferta deberá poder asociarse con un producto y contemplar, como mínimo:
+
+- Nombre o identificación de la tienda.
+- URL de la tienda.
+- URL directa del producto dentro de la tienda.
+- Precio publicado.
+- Indicador de envío gratis.
+- Fecha y hora de la última actualización del precio.
+
+La relación exacta entre productos, establecimientos y ofertas deberá decidirse después de revisar las entidades y tablas existentes. No se presupone que las tablas actuales puedan reutilizarse sin cambios. Cualquier modificación de esquema debe acordarse con el equipo, documentarse mediante una migración numerada y verificarse contra el historial real de migraciones. Esta documentación no autoriza ejecutar SQL en Supabase.
+
+En esta etapa, la gestión de precios/ofertas por parte del administrador se considera una propuesta para priorización del Sprint 2. La administración directa por representantes de tiendas se deja para un sprint posterior, salvo aprobación expresa del equipo.
+
+## 16.3 Roles y permisos
+
+Se consideran los siguientes perfiles funcionales, sujetos a la definición vigente de `docs/usuarios-y-roles.md` y a las reglas aplicadas por el backend:
+
+- **Visitante:** consulta información pública; no publica reseñas ni calificaciones.
+- **Usuario registrado:** consulta y compara productos y, tras autenticarse, publica reseñas y calificaciones.
+- **Administrador:** realiza operaciones administrativas autorizadas sobre el catálogo.
+- **Representante de establecimiento:** perfil futuro para administrar la información de su establecimiento/ofertas cuando esa funcionalidad sea aprobada e implementada.
+
+Los permisos definitivos deben mantenerse consistentes entre la documentación, la base de datos, el backend y la interfaz.
+
+## 16.4 Fuera del alcance del Sprint 2
+
+Salvo aprobación posterior del equipo, no se incluyen:
+
+- Procesamiento de pagos, carrito de compras ni compra directa.
+- Gestión logística de pedidos y envíos; el indicador de envío gratis es informativo.
+- Sincronización automática de precios con marketplaces o tiendas externas.
+- Administración autónoma de tiendas por representantes, hasta que se priorice e implemente.
+- Funcionalidades de mapas y geolocalización como parte de la entrega de tiendas virtuales; cualquier integración de mapas existente deberá evaluarse por separado dentro del alcance general.
+- Cambios directos al esquema de producción sin revisión y autorización.
+
+## 16.5 Criterios de aceptación adicionales
+
+- Los productos y ofertas mostrados deben provenir de la fuente de datos configurada y no de datos de demostración presentados como reales.
+- Las URL de tienda y producto deben ser accesibles como enlaces y validarse en el backend.
+- El precio, el indicador de envío gratis y la fecha de actualización deben mostrarse de forma clara cuando estén disponibles.
+- Los visitantes no autenticados no pueden crear reseñas ni calificaciones.
+- Las operaciones administrativas deben comprobar los permisos en el servidor.
+- Las migraciones deben tener una versión única y documentar su aplicación; antes de asignar una versión nueva se revisarán los scripts y el registro de versiones existentes.
+- Las pruebas de backend y frontend deben pasar antes de considerar lista la entrega.
+
+## 16.6 Riesgos y dependencias
+
+- La ampliación del modelo de datos requiere coordinación del equipo y revisión de las tablas existentes en Supabase.
+- La disponibilidad del backend y la conexión con PostgreSQL deben verificarse en el entorno desplegado antes de validar la integración completa.
+- Los estimados de esfuerzo y la distribución definitiva de tareas deberán ajustarse con base en la capacidad y los resultados reales del equipo.
+
+## 16.7 Historial de cambios
+
+- **Versión 1.0:** borrador inicial del alcance.
+- **Versión 1.1:** aclaración propuesta del Sprint 2, tiendas virtuales, roles, criterios de aceptación, exclusiones y dependencias.

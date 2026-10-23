@@ -9,9 +9,126 @@ export interface Producto {
   estado: boolean;
   nombreCategoria?: string;
   nombreMarca?: string;
+  caracteristicas?: Record<string, unknown> | null;
 }
 
-export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares";
+/**
+ * DTO para la creación y actualización de productos (ProductoRequest en Spring Boot).
+ */
+export interface ProductoRequest {
+  nombre: string;
+  descripcion?: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen?: string | null;
+  precioReferencia?: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+}
+
+/**
+ * DTO de respuesta para productos (ProductoResponse en Spring Boot).
+ */
+export type ProductoResponse = Producto;
+
+/**
+ * DTO para la creación y actualización de categorías (CategoriaRequest en Spring Boot).
+ */
+export interface CategoriaRequest {
+  nombre: string;
+  descripcion?: string | null;
+}
+
+/**
+ * DTO de respuesta para categorías (CategoriaResponse en Spring Boot).
+ */
+export interface CategoriaResponse {
+  idCategoria: number;
+  nombre: string;
+  descripcion: string | null;
+  estado: boolean;
+}
+
+/**
+ * DTO para la creación y actualización de marcas (MarcaRequest en Spring Boot).
+ */
+export interface MarcaRequest {
+  nombre: string;
+  descripcion?: string | null;
+}
+
+/**
+ * DTO de respuesta para marcas (MarcaResponse en Spring Boot).
+ */
+export interface MarcaResponse {
+  idMarca: number;
+  nombre: string;
+  descripcion: string | null;
+  estado: boolean;
+}
+
+// ============================================================================
+// DTOs DE RANKINGS (Fase 4.4 / 4.5)
+// ============================================================================
+
+export interface ProductoMejorValorado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  promedioPuntuacion: number;
+  cantidadValoraciones: number;
+  posicionRanking: number;
+}
+
+export interface ProductoDeseado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  cantidadDeseados: number;
+  posicionRanking: number;
+}
+
+export interface ProductoMasComentado {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  precioReferencia: number | null;
+  caracteristicas?: Record<string, unknown> | null;
+  cantidadResenas: number;
+  posicionRanking: number;
+}
+
+export interface ProductoOferta {
+  idProducto: number;
+  nombre: string;
+  descripcion: string | null;
+  idCategoria: number;
+  idMarca: number;
+  imagen: string | null;
+  caracteristicas?: Record<string, unknown> | null;
+  precioReferencia: number;
+  precioActual: number;
+  ahorroMonetario: number;
+  porcentajeDescuento: number;
+  idEstablecimiento: number;
+  nombreEstablecimiento: string;
+  posicionRanking: number;
+}
+
+
+export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares" | "monitores";
 
 export interface SeccionHardware {
   icono: string;
@@ -73,6 +190,8 @@ export interface DispositivoKimovil {
   imagen: string;
   tipo: "vendido" | "deseado" | "oferta";
   categoria?: string;
+  chipInfo?: string;
+  vendedor?: string;
   detalleSpecs?: EspecificacionesDetalladas;
 }
 
@@ -82,4 +201,41 @@ export interface UsuarioSesion {
   usuario: string;
   email: string;
   avatar?: string;
+  rol?: string;
+  idUsuario?: number;
+  activo?: boolean;
+  fechaRegistro?: string;
+}
+
+export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento";
+
+export const ROLES_SISTEMA = {
+  USUARIO_REGISTRADO: "Usuario registrado",
+  ADMINISTRADOR: "Administrador",
+  REPRESENTANTE: "Representante de establecimiento",
+} as const;
+
+/**
+ * Valida si la sesión tiene rol de Administrador confirmado por el backend.
+ * Compara de forma estricta e insensible a mayúsculas/minúsculas.
+ */
+export function esAdministrador(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "administrador";
+}
+
+/**
+ * Valida si la sesión tiene rol de Representante de establecimiento confirmado por el backend.
+ */
+export function esRepresentante(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "representante de establecimiento";
+}
+
+/**
+ * Valida si la sesión tiene rol de Usuario registrado confirmado por el backend.
+ */
+export function esUsuarioRegistrado(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "usuario registrado";
 }

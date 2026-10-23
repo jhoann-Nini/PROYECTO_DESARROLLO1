@@ -18,8 +18,11 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Column(name = "supabase_uid", unique = true, length = 64)
+    private String supabaseUid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol", nullable = false)
@@ -39,6 +42,8 @@ public class Usuario {
     public void setCorreo(String correo) { this.correo = correo; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getSupabaseUid() { return supabaseUid; }
+    public void setSupabaseUid(String supabaseUid) { this.supabaseUid = supabaseUid; }
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }

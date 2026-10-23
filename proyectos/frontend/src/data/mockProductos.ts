@@ -5,6 +5,160 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
   {
     id: 101,
     ranking: 1,
+    nombre: "Redmi Note 13 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    especificaciones: "Dimensity 7200 Ultra · 200MP OIS · 12GB RAM · 120Hz Curved AMOLED",
+    puntuacion: 9.1,
+    precio: 437.25, // $ 1.749.000 COP
+    precioOriginal: 524.75,
+    descuento: "-17%",
+    tendencia: "sube",
+    cambioRanking: 2,
+    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Dimensity 7200 Ultra · 200MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "800,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA & DISEÑO CURVO",
+          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K · 120Hz · 1800 nits pico · Dolby Vision · IP68.",
+        },
+        {
+          icono: "⚡",
+          titulo: "PROCESADOR & RENDIMIENTO",
+          descripcion: "MediaTek Dimensity 7200 Ultra (4nm TSMC) Octa-Core con refrigeración líquida VC.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.1 },
+        { nombre: "Cámara 200MP OIS", puntos: 9.2 },
+        { nombre: "Pantalla AMOLED 1.5K", puntos: 9.3 },
+        { nombre: "Batería y Carga 120W", puntos: 9.4 },
+      ],
+      tiendas: [
+        { nombre: "Éxito Colombia Oficial", precio: 437.25, envioGratis: true },
+        { nombre: "Falabella Colombia", precio: 445, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 102,
+    ranking: 2,
+    nombre: "Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "Exynos 1480 · 5000 mAh · Super AMOLED 120Hz · 8GB RAM",
+    puntuacion: 8.8,
+    precio: 397.25, // $ 1.589.000 COP
+    precioOriginal: 450,
+    descuento: "-12%",
+    tendencia: "igual",
+    cambioRanking: 0,
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Exynos 1480 · 50MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "715,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER AMOLED",
+          descripcion: "6.6'' Super AMOLED FHD+ · 120Hz · Vision Booster · Gorilla Glass Victus+.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento", puntos: 8.7 },
+        { nombre: "Pantalla", puntos: 9.1 },
+        { nombre: "Batería", puntos: 9.2 },
+        { nombre: "Cámaras", puntos: 8.6 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia", precio: 397.25, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 103,
+    ranking: 3,
+    nombre: "Edge 50 Pro",
+    marca: "Motorola",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 7 Gen 3 · Carga 125W TurboPower · Pantone Validated",
+    puntuacion: 8.9,
+    precio: 574.975, // $ 2.299.900 COP
+    precioOriginal: 649.75,
+    descuento: "-11%",
+    tendencia: "baja",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Snapdragon 7 Gen 3 · 50MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "850,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA CURVA P-OLED",
+          descripcion: "6.7'' pOLED 1.5K 144Hz · Certificación de color Pantone y piel vegana premium.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento", puntos: 8.9 },
+        { nombre: "Pantalla", puntos: 9.3 },
+      ],
+      tiendas: [
+        { nombre: "Motorola Colombia Oficial", precio: 574.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 104,
+    ranking: 4,
+    nombre: "iPhone 13 (128GB)",
+    marca: "Apple",
+    categoria: "moviles",
+    especificaciones: "A15 Bionic · Super Retina XDR · iOS 18 · Modo Cine",
+    puntuacion: 8.6,
+    precio: 662.25, // $ 2.649.000 COP
+    precioOriginal: 749.75,
+    descuento: "-12%",
+    tendencia: "sube",
+    cambioRanking: 3,
+    imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
+    tipo: "vendido",
+    chipInfo: "Apple A15 Bionic · 12MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
+      benchmarkValor: "4,750 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER RETINA XDR",
+          descripcion: "6.1'' OLED Super Retina XDR · HDR10 · Dolby Vision · Ceramic Shield.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento iOS", puntos: 9.2 },
+        { nombre: "Calidad de Cámaras", puntos: 8.9 },
+      ],
+      tiendas: [
+        { nombre: "iShop Colombia", precio: 662.25, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 105,
+    ranking: 5,
     nombre: "POCO X8 Pro 5G",
     marca: "Xiaomi POCO",
     categoria: "moviles",
@@ -67,7 +221,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 102,
+    id: 106,
     ranking: 2,
     nombre: "Nothing Phone (2a) Plus",
     marca: "Nothing",
@@ -130,7 +284,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 103,
+    id: 107,
     ranking: 3,
     nombre: "Redmi Note 14 Pro+ 5G",
     marca: "Xiaomi",
@@ -191,7 +345,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 104,
+    id: 108,
     ranking: 4,
     nombre: "OnePlus Pad 2 Snapdragon",
     marca: "OnePlus",
@@ -254,7 +408,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 105,
+    id: 109,
     ranking: 5,
     nombre: "Sony WH-1000XM5 Noise Cancelling",
     marca: "Sony",
@@ -318,7 +472,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 106,
+    id: 110,
     ranking: 6,
     nombre: "ASUS ROG Zephyrus G16 OLED Laptop",
     marca: "ASUS",
@@ -386,6 +540,150 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 201,
     ranking: 1,
+    nombre: "iPhone 15 Pro Max (256GB)",
+    marca: "Apple",
+    categoria: "moviles",
+    especificaciones: "A17 Pro 3nm · Teleobjetivo Tetraprisma 5X · Titanio Grado 5 · iOS 18",
+    puntuacion: 9.6,
+    precio: 1297.5, // $ 5.190.000 COP
+    precioOriginal: 1475,
+    descuento: "-12%",
+    tendencia: "sube",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Apple A17 Pro · 48MP ProRAW",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
+      benchmarkValor: "7,450 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA SUPER RETINA XDR PROMOTION",
+          descripcion: "6.7'' OLED con ProMotion 120Hz adaptativo · Dynamic Island · 2000 nits pico exterior.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento Global", puntos: 9.8 },
+        { nombre: "Cámaras y Zoom 5X", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Apple Colombia Store", precio: 1297.5, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 202,
+    ranking: 2,
+    nombre: "Galaxy S24 Ultra",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 8 Gen 3 for Galaxy · S-Pen · 200MP · Marco de Titanio",
+    puntuacion: 9.4,
+    precio: 1049.975, // $ 4.199.900 COP
+    precioOriginal: 1349.975, // $ 5.399.900 COP
+    descuento: "-22%",
+    tendencia: "sube",
+    cambioRanking: 1,
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · 200MP",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,050,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "DYNAMIC AMOLED 2X PLANO",
+          descripcion: "6.8'' Dynamic AMOLED 2X 120Hz · 2600 nits pico · Corning Gorilla Armor antirreflejos.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.6 },
+        { nombre: "Cámaras 200MP Quad Tele", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia Oficial", precio: 1049.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 203,
+    ranking: 3,
+    nombre: "ROG Phone 8 Pro (16GB)",
+    marca: "Asus ROG",
+    categoria: "moviles",
+    especificaciones: "Snapdragon 8 Gen 3 · 165Hz AMOLED · AirTrigger · AniMe Vision LED",
+    puntuacion: 9.3,
+    precio: 1174.75, // $ 4.699.000 COP
+    precioOriginal: 1250,
+    descuento: "-6%",
+    tendencia: "igual",
+    cambioRanking: 0,
+    imagen: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · 165Hz",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,240,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "PANTALLA GAMING SAMSUNG E6",
+          descripcion: "6.78'' Flexible AMOLED 165Hz · Tasa de muestreo táctil 720Hz · 2500 nits.",
+        },
+      ],
+      metricas: [
+        { nombre: "Potencia Gaming Extrema", puntos: 9.9 },
+        { nombre: "Pantalla 165Hz", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Asus Colombia Oficial", precio: 1174.75, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 204,
+    ranking: 4,
+    nombre: "Xiaomi 14 Ultra (512GB)",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    especificaciones: "Sensor Leica 1 pulgada LYT-900 · 90W HyperCharge · Cuádruple 50MP",
+    puntuacion: 9.3,
+    precio: 1237.5, // $ 4.950.000 COP
+    precioOriginal: 1350,
+    descuento: "-8%",
+    tendencia: "sube",
+    cambioRanking: 2,
+    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    tipo: "deseado",
+    chipInfo: "Snapdragon 8 Gen 3 · Ópticas Leica",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "DxOMark Calidad de Cámara",
+      benchmarkValor: "155 Puntos",
+      secciones: [
+        {
+          icono: "📸",
+          titulo: "ÓPTICAS LEICA SUMMILUX",
+          descripcion: "Cuádruple cámara de 50MP con sensor LYT-900 de 1 pulgada.",
+        },
+      ],
+      metricas: [
+        { nombre: "Fotografía Profesional", puntos: 9.9 },
+        { nombre: "Rendimiento Snapdragon", puntos: 9.5 },
+      ],
+      tiendas: [
+        { nombre: "Xiaomi Store Colombia", precio: 1237.5, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 205,
+    ranking: 5,
     nombre: "Nothing Phone (3) Ultra Concept",
     marca: "Nothing",
     categoria: "moviles",
@@ -445,7 +743,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 202,
+    id: 206,
     ranking: 2,
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
@@ -506,7 +804,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 203,
+    id: 207,
     ranking: 3,
     nombre: "OnePlus 13 Pro 5G",
     marca: "OnePlus",
@@ -567,7 +865,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 204,
+    id: 208,
     ranking: 4,
     nombre: "Apple iPad Pro 11'' M4 OLED",
     marca: "Apple",
@@ -628,7 +926,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 205,
+    id: 209,
     ranking: 5,
     nombre: "Apple MacBook Pro 16'' M3 Max",
     marca: "Apple",
@@ -689,7 +987,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     },
   },
   {
-    id: 206,
+    id: 210,
     ranking: 6,
     nombre: "Bose QuietComfort Ultra Headphones",
     marca: "Bose",
@@ -753,8 +1051,45 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
 
 export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
   {
-    id: 301,
+    id: 300,
     ranking: 1,
+    nombre: "Galaxy S24 Ultra (512GB)",
+    marca: "Samsung",
+    categoria: "moviles",
+    especificaciones: "12GB RAM · Dynamic AMOLED 2X 120Hz · 5000 mAh",
+    chipInfo: "Snapdragon 8 Gen 3 · 200MP",
+    puntuacion: 9.6,
+    precio: 1049.975, // $ 4.199.900 COP
+    precioOriginal: 1349.975, // $ 5.399.900 COP
+    descuento: "-22% DTO",
+    tendencia: "sube",
+    cambioRanking: 1,
+    vendedor: "Vendido por Samsung Store Colombia Oficial",
+    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    tipo: "oferta",
+    detalleSpecs: {
+      categoriaTipo: "moviles",
+      benchmarkEtiqueta: "AnTuTu Benchmark v10",
+      benchmarkValor: "2,050,000 Puntos",
+      secciones: [
+        {
+          icono: "📱",
+          titulo: "DYNAMIC AMOLED 2X PLANO",
+          descripcion: "6.8'' Dynamic AMOLED 2X 120Hz · 2600 nits pico · Corning Gorilla Armor antirreflejos.",
+        },
+      ],
+      metricas: [
+        { nombre: "Rendimiento y CPU", puntos: 9.6 },
+        { nombre: "Cámaras 200MP Quad Tele", puntos: 9.7 },
+      ],
+      tiendas: [
+        { nombre: "Samsung Store Colombia Oficial", precio: 1049.975, envioGratis: true },
+      ],
+    },
+  },
+  {
+    id: 301,
+    ranking: 2,
     nombre: "Nothing Ear (a) Black Edition",
     marca: "Nothing",
     categoria: "auriculares",
@@ -1145,6 +1480,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 379.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.7'' Flexible AMOLED FHD+ (2412x1084) · 120Hz adaptativo · 1300 nits pico · Gorilla Glass 5",
+      procesador: "MediaTek Dimensity 7200 Pro (4nm TSMC) Octa-Core hasta 2.8GHz con NPU integrada",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 256GB Almacenamiento UFS 3.1",
+      camaras: "Doble cámara trasera 50MP OIS + 50MP Ultra Gran Angular 114° · Selfie 32MP",
+      bateria: "5000 mAh · Carga rápida por cable de 45W",
+      conectividad: "5G Dual SIM · Wi-Fi 6 · Bluetooth 5.3 · NFC con Google Wallet · Interfaz Glyph trasera",
+    },
   },
   {
     idProducto: 2,
@@ -1157,6 +1500,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 349.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.67'' Flow AMOLED CrystalRes 1.5K (2712x1220) · 120Hz · 1800 nits pico · Dolby Vision · HDR10+",
+      procesador: "MediaTek Dimensity 8300 Ultra (4nm) Octa-Core con refrigeración LiquidCool 2.0",
+      ram_almacenamiento: "12GB LPDDR5X · 512GB UFS 4.0 ultra rápido",
+      camaras: "Triple cámara 64MP OIS + 8MP Ultra Gran Angular + 2MP Macro · Grabación 4K 60fps",
+      bateria: "5000 mAh con tecnología de carga turbo de 67W",
+      conectividad: "5G Dual SIM · Wi-Fi 6 · Bluetooth 5.4 · NFC multifunción · Emisor infrarrojo",
+    },
   },
   {
     idProducto: 3,
@@ -1169,6 +1520,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 149.0,
     estado: true,
+    caracteristicas: {
+      transductores: "Drivers personalizados de 11.6mm con diafragma de grafeno y poliuretano · Sonido Hi-Res Audio 24bit/192kHz",
+      cancelacion_ruido: "Cancelación activa de ruido (ANC) personalizada de hasta 40dB con modo adaptativo inteligente",
+      microfonos: "3 micrófonos por auricular con tecnología Clear Voice de reducción de eco y viento",
+      bateria: "Hasta 36 horas con estuche de carga · 6.3 horas continuas · Carga rápida (10 min = 8 horas)",
+      codecs: "Bluetooth 5.3 · Códec LHDC 5.0, AAC y SBC · Conexión dual multipunto simultánea",
+      software: "Nothing X App con ecualizador paramétrico de 8 bandas y calibración de perfil auditivo personal",
+    },
   },
   {
     idProducto: 4,
@@ -1181,6 +1540,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 1299.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.8'' Dynamic AMOLED 2X QHD+ (3120x1440) · 1-120Hz LTPO · 2600 nits pico · Corning Gorilla Armor antirreflejo",
+      procesador: "Qualcomm Snapdragon 8 Gen 3 for Galaxy (4nm) Octa-Core con NPU dedicada para Galaxy AI",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 512GB Almacenamiento UFS 4.0",
+      camaras: "Cuádruple cámara: 200MP OIS principal + 50MP Periscopio 5x + 10MP Telefoto 3x + 12MP Ultra Gran Angular",
+      bateria: "5000 mAh · Carga super rápida de 45W · Carga inalámbrica Fast Wireless 2.0 y reversa PowerShare",
+      conectividad: "5G SA/NSA · Wi-Fi 7 · Bluetooth 5.3 · UWB · S-Pen integrado con latencia ultra baja de 2.8ms",
+    },
   },
   {
     idProducto: 5,
@@ -1193,6 +1560,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 429.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "12.1'' LCD 3K (3000x2120) · Tasa de refresco fluida de 144Hz · Formato 7:5 optimizado para lectura · 900 nits",
+      procesador: "Qualcomm Snapdragon 8 Gen 3 Flagship (4nm) con GPU Adreno 750",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 256GB Almacenamiento de alta velocidad UFS 4.0",
+      camaras: "Cámara trasera 13MP con flash LED · Cámara frontal 8MP centrada con encuadre automático para videollamadas",
+      bateria: "9510 mAh de alta capacidad · Carga ultra rápida 67W SuperVOOC (100% en 81 minutos)",
+      conectividad: "Wi-Fi 7 ultra rápido · Bluetooth 5.4 · Sistema de audio espacial de 6 altavoces estéreo · Soporte Stylus Stylo 2",
+    },
   },
   {
     idProducto: 6,
@@ -1205,5 +1580,13 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 799.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 100% sRGB · Bisagra con apertura de 180°",
+      procesador: "Intel Core i7-1355U 13ª Generación (10 núcleos, 12 hilos, frecuencia turbo hasta 5.0GHz)",
+      ram: "16GB Memoria RAM DDR5 5200MHz Dual Channel (ampliable hasta 40GB)",
+      almacenamiento: "512GB SSD M.2 2242 PCIe 4.0 NVMe Opal 2.0",
+      bateria: "Batería integrada de 57Wh con tecnología Rapid Charge (80% de carga en 60 minutos con USB-C 65W)",
+      puertos: "Thunderbolt 4 / USB-C, USB-C 3.2 Gen 2, USB-A 3.2 Gen 1, USB-A 2.0, HDMI 2.1, RJ-45 Gigabit Ethernet",
+    },
   },
 ];

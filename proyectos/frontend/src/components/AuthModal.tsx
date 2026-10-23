@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { UsuarioSesion } from "@/types/producto";
+import { createClient } from "@/lib/supabase/client";
+import { obtenerMiPerfil, mapearPerfilABusinessSession } from "@/services/api";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -24,23 +26,24 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
   const [regTerminos, setRegTerminos] = useState(false);
 
-  // Estados de error / feedback
+  // Estados de error, éxito y carga
   const [error, setError] = useState("");
   const [exito, setExito] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !cargando) onClose();
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, cargando]);
 
   if (!isOpen) return null;
 
-  const manejarLogin = (e: React.FormEvent) => {
+  const manejarLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setExito("");
@@ -50,30 +53,74 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       return;
     }
 
-    const usuarioSimulado: UsuarioSesion = {
-      id: "usr_" + Date.now(),
-      nombre: loginEmail.split("@")[0].toUpperCase() || "USUARIO",
-      usuario: loginEmail.split("@")[0],
-      email: loginEmail,
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    };
+    let loginExitoso = false;
+    setCargando(true);
+    try {
+      const supabase = createClient();
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: loginEmail.trim(),
+        password: loginPassword,
+      });
 
-    localStorage.setItem("usuario_sesion", JSON.stringify(usuarioSimulado));
-    setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
+      if (authError) {
+        if (authError.message.includes("Invalid login credentials")) {
+          setError("Credenciales incorrectas. Verifica tu correo y contraseña.");
+        } else if (authError.message.includes("Email not confirmed")) {
+          setError("Debes confirmar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.");
+        } else {
+          setError(authError.message || "No fue posible iniciar sesión. Inténtalo de nuevo.");
+        }
+        return;
+      }
 
-    setTimeout(() => {
-      onLoginSuccess(usuarioSimulado);
-      onClose();
-    }, 800);
+      if (!data.user || !data.session?.access_token) {
+        setError("No se recibió la información del usuario tras iniciar sesión.");
+        return;
+      }
+
+      try {
+        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
+
+        loginExitoso = true;
+        setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
+        setTimeout(() => {
+          onLoginSuccess(usuarioSesion);
+          onClose();
+        }, 600);
+      } catch (errPerfil) {
+        const mensaje =
+          errPerfil instanceof Error
+            ? errPerfil.message
+            : "Error al sincronizar el perfil con el servidor.";
+        setError(mensaje);
+        try {
+          await supabase.auth.signOut({ scope: "local" });
+        } catch {}
+        return;
+      }
+    } catch (err) {
+      const mensaje = err instanceof Error ? err.message : "Error al conectar con el servicio de autenticación.";
+      setError(mensaje);
+    } finally {
+      if (!loginExitoso) {
+        setCargando(false);
+      }
+    }
   };
 
-  const manejarRegistro = (e: React.FormEvent) => {
+  const manejarRegistro = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setExito("");
 
     if (!regNombre.trim() || !regEmail.trim() || !regUsuario.trim() || !regPassword.trim()) {
       setError("Todos los campos marcados con (*) son obligatorios.");
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
@@ -87,21 +134,85 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       return;
     }
 
-    const nuevoUsuario: UsuarioSesion = {
-      id: "usr_" + Date.now(),
-      nombre: regNombre,
-      usuario: regUsuario,
-      email: regEmail,
-      avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-    };
+    let registroExitoso = false;
+    setCargando(true);
+    try {
+      const supabase = createClient();
+      const redirectUrl =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback`
+          : undefined;
 
-    localStorage.setItem("usuario_sesion", JSON.stringify(nuevoUsuario));
-    setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
+      const { data, error: authError } = await supabase.auth.signUp({
+        email: regEmail.trim(),
+        password: regPassword,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name: regNombre.trim(),
+            full_name: regNombre.trim(),
+            user_name: regUsuario.trim(),
+            usuario: regUsuario.trim(),
+          },
+        },
+      });
 
-    setTimeout(() => {
-      onLoginSuccess(nuevoUsuario);
-      onClose();
-    }, 1000);
+      if (authError) {
+        if (authError.message.includes("User already registered")) {
+          setError("Ya existe una cuenta registrada con este correo electrónico.");
+        } else if (authError.message.includes("Password should be at least 6 characters")) {
+          setError("La contraseña debe tener al menos 6 caracteres.");
+        } else {
+          setError(authError.message || "No fue posible registrar la cuenta. Inténtalo de nuevo.");
+        }
+        return;
+      }
+
+      if (!data.user) {
+        setError("No se pudo completar el registro.");
+        return;
+      }
+
+      // Si Supabase requiere confirmación de email, data.session es nulo
+      if (!data.session?.access_token) {
+        registroExitoso = true;
+        setExito("¡Registro exitoso! Hemos enviado un enlace de confirmación a tu correo. Por favor revisa tu bandeja de entrada antes de iniciar sesión.");
+        setTimeout(() => {
+          onClose();
+        }, 3500);
+        return;
+      }
+
+      // Si Supabase devuelve la sesión activa de inmediato
+      try {
+        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
+
+        registroExitoso = true;
+        setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
+        setTimeout(() => {
+          onLoginSuccess(usuarioSesion);
+          onClose();
+        }, 800);
+      } catch (errPerfil) {
+        const mensaje =
+          errPerfil instanceof Error
+            ? errPerfil.message
+            : "Cuenta creada, pero ocurrió un error al sincronizar el perfil con el servidor.";
+        setError(mensaje);
+        try {
+          await supabase.auth.signOut({ scope: "local" });
+        } catch {}
+        return;
+      }
+    } catch (err) {
+      const mensaje = err instanceof Error ? err.message : "Error al conectar con el servicio de autenticación.";
+      setError(mensaje);
+    } finally {
+      if (!registroExitoso) {
+        setCargando(false);
+      }
+    }
   };
 
   return (
@@ -118,16 +229,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         {/* Cabecera modal */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <h2 id="auth-modal-title" className="text-base font-bold text-slate-900 dark:text-white">
-              Acceso a <span className="text-blue-700 dark:text-blue-400">TecReview</span>
+            <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
+            <h2 id="auth-modal-title" className="font-doto text-base font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+              ACCESO A <span className="text-blue-700 dark:text-blue-400">TECREVIEW</span>.
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
             aria-label="Cerrar modal de autenticación"
           >
-            ✕ Cerrar
+            ✕ CERRAR
           </button>
         </div>
 
@@ -140,13 +252,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
               modo === "login"
                 ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Iniciar sesión
+            INICIAR SESIÓN
           </button>
           <button
             type="button"
@@ -155,13 +267,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
               modo === "registro"
                 ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            Crear cuenta
+            CREAR CUENTA
           </button>
         </div>
 
@@ -214,9 +326,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs cursor-pointer"
+              disabled={cargando}
+              className={`w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs ${
+                cargando ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
-              Entrar a TecReview
+              {cargando ? "Iniciando sesión..." : "Entrar a TecReview"}
             </button>
           </form>
         )}
@@ -298,9 +413,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs cursor-pointer"
+              disabled={cargando}
+              className={`w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs ${
+                cargando ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+              }`}
             >
-              Crear mi cuenta
+              {cargando ? "Creando cuenta..." : "Crear mi cuenta"}
             </button>
           </form>
         )}

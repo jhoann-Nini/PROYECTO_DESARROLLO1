@@ -2,6 +2,9 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.Map;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "producto")
@@ -35,6 +38,10 @@ public class Producto {
     @Column(nullable = false)
     private Boolean estado = true;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "caracteristicas")
+    private Map<String, Object> caracteristicas;
+
     public Long getIdProducto() { return idProducto; }
     public void setIdProducto(Long idProducto) { this.idProducto = idProducto; }
     public String getNombre() { return nombre; }
@@ -51,4 +58,6 @@ public class Producto {
     public void setPrecioReferencia(BigDecimal precioReferencia) { this.precioReferencia = precioReferencia; }
     public Boolean getEstado() { return estado; }
     public void setEstado(Boolean estado) { this.estado = estado; }
+    public Map<String, Object> getCaracteristicas() { return caracteristicas; }
+    public void setCaracteristicas(Map<String, Object> caracteristicas) { this.caracteristicas = caracteristicas; }
 }

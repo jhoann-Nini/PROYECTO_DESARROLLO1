@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Datos que el cliente envía para crear o actualizar un producto.
  * idCategoria e idMarca referencian entidades existentes por su id.
+ * caracteristicas contiene especificaciones técnicas estructuradas (JSONB).
  */
 public record ProductoRequest(
 
@@ -29,6 +31,21 @@ public record ProductoRequest(
         String imagen,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "El precio no puede ser negativo")
-        BigDecimal precioReferencia
+        BigDecimal precioReferencia,
+
+        Map<String, Object> caracteristicas
 ) {
+        /**
+         * Constructor de compatibilidad hacia atrás para clientes o pruebas
+         * que no envíen características técnicas.
+         */
+        public ProductoRequest(
+                String nombre,
+                String descripcion,
+                Long idCategoria,
+                Long idMarca,
+                String imagen,
+                BigDecimal precioReferencia) {
+                this(nombre, descripcion, idCategoria, idMarca, imagen, precioReferencia, null);
+        }
 }

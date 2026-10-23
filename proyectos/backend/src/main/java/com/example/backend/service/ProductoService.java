@@ -34,12 +34,13 @@ public class ProductoService {
         this.marcaRepository = marcaRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<ProductoResponse> listarActivos() {
-    return productoRepository.findByEstadoTrue()
-      .stream()
-      .map(this::toResponse)
-      .toList();
-  }
+        return productoRepository.findByEstadoTrue()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
 
     @Transactional(readOnly = true)

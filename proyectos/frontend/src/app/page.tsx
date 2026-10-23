@@ -11,21 +11,26 @@ import {
   crearResena,
   type ResenaResponse,
   ApiError,
+  obtenerMejorValorados,
+  obtenerMasDeseados,
+  obtenerOfertas,
+  obtenerMasComentados,
 } from "@/services/api";
 import {
   type Producto,
   type DispositivoKimovil,
   type UsuarioSesion,
+  type ProductoMejorValorado,
+  type ProductoDeseado,
+  type ProductoMasComentado,
+  type ProductoOferta,
   esAdministrador,
   esRepresentante,
 } from "@/types/producto";
 import {
-  DISPOSITIVOS_VENDIDOS,
-  DISPOSITIVOS_DESEADOS,
-  ULTIMAS_OFERTAS,
   PRODUCTOS_MOCK,
 } from "@/data/mockProductos";
-import DeviceListItem from "@/components/DeviceListItem";
+import RankingItem from "@/components/RankingItem";
 import ProductCard from "@/components/ProductCard";
 import AuthModal from "@/components/AuthModal";
 import FichaTecnicaModal from "@/components/FichaTecnicaModal";
@@ -35,7 +40,7 @@ import { formatearCOP } from "@/data/specsHelper";
 import { createClient } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 
-type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares";
+type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares" | "monitores";
 
 export default function Home() {
   // Estado de backend
@@ -63,10 +68,27 @@ export default function Home() {
   const [presupuestoMax, setPresupuestoMax] = useState<number>(1000);
 
   // Estados de vista
-  const [mostrarTodosVendidos, setMostrarTodosVendidos] = useState(false);
-  const [mostrarTodosDeseados, setMostrarTodosDeseados] = useState(false);
+  const [mostrarTodosMejorValorados, setMostrarTodosMejorValorados] = useState(false);
+  const [mostrarTodosComentados, setMostrarTodosComentados] = useState(false);
   const [mostrarTodasOfertas, setMostrarTodasOfertas] = useState(false);
   const [seccionActiva, setSeccionActiva] = useState<"ranking" | "catalogo">("ranking");
+
+  // Estados de Rankings Reales del Backend (Fase 4.5)
+  const [mejorValorados, setMejorValorados] = useState<ProductoMejorValorado[]>([]);
+  const [cargandoMejorValorados, setCargandoMejorValorados] = useState(true);
+  const [errorMejorValorados, setErrorMejorValorados] = useState<string | null>(null);
+
+  const [masDeseados, setMasDeseados] = useState<ProductoDeseado[]>([]);
+  const [cargandoMasDeseados, setCargandoMasDeseados] = useState(true);
+  const [errorMasDeseados, setErrorMasDeseados] = useState<string | null>(null);
+
+  const [masComentados, setMasComentados] = useState<ProductoMasComentado[]>([]);
+  const [cargandoMasComentados, setCargandoMasComentados] = useState(true);
+  const [errorMasComentados, setErrorMasComentados] = useState<string | null>(null);
+
+  const [ofertas, setOfertas] = useState<ProductoOferta[]>([]);
+  const [cargandoOfertas, setCargandoOfertas] = useState(true);
+  const [errorOfertas, setErrorOfertas] = useState<string | null>(null);
 
   // Opiniones de la comunidad persistidas
   const [comentario, setComentario] = useState("");
@@ -251,42 +273,268 @@ export default function Home() {
     };
   }, []);
 
-  // Filtrado de listas
-  const vendidosFiltrados = useMemo(() => {
-    return DISPOSITIVOS_VENDIDOS.filter((d) => {
-      const matchBusqueda =
-        d.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
-      const matchPrecio = d.precio <= presupuestoMax;
-      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
-      return matchBusqueda && matchPrecio && matchCat;
-    });
-  }, [busqueda, presupuestoMax, tipoDispositivo]);
+  // Consulta de Rankings Reales del Backend (Fase 4.5)
+  const cargarMejorValorados = useCallback(async () => {
+    setCargandoMejorValorados(true);
+    setErrorMejorValorados(null);
+    try {
+      const datos = await obtenerMejorValorados(10);
+      setMejorValorados(datos);
+    } catch (err) {
+      setMejorValorados([]);
+      setErrorMejorValorados(
+        err instanceof Error ? err.message : "Error al cargar los productos mejor valorados."
+      );
+    } finally {
+      setCargandoMejorValorados(false);
+    }
+  }, []);
 
-  const deseadosFiltrados = useMemo(() => {
-    return DISPOSITIVOS_DESEADOS.filter((d) => {
+  const cargarMasDeseados = useCallback(async () => {
+    setCargandoMasDeseados(true);
+    setErrorMasDeseados(null);
+    try {
+      const datos = await obtenerMasDeseados(10);
+      setMasDeseados(datos);
+    } catch (err) {
+      setMasDeseados([]);
+      setErrorMasDeseados(
+        err instanceof Error ? err.message : "Error al cargar los productos más deseados."
+      );
+    } finally {
+      setCargandoMasDeseados(false);
+    }
+  }, []);
+
+  const cargarMasComentados = useCallback(async () => {
+    setCargandoMasComentados(true);
+    setErrorMasComentados(null);
+    try {
+      const datos = await obtenerMasComentados(10);
+      setMasComentados(datos);
+    } catch (err) {
+      setMasComentados([]);
+      setErrorMasComentados(
+        err instanceof Error ? err.message : "Error al cargar los productos más comentados."
+      );
+    } finally {
+      setCargandoMasComentados(false);
+    }
+  }, []);
+
+  const cargarOfertas = useCallback(async () => {
+    setCargandoOfertas(true);
+    setErrorOfertas(null);
+    try {
+      const datos = await obtenerOfertas(10);
+      const validas = datos.filter(
+        (o) =>
+          typeof o.precioActual === "number" &&
+          typeof o.precioReferencia === "number" &&
+          o.precioActual > 0 &&
+          o.precioReferencia > o.precioActual
+      );
+      setOfertas(validas);
+    } catch (err) {
+      setOfertas([]);
+      setErrorOfertas(
+        err instanceof Error ? err.message : "Error al cargar las ofertas destacadas."
+      );
+    } finally {
+      setCargandoOfertas(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let montado = true;
+
+    // Consultar rankings en paralelo para optimizar la carga inicial
+    obtenerMejorValorados(10)
+      .then((datos) => {
+        if (montado) setMejorValorados(datos);
+      })
+      .catch((err) => {
+        if (montado) {
+          setMejorValorados([]);
+          setErrorMejorValorados(
+            err instanceof Error ? err.message : "Error al cargar los productos mejor valorados."
+          );
+        }
+      })
+      .finally(() => {
+        if (montado) setCargandoMejorValorados(false);
+      });
+
+    obtenerMasDeseados(10)
+      .then((datos) => {
+        if (montado) setMasDeseados(datos);
+      })
+      .catch((err) => {
+        if (montado) {
+          setMasDeseados([]);
+          setErrorMasDeseados(
+            err instanceof Error ? err.message : "Error al cargar los productos más deseados."
+          );
+        }
+      })
+      .finally(() => {
+        if (montado) setCargandoMasDeseados(false);
+      });
+
+    obtenerMasComentados(10)
+      .then((datos) => {
+        if (montado) setMasComentados(datos);
+      })
+      .catch((err) => {
+        if (montado) {
+          setMasComentados([]);
+          setErrorMasComentados(
+            err instanceof Error ? err.message : "Error al cargar los productos más comentados."
+          );
+        }
+      })
+      .finally(() => {
+        if (montado) setCargandoMasComentados(false);
+      });
+
+    obtenerOfertas(10)
+      .then((datos) => {
+        if (montado) {
+          const validas = datos.filter(
+            (o) =>
+              typeof o.precioActual === "number" &&
+              typeof o.precioReferencia === "number" &&
+              o.precioActual > 0 &&
+              o.precioReferencia > o.precioActual
+          );
+          setOfertas(validas);
+        }
+      })
+      .catch((err) => {
+        if (montado) {
+          setOfertas([]);
+          setErrorOfertas(
+            err instanceof Error ? err.message : "Error al cargar las ofertas destacadas."
+          );
+        }
+      })
+      .finally(() => {
+        if (montado) setCargandoOfertas(false);
+      });
+
+    return () => {
+      montado = false;
+    };
+  }, []);
+
+  // Función auxiliar para filtrar por categoría
+  const matchCatRanking = useCallback((idCategoria: number, tipo: CategoriaDispositivo) => {
+    if (tipo === "todos") return true;
+    if (tipo === "moviles") return idCategoria === 1;
+    if (tipo === "tablets") return idCategoria === 2;
+    if (tipo === "laptops") return idCategoria === 3;
+    if (tipo === "auriculares") return idCategoria === 4;
+    if (tipo === "monitores") return idCategoria === 5;
+    return true;
+  }, []);
+
+  // Filtrado de rankings
+  const mejorValoradosFiltrados = useMemo(() => {
+    const limiteCOP = presupuestoMax < 10000 ? presupuestoMax * 4000 : presupuestoMax;
+    return mejorValorados.filter((item) => {
       const matchBusqueda =
-        d.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
-      const matchPrecio = d.precio <= presupuestoMax;
-      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
+        !busqueda.trim() ||
+        item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(busqueda.toLowerCase()));
+      const precioItemCOP =
+        item.precioReferencia !== null && item.precioReferencia !== undefined
+          ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
+          : null;
+      const matchPrecio =
+        precioItemCOP === null ||
+        presupuestoMax >= 1500 ||
+        precioItemCOP <= limiteCOP;
+      const matchCat = matchCatRanking(item.idCategoria, tipoDispositivo);
       return matchBusqueda && matchPrecio && matchCat;
     });
-  }, [busqueda, presupuestoMax, tipoDispositivo]);
+  }, [mejorValorados, busqueda, presupuestoMax, tipoDispositivo, matchCatRanking]);
+
+  const masComentadosFiltrados = useMemo(() => {
+    const limiteCOP = presupuestoMax < 10000 ? presupuestoMax * 4000 : presupuestoMax;
+    return masComentados.filter((item) => {
+      const matchBusqueda =
+        !busqueda.trim() ||
+        item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(busqueda.toLowerCase()));
+      const precioItemCOP =
+        item.precioReferencia !== null && item.precioReferencia !== undefined
+          ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
+          : null;
+      const matchPrecio =
+        precioItemCOP === null ||
+        presupuestoMax >= 1500 ||
+        precioItemCOP <= limiteCOP;
+      const matchCat = matchCatRanking(item.idCategoria, tipoDispositivo);
+      return matchBusqueda && matchPrecio && matchCat;
+    });
+  }, [masComentados, busqueda, presupuestoMax, tipoDispositivo, matchCatRanking]);
+
+  const masDeseadosFiltrados = useMemo(() => {
+    const limiteCOP = presupuestoMax < 10000 ? presupuestoMax * 4000 : presupuestoMax;
+    return masDeseados.filter((item) => {
+      const matchBusqueda =
+        !busqueda.trim() ||
+        item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(busqueda.toLowerCase()));
+      const precioItemCOP =
+        item.precioReferencia !== null && item.precioReferencia !== undefined
+          ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
+          : null;
+      const matchPrecio =
+        precioItemCOP === null ||
+        presupuestoMax >= 1500 ||
+        precioItemCOP <= limiteCOP;
+      const matchCat = matchCatRanking(item.idCategoria, tipoDispositivo);
+      return matchBusqueda && matchPrecio && matchCat;
+    });
+  }, [masDeseados, busqueda, presupuestoMax, tipoDispositivo, matchCatRanking]);
 
   const ofertasFiltradas = useMemo(() => {
-    return ULTIMAS_OFERTAS.filter((d) => {
+    const limiteCOP = presupuestoMax < 10000 ? presupuestoMax * 4000 : presupuestoMax;
+    return ofertas.filter((item) => {
       const matchBusqueda =
-        d.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.marca.toLowerCase().includes(busqueda.toLowerCase()) ||
-        d.especificaciones.toLowerCase().includes(busqueda.toLowerCase());
-      const matchPrecio = d.precio <= presupuestoMax;
-      const matchCat = tipoDispositivo === "todos" || d.categoria === tipoDispositivo;
+        !busqueda.trim() ||
+        item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(busqueda.toLowerCase())) ||
+        (item.nombreEstablecimiento && item.nombreEstablecimiento.toLowerCase().includes(busqueda.toLowerCase()));
+      const precioItemCOP =
+        item.precioActual < 10000 ? item.precioActual * 4000 : item.precioActual;
+      const matchPrecio = presupuestoMax >= 1500 || precioItemCOP <= limiteCOP;
+      const matchCat = matchCatRanking(item.idCategoria, tipoDispositivo);
       return matchBusqueda && matchPrecio && matchCat;
     });
-  }, [busqueda, presupuestoMax, tipoDispositivo]);
+  }, [ofertas, busqueda, presupuestoMax, tipoDispositivo, matchCatRanking]);
+
+  // Conversión de elemento de ranking hacia Producto para ver su Ficha Técnica
+  const verFichaRanking = useCallback(
+    (item: ProductoMejorValorado | ProductoMasComentado | ProductoOferta | ProductoDeseado) => {
+      setProductoSeleccionado({
+        idProducto: item.idProducto,
+        nombre: item.nombre,
+        descripcion: item.descripcion,
+        idCategoria: item.idCategoria,
+        idMarca: item.idMarca,
+        imagen: item.imagen,
+        precioReferencia:
+          "precioActual" in item && typeof item.precioActual === "number"
+            ? item.precioActual
+            : item.precioReferencia,
+        estado: true,
+        caracteristicas: item.caracteristicas,
+      });
+    },
+    []
+  );
 
   // Filtrado de catálogo
   const productosBackendFiltrados = useMemo(() => {
@@ -324,6 +572,11 @@ export default function Home() {
             nomCat.includes("audifono") ||
             nomCat.includes("headphone") ||
             nomCat.includes("ear");
+        } else if (tipoDispositivo === "monitores") {
+          matchCat =
+            p.idCategoria === 5 ||
+            nomCat.includes("monitor") ||
+            nomCat.includes("pantalla");
         }
       }
       return matchBusqueda && matchPrecio && matchCat;
@@ -644,6 +897,7 @@ export default function Home() {
                 { id: "tablets" as const, label: "Tablets", icon: "📱" },
                 { id: "laptops" as const, label: "Portátiles / PC", icon: "💻" },
                 { id: "auriculares" as const, label: "Auriculares", icon: "🎧" },
+                { id: "monitores" as const, label: "Monitores", icon: "🖥️" },
               ].map((cat) => (
                 <button
                   key={cat.id}
@@ -773,16 +1027,36 @@ export default function Home() {
 
                 {/* Lista de ofertas */}
                 <div className="space-y-3 flex-1">
-                  {ofertasFiltradas.length > 0 ? (
+                  {cargandoOfertas ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
+                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
+                    </div>
+                  ) : errorOfertas ? (
+                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
+                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
+                      <button
+                        type="button"
+                        onClick={cargarOfertas}
+                        aria-label="Reintentar ofertas"
+                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
+                      >
+                        Reintentar ofertas
+                      </button>
+                    </div>
+                  ) : ofertasFiltradas.length > 0 ? (
                     (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
                       <div
-                        key={`oferta-${oferta.id}`}
-                        onClick={() => setProductoSeleccionado(oferta)}
+                        key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
+                        onClick={() => verFichaRanking(oferta)}
                         className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
                       >
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
                           <img
-                            src={oferta.imagen}
+                            src={
+                              oferta.imagen ||
+                              "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80"
+                            }
                             alt={`Imagen de ${oferta.nombre}`}
                             className="h-full w-full object-contain"
                           />
@@ -793,24 +1067,35 @@ export default function Home() {
                             {oferta.nombre}
                           </p>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            {oferta.especificaciones}
+                            {oferta.nombreEstablecimiento}
+                            {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
                           </p>
+                          {oferta.ahorroMonetario > 0 && (
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
+                              Ahorras: {formatearCOP(oferta.ahorroMonetario)}
+                            </p>
+                          )}
                         </div>
 
                         <div className="text-right shrink-0">
-                          {oferta.descuento && (
+                          {oferta.porcentajeDescuento > 0 && (
                             <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
-                              {oferta.descuento}
+                              -{Math.round(oferta.porcentajeDescuento)}%
                             </span>
                           )}
                           <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
-                            {formatearCOP(oferta.precio)}
+                            {formatearCOP(oferta.precioActual)}
                           </div>
+                          {oferta.precioReferencia && (
+                            <div className="text-[10px] text-slate-400 line-through">
+                              {formatearCOP(oferta.precioReferencia)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="py-8 text-center text-xs text-slate-500">
+                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
                       No hay ofertas coincidentes con este filtro.
                     </div>
                   )}
@@ -819,6 +1104,7 @@ export default function Home() {
                 {ofertasFiltradas.length > 3 && (
                   <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
                     <button
+                      type="button"
                       onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
                       className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
                     >
@@ -867,94 +1153,234 @@ export default function Home() {
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECCIÓN 1: DISPOSITIVOS DESTACADOS (MÁS VENDIDOS Y DESEADOS)
+          SECCIÓN 1: DISPOSITIVOS DESTACADOS (RANKINGS REALES DEL BACKEND)
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "ranking" && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            {/* COLUMNA 1: LOS MÁS VENDIDOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-red-500">/</span> Los más vendidos.
-                  </h3>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    ({vendidosFiltrados.length} dispositivos)
-                  </span>
-                </div>
-                <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
-              </div>
-
-              <div className="space-y-3">
-                {vendidosFiltrados.length > 0 ? (
-                  (mostrarTodosVendidos ? vendidosFiltrados : vendidosFiltrados.slice(0, 4)).map((item) => (
-                    <DeviceListItem
-                      key={`vendido-${item.id}`}
-                      item={item}
-                      onVerDetalle={(item) => setProductoSeleccionado(item)}
-                    />
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
-                    No se encontraron dispositivos en la categoría &ldquo;{tipoDispositivo}&rdquo; dentro de este presupuesto.
+            {/* COLUMNA 1: MEJOR VALORADOS */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                      <span className="text-red-500">/</span> Mejor valorados.
+                    </h3>
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      ({mejorValoradosFiltrados.length} dispositivos)
+                    </span>
                   </div>
-                )}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                    {"//"} Puntuación real de usuarios registrados
+                  </p>
+                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                </div>
+
+                <div className="space-y-3">
+                  {cargandoMejorValorados ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
+                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando valoraciones reales...</p>
+                    </div>
+                  ) : errorMejorValorados ? (
+                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
+                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMejorValorados}</p>
+                      <button
+                        type="button"
+                        onClick={cargarMejorValorados}
+                        aria-label="Reintentar valoraciones"
+                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        Reintentar valoraciones
+                      </button>
+                    </div>
+                  ) : mejorValoradosFiltrados.length > 0 ? (
+                    (mostrarTodosMejorValorados
+                      ? mejorValoradosFiltrados
+                      : mejorValoradosFiltrados.slice(0, 4)
+                    ).map((item) => (
+                      <RankingItem
+                        key={`mejor-${item.idProducto}`}
+                        ranking={item.posicionRanking}
+                        nombre={item.nombre}
+                        descripcion={item.descripcion}
+                        imagen={item.imagen}
+                        precio={item.precioReferencia}
+                        metricaTipo="valoracion"
+                        puntuacion={item.promedioPuntuacion}
+                        cantidadValoraciones={item.cantidadValoraciones}
+                        onVerDetalle={() => verFichaRanking(item)}
+                      />
+                    ))
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                      {mejorValorados.length === 0
+                        ? "Aún no hay productos con valoraciones registradas en el catálogo."
+                        : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {vendidosFiltrados.length > 4 && (
+              {mejorValoradosFiltrados.length > 4 && (
                 <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
                   <button
-                    onClick={() => setMostrarTodosVendidos(!mostrarTodosVendidos)}
+                    type="button"
+                    onClick={() => setMostrarTodosMejorValorados(!mostrarTodosMejorValorados)}
                     className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
                   >
-                    {mostrarTodosVendidos ? "Ocultar listado" : `Ver lista completa (${vendidosFiltrados.length})`}
+                    {mostrarTodosMejorValorados
+                      ? "Ocultar listado"
+                      : `Ver lista completa (${mejorValoradosFiltrados.length})`}
                   </button>
                 </div>
               )}
             </div>
 
-            {/* COLUMNA 2: LOS MÁS DESEADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                    <span className="text-red-500">/</span> Los más deseados.
-                  </h3>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    ({deseadosFiltrados.length} dispositivos)
-                  </span>
-                </div>
-                <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
-              </div>
-
-              <div className="space-y-3">
-                {deseadosFiltrados.length > 0 ? (
-                  (mostrarTodosDeseados ? deseadosFiltrados : deseadosFiltrados.slice(0, 4)).map((item) => (
-                    <DeviceListItem
-                      key={`deseado-${item.id}`}
-                      item={item}
-                      onVerDetalle={(item) => setProductoSeleccionado(item)}
-                    />
-                  ))
-                ) : (
-                  <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
-                    No se encontraron dispositivos en la categoría &ldquo;{tipoDispositivo}&rdquo; dentro de este presupuesto.
+            {/* COLUMNA 2: MÁS COMENTADOS */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                      <span className="text-red-500">/</span> Más comentados.
+                    </h3>
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      ({masComentadosFiltrados.length} dispositivos)
+                    </span>
                   </div>
-                )}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                    {"//"} Interacción real de reseñas comunitarias
+                  </p>
+                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                </div>
+
+                <div className="space-y-3">
+                  {cargandoMasComentados ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
+                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando reseñas de la comunidad...</p>
+                    </div>
+                  ) : errorMasComentados ? (
+                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
+                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasComentados}</p>
+                      <button
+                        type="button"
+                        onClick={cargarMasComentados}
+                        aria-label="Reintentar comentarios"
+                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        Reintentar comentarios
+                      </button>
+                    </div>
+                  ) : masComentadosFiltrados.length > 0 ? (
+                    (mostrarTodosComentados
+                      ? masComentadosFiltrados
+                      : masComentadosFiltrados.slice(0, 4)
+                    ).map((item) => (
+                      <RankingItem
+                        key={`comentado-${item.idProducto}`}
+                        ranking={item.posicionRanking}
+                        nombre={item.nombre}
+                        descripcion={item.descripcion}
+                        imagen={item.imagen}
+                        precio={item.precioReferencia}
+                        metricaTipo="comentario"
+                        cantidadResenas={item.cantidadResenas}
+                        onVerDetalle={() => verFichaRanking(item)}
+                      />
+                    ))
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                      {masComentados.length === 0
+                        ? "Aún no hay reseñas registradas para los productos en la plataforma."
+                        : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {deseadosFiltrados.length > 4 && (
+              {masComentadosFiltrados.length > 4 && (
                 <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
                   <button
-                    onClick={() => setMostrarTodosDeseados(!mostrarTodosDeseados)}
+                    type="button"
+                    onClick={() => setMostrarTodosComentados(!mostrarTodosComentados)}
                     className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
                   >
-                    {mostrarTodosDeseados ? "Ocultar listado" : `Ver lista completa (${deseadosFiltrados.length})`}
+                    {mostrarTodosComentados
+                      ? "Ocultar listado"
+                      : `Ver lista completa (${masComentadosFiltrados.length})`}
                   </button>
                 </div>
               )}
+            </div>
+
+            {/* COLUMNA 3: LOS MÁS DESEADOS */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                      <span className="text-red-500">/</span> Los más deseados.
+                    </h3>
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      ({masDeseadosFiltrados.length} dispositivos)
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                    {"//"} Listas de deseos y favoritos de usuarios
+                  </p>
+                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                </div>
+
+                <div className="space-y-3">
+                  {cargandoMasDeseados ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
+                      <p className="mt-3 text-xs text-slate-500 font-mono">Consultando listas de deseos...</p>
+                    </div>
+                  ) : errorMasDeseados ? (
+                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
+                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasDeseados}</p>
+                      <button
+                        type="button"
+                        onClick={cargarMasDeseados}
+                        aria-label="Reintentar deseos"
+                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        Reintentar deseos
+                      </button>
+                    </div>
+                  ) : masDeseadosFiltrados.length > 0 ? (
+                    masDeseadosFiltrados.map((item) => (
+                      <RankingItem
+                        key={`deseado-${item.idProducto}`}
+                        ranking={item.posicionRanking}
+                        nombre={item.nombre}
+                        descripcion={item.descripcion}
+                        imagen={item.imagen}
+                        precio={item.precioReferencia}
+                        metricaTipo="comentario"
+                        cantidadResenas={item.cantidadDeseados}
+                        onVerDetalle={() => verFichaRanking(item)}
+                      />
+                    ))
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
+                      <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-lg mb-3">
+                        ❤️
+                      </div>
+                      <p className="font-bold text-slate-800 dark:text-slate-200 text-xs font-doto uppercase tracking-wider mb-1">
+                        Sin listas de deseos registradas
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+                        La funcionalidad de listas de deseos y favoritos estará disponible en una fase posterior. Actualmente la plataforma no muestra datos ficticios.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1175,6 +1601,9 @@ export default function Home() {
         }
         producto={productoSeleccionado}
         onClose={() => setProductoSeleccionado(null)}
+        usuarioSesion={usuarioSesion}
+        onPedirLogin={() => setModalAuthAbierto(true)}
+        onValoracionGuardada={cargarMejorValorados}
       />
 
       {/* ─────────────────────────────────────────────────────────────

@@ -1480,6 +1480,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 379.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.7'' Flexible AMOLED FHD+ (2412x1084) · 120Hz adaptativo · 1300 nits pico · Gorilla Glass 5",
+      procesador: "MediaTek Dimensity 7200 Pro (4nm TSMC) Octa-Core hasta 2.8GHz con NPU integrada",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 256GB Almacenamiento UFS 3.1",
+      camaras: "Doble cámara trasera 50MP OIS + 50MP Ultra Gran Angular 114° · Selfie 32MP",
+      bateria: "5000 mAh · Carga rápida por cable de 45W",
+      conectividad: "5G Dual SIM · Wi-Fi 6 · Bluetooth 5.3 · NFC con Google Wallet · Interfaz Glyph trasera",
+    },
   },
   {
     idProducto: 2,
@@ -1492,6 +1500,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 349.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.67'' Flow AMOLED CrystalRes 1.5K (2712x1220) · 120Hz · 1800 nits pico · Dolby Vision · HDR10+",
+      procesador: "MediaTek Dimensity 8300 Ultra (4nm) Octa-Core con refrigeración LiquidCool 2.0",
+      ram_almacenamiento: "12GB LPDDR5X · 512GB UFS 4.0 ultra rápido",
+      camaras: "Triple cámara 64MP OIS + 8MP Ultra Gran Angular + 2MP Macro · Grabación 4K 60fps",
+      bateria: "5000 mAh con tecnología de carga turbo de 67W",
+      conectividad: "5G Dual SIM · Wi-Fi 6 · Bluetooth 5.4 · NFC multifunción · Emisor infrarrojo",
+    },
   },
   {
     idProducto: 3,
@@ -1504,6 +1520,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 149.0,
     estado: true,
+    caracteristicas: {
+      transductores: "Drivers personalizados de 11.6mm con diafragma de grafeno y poliuretano · Sonido Hi-Res Audio 24bit/192kHz",
+      cancelacion_ruido: "Cancelación activa de ruido (ANC) personalizada de hasta 40dB con modo adaptativo inteligente",
+      microfonos: "3 micrófonos por auricular con tecnología Clear Voice de reducción de eco y viento",
+      bateria: "Hasta 36 horas con estuche de carga · 6.3 horas continuas · Carga rápida (10 min = 8 horas)",
+      codecs: "Bluetooth 5.3 · Códec LHDC 5.0, AAC y SBC · Conexión dual multipunto simultánea",
+      software: "Nothing X App con ecualizador paramétrico de 8 bandas y calibración de perfil auditivo personal",
+    },
   },
   {
     idProducto: 4,
@@ -1516,6 +1540,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 1299.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "6.8'' Dynamic AMOLED 2X QHD+ (3120x1440) · 1-120Hz LTPO · 2600 nits pico · Corning Gorilla Armor antirreflejo",
+      procesador: "Qualcomm Snapdragon 8 Gen 3 for Galaxy (4nm) Octa-Core con NPU dedicada para Galaxy AI",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 512GB Almacenamiento UFS 4.0",
+      camaras: "Cuádruple cámara: 200MP OIS principal + 50MP Periscopio 5x + 10MP Telefoto 3x + 12MP Ultra Gran Angular",
+      bateria: "5000 mAh · Carga super rápida de 45W · Carga inalámbrica Fast Wireless 2.0 y reversa PowerShare",
+      conectividad: "5G SA/NSA · Wi-Fi 7 · Bluetooth 5.3 · UWB · S-Pen integrado con latencia ultra baja de 2.8ms",
+    },
   },
   {
     idProducto: 5,
@@ -1528,6 +1560,14 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 429.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "12.1'' LCD 3K (3000x2120) · Tasa de refresco fluida de 144Hz · Formato 7:5 optimizado para lectura · 900 nits",
+      procesador: "Qualcomm Snapdragon 8 Gen 3 Flagship (4nm) con GPU Adreno 750",
+      ram_almacenamiento: "12GB RAM LPDDR5X · 256GB Almacenamiento de alta velocidad UFS 4.0",
+      camaras: "Cámara trasera 13MP con flash LED · Cámara frontal 8MP centrada con encuadre automático para videollamadas",
+      bateria: "9510 mAh de alta capacidad · Carga ultra rápida 67W SuperVOOC (100% en 81 minutos)",
+      conectividad: "Wi-Fi 7 ultra rápido · Bluetooth 5.4 · Sistema de audio espacial de 6 altavoces estéreo · Soporte Stylus Stylo 2",
+    },
   },
   {
     idProducto: 6,
@@ -1540,5 +1580,13 @@ export const PRODUCTOS_MOCK: Producto[] = [
     imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
     precioReferencia: 799.0,
     estado: true,
+    caracteristicas: {
+      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 100% sRGB · Bisagra con apertura de 180°",
+      procesador: "Intel Core i7-1355U 13ª Generación (10 núcleos, 12 hilos, frecuencia turbo hasta 5.0GHz)",
+      ram: "16GB Memoria RAM DDR5 5200MHz Dual Channel (ampliable hasta 40GB)",
+      almacenamiento: "512GB SSD M.2 2242 PCIe 4.0 NVMe Opal 2.0",
+      bateria: "Batería integrada de 57Wh con tecnología Rapid Charge (80% de carga en 60 minutos con USB-C 65W)",
+      puertos: "Thunderbolt 4 / USB-C, USB-C 3.2 Gen 2, USB-A 3.2 Gen 1, USB-A 2.0, HDMI 2.1, RJ-45 Gigabit Ethernet",
+    },
   },
 ];

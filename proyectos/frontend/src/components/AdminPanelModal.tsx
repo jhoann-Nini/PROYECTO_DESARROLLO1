@@ -26,6 +26,8 @@ import {
   crearMarca,
   actualizarMarca,
   eliminarMarca,
+  descargarCatalogoCsv,
+  dispararDescargaArchivo,
   ApiError,
 } from "@/services/api";
 
@@ -134,6 +136,7 @@ export default function AdminPanelModal({
   const [productoEliminando, setProductoEliminando] = useState<ProductoResponse | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [exportandoCsv, setExportandoCsv] = useState(false);
 
   const [formNombre, setFormNombre] = useState("");
   const [formDescripcion, setFormDescripcion] = useState("");
@@ -469,6 +472,25 @@ export default function AdminPanelModal({
     setErroresForm({});
     setError(null);
     setMensajeExito(null);
+  };
+
+  const manejarExportarCsv = async () => {
+    try {
+      setExportandoCsv(true);
+      setError(null);
+      setMensajeExito(null);
+      const { blob, nombreArchivo } = await descargarCatalogoCsv();
+      dispararDescargaArchivo(blob, nombreArchivo);
+      setMensajeExito("Catálogo exportado exitosamente a CSV.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Ocurrió un error inesperado al exportar el catálogo.");
+      }
+    } finally {
+      setExportandoCsv(false);
+    }
   };
 
   const cancelarFormulario = () => {
@@ -1033,13 +1055,34 @@ export default function AdminPanelModal({
                   </p>
                 </div>
                 {modoFormulario === "ninguno" && (
-                  <button
-                    type="button"
-                    onClick={abrirCrear}
-                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
-                  >
-                    <span>+</span> Nuevo Producto
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={manejarExportarCsv}
+                      disabled={exportandoCsv}
+                      className="rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 hover:text-white px-3.5 py-1.5 text-xs font-bold text-slate-300 uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Exportar catálogo de productos a CSV"
+                    >
+                      {exportandoCsv ? (
+                        <>
+                          <span className="animate-spin inline-block h-3.5 w-3.5 border-2 border-slate-400 border-t-transparent rounded-full" />
+                          <span>Exportando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>📥</span>
+                          <span>Exportar catálogo CSV</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={abrirCrear}
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    >
+                      <span>+</span> Nuevo Producto
+                    </button>
+                  </div>
                 )}
               </div>
 

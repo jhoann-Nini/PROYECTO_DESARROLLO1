@@ -285,8 +285,9 @@ export function normalizarFichaProducto(
     ? (producto as DispositivoKimovil).precio
     : (producto as Producto).precioReferencia ?? 0;
   const imagen =
-    producto.imagen ||
-    "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80";
+    producto.imagen && producto.imagen.trim().length > 0
+      ? producto.imagen.trim()
+      : "";
 
   const detalle = esKimovil ? (producto as DispositivoKimovil).detalleSpecs : undefined;
 

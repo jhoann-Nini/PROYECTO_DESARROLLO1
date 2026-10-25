@@ -821,6 +821,11 @@ export default function Home() {
             </span>
           </div>
 
+          <div className="hidden items-center gap-6 text-[12px] font-medium text-blue-50/90 md:flex">
+            <a href="#" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="transition-colors hover:text-white">Inicio</a>
+            <a href="#catalogo-productos" onClick={(event) => { event.preventDefault(); setSeccionActiva("catalogo"); document.getElementById("catalogo-productos")?.scrollIntoView({ behavior: "smooth" }); }} className="transition-colors hover:text-white">Productos</a>
+            <a href="#opiniones-comunidad" onClick={(event) => { event.preventDefault(); document.getElementById("opiniones-comunidad")?.scrollIntoView({ behavior: "smooth" }); }} className="transition-colors hover:text-white">Reseñas</a>
+          </div>
           <div className="flex items-center gap-3">
             {/* Enlace Explorador API disponible para navegación rápida */}
             <Link
@@ -1011,7 +1016,7 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           SELECTOR DE VISTAS (DESTACADOS vs CATÁLOGO)
       ───────────────────────────────────────────────────────────── */}
-      <div className="border-b border-slate-200/70 dark:border-slate-800/70 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
+      <div id="catalogo-productos" className="scroll-mt-24 border-b border-slate-200/70 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-3">
             <button
@@ -1046,7 +1051,7 @@ export default function Home() {
           SECCIÓN 1: DISPOSITIVOS DESTACADOS (RANKINGS REALES DEL BACKEND)
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "ranking" && (
-        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+        <section id="opiniones-comunidad" className="scroll-mt-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* COLUMNA 1: MEJOR VALORADOS */}

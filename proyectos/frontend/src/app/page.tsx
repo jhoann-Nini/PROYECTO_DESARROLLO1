@@ -979,7 +979,7 @@ export default function Home() {
               <div>
                 <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-blue-400/40 bg-blue-950/50 px-3 py-1.5 text-xs font-bold font-doto uppercase tracking-widest text-blue-200 shadow-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                  CATÁLOGO Y COMPARADOR DE TECNOLOGÍA
+                  CATÁLOGO Y GUÍA DE COMPRA
                 </span>
 
                 <h2 className="max-w-3xl font-doto text-3xl font-black uppercase leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">

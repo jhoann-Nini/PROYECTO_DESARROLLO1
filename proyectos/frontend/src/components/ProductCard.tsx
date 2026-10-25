@@ -35,9 +35,9 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-violet-700"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-700"
     >
-      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-violet-950/30">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950/30">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}

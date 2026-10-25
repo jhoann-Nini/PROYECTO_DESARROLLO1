@@ -21,9 +21,7 @@ export default function ProductCard({
   const tieneImagenValida = Boolean(
     producto.imagen && producto.imagen.trim().length > 0 && !errorImagen
   );
-
   const precioFormateado = formatearCOP(producto.precioReferencia);
-
   const cumplePresupuesto =
     limitePresupuestoCOP !== undefined &&
     limitePresupuestoCOP !== null &&
@@ -37,14 +35,13 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg cursor-pointer"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-violet-700"
     >
-      {/* Contenedor de Fotografía */}
-      <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-[#0a0e17] p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800/80">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-violet-50/70 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-violet-950/30">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
-            alt={`Fotografía oficial de ${producto.nombre}`}
+            alt={`Fotografía de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
@@ -57,69 +54,47 @@ export default function ProductCard({
             tamano="md"
           />
         )}
-
-        {/* Etiquetas informativas con estilo técnico */}
-        <div className="absolute top-3 left-3 flex gap-1.5 text-xs">
-          <span className="rounded-md bg-white/95 dark:bg-[#111827]/90 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 shadow-2xs font-doto uppercase tracking-wider">
-            {producto.nombreCategoria || `CAT ${producto.idCategoria}`}
+        <div className="absolute left-3 top-3 flex max-w-[70%] flex-wrap gap-1.5">
+          <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300">
+            {producto.nombreCategoria || `Categoría ${producto.idCategoria}`}
           </span>
-          <span className="rounded-md bg-blue-50/95 dark:bg-blue-950/80 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 shadow-2xs font-doto uppercase tracking-wider">
+          <span className="rounded-full border border-violet-200 bg-violet-50/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:border-violet-800 dark:bg-violet-950/90 dark:text-violet-300">
             {producto.nombreMarca || `Marca ${producto.idMarca}`}
           </span>
         </div>
-
-        {/* Indicador de disponibilidad */}
-        {producto.estado ? (
-          <span className="absolute top-3 right-3 rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-doto uppercase">
-            • DISPONIBLE
-          </span>
-        ) : (
-          <span className="absolute top-3 right-3 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 font-doto uppercase">
-            NO DISPONIBLE
-          </span>
-        )}
+        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-bold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300" : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}>
+          <span aria-hidden="true">{producto.estado ? "● " : "○ "}</span>
+          {producto.estado ? "Activo" : "Inactivo"}
+        </span>
       </div>
 
-      {/* Contenido descriptivo del producto */}
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-500 transition-colors font-doto uppercase tracking-wide">
+        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-violet-700 dark:text-white dark:group-hover:text-violet-300">
           {producto.nombre}
         </h3>
-
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 line-clamp-2 flex-1 leading-relaxed">
-          {producto.descripcion || "Especificaciones técnicas detalladas disponibles en la ficha."}
+        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
+          {producto.descripcion || "Consulta las características y especificaciones técnicas de este dispositivo."}
         </p>
 
-        {/* Sección de precio y acción principal */}
-        <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3.5">
-          <div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
-                Precio estimado
-              </span>
-              {cumplePresupuesto !== null && (
-                cumplePresupuesto ? (
-                  <span
-                    className="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 font-mono tracking-tight"
-                    title="Dentro del presupuesto máximo"
-                  >
-                    ✓ En presupuesto
-                  </span>
-                ) : (
-                  <span
-                    className="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-950/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 font-mono tracking-tight"
-                    title="Supera el presupuesto máximo"
-                  >
-                    Supera presupuesto
-                  </span>
-                )
-              )}
+        <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <div className="flex min-h-12 items-end justify-between gap-2">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Precio de referencia
+              </p>
+              <p className="mt-0.5 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">
+                {precioFormateado}
+              </p>
             </div>
-            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
-              {precioFormateado}
-            </span>
+            {cumplePresupuesto !== null && (
+              <span
+                className={`mb-1 rounded-full px-2 py-1 text-[10px] font-bold ${cumplePresupuesto ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"}`}
+                title={cumplePresupuesto ? "Dentro del presupuesto máximo" : "Supera el presupuesto máximo"}
+              >
+                {cumplePresupuesto ? "✓ En presupuesto" : "Sobre presupuesto"}
+              </span>
+            )}
           </div>
-
           <button
             type="button"
             onClick={(e) => {
@@ -127,9 +102,9 @@ export default function ProductCard({
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-3.5 py-2 text-xs font-bold text-white shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-violet-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 active:scale-[0.99] dark:bg-violet-600 dark:hover:bg-violet-500"
           >
-            Ver ficha técnica
+            Ver ficha técnica <span aria-hidden="true">↗</span>
           </button>
         </div>
       </div>

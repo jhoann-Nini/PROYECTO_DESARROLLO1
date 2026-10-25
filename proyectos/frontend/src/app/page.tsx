@@ -810,9 +810,9 @@ export default function Home() {
       <nav aria-label="Navegación superior" className="sticky top-0 z-40 border-b border-blue-950/50 bg-[#07172f]/95 px-4 py-3 text-xs text-white shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 font-doto text-base font-extrabold uppercase tracking-widest text-white">
+            <span className="flex items-center gap-1.5 text-lg font-extrabold tracking-tight text-white">
               <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-              Tec<span className="text-blue-700 dark:text-blue-400">Review</span>
+              Tec<span className="text-blue-400">Review</span>
               <span className="text-red-500">.</span>
             </span>
             <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
@@ -932,14 +932,14 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           
           {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col gap-6 border-b border-blue-200/80 pb-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-5 border-b border-blue-200/80 pb-6 md:flex-row md:items-end md:justify-between">
             {/* Título de Marca Limpio */}
             <div className="flex items-center">
               <div>
-                <h1 className="font-doto text-4xl font-black uppercase tracking-wider text-[#10213f] sm:text-5xl lg:text-6xl" aria-label="TecReview">
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#10213f] sm:text-4xl lg:text-5xl" aria-label="TecReview">
                   Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
                 </h1>
-                <p className="mt-2 max-w-xl font-mono text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 sm:text-sm">
+                <p className="mt-2 max-w-xl text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 sm:text-sm">
                   {"//"} Guía de compra y especificaciones técnicas
                 </p>
               </div>
@@ -958,7 +958,7 @@ export default function Home() {
                 <button
                   key={cat.id}
                   onClick={() => setTipoDispositivo(cat.id)}
-                  className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex min-h-10 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all cursor-pointer ${
                     tipoDispositivo === cat.id
                       ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-900/20"
                       : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800"
@@ -972,17 +972,17 @@ export default function Home() {
           </div>
 
           {/* Cuerpo Central del Banner */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+          <div className="grid grid-cols-1 items-stretch gap-8 pt-8 lg:grid-cols-12">
             
             {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
-            <div className="lg:col-span-8 flex flex-col justify-between gap-6">
+            <div className="flex flex-col justify-center gap-6 lg:col-span-7">
               <div>
-                <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-white/90 px-3 py-1.5 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 shadow-sm">
+                <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 shadow-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
                   CATÁLOGO Y GUÍA DE COMPRA
                 </span>
 
-                <h2 className="max-w-3xl font-doto text-3xl font-black uppercase leading-tight tracking-wide text-[#10213f] sm:text-4xl md:text-5xl">
+                <h2 className="max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-[#10213f] sm:text-4xl md:text-5xl">
                   Encuentra tu próximo dispositivo.
                 </h2>
 
@@ -993,7 +993,7 @@ export default function Home() {
 
               {/* Buscador Rápido Accesible */}
               <div>
-                <label htmlFor="buscador-principal" className="mb-2 block font-doto text-xs font-bold uppercase tracking-wider text-slate-600">
+                <label htmlFor="buscador-principal" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-600">
                   Buscar dispositivos tecnológicos
                 </label>
                 <div className="relative flex items-center">
@@ -1067,8 +1067,8 @@ export default function Home() {
             </div>
 
             {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
-            <div className="lg:col-span-4 flex flex-col">
-              <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
+            <div className="flex flex-col lg:col-span-5">
+              <div className="flex h-full flex-col rounded-3xl border border-blue-100 bg-white p-5 shadow-xl shadow-blue-950/10 sm:p-6">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>

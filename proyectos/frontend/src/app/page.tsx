@@ -974,14 +974,14 @@ export default function Home() {
                 <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full border border-white/20" aria-hidden="true" />
                 <div className="absolute -right-5 -top-5 h-44 w-44 rounded-full border border-white/15" aria-hidden="true" />
                 <div className="relative flex min-h-[280px] items-center justify-center sm:min-h-[340px]">
-                  <div className="absolute left-2 top-7 h-44 w-28 rotate-[-12deg] rounded-[1.4rem] border-[5px] border-slate-800 bg-slate-950 p-1 shadow-xl sm:left-8 sm:h-56 sm:w-36">
-                    <div className="h-full w-full rounded-[1rem] bg-gradient-to-br from-violet-300 via-blue-500 to-slate-950 p-3"><div className="mt-5 h-12 rounded-lg bg-white/20" /><div className="mt-3 h-3 w-2/3 rounded bg-white/30" /></div>
+                  <div className="absolute left-1 top-7 z-10 h-44 w-28 rotate-[-10deg] overflow-hidden rounded-[1.4rem] border-[5px] border-slate-800 bg-slate-950 p-1 shadow-2xl sm:left-7 sm:h-56 sm:w-36">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=85" alt="" className="h-full w-full rounded-[1rem] object-cover" />
                   </div>
-                  <div className="absolute right-1 top-4 h-36 w-28 rotate-[8deg] rounded-2xl border-4 border-slate-200 bg-white p-2 shadow-xl sm:right-7 sm:h-48 sm:w-36">
-                    <div className="h-full rounded-xl bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-500 p-2"><div className="mt-3 h-16 rounded-lg bg-white/50" /></div>
+                  <div className="absolute right-1 top-4 z-0 h-36 w-28 rotate-[8deg] overflow-hidden rounded-2xl border-4 border-slate-200 bg-white p-1 shadow-xl sm:right-7 sm:h-48 sm:w-36">
+                    <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=500&q=85" alt="" className="h-full w-full rounded-xl object-cover" />
                   </div>
-                  <div className="absolute bottom-8 left-1/2 h-32 w-48 -translate-x-1/2 rounded-xl border-4 border-slate-700 bg-slate-900 p-2 shadow-2xl sm:bottom-5 sm:h-44 sm:w-64">
-                    <div className="h-full rounded-md bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-300"><div className="flex h-full items-end p-3"><span className="text-xs font-bold tracking-widest text-white/90">TECNOLOGÍA PARA TI</span></div></div>
+                  <div className="absolute bottom-8 left-1/2 z-20 h-32 w-48 -translate-x-1/2 overflow-hidden rounded-xl border-4 border-slate-700 bg-slate-900 p-1 shadow-2xl sm:bottom-5 sm:h-44 sm:w-64">
+                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=85" alt="" className="h-full w-full rounded-md object-cover" />
                     <div className="absolute -bottom-3 left-1/2 h-3 w-24 -translate-x-1/2 rounded-b-lg bg-slate-300" />
                   </div>
                   <div className="absolute bottom-3 right-2 flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-white/15 text-3xl shadow-lg backdrop-blur sm:bottom-7 sm:right-7 sm:h-20 sm:w-20" aria-hidden="true">🎧</div>

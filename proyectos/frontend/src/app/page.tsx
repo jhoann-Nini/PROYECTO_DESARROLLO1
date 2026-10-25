@@ -920,7 +920,7 @@ export default function Home() {
                 }}
                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-950/30 transition-colors hover:bg-blue-500"
               >
-                <span>🔑</span> Iniciar sesión
+                <span aria-hidden="true" className="text-base">↗</span> Iniciar sesión
               </button>
             )}
           </div>
@@ -1054,7 +1054,7 @@ export default function Home() {
                   : "bg-white bg-white text-slate-700 text-slate-600 border border-slate-300 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              ⭐ Dispositivos destacados
+              Dispositivos destacados
             </button>
             <button
               onClick={() => setSeccionActiva("catalogo")}
@@ -1064,7 +1064,7 @@ export default function Home() {
                   : "bg-white bg-white text-slate-700 text-slate-600 border border-slate-300 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              📦 Catálogo general ({productosBackendFiltrados.length})
+              Catálogo general ({productosBackendFiltrados.length})
             </button>
           </div>
 
@@ -1087,7 +1087,7 @@ export default function Home() {
                 <div className="pb-4 border-b border-slate-200 border-slate-200 mb-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
-                      <span className="text-red-500">/</span> Mejor valorados.
+                      <span aria-hidden="true" className="text-red-500">—</span> Mejor valorados.
                     </h3>
                     <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 text-slate-500">
                       ({mejorValoradosFiltrados.length} dispositivos)
@@ -1457,7 +1457,7 @@ export default function Home() {
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
-                <span className="text-red-500">/</span> Opiniones de la comunidad ({resenas.length}).
+                <span aria-hidden="true" className="text-red-500">—</span> Opiniones de la comunidad ({resenas.length}).
               </h3>
               <p className="text-sm text-slate-600 text-slate-500 mt-1">
                 Lee experiencias y comparte opiniones sobre dispositivos con la comunidad.
@@ -1470,7 +1470,7 @@ export default function Home() {
               className="self-start sm:self-auto font-doto uppercase tracking-wider rounded-xl border border-slate-300 border-slate-200 bg-white bg-slate-100 px-3.5 py-2 text-xs font-semibold text-slate-700 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
               title="Actualizar listado de opiniones desde el servidor"
             >
-              {cargandoResenas ? "Actualizando..." : "🔄 Actualizar"}
+              {cargandoResenas ? "Actualizando..." : "Actualizar opiniones"}
             </button>
           </div>
 

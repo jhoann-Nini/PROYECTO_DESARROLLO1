@@ -807,16 +807,16 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           BARRA SUPERIOR Y SESIÓN
       ───────────────────────────────────────────────────────────── */}
-      <nav aria-label="Navegación superior" className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2.5 text-xs shadow-2xs sticky top-0 z-20">
+      <nav aria-label="Navegación superior" className="sticky top-0 z-40 border-b border-blue-900/60 bg-[#07152f]/95 px-4 py-3 text-xs shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-doto font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base tracking-widest uppercase">
+            <span className="flex items-center gap-1.5 font-doto text-base font-extrabold uppercase tracking-widest text-white">
               <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
               Tec<span className="text-blue-700 dark:text-blue-400">Review</span>
               <span className="text-red-500">.</span>
             </span>
             <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
-            <span className="hidden md:inline text-slate-600 dark:text-slate-400 font-medium">
+            <span className="hidden md:inline font-medium text-blue-100/80">
               Plataforma de Reseñas y Especificaciones Técnicas
             </span>
           </div>
@@ -915,7 +915,7 @@ export default function Home() {
                   setErrorSesion(null);
                   setModalAuthAbierto(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3 py-1 text-xs font-semibold text-white shadow-2xs transition-colors cursor-pointer"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-950/30 transition-colors hover:bg-blue-500"
               >
                 <span>🔑</span> Iniciar sesión
               </button>
@@ -927,18 +927,19 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           CABECERA PRINCIPAL (BANNER HERO CON FONDO TRASLÚCIDO)
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-slate-200/70 dark:border-slate-800/70 bg-white/20 dark:bg-slate-950/20 backdrop-blur-[1px] py-12 px-4 sm:px-6 lg:px-8">
+      <section className="relative isolate overflow-hidden border-b border-violet-900/50 bg-gradient-to-br from-[#100d35] via-[#25105c] to-[#101b54] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-30"><div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-blue-500/30 blur-3xl" /><div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-fuchsia-600/20 blur-3xl" /><div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(129,140,248,0.14),transparent_60%)]" /></div>
         <div className="mx-auto max-w-7xl">
           
           {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-8 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col gap-6 border-b border-white/10 pb-8 md:flex-row md:items-center md:justify-between">
             {/* Título de Marca Limpio */}
             <div className="flex items-center">
               <div>
-                <h1 className="font-doto text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-slate-900 dark:text-white uppercase" aria-label="TecReview">
+                <h1 className="font-doto text-4xl font-black uppercase tracking-wider text-white sm:text-5xl lg:text-6xl" aria-label="TecReview">
                   Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
                 </h1>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
+                <p className="mt-2 max-w-xl font-mono text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70 sm:text-sm">
                   {"//"} Guía de compra y especificaciones técnicas
                 </p>
               </div>
@@ -959,8 +960,8 @@ export default function Home() {
                   onClick={() => setTipoDispositivo(cat.id)}
                   className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
                     tipoDispositivo === cat.id
-                      ? "border-blue-700 bg-blue-700 text-white shadow-xs"
-                      : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
+                      ? "border-blue-400 bg-blue-600 text-white shadow-lg shadow-blue-950/30"
+                      : "border-white/10 bg-[#0b1731]/80 text-slate-200 hover:border-blue-400/70 hover:bg-blue-950/80 hover:text-white"
                   }`}
                 >
                   <span aria-hidden="true">{cat.icon}</span>
@@ -976,23 +977,23 @@ export default function Home() {
             {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between gap-6">
               <div>
-                <span className="inline-flex items-center gap-2 rounded-md bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 px-3 py-1 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 dark:text-blue-300 mb-3 shadow-2xs">
+                <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-blue-400/40 bg-blue-950/50 px-3 py-1.5 text-xs font-bold font-doto uppercase tracking-widest text-blue-200 shadow-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
                   CATÁLOGO Y COMPARADOR DE TECNOLOGÍA
                 </span>
 
-                <h2 className="font-doto text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-wide uppercase leading-tight">
+                <h2 className="max-w-3xl font-doto text-3xl font-black uppercase leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">
                   Encuentra y compara tu próximo dispositivo.
                 </h2>
 
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                <p className="mt-4 max-w-xl text-base leading-7 text-blue-100/75 sm:text-lg">
                   Consulta fichas técnicas completas, análisis imparciales y precios de referencia en pesos colombianos (COP).
                 </p>
               </div>
 
               {/* Buscador Rápido Accesible */}
               <div>
-                <label htmlFor="buscador-principal" className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                <label htmlFor="buscador-principal" className="mb-2 block font-doto text-xs font-bold uppercase tracking-wider text-blue-100/80">
                   Buscar dispositivos tecnológicos
                 </label>
                 <div className="relative flex items-center">
@@ -1008,7 +1009,7 @@ export default function Home() {
                     onChange={(e) => setBusqueda(e.target.value)}
                     placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
                     aria-label="Buscar dispositivos por marca, modelo o características"
-                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-3.5 pl-12 pr-20 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                    className="w-full rounded-2xl border border-white/15 bg-[#0b1731] py-4 pl-12 pr-20 text-sm text-white shadow-xl shadow-slate-950/20 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   />
                   {busqueda && (
                     <button
@@ -1026,7 +1027,7 @@ export default function Home() {
               </div>
 
               {/* Slider de Presupuesto en COP */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+              <div className="rounded-2xl border border-white/10 bg-[#0b1731]/85 p-5 shadow-xl shadow-slate-950/20 backdrop-blur sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-red-600"></span>

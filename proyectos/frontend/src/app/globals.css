@@ -76,3 +76,21 @@ select, textarea {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Legibilidad de campos y microinteracciones accesibles, preservando la identidad visual del rediseño. */
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+input,
+textarea,
+select {
+  color: #10213f;
+}
+
+::selection {
+  background: #dbeafe;
+  color: #10213f;
+}

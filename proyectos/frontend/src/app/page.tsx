@@ -1271,15 +1271,17 @@ export default function Home() {
                       <p className="mt-3 text-xs text-slate-500 font-mono">Consultando listas de deseos...</p>
                     </div>
                   ) : errorMasDeseados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasDeseados}</p>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-center sm:p-6" role="status" aria-live="polite">
+                      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700" aria-hidden="true">!</div>
+                      <p className="text-sm font-semibold text-slate-900">No pudimos cargar los productos más deseados</p>
+                      <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-slate-600">No conseguimos conectar con las listas de deseos. Puedes intentarlo de nuevo en unos segundos.</p>
                       <button
                         type="button"
                         onClick={cargarMasDeseados}
-                        aria-label="Reintentar deseos"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        aria-label="Reintentar cargar los productos más deseados"
+                        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer"
                       >
-                        Reintentar deseos
+                        Reintentar
                       </button>
                     </div>
                   ) : masDeseadosFiltrados.length > 0 ? (

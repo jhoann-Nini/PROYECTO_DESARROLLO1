@@ -40,6 +40,8 @@ body {
     radial-gradient(ellipse at 85% 0%, rgba(219, 234, 254, .52), transparent 38rem),
     #f4f7fc;
   color: #10213f;
+  background-color: #f1f5f9;
+  color: #0f172a;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -93,4 +95,48 @@ select {
 ::selection {
   background: #dbeafe;
   color: #10213f;
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Base visual: texto legible por defecto y superficies claras como el prototipo. */
+body,
+body * {
+  text-rendering: optimizeLegibility;
+}
+
+input,
+textarea,
+select {
+  color: #0f172a;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+::selection {
+  background: #bfdbfe;
+  color: #0f172a;
 }

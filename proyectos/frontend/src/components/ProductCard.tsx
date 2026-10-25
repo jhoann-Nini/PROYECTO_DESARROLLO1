@@ -54,7 +54,7 @@ export default function ProductCard({
             tamano="md"
           />
         )}
-        <div className="absolute left-3 top-3 flex max-w-[72%] flex-wrap gap-1.5">
+        <div className="absolute left-3 top-3 flex max-w-[calc(100%-5.5rem)] flex-wrap gap-1.5">
           <span className="rounded-full border border-slate-200 bg-white/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-slate-700 shadow-sm backdrop-blur">
             {producto.nombreCategoria || `Categoría ${producto.idCategoria}`}
           </span>

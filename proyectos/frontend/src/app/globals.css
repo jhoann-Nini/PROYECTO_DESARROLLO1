@@ -50,11 +50,12 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Tipografía de Matriz de Puntos (Estilo Nothing Tech NDot / Doto) */
+/* Tipografía moderna y consistente: las etiquetas antiguas conservan su clase
+   para no alterar componentes, pero heredan la familia sans-serif del producto. */
 .font-doto {
-  font-family: var(--font-doto, 'Doto', monospace, sans-serif);
-  font-variation-settings: 'ROND' 100;
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-variation-settings: normal;
+  letter-spacing: 0.045em;
 }
 
 /* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */

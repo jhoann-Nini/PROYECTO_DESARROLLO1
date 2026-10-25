@@ -720,11 +720,9 @@ export default function Home() {
       });
       setComentario("");
       await cargarResenas();
-    } catch (err) {
+    } catch {
       setErrorComentario(
-        err instanceof Error
-          ? err.message
-          : "No fue posible guardar tu opinión. Inténtalo de nuevo más tarde."
+        "No pudimos publicar tu opinión. Comprueba tu conexión e inténtalo de nuevo."
       );
     } finally {
       setEnviandoComentario(false);
@@ -1539,12 +1537,12 @@ export default function Home() {
                       ? `Comentar como ${usuarioSesion.nombre}...`
                       : "Inicia sesión para publicar tu opinión aquí..."
                   }
-                  className="flex-1 rounded-xl border border-slate-300 border-slate-200 bg-white bg-slate-50 px-4 py-3 text-sm text-slate-900 text-slate-900 placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                  className="min-h-11 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={enviandoComentario}
-                  className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+                  className="min-h-11 rounded-xl bg-blue-700 px-6 py-3 font-doto text-xs font-bold uppercase tracking-wider text-white shadow-2xs transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {enviandoComentario ? "Publicando..." : "Publicar opinión"}
                 </button>

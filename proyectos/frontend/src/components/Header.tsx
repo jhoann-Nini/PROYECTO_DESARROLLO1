@@ -1,28 +1,26 @@
+"use client";
+
 export default function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-blue-950/50 bg-[#07172f]/95 px-4 py-3 text-white shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <a href="#buscador-principal" aria-label="TecnoReview, inicio" className="group flex shrink-0 items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-lg font-black text-white shadow-md shadow-blue-900/20 transition-transform group-hover:-rotate-3">
-            T
-          </span>
-          <span className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
-            Tecno<span className="text-blue-400">Review</span>
-            <span className="mt-0.5 hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-100/70 sm:block">
-              Tecnología, opiniones y comparativas
-            </span>
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 px-4 py-3 text-slate-900 shadow-sm backdrop-blur-xl sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+        <a href="#buscador-principal" aria-label="TecReview, inicio" className="group flex min-w-0 shrink-0 items-center gap-2.5">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-700 text-xl text-white shadow-md shadow-blue-900/15 transition group-hover:-translate-y-0.5" aria-hidden="true">▯</span>
+          <span className="min-w-0 text-lg font-extrabold tracking-tight text-slate-950 sm:text-xl">
+            Tec<span className="text-blue-700">Review</span>
+            <span className="mt-0.5 hidden text-[10px] font-semibold tracking-wide text-slate-500 sm:block">Compara · Analiza · Decide</span>
           </span>
         </a>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <span className="hidden rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-blue-50 md:inline-flex">
-            Encuentra tu próximo dispositivo
-          </span>
-          <a
-            href="#buscador-principal"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3.5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 sm:px-4"
-          >
-            Explorar catálogo <span aria-hidden="true">↓</span>
+        <nav aria-label="Navegación principal" className="hidden items-center gap-6 text-sm font-semibold text-slate-600 lg:flex">
+          <a className="transition hover:text-blue-700" href="#buscador-principal">Inicio</a>
+          <a className="transition hover:text-blue-700" href="#catalogo">Productos</a>
+          <a className="transition hover:text-blue-700" href="#resenas">Reseñas</a>
+        </nav>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <a href="#catalogo" className="hidden rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-800 sm:inline-flex">
+            Explorar productos <span className="ml-2 text-blue-700" aria-hidden="true">↗</span>
           </a>
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-blue-700 sm:hidden" aria-hidden="true">⌕</span>
         </div>
       </div>
     </header>

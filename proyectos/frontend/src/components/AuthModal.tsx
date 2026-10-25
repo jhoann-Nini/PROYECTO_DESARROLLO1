@@ -225,18 +225,18 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       aria-modal="true"
       aria-labelledby="auth-modal-title"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
+      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-blue-100 bg-white p-6 shadow-2xl shadow-blue-950/15 sm:p-7 text-slate-900 dark:text-slate-100">
         {/* Cabecera modal */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-            <h2 id="auth-modal-title" className="font-doto text-base font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              ACCESO A <span className="text-blue-700 dark:text-blue-400">TECREVIEW</span>.
+            <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-[#10213f]">
+              Bienvenido a <span className="text-blue-700">TecnoReview</span>
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-50 cursor-pointer"
             aria-label="Cerrar modal de autenticación"
           >
             ✕ CERRAR

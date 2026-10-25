@@ -1069,6 +1069,26 @@ export default function Home() {
             {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
             <div className="flex flex-col lg:col-span-5">
               <div className="flex h-full flex-col rounded-3xl border border-blue-100 bg-white p-5 shadow-xl shadow-blue-950/10 sm:p-6">
+                {ofertasFiltradas.length > 0 && (
+                  <div className="relative mb-5 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#dcecff] p-5 text-white">
+                    <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/15 blur-2xl" aria-hidden="true" />
+                    <p className="relative z-10 text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Recomendado en ofertas</p>
+                    <div className="relative z-10 mt-3 flex min-h-36 items-center justify-between gap-3">
+                      <div className="max-w-[55%]">
+                        <h3 className="text-xl font-extrabold leading-tight">{ofertasFiltradas[0].nombre}</h3>
+                        <p className="mt-2 text-sm text-blue-100">{formatearCOP(ofertasFiltradas[0].precioActual)}</p>
+                        <button type="button" onClick={() => verFichaRanking(ofertasFiltradas[0])} className="mt-4 rounded-lg bg-white px-4 py-2 text-xs font-bold text-blue-800 transition hover:bg-blue-50">Ver ficha técnica</button>
+                      </div>
+                      <div className="h-32 w-[42%] shrink-0 rounded-xl bg-white/95 p-2 shadow-lg">
+                        {ofertasFiltradas[0].imagen && ofertasFiltradas[0].imagen.trim().length > 0 ? (
+                          <img src={ofertasFiltradas[0].imagen} alt={`Imagen de ${ofertasFiltradas[0].nombre}`} className="h-full w-full object-contain" />
+                        ) : (
+                          <ProductImagePlaceholder categoria={ofertasFiltradas[0].idCategoria} nombre={ofertasFiltradas[0].nombre} tamano="md" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>

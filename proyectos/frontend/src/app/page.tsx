@@ -930,7 +930,7 @@ export default function Home() {
       </nav>
 
       {/* PORTADA REDISEÑADA — composición fiel al prototipo */}
-      <section className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-br from-[#eaf3ff] via-white to-[#dceaff] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <section className="relative overflow-hidden border-b border-blue-100 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/35 blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
@@ -938,39 +938,39 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
             <div className="py-3 sm:py-8">
-              <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 shadow-sm">
+              <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-100 shadow-sm backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 Tu guía de tecnología
               </span>
-              <h2 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight text-[#10213f] sm:text-5xl lg:text-6xl">
+              <h2 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Tu guía confiable para elegir la mejor tecnología.
               </h2>
-              <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+              <p className="mt-5 max-w-xl text-base leading-7 text-blue-100 sm:text-lg">
                 Explora dispositivos, consulta fichas técnicas y opiniones, y conoce precios de referencia en pesos colombianos.
               </p>
-              <div className="mt-7 max-w-xl">
+              <div className="mt-7 max-w-xl rounded-2xl bg-white p-1.5 shadow-xl shadow-slate-950/20">
                 <label htmlFor="buscador-principal" className="sr-only">Buscar dispositivos tecnológicos</label>
                 <div className="relative flex items-center">
                   <svg className="pointer-events-none absolute left-4 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
                   </svg>
-                  <input id="buscador-principal" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="¿Qué dispositivo estás buscando?" aria-label="Buscar dispositivos por marca, modelo o características" className="w-full rounded-xl border border-slate-200 bg-white py-4 pl-12 pr-20 text-sm text-slate-900 shadow-lg shadow-blue-950/5 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
+                  <input id="buscador-principal" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="¿Qué dispositivo estás buscando?" aria-label="Buscar dispositivos por marca, modelo o características" className="w-full rounded-xl border border-transparent bg-white py-4 pl-12 pr-20 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
                   {busqueda && <button type="button" onClick={() => setBusqueda("")} aria-label="Borrar búsqueda" className="absolute right-4 text-xs font-semibold text-blue-700 hover:text-blue-900">Limpiar</button>}
                 </div>
-                <p className="mt-2 text-xs text-slate-500">Busca por marca, modelo o categoría.</p>
+                <p className="mt-2 px-2 text-xs text-blue-100">Busca por marca, modelo o categoría.</p>
               </div>
-              <div className="mt-6 rounded-2xl border border-blue-100 bg-white/90 p-4 shadow-md shadow-blue-950/5 sm:p-5">
+              <div className="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4 shadow-md backdrop-blur sm:p-5">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <label htmlFor="presupuesto-principal" className="text-sm font-semibold text-slate-700">Presupuesto máximo</label>
-                  <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{formatearCOP(presupuestoMax)}</span>
+                  <label htmlFor="presupuesto-principal" className="text-sm font-semibold text-white">Presupuesto máximo</label>
+                  <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-blue-700">{formatearCOP(presupuestoMax)}</span>
                 </div>
                 <input id="presupuesto-principal" type="range" min="50" max="1500" step="25" value={presupuestoMax} onChange={(e) => setPresupuestoMax(Number(e.target.value))} aria-label="Ajustar presupuesto máximo" className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600" />
-                <div className="mt-2 flex justify-between text-[11px] text-slate-500"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
+                <div className="mt-2 flex justify-between text-[11px] text-blue-100"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
               </div>
             </div>
             <div className="relative mx-auto w-full max-w-xl">
               <div className="absolute inset-4 rounded-[2rem] bg-blue-600/15 blur-2xl" aria-hidden="true" />
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#4b91e2] p-5 shadow-2xl shadow-blue-950/20 sm:p-8">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-5 shadow-2xl shadow-blue-950/20 backdrop-blur-sm sm:p-8">
                 <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full border border-white/20" aria-hidden="true" />
                 <div className="absolute -right-5 -top-5 h-44 w-44 rounded-full border border-white/15" aria-hidden="true" />
                 <div className="relative flex min-h-[280px] items-center justify-center sm:min-h-[340px]">
@@ -993,7 +993,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-blue-200/80 pt-6">
+          <div className="mt-8 border-t border-slate-200 pt-6">
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Explora por categoría</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Filtrar por categoría">
               {[

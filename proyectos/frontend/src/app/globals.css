@@ -4,7 +4,18 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-doto: 'Doto', monospace;
+  --font-display: var(--font-space-grotesk), var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-brand: var(--font-doto), 'Doto', monospace;
+
+  /* Escala de radios coherente: controles 12px, tarjetas y modales 16px */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
 
   /* Superficies y Fondos */
   --color-surface-base: #f8fafc;
@@ -12,6 +23,14 @@
   --color-surface-muted: #f1f5f9;
   --color-surface-border: #e2e8f0;
   --color-surface-border-strong: #cbd5e1;
+
+  /* Superficies del tema oscuro (se conserva la paleta original) */
+  --color-surface-0: #090714;
+  --color-surface-1: #0f172a;
+  --color-surface-2: #141d33;
+  --color-line: #1e293b;
+  --color-line-soft: #172033;
+  --shadow-soft: 0 24px 60px -38px rgba(2, 6, 23, 0.95);
 
   /* Jerarquía Tipográfica y Contraste (WCAG 2.1 AA) */
   --color-text-primary: #0f172a;
@@ -45,16 +64,78 @@ html {
 
 body {
   min-height: 100vh;
+  overflow-x: clip;
   background-color: #090714;
   color: #f8fafc;
   font-family: var(--font-sans);
 }
 
-/* Tipografía de Matriz de Puntos (Estilo Nothing Tech NDot / Doto) */
-.font-doto {
-  font-family: var(--font-doto, 'Doto', monospace, sans-serif);
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Marca: se conserva la matriz de puntos solo en el wordmark */
+.font-brand {
+  font-family: var(--font-brand);
   font-variation-settings: 'ROND' 100;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+}
+
+/* Animaciones sutiles y accesibles */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in,
+.animate-fadeIn {
+  animation: fade-in 180ms ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Titulares equilibrados y párrafos sin viudas */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
@@ -83,6 +164,6 @@ body {
 }
 
 .dark body {
-  background-color: #0a0e17;
+  background-color: #090714;
   color: #f8fafc;
 }

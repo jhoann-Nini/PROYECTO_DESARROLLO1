@@ -603,7 +603,6 @@ El catálogo cuenta con páginas propias por categoría:
 /categorias/tablets
 /categorias/portatiles
 /categorias/auriculares
-/categorias/monitores
 ```
 
 La ruta dinámica `src/app/categorias/[slug]/page.tsx` resuelve el parámetro

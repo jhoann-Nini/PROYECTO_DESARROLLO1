@@ -91,14 +91,6 @@ export const CAMPOS_POR_CATEGORIA: Record<CategoriaDispositivo, CampoEspecificac
     { clave: "bateria", etiqueta: "Batería & Autonomía", placeholder: "Ej: 9510 mAh · Carga ultra rápida 67W", icono: "🔋" },
     { clave: "productividad", etiqueta: "Productividad & Stylus", placeholder: "Ej: Compatible con Stylus de baja latencia", icono: "✏️" },
   ],
-  monitores: [
-    { clave: "panel", etiqueta: "Tecnología de Panel & Resolución", placeholder: "Ej: 27'' Fast IPS QHD (2560x1440)", icono: "🖥️" },
-    { clave: "tasa_refresco", etiqueta: "Tasa de Refresco", placeholder: "Ej: 180 Hz con FreeSync / G-Sync", icono: "⚡" },
-    { clave: "tiempo_respuesta", etiqueta: "Tiempo de Respuesta", placeholder: "Ej: 1ms GtG", icono: "⚡" },
-    { clave: "color_hdr", etiqueta: "Gamut de Color & HDR", placeholder: "Ej: 99% sRGB / 95% DCI-P3 · HDR400", icono: "🎨" },
-    { clave: "puertos", etiqueta: "Puertos & Conectividad", placeholder: "Ej: 2x HDMI 2.0, 1x DisplayPort 1.4", icono: "🔌" },
-    { clave: "ergonomia", etiqueta: "Ergonomía & Soporte", placeholder: "Ej: Ajuste de altura, inclinación y VESA", icono: "📐" },
-  ],
 };
 
 interface ErroresFormularioCategoria {
@@ -919,19 +911,19 @@ export default function AdminPanelModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-slate-950/85 p-4 backdrop-blur-sm"
     >
-      <div className="relative w-full max-w-4xl rounded-2xl border border-red-900/60 bg-slate-900/95 p-6 shadow-2xl text-slate-100 font-mono flex flex-col max-h-[92vh]">
+      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col rounded-card border border-line bg-surface-1/95 p-6 text-slate-100 shadow-soft">
         
-        {/* Encabezado accesible Nothing OS */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0">
+        {/* Encabezado accesible */}
+        <div className="flex shrink-0 items-center justify-between border-b border-line/70 pb-4">
           <div className="flex items-center gap-2.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-600 animate-pulse" aria-hidden="true"></span>
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-600" aria-hidden="true"></span>
             <div>
-              <h2 id="modal-admin-panel-titulo" className="text-sm font-bold uppercase tracking-wider text-white font-doto">
-                Panel de Administración <span className="text-red-500">{"//"}</span> TecReview
+              <h2 id="modal-admin-panel-titulo" className="font-display text-sm font-semibold tracking-[-0.01em] text-white">
+                Panel de Administración <span className="text-red-500">/</span> TecReview
               </h2>
-              <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+              <p className="mt-0.5 text-[11px] text-slate-400">
                 Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) • Rol:{" "}
                 <span className="text-red-400 font-semibold">{usuarioSesion?.rol}</span>
               </p>
@@ -991,7 +983,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`font-doto uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`font-display uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "productos"
                 ? "border-red-600 bg-red-950/40 text-red-300 shadow-2xs"
                 : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200 hover:border-slate-700"
@@ -1009,7 +1001,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`font-doto uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`font-display uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "categorias"
                 ? "border-red-600 bg-red-950/40 text-red-300 shadow-2xs"
                 : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200 hover:border-slate-700"
@@ -1027,7 +1019,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`font-doto uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`font-display uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "marcas"
                 ? "border-red-600 bg-red-950/40 text-red-300 shadow-2xs"
                 : "border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200 hover:border-slate-700"
@@ -1047,7 +1039,7 @@ export default function AdminPanelModal({
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/60">
                 <div>
-                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-doto">
+                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-display">
                     Gestión de Catálogo de Productos
                   </h3>
                   <p className="text-[11px] text-slate-400 mt-0.5">
@@ -1060,7 +1052,7 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={manejarExportarCsv}
                       disabled={exportandoCsv}
-                      className="rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 hover:text-white px-3.5 py-1.5 text-xs font-bold text-slate-300 uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 hover:text-white px-3.5 py-1.5 text-xs font-bold text-slate-300 uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Exportar catálogo de productos a CSV"
                     >
                       {exportandoCsv ? (
@@ -1078,7 +1070,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                     >
                       <span>+</span> Nuevo Producto
                     </button>
@@ -1090,7 +1082,7 @@ export default function AdminPanelModal({
               {modoFormulario !== "ninguno" && (
                 <div className="rounded-xl border border-red-900/50 bg-slate-950/80 p-4 space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-doto flex items-center gap-2">
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-display flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-red-500"></span>
                       {modoFormulario === "crear"
                         ? "Registrar Nuevo Producto"
@@ -1253,7 +1245,7 @@ export default function AdminPanelModal({
                       <div className="sm:col-span-2 pt-3 border-t border-slate-800/80 space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div>
-                            <h5 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-doto flex items-center gap-2">
+                            <h5 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-display flex items-center gap-2">
                               <span>⚙️ Especificaciones Técnicas</span>
                               <span className="px-2 py-0.5 rounded text-[10px] bg-red-950/60 text-red-300 border border-red-900/40">
                                 {infoCatActual.icono} {infoCatActual.etiqueta}
@@ -1279,7 +1271,7 @@ export default function AdminPanelModal({
                                 </p>
                                 <p className="text-[11px] text-amber-200/80 mt-0.5">
                                   Campos de la categoría anterior con datos:{" "}
-                                  <span className="font-mono font-bold text-amber-100">
+                                  <span className="font-sans font-bold text-amber-100">
                                     {clavesIncompatiblesDetectadas.join(", ")}
                                   </span>
                                   .
@@ -1373,7 +1365,7 @@ export default function AdminPanelModal({
                                   actualizarCampoPersonalizado(cp.id, "clave", e.target.value)
                                 }
                                 disabled={guardando}
-                                className="w-1/3 rounded-lg bg-slate-900 border border-slate-800 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors font-mono"
+                                className="w-1/3 rounded-lg bg-slate-900 border border-slate-800 px-2.5 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 transition-colors font-sans"
                               />
                               <input
                                 type="text"
@@ -1408,14 +1400,14 @@ export default function AdminPanelModal({
                         type="button"
                         onClick={cancelarFormulario}
                         disabled={guardando}
-                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardando}
-                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardando ? (
                           <>
@@ -1435,7 +1427,7 @@ export default function AdminPanelModal({
 
               {/* Listado de Productos */}
               {cargando ? (
-                <div className="py-12 text-center text-slate-400 font-mono animate-pulse">
+                <div className="py-12 text-center text-slate-400 font-sans animate-pulse">
                   Consultando catálogo de productos con el servidor...
                 </div>
               ) : productos.length === 0 ? (
@@ -1447,7 +1439,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primer Producto
                     </button>
@@ -1456,7 +1448,7 @@ export default function AdminPanelModal({
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-doto">
+                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-display">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Producto</th>
@@ -1469,7 +1461,7 @@ export default function AdminPanelModal({
                     <tbody className="divide-y divide-slate-800/80 text-slate-300">
                       {productos.map((prod) => (
                         <tr key={prod.idProducto} className="hover:bg-slate-900/40 transition-colors">
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-slate-400">
+                          <td className="py-2.5 px-3 font-sans text-[11px] text-slate-400">
                             #{prod.idProducto}
                           </td>
                           <td className="py-2.5 px-3">
@@ -1483,7 +1475,7 @@ export default function AdminPanelModal({
                               <div className="mt-1">
                                 <span
                                   data-testid={`badge-specs-${prod.idProducto}`}
-                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-950/60 text-cyan-300 border border-cyan-800/50"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-sans bg-cyan-950/60 text-cyan-300 border border-cyan-800/50"
                                   title={`Especificaciones: ${Object.keys(prod.caracteristicas).join(", ")}`}
                                 >
                                   <span>⚡</span>
@@ -1502,7 +1494,7 @@ export default function AdminPanelModal({
                               {getNombreMarca(prod.idMarca)}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-right font-mono text-slate-200">
+                          <td className="py-2.5 px-3 text-right font-sans text-slate-200">
                             {prod.precioReferencia !== null && prod.precioReferencia !== undefined
                               ? `$${Number(prod.precioReferencia).toFixed(2)}`
                               : "—"}
@@ -1514,7 +1506,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditar(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Editar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1523,7 +1515,7 @@ export default function AdminPanelModal({
                                 onClick={() => setProductoEliminando(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Eliminar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1545,7 +1537,7 @@ export default function AdminPanelModal({
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/60">
                 <div>
-                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-doto">
+                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-display">
                     Gestión de Categorías
                   </h3>
                   <p className="text-[11px] text-slate-400 mt-0.5">
@@ -1556,7 +1548,7 @@ export default function AdminPanelModal({
                   <button
                     type="button"
                     onClick={abrirCrearCategoria}
-                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                   >
                     <span>+</span> Nueva Categoría
                   </button>
@@ -1567,7 +1559,7 @@ export default function AdminPanelModal({
               {modoFormularioCat !== "ninguno" && (
                 <div className="rounded-xl border border-red-900/50 bg-slate-950/80 p-4 space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-doto flex items-center gap-2">
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-display flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-red-500"></span>
                       {modoFormularioCat === "crear"
                         ? "Registrar Nueva Categoría"
@@ -1637,14 +1629,14 @@ export default function AdminPanelModal({
                         type="button"
                         onClick={cancelarFormularioCategoria}
                         disabled={guardandoCat}
-                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardandoCat}
-                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoCat ? (
                           <>
@@ -1664,7 +1656,7 @@ export default function AdminPanelModal({
 
               {/* Listado de Categorías */}
               {cargando ? (
-                <div className="py-12 text-center text-slate-400 font-mono animate-pulse">
+                <div className="py-12 text-center text-slate-400 font-sans animate-pulse">
                   Consultando catálogo de categorías con el servidor...
                 </div>
               ) : categorias.length === 0 ? (
@@ -1676,7 +1668,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrearCategoria}
-                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Categoría
                     </button>
@@ -1685,7 +1677,7 @@ export default function AdminPanelModal({
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-doto">
+                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-display">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Nombre</th>
@@ -1697,7 +1689,7 @@ export default function AdminPanelModal({
                     <tbody className="divide-y divide-slate-800/80 text-slate-300">
                       {categorias.map((cat) => (
                         <tr key={cat.idCategoria} className="hover:bg-slate-900/40 transition-colors">
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-slate-400">
+                          <td className="py-2.5 px-3 font-sans text-[11px] text-slate-400">
                             #{cat.idCategoria}
                           </td>
                           <td className="py-2.5 px-3 font-semibold text-slate-100">
@@ -1707,7 +1699,7 @@ export default function AdminPanelModal({
                             {cat.descripcion || "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded border border-emerald-900/60 bg-emerald-950/40 text-emerald-400 text-[10px] font-mono">
+                            <span className="px-2 py-0.5 rounded border border-emerald-900/60 bg-emerald-950/40 text-emerald-400 text-[10px] font-sans">
                               Activa
                             </span>
                           </td>
@@ -1718,7 +1710,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditarCategoria(cat)}
                                 disabled={guardandoCat || eliminandoCat}
                                 aria-label={`Editar ${cat.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1727,7 +1719,7 @@ export default function AdminPanelModal({
                                 onClick={() => setCategoriaEliminando(cat)}
                                 disabled={guardandoCat || eliminandoCat}
                                 aria-label={`Eliminar ${cat.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1749,7 +1741,7 @@ export default function AdminPanelModal({
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800/60">
                 <div>
-                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-doto">
+                  <h3 className="font-bold text-white text-xs uppercase tracking-wider font-display">
                     Gestión de Marcas
                   </h3>
                   <p className="text-[11px] text-slate-400 mt-0.5">
@@ -1760,7 +1752,7 @@ export default function AdminPanelModal({
                   <button
                     type="button"
                     onClick={abrirCrearMarca}
-                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                   >
                     <span>+</span> Nueva Marca
                   </button>
@@ -1771,7 +1763,7 @@ export default function AdminPanelModal({
               {modoFormularioMarca !== "ninguno" && (
                 <div className="rounded-xl border border-red-900/50 bg-slate-950/80 p-4 space-y-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-doto flex items-center gap-2">
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-red-400 font-display flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-red-500"></span>
                       {modoFormularioMarca === "crear"
                         ? "Registrar Nueva Marca"
@@ -1833,14 +1825,14 @@ export default function AdminPanelModal({
                         type="button"
                         onClick={cancelarFormularioMarca}
                         disabled={guardandoMarca}
-                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardandoMarca}
-                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-red-600 hover:bg-red-500 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoMarca ? (
                           <>
@@ -1860,7 +1852,7 @@ export default function AdminPanelModal({
 
               {/* Listado de Marcas */}
               {cargando ? (
-                <div className="py-12 text-center text-slate-400 font-mono animate-pulse">
+                <div className="py-12 text-center text-slate-400 font-sans animate-pulse">
                   Consultando catálogo de marcas con el servidor...
                 </div>
               ) : marcas.length === 0 ? (
@@ -1872,7 +1864,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrearMarca}
-                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Marca
                     </button>
@@ -1881,7 +1873,7 @@ export default function AdminPanelModal({
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-doto">
+                    <thead className="bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-display">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Nombre</th>
@@ -1893,7 +1885,7 @@ export default function AdminPanelModal({
                     <tbody className="divide-y divide-slate-800/80 text-slate-300">
                       {marcas.map((m) => (
                         <tr key={m.idMarca} className="hover:bg-slate-900/40 transition-colors">
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-slate-400">
+                          <td className="py-2.5 px-3 font-sans text-[11px] text-slate-400">
                             #{m.idMarca}
                           </td>
                           <td className="py-2.5 px-3 font-semibold text-slate-100">
@@ -1903,7 +1895,7 @@ export default function AdminPanelModal({
                             {m.descripcion || "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded border border-emerald-900/60 bg-emerald-950/40 text-emerald-400 text-[10px] font-mono">
+                            <span className="px-2 py-0.5 rounded border border-emerald-900/60 bg-emerald-950/40 text-emerald-400 text-[10px] font-sans">
                               Activa
                             </span>
                           </td>
@@ -1914,7 +1906,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditarMarca(m)}
                                 disabled={guardandoMarca || eliminandoMarca}
                                 aria-label={`Editar ${m.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-amber-400 hover:text-amber-200 border border-amber-900/40 hover:bg-amber-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1923,7 +1915,7 @@ export default function AdminPanelModal({
                                 onClick={() => setMarcaEliminando(m)}
                                 disabled={guardandoMarca || eliminandoMarca}
                                 aria-label={`Eliminar ${m.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-doto text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase font-display text-red-400 hover:text-red-200 border border-red-900/40 hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1946,12 +1938,12 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar"
             aria-describedby="desc-confirmar-eliminar"
-            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in duration-100"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-slate-950/85 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md rounded-xl border border-red-800 bg-slate-900 p-5 shadow-2xl text-slate-100 font-mono">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-500/40 bg-surface-1 p-5 text-slate-100 shadow-soft">
               <div className="flex items-center gap-2 text-red-500 mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar" className="font-bold text-sm uppercase font-doto text-white">
+                <h4 id="titulo-confirmar-eliminar" className="font-bold text-sm uppercase font-display text-white">
                   Confirmar Eliminación de Producto
                 </h4>
               </div>
@@ -1967,7 +1959,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setProductoEliminando(null)}
                   disabled={eliminando}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -1975,7 +1967,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionProducto}
                   disabled={eliminando}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-doto uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-display uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
                 >
                   {eliminando ? (
                     <>
@@ -1998,12 +1990,12 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-cat"
             aria-describedby="desc-confirmar-eliminar-cat"
-            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in duration-100"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-slate-950/85 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md rounded-xl border border-red-800 bg-slate-900 p-5 shadow-2xl text-slate-100 font-mono">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-500/40 bg-surface-1 p-5 text-slate-100 shadow-soft">
               <div className="flex items-center gap-2 text-red-500 mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar-cat" className="font-bold text-sm uppercase font-doto text-white">
+                <h4 id="titulo-confirmar-eliminar-cat" className="font-bold text-sm uppercase font-display text-white">
                   Confirmar Eliminación de Categoría
                 </h4>
               </div>
@@ -2019,7 +2011,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setCategoriaEliminando(null)}
                   disabled={eliminandoCat}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -2027,7 +2019,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionCategoria}
                   disabled={eliminandoCat}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-doto uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-display uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
                 >
                   {eliminandoCat ? (
                     <>
@@ -2050,12 +2042,12 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-marca"
             aria-describedby="desc-confirmar-eliminar-marca"
-            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4 animate-in fade-in duration-100"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-slate-950/85 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md rounded-xl border border-red-800 bg-slate-900 p-5 shadow-2xl text-slate-100 font-mono">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-500/40 bg-surface-1 p-5 text-slate-100 shadow-soft">
               <div className="flex items-center gap-2 text-red-500 mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar-marca" className="font-bold text-sm uppercase font-doto text-white">
+                <h4 id="titulo-confirmar-eliminar-marca" className="font-bold text-sm uppercase font-display text-white">
                   Confirmar Eliminación de Marca
                 </h4>
               </div>
@@ -2071,7 +2063,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setMarcaEliminando(null)}
                   disabled={eliminandoMarca}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-doto uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-display uppercase transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -2079,7 +2071,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionMarca}
                   disabled={eliminandoMarca}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-doto uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold font-display uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
                 >
                   {eliminandoMarca ? (
                     <>
@@ -2097,13 +2089,13 @@ export default function AdminPanelModal({
 
         {/* Pie del modal */}
         <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between shrink-0">
-          <span className="text-[10px] text-slate-500 font-mono">
+          <span className="text-[10px] text-slate-500 font-sans">
             TecReview // Módulo administrativo verificado
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer"
+            className="rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2 text-xs font-bold text-white uppercase tracking-wider font-display transition-colors cursor-pointer"
           >
             Cerrar
           </button>

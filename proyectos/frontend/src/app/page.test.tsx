@@ -102,8 +102,8 @@ describe("Página principal / (Home)", () => {
       const productosBackend: Producto[] = [
         {
           idProducto: 991,
-          nombre: "Monitor Profesional 4K HDR",
-          descripcion: "Monitor IPS de precisión para creadores",
+          nombre: "Laptop Profesional 4K HDR",
+          descripcion: "Portátil IPS de precisión para creadores",
           precioReferencia: 650,
           idCategoria: 3,
           idMarca: 1,
@@ -124,7 +124,7 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Servidor conectado")).toBeDefined();
       });
 
-      expect(screen.getByText("Monitor Profesional 4K HDR")).toBeDefined();
+      expect(screen.getByText("Laptop Profesional 4K HDR")).toBeDefined();
       expect(
         screen.queryByText("Cargando catálogo de dispositivos..."),
       ).toBeNull();
@@ -995,8 +995,8 @@ describe("Página principal / (Home)", () => {
       const mejorValorados: ProductoMejorValorado[] = [
         {
           idProducto: 204,
-          nombre: "Monitor Gamer Asus ROG",
-          descripcion: "Monitor para eSports 240Hz",
+          nombre: "Laptop Gamer Asus ROG",
+          descripcion: "Portátil para eSports 240Hz",
           precioReferencia: 2100000,
           idCategoria: 3,
           idMarca: 6,
@@ -1013,11 +1013,11 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       await waitFor(() => {
-        expect(screen.getByText("Monitor Gamer Asus ROG")).toBeDefined();
+        expect(screen.getByText("Laptop Gamer Asus ROG")).toBeDefined();
       });
 
       const btnFicha = screen.getByRole("button", {
-        name: "Ver ficha de Monitor Gamer Asus ROG",
+        name: "Ver ficha de Laptop Gamer Asus ROG",
       });
       fireEvent.click(btnFicha);
 
@@ -1025,7 +1025,7 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByRole("dialog")).toBeDefined();
         expect(screen.getByText("FICHA TÉCNICA")).toBeDefined();
         expect(
-          screen.getByRole("heading", { level: 2, name: "Monitor Gamer Asus ROG" })
+          screen.getByRole("heading", { level: 2, name: "Laptop Gamer Asus ROG" })
         ).toBeDefined();
       });
     });
@@ -1042,7 +1042,6 @@ describe("Página principal / (Home)", () => {
         [/Tablets/i, "/categorias/tablets"],
         [/Portátiles \/ PC/i, "/categorias/portatiles"],
         [/Auriculares/i, "/categorias/auriculares"],
-        [/Monitores/i, "/categorias/monitores"],
       ];
 
       for (const [nombre, href] of enlacesEsperados) {
@@ -1050,6 +1049,7 @@ describe("Página principal / (Home)", () => {
         expect(enlace.getAttribute("href")).toBe(href);
       }
 
+      expect(screen.queryByRole("link", { name: /Monitores/i })).toBeNull();
       expect(screen.getByRole("button", { name: /Todos/i })).toBeDefined();
     });
   });

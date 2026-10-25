@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Doto } from "next/font/google";
+import { Inter, Doto, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,11 +8,16 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+});
+
 const doto = Doto({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-doto",
-  weight: ["600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,8 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${doto.variable} dark`}>
-      <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-purple-600 selection:text-white">
+    <html
+      lang="es"
+      className={`${inter.variable} ${spaceGrotesk.variable} ${doto.variable} dark`}
+    >
+      <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-blue-600 selection:text-white">
         {children}
       </body>
     </html>

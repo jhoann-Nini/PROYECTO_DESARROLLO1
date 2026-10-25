@@ -169,31 +169,31 @@ export default function CategoriaPageContent({
   const total = productosFiltrados.length;
 
   return (
-    <main className="relative min-h-screen dark text-slate-100">
+    <main className="relative min-h-screen overflow-x-clip text-slate-100 dark">
       <GeometricBackground tema="oscuro" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <nav
           aria-label="Migas de pan"
-          className="flex flex-wrap items-center justify-between gap-3 pb-6 border-b border-slate-800/80"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-line/70 pb-6"
         >
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <Link href="/" className="hover:text-blue-400 transition-colors">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            <Link href="/" className="transition-colors hover:text-blue-300">
               Inicio
             </Link>
             <span aria-hidden="true">/</span>
-            <span className="text-slate-200">Categorías</span>
+            <span className="text-slate-300">Categorías</span>
             {nombreCategoria && (
               <>
                 <span aria-hidden="true">/</span>
-                <span className="text-blue-400">{nombreCategoria}</span>
+                <span className="text-blue-300">{nombreCategoria}</span>
               </>
             )}
           </div>
 
           <Link
             href="/"
-            className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 px-4 py-2 text-xs font-bold text-white shadow-2xs transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-control border border-line bg-surface-1/80 px-4 py-2 text-xs font-semibold text-slate-200 transition-colors hover:border-blue-500/40 hover:text-white"
           >
             ← Volver al catálogo
           </Link>
@@ -205,67 +205,67 @@ export default function CategoriaPageContent({
             aria-live="polite"
             aria-busy="true"
           >
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-800 border-t-blue-600" />
-            <p className="mt-4 text-sm font-doto uppercase tracking-wider text-slate-400">
+            <div className="h-10 w-10 animate-spin rounded-full border-2 border-line border-t-blue-500" />
+            <p className="mt-4 text-sm text-slate-500">
               Consultando productos de la categoría...
             </p>
           </section>
         ) : noEncontrada ? (
-          <section className="mt-10 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 p-12 text-center">
-            <p className="font-doto text-2xl font-black uppercase tracking-wider text-slate-100">
+          <section className="mt-10 rounded-card border border-dashed border-line bg-surface-1/70 p-10 text-center sm:p-12">
+            <p className="font-display text-2xl font-semibold tracking-[-0.02em] text-white">
               Categoría no encontrada
             </p>
-            <p className="mt-3 text-sm text-slate-400 max-w-lg mx-auto">
+            <p className="mx-auto mt-3 max-w-lg text-sm text-slate-400">
               La categoría solicitada no existe en el catálogo actual o su
               nombre cambió en la base de datos.
             </p>
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 px-4 py-2 text-xs font-bold font-doto uppercase tracking-wider text-white transition-colors"
+              className="mt-6 inline-flex items-center gap-1.5 rounded-control bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500"
             >
               ← Volver al catálogo
             </Link>
           </section>
         ) : error ? (
           <section
-            className="mt-10 rounded-2xl border border-red-900/60 bg-red-950/40 p-8 text-center"
+            className="mt-10 rounded-card border border-red-500/30 bg-red-500/10 p-8 text-center"
             role="alert"
           >
-            <p className="font-doto text-lg font-black uppercase tracking-wider text-red-300">
+            <p className="font-display text-lg font-semibold text-red-300">
               No fue posible cargar la categoría
             </p>
-            <p className="mt-2 text-sm text-red-200">{error}</p>
+            <p className="mt-2 text-sm text-red-200/80">{error}</p>
             <button
               type="button"
               onClick={reintentar}
-              className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-blue-700 hover:bg-blue-800 px-4 py-2 text-xs font-bold font-doto uppercase tracking-wider text-white transition-colors cursor-pointer"
+              className="mt-5 inline-flex items-center gap-1.5 rounded-control bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
             >
               Reintentar
             </button>
           </section>
         ) : (
           <>
-            <header className="pt-8 pb-6 border-b border-slate-800/80">
-              <span className="inline-flex items-center gap-2 rounded-md bg-blue-950/80 border border-blue-800/80 px-3 py-1 text-[11px] font-bold font-doto uppercase tracking-widest text-blue-300">
+            <header className="animate-fade-in border-b border-line/70 pb-6 pt-8">
+              <span className="inline-flex items-center gap-2 rounded-full border border-blue-500/25 bg-blue-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-300">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
                 {categoria?.definicion.etiqueta || "Categoría"}
               </span>
-              <h1 className="mt-3 font-doto text-3xl sm:text-4xl font-black uppercase tracking-wider text-white">
+              <h1 className="mt-3 font-display text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
                 {nombreCategoria}
               </h1>
               {descripcionCategoria && (
-                <p className="mt-2 max-w-2xl text-sm text-slate-400 leading-relaxed">
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
                   {descripcionCategoria}
                 </p>
               )}
             </header>
 
             <section className="py-6" aria-label="Filtros de la categoría">
-              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="w-full lg:max-w-md">
                   <label
                     htmlFor="buscar-categoria"
-                    className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-300 mb-2"
+                    className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400"
                   >
                     Buscar dentro de la categoría
                   </label>
@@ -275,7 +275,7 @@ export default function CategoriaPageContent({
                     value={busqueda}
                     onChange={(event) => setBusqueda(event.target.value)}
                     placeholder="Buscar por nombre, marca o descripción..."
-                    className="w-full rounded-xl border border-slate-700 bg-slate-900 py-3 px-4 text-sm text-white placeholder:text-slate-500 focus:border-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                    className="w-full rounded-control border border-line bg-surface-1/80 px-4 py-3 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
                   />
                 </div>
 
@@ -283,7 +283,7 @@ export default function CategoriaPageContent({
                   <div>
                     <label
                       htmlFor="ordenar-categoria"
-                      className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-300 mb-2"
+                      className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400"
                     >
                       Ordenar productos
                     </label>
@@ -293,7 +293,7 @@ export default function CategoriaPageContent({
                       onChange={(event) =>
                         setOrden(event.target.value as OrdenProductos)
                       }
-                      className="rounded-xl border border-slate-700 bg-slate-900 py-3 px-4 text-sm text-white focus:border-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors cursor-pointer"
+                      className="cursor-pointer rounded-control border border-line bg-surface-1/80 px-4 py-3 text-sm text-white transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
                     >
                       <option value="nombre">Nombre (A-Z)</option>
                       <option value="precio-asc">Menor precio</option>
@@ -301,7 +301,7 @@ export default function CategoriaPageContent({
                     </select>
                   </div>
 
-                  <span className="inline-flex items-center rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold font-mono text-slate-300">
+                  <span className="inline-flex items-center rounded-full border border-line bg-surface-2/60 px-3.5 py-2 text-xs font-medium text-slate-300">
                     {total} producto{total === 1 ? "" : "s"} encontrado
                     {total === 1 ? "" : "s"}
                   </span>
@@ -312,7 +312,7 @@ export default function CategoriaPageContent({
             {productosFiltrados.length > 0 ? (
               <section
                 aria-label={`Productos de ${nombreCategoria}`}
-                className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                className="grid animate-fade-in gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
               >
                 {productosFiltrados.map((producto) => (
                   <ProductCard
@@ -323,26 +323,26 @@ export default function CategoriaPageContent({
                 ))}
               </section>
             ) : (
-              <section className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center">
+              <section className="rounded-card border border-dashed border-line bg-surface-1/50 p-10 text-center sm:p-12">
                 {busqueda.trim() ? (
                   <>
-                    <p className="font-bold text-slate-100">
+                    <p className="font-semibold text-slate-200">
                       No se encontraron productos para &ldquo;{busqueda}&rdquo;.
                     </p>
                     <button
                       type="button"
                       onClick={() => setBusqueda("")}
-                      className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider text-white transition-colors cursor-pointer"
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                     >
                       Limpiar búsqueda
                     </button>
                   </>
                 ) : (
                   <>
-                    <p className="font-bold text-slate-100">
+                    <p className="font-semibold text-slate-200">
                       Aún no hay productos registrados en esta categoría.
                     </p>
-                    <p className="mt-2 text-sm text-slate-400">
+                    <p className="mt-2 text-sm text-slate-500">
                       Cuando se registren productos en la base de datos
                       aparecerán aquí automáticamente.
                     </p>

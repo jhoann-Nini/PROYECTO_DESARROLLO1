@@ -45,7 +45,7 @@ import { formatearCOP } from "@/data/specsHelper";
 import { createClient } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 
-type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares" | "monitores";
+type CategoriaDispositivo = "todos" | "moviles" | "tablets" | "laptops" | "auriculares";
 
 export default function Home() {
   // Estado de backend
@@ -440,7 +440,6 @@ export default function Home() {
     if (tipo === "tablets") return idCategoria === 2;
     if (tipo === "laptops") return idCategoria === 3;
     if (tipo === "auriculares") return idCategoria === 4;
-    if (tipo === "monitores") return idCategoria === 5;
     return true;
   }, []);
 
@@ -604,11 +603,6 @@ export default function Home() {
             nomCat.includes("audifono") ||
             nomCat.includes("headphone") ||
             nomCat.includes("ear");
-        } else if (tipoDispositivo === "monitores") {
-          matchCat =
-            p.idCategoria === 5 ||
-            nomCat.includes("monitor") ||
-            nomCat.includes("pantalla");
         }
       }
 
@@ -810,25 +804,25 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           BARRA SUPERIOR Y SESIÓN
       ───────────────────────────────────────────────────────────── */}
-      <nav aria-label="Navegación superior" className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2.5 text-xs shadow-2xs sticky top-0 z-20">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="font-doto font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base tracking-widest uppercase">
+      <nav aria-label="Navegación superior" className="sticky top-0 z-30 border-b border-line/80 bg-[#090714]/80 px-4 py-3 text-xs backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="font-brand flex items-center gap-1.5 text-sm font-extrabold uppercase tracking-widest text-white sm:text-base">
               <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-              Tec<span className="text-blue-700 dark:text-blue-400">Review</span>
+              Tec<span className="text-blue-400">Review</span>
               <span className="text-red-500">.</span>
             </span>
-            <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
-            <span className="hidden md:inline text-slate-600 dark:text-slate-400 font-medium">
+            <span className="hidden md:inline text-line">|</span>
+            <span className="hidden md:inline text-slate-500 font-medium">
               Plataforma de Reseñas y Especificaciones Técnicas
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {/* Enlace Explorador API disponible para navegación rápida */}
             <Link
               href="/productos"
-              className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-600 hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+              className="hidden items-center gap-1 rounded-full border border-line/80 px-3 py-1.5 text-[11px] font-medium text-slate-400 transition-colors hover:border-blue-500/50 hover:text-blue-300 sm:inline-flex"
               title="Explorar catálogo directo del backend"
             >
               Catálogo API
@@ -842,12 +836,13 @@ export default function Home() {
                   e.preventDefault();
                   setModalAdminAbierto(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/60 bg-red-950/40 text-red-400 hover:bg-red-900/50 hover:text-red-300 px-2.5 py-1 text-xs font-semibold font-mono tracking-wider transition-colors cursor-pointer shadow-2xs"
+                className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 transition-colors hover:border-red-400/60 hover:bg-red-500/15 hover:text-red-200 cursor-pointer"
                 aria-label="Panel de administración"
                 title="Panel de administración (Rol verificado en servidor)"
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden="true"></span>
-                Administración
+                <span className="hidden sm:inline">Administración</span>
+                <span className="sm:hidden">Admin</span>
               </a>
             )}
 
@@ -872,12 +867,12 @@ export default function Home() {
             ) : usuarioSesion ? (
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-md flex items-center gap-1.5 border ${
+                  className={`text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1.5 border ${
                     esAdmin
                       ? "text-red-200 bg-red-950/40 border-red-800/60"
                       : esRepre
                       ? "text-amber-200 bg-amber-950/40 border-amber-800/60"
-                      : "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                      : "border-line bg-surface-2/60 text-slate-200"
                   }`}
                 >
                   <span
@@ -894,10 +889,10 @@ export default function Home() {
                     <span
                       className={`text-[10px] font-normal ${
                         esAdmin
-                          ? "text-red-400 font-mono"
+                          ? "text-red-400"
                           : esRepre
-                          ? "text-amber-400 font-mono"
-                          : "text-blue-700 dark:text-blue-400"
+                          ? "text-amber-400"
+                          : "text-blue-300"
                       }`}
                     >
                       • {usuarioSesion.rol}
@@ -918,9 +913,9 @@ export default function Home() {
                   setErrorSesion(null);
                   setModalAuthAbierto(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3 py-1 text-xs font-semibold text-white shadow-2xs transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-control bg-brand-primary px-3.5 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-brand-hover active:scale-[0.98] cursor-pointer"
               >
-                <span>🔑</span> Iniciar sesión
+                <span aria-hidden="true">🔑</span> Iniciar sesión
               </button>
             )}
           </div>
@@ -930,19 +925,19 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           CABECERA PRINCIPAL (BANNER HERO CON FONDO TRASLÚCIDO)
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-slate-200/70 dark:border-slate-800/70 bg-white/20 dark:bg-slate-950/20 backdrop-blur-[1px] py-12 px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden border-b border-line/70 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
           
           {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-8 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex flex-col gap-6 border-b border-line/70 pb-8 md:flex-row md:items-center md:justify-between">
             {/* Título de Marca Limpio */}
             <div className="flex items-center">
               <div>
-                <h1 className="font-doto text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-slate-900 dark:text-white uppercase" aria-label="TecReview">
-                  Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
+                <h1 className="font-brand text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase" aria-label="TecReview">
+                  Tec<span className="text-blue-400">Review</span><span className="text-red-500">.</span>
                 </h1>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
-                  {"//"} Guía de compra y especificaciones técnicas
+                <p className="mt-1 text-[13px] font-medium text-slate-500">
+                  Guía de compra y especificaciones técnicas
                 </p>
               </div>
             </div>
@@ -952,10 +947,10 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => setTipoDispositivo("todos")}
-                className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium transition-all duration-200 cursor-pointer ${
                   tipoDispositivo === "todos"
-                    ? "border-blue-700 bg-blue-700 text-white shadow-xs"
-                    : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
+                    ? "border-blue-500/60 bg-blue-600 text-white shadow-[0_0_0_1px_rgba(59,130,246,0.25)]"
+                    : "border-line bg-surface-1/80 text-slate-300 hover:border-blue-500/40 hover:bg-surface-2 hover:text-white"
                 }`}
               >
                 <span aria-hidden="true">📱</span>
@@ -966,7 +961,7 @@ export default function Home() {
                 <Link
                   key={categoria.slug}
                   href={obtenerRutaCategoria(categoria.slug)}
-                  className="font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs transition-all"
+                  className="flex items-center gap-1.5 rounded-full border border-line bg-surface-1/80 px-4 py-2 text-[13px] font-medium text-slate-300 transition-all duration-200 hover:border-blue-500/40 hover:bg-surface-2 hover:text-white"
                   title={`Ver todos los productos de ${categoria.etiqueta}`}
                 >
                   <span aria-hidden="true">{categoria.icono}</span>
@@ -977,28 +972,28 @@ export default function Home() {
           </div>
 
           {/* Cuerpo Central del Banner */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
+          <div className="grid grid-cols-1 gap-6 pt-8 lg:grid-cols-12 lg:gap-10">
             
             {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between gap-6">
               <div>
-                <span className="inline-flex items-center gap-2 rounded-md bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 px-3 py-1 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 dark:text-blue-300 mb-3 shadow-2xs">
+                <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                  CATÁLOGO Y COMPARADOR DE TECNOLOGÍA
+                  Catálogo y comparador de tecnología
                 </span>
 
-                <h2 className="font-doto text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-wide uppercase leading-tight">
+                <h2 className="max-w-2xl font-display text-3xl font-semibold leading-[1.05] tracking-[-0.03em] text-white sm:text-4xl md:text-5xl">
                   Encuentra y compara tu próximo dispositivo.
                 </h2>
 
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                <p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">
                   Consulta fichas técnicas completas, análisis imparciales y precios de referencia en pesos colombianos (COP).
                 </p>
               </div>
 
               {/* Buscador Rápido Accesible */}
               <div>
-                <label htmlFor="buscador-principal" className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                <label htmlFor="buscador-principal" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
                   Buscar dispositivos tecnológicos
                 </label>
                 <div className="relative flex items-center">
@@ -1014,36 +1009,36 @@ export default function Home() {
                     onChange={(e) => setBusqueda(e.target.value)}
                     placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
                     aria-label="Buscar dispositivos por marca, modelo o características"
-                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-3.5 pl-12 pr-20 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                    className="w-full rounded-control border border-line bg-surface-1/90 py-3.5 pl-12 pr-24 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
                   />
                   {busqueda && (
                     <button
                       onClick={() => setBusqueda("")}
                       aria-label="Borrar texto de búsqueda"
-                      className="absolute right-4 text-xs font-bold font-doto uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
+                      className="absolute right-4 text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition-colors hover:text-white cursor-pointer"
                     >
                       Limpiar
                     </button>
                   )}
                 </div>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                  {"//"} Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
+                <p className="mt-2 text-xs text-slate-500">
+                  Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
                 </p>
               </div>
 
               {/* Slider de Presupuesto en COP */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div className="rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                    <span className="text-xs font-bold font-doto text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+                    <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                    <span className="text-sm font-semibold text-slate-200">
                       Presupuesto máximo
                     </span>
                   </div>
 
-                  <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3.5 py-1.5">
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400 font-mono">Hasta:</span>
-                    <span className="text-sm font-extrabold font-sans tracking-tight text-blue-700 dark:text-blue-300">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3.5 py-1.5">
+                    <span className="text-[11px] font-medium text-slate-400">Hasta:</span>
+                    <span className="text-sm font-semibold tracking-tight text-blue-300">
                       {formatearCOP(presupuestoMax)}
                     </span>
                   </div>
@@ -1058,11 +1053,11 @@ export default function Home() {
                     value={presupuestoMax}
                     onChange={(e) => setPresupuestoMax(Number(e.target.value))}
                     aria-label="Ajustar presupuesto máximo en pesos colombianos"
-                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-700"
+                    className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-700 accent-blue-500"
                   />
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-slate-500">
                     <span>Mínimo: $ 200.000 COP</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400 font-sans">
+                    <span className="font-semibold text-blue-300">
                       Límite: {formatearCOP(presupuestoMax)}
                     </span>
                     <span>Máximo: $ 6.000.000+ COP</span>
@@ -1073,15 +1068,15 @@ export default function Home() {
 
             {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
             <div className="lg:col-span-4 flex flex-col">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm flex flex-col h-full">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
+              <div className="flex h-full flex-col rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-line/70 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
-                    <h3 className="text-xs font-bold font-doto uppercase tracking-wider text-slate-900 dark:text-white">
-                      Ofertas destacadas.
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-red-500"></span>
+                    <h3 className="text-sm font-semibold text-white">
+                      Ofertas destacadas
                     </h3>
                   </div>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
+                  <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-[11px] font-semibold text-blue-300">
                     En promoción ({ofertasFiltradas.length})
                   </span>
                 </div>
@@ -1090,29 +1085,31 @@ export default function Home() {
                 <div className="space-y-3 flex-1">
                   {cargandoOfertas ? (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-line border-t-blue-500"></div>
+                      <p className="mt-3 text-xs text-slate-500">Cargando ofertas reales...</p>
                     </div>
                   ) : errorOfertas ? (
-                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
-                      <button
-                        type="button"
-                        onClick={cargarOfertas}
-                        aria-label="Reintentar ofertas"
-                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
-                      >
-                        Reintentar ofertas
-                      </button>
+                    <div className="flex h-full min-h-[220px] items-center justify-center">
+                      <div className="w-full rounded-control border border-red-500/30 bg-red-500/10 px-4 py-6 text-center text-xs">
+                        <p className="font-medium text-red-300">⚠️ {errorOfertas}</p>
+                        <button
+                          type="button"
+                          onClick={cargarOfertas}
+                          aria-label="Reintentar ofertas"
+                          className="mt-2 text-xs font-semibold text-blue-300 underline decoration-blue-500/40 underline-offset-4 transition-colors hover:text-blue-200 hover:no-underline cursor-pointer"
+                        >
+                          Reintentar ofertas
+                        </button>
+                      </div>
                     </div>
                   ) : ofertasFiltradas.length > 0 ? (
                     (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
                       <div
                         key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
                         onClick={() => verFichaRanking(oferta)}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
+                        className="group flex items-center justify-between gap-3 rounded-control border border-line/80 bg-surface-2/40 p-3 transition-all duration-200 hover:border-blue-500/40 hover:bg-surface-2 cursor-pointer"
                       >
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border border-line bg-surface-0 p-1">
                           {oferta.imagen && oferta.imagen.trim().length > 0 ? (
                             <img
                               src={oferta.imagen}
@@ -1128,32 +1125,32 @@ export default function Home() {
                           )}
                         </div>
 
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-xs font-semibold text-slate-100 transition-colors group-hover:text-blue-300">
                             {oferta.nombre}
                           </p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                          <p className="truncate text-[11px] text-slate-500">
                             {oferta.nombreEstablecimiento}
                             {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
                           </p>
                           {oferta.ahorroMonetario > 0 && (
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
+                            <p className="text-[10px] font-medium text-emerald-400">
                               Ahorras: {formatearCOP(oferta.ahorroMonetario)}
                             </p>
                           )}
                         </div>
 
-                        <div className="text-right shrink-0">
+                        <div className="shrink-0 text-right">
                           {oferta.porcentajeDescuento > 0 && (
-                            <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
+                            <span className="inline-block rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-300">
                               -{Math.round(oferta.porcentajeDescuento)}%
                             </span>
                           )}
-                          <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
+                          <div className="text-xs font-semibold text-blue-300">
                             {formatearCOP(oferta.precioActual)}
                           </div>
                           {oferta.precioReferencia && (
-                            <div className="text-[10px] text-slate-400 line-through">
+                            <div className="text-[10px] text-slate-500 line-through">
                               {formatearCOP(oferta.precioReferencia)}
                             </div>
                           )}
@@ -1161,18 +1158,18 @@ export default function Home() {
                       </div>
                     ))
                   ) : (
-                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
+                    <div className="py-8 text-center text-xs text-slate-500">
                       No hay ofertas coincidentes con este filtro.
                     </div>
                   )}
                 </div>
 
                 {ofertasFiltradas.length > 3 && (
-                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
+                  <div className="mt-4 border-t border-line/70 pt-3 text-center">
                     <button
                       type="button"
                       onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
-                      className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
+                      className="text-xs font-semibold text-blue-300 transition-colors hover:text-blue-200 hover:underline cursor-pointer"
                     >
                       {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
                     </button>
@@ -1187,33 +1184,33 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           SELECTOR DE VISTAS (DESTACADOS vs CATÁLOGO)
       ───────────────────────────────────────────────────────────── */}
-      <div className="border-b border-slate-200/70 dark:border-slate-800/70 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center gap-3">
+      <div className="border-b border-line/70 bg-[#090714]/60 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setSeccionActiva("ranking")}
-              className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-all duration-200 cursor-pointer ${
                 seccionActiva === "ranking"
-                  ? "bg-blue-700 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
+                  ? "bg-blue-600 text-white"
+                  : "border border-line bg-surface-1 text-slate-300 hover:bg-surface-2 hover:text-white"
               }`}
             >
               ⭐ Dispositivos destacados
             </button>
             <button
               onClick={() => setSeccionActiva("catalogo")}
-              className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+              className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-all duration-200 cursor-pointer ${
                 seccionActiva === "catalogo"
-                  ? "bg-blue-700 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
+                  ? "bg-blue-600 text-white"
+                  : "border border-line bg-surface-1 text-slate-300 hover:bg-surface-2 hover:text-white"
               }`}
             >
               📦 Catálogo general ({productosBackendFiltrados.length})
             </button>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
-            <span>{"//"} Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
+          <div className="hidden items-center gap-2 text-xs text-slate-500 md:flex">
+            <span>Filtro activo: {tipoDispositivo} · Hasta {formatearCOP(presupuestoMax)}</span>
           </div>
         </div>
       </div>
@@ -1223,40 +1220,40 @@ export default function Home() {
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "ranking" && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             
             {/* COLUMNA 1: MEJOR VALORADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex flex-col justify-between rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="mb-6 border-b border-line/70 pb-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <h3 className="flex items-center gap-2 text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl">
                       <span className="text-red-500">/</span> Mejor valorados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-medium text-slate-500">
                       ({mejorValoradosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="mt-1 text-xs text-slate-500">
                     {"//"} Puntuación real de usuarios registrados
                   </p>
-                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                  <div className="mt-3 h-0.5 w-12 rounded-full bg-blue-500/70"></div>
                 </div>
 
                 <div className="space-y-3">
                   {cargandoMejorValorados ? (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando valoraciones reales...</p>
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-blue-500"></div>
+                      <p className="mt-3 text-xs text-slate-500">Cargando valoraciones reales...</p>
                     </div>
                   ) : errorMejorValorados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMejorValorados}</p>
+                    <div className="rounded-control border border-red-500/30 bg-red-500/10 p-6 text-center text-xs">
+                      <p className="font-medium text-red-300">⚠️ {errorMejorValorados}</p>
                       <button
                         type="button"
                         onClick={cargarMejorValorados}
                         aria-label="Reintentar valoraciones"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-3 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                       >
                         Reintentar valoraciones
                       </button>
@@ -1281,7 +1278,7 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                    <div className="rounded-control border border-dashed border-line bg-surface-2/30 p-8 text-center text-sm text-slate-500">
                       {mejorValorados.length === 0
                         ? "Aún no hay productos con valoraciones registradas en el catálogo."
                         : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
@@ -1291,11 +1288,11 @@ export default function Home() {
               </div>
 
               {mejorValoradosFiltrados.length > 4 && (
-                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                <div className="mt-6 border-t border-line/70 pt-4 text-center">
                   <button
                     type="button"
                     onClick={() => setMostrarTodosMejorValorados(!mostrarTodosMejorValorados)}
-                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="w-full rounded-control border border-line bg-surface-2/60 py-3 text-xs font-semibold text-slate-300 transition-colors hover:border-blue-500/40 hover:bg-surface-2 hover:text-white cursor-pointer"
                   >
                     {mostrarTodosMejorValorados
                       ? "Ocultar listado"
@@ -1306,37 +1303,37 @@ export default function Home() {
             </div>
 
             {/* COLUMNA 2: MÁS COMENTADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex flex-col justify-between rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="mb-6 border-b border-line/70 pb-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <h3 className="flex items-center gap-2 text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl">
                       <span className="text-red-500">/</span> Más comentados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-medium text-slate-500">
                       ({masComentadosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="mt-1 text-xs text-slate-500">
                     {"//"} Interacción real de reseñas comunitarias
                   </p>
-                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                  <div className="mt-3 h-0.5 w-12 rounded-full bg-blue-500/70"></div>
                 </div>
 
                 <div className="space-y-3">
                   {cargandoMasComentados ? (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando reseñas de la comunidad...</p>
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-blue-500"></div>
+                      <p className="mt-3 text-xs text-slate-500">Cargando reseñas de la comunidad...</p>
                     </div>
                   ) : errorMasComentados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasComentados}</p>
+                    <div className="rounded-control border border-red-500/30 bg-red-500/10 p-6 text-center text-xs">
+                      <p className="font-medium text-red-300">⚠️ {errorMasComentados}</p>
                       <button
                         type="button"
                         onClick={cargarMasComentados}
                         aria-label="Reintentar comentarios"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-3 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                       >
                         Reintentar comentarios
                       </button>
@@ -1360,7 +1357,7 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                    <div className="rounded-control border border-dashed border-line bg-surface-2/30 p-8 text-center text-sm text-slate-500">
                       {masComentados.length === 0
                         ? "Aún no hay reseñas registradas para los productos en la plataforma."
                         : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
@@ -1370,11 +1367,11 @@ export default function Home() {
               </div>
 
               {masComentadosFiltrados.length > 4 && (
-                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                <div className="mt-6 border-t border-line/70 pt-4 text-center">
                   <button
                     type="button"
                     onClick={() => setMostrarTodosComentados(!mostrarTodosComentados)}
-                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="w-full rounded-control border border-line bg-surface-2/60 py-3 text-xs font-semibold text-slate-300 transition-colors hover:border-blue-500/40 hover:bg-surface-2 hover:text-white cursor-pointer"
                   >
                     {mostrarTodosComentados
                       ? "Ocultar listado"
@@ -1385,37 +1382,37 @@ export default function Home() {
             </div>
 
             {/* COLUMNA 3: LOS MÁS DESEADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex flex-col justify-between rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="mb-6 border-b border-line/70 pb-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <h3 className="flex items-center gap-2 text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl">
                       <span className="text-red-500">/</span> Los más deseados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-medium text-slate-500">
                       ({masDeseadosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="mt-1 text-xs text-slate-500">
                     {"//"} Listas de deseos y favoritos de usuarios
                   </p>
-                  <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
+                  <div className="mt-3 h-0.5 w-12 rounded-full bg-blue-500/70"></div>
                 </div>
 
                 <div className="space-y-3">
                   {cargandoMasDeseados ? (
                     <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Consultando listas de deseos...</p>
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-blue-500"></div>
+                      <p className="mt-3 text-xs text-slate-500">Consultando listas de deseos...</p>
                     </div>
                   ) : errorMasDeseados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasDeseados}</p>
+                    <div className="rounded-control border border-red-500/30 bg-red-500/10 p-6 text-center text-xs">
+                      <p className="font-medium text-red-300">⚠️ {errorMasDeseados}</p>
                       <button
                         type="button"
                         onClick={cargarMasDeseados}
                         aria-label="Reintentar deseos"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-3 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                       >
                         Reintentar deseos
                       </button>
@@ -1436,14 +1433,16 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
-                      <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-lg mb-3">
-                        ❤️
+                    <div className="flex flex-col items-center justify-center rounded-control border border-dashed border-line bg-surface-2/30 p-8 text-center text-sm text-slate-500">
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface-2 text-slate-400">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                        </svg>
                       </div>
-                      <p className="font-bold text-slate-800 dark:text-slate-200 text-xs font-doto uppercase tracking-wider mb-1">
+                      <p className="mb-1 text-xs font-semibold text-slate-200">
                         Sin listas de deseos registradas
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+                      <p className="max-w-xs text-xs leading-relaxed text-slate-500">
                         La funcionalidad de listas de deseos y favoritos estará disponible en una fase posterior. Actualmente la plataforma no muestra datos ficticios.
                       </p>
                     </div>
@@ -1460,25 +1459,25 @@ export default function Home() {
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "catalogo" && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-6">
+          <div className="rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
+            <div className="mb-6 flex flex-col gap-4 border-b border-line/70 pb-6 md:flex-row md:items-center md:justify-between">
               <div>
-                <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl">
                   <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
-                  {"//"} {totalProductosVerificados} productos verificados en la plataforma • {productosBackendFiltrados.length} mostrado{productosBackendFiltrados.length === 1 ? "" : "s"}
+                <p className="mt-1 text-xs text-slate-500">
+                  {totalProductosVerificados} productos verificados en la plataforma • {productosBackendFiltrados.length} mostrado{productosBackendFiltrados.length === 1 ? "" : "s"}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 {estadoBackend === "online" ? (
-                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/80 px-2.5 py-1 text-xs text-emerald-800 dark:text-emerald-300 font-bold">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
                     <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                     Servidor conectado
                   </span>
                 ) : (
-                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 text-xs text-amber-800 dark:text-amber-300 font-bold">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300">
                     <span className="h-2 w-2 rounded-full bg-amber-500"></span>
                     Modo local
                   </span>
@@ -1487,13 +1486,13 @@ export default function Home() {
             </div>
 
             {/* Barra informativa de presupuesto y selector explícito */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 dark:border-slate-800/80 text-xs font-mono">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-slate-500 dark:text-slate-400">Presupuesto activo:</span>
-                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 px-2 py-0.5 font-bold text-blue-700 dark:text-blue-300 font-sans">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-line/70 pb-4 text-xs">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-slate-500">Presupuesto activo:</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 font-semibold text-blue-300">
                   Hasta {formatearCOP(presupuestoMax)}
                 </span>
-                <span className="text-slate-400 dark:text-slate-500">
+                <span className="text-slate-500">
                   ({totalEnPresupuesto} de {totalProductosVerificados} dentro del presupuesto)
                 </span>
               </div>
@@ -1502,10 +1501,10 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setFiltrarSoloEnPresupuesto((prev) => !prev)}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold font-doto uppercase tracking-wider transition-colors cursor-pointer border ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer ${
                     filtrarSoloEnPresupuesto
-                      ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
-                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-slate-400"
+                      ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+                      : "border-line bg-surface-2/60 text-slate-300 hover:border-blue-500/40 hover:text-white"
                   }`}
                   aria-pressed={filtrarSoloEnPresupuesto}
                   title="Alternar entre mostrar todo el catálogo o filtrar exclusivamente por presupuesto"
@@ -1518,11 +1517,11 @@ export default function Home() {
 
             {cargandoApi ? (
               <div className="flex flex-col items-center justify-center py-20" aria-live="polite" aria-busy="true">
-                <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" aria-hidden="true"></div>
-                <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 font-doto uppercase tracking-wider">Cargando catálogo de dispositivos...</p>
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-line border-t-blue-500" aria-hidden="true"></div>
+                <p className="mt-4 text-sm text-slate-400">Cargando catálogo de dispositivos...</p>
               </div>
             ) : productosBackendFiltrados.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                 {productosBackendFiltrados.map((producto) => (
                   <ProductCard
                     key={`prod-${producto.idProducto}`}
@@ -1533,51 +1532,51 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm font-mono">
+              <div className="rounded-control border border-dashed border-line bg-surface-2/30 p-8 text-center text-sm sm:p-12">
                 {busqueda.trim() ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 dark:text-slate-200 text-base">
+                    <p className="text-base font-semibold text-slate-200">
                       No se encontraron productos para &ldquo;{busqueda}&rdquo;.
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                    <p className="mx-auto max-w-md text-xs leading-relaxed text-slate-500">
                       No hay coincidencias con ese nombre o modelo en el catálogo. Intenta con otros términos como marca (Samsung, Asus, Sony...) o tipo de dispositivo.
                     </p>
                     <button
                       type="button"
                       onClick={() => setBusqueda("")}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                     >
                       Limpiar búsqueda
                     </button>
                   </div>
                 ) : tipoDispositivo !== "todos" ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                    <p className="font-semibold text-slate-200">
                       No hay dispositivos disponibles en la categoría &ldquo;{tipoDispositivo}&rdquo;.
                     </p>
                     <button
                       type="button"
                       onClick={() => setTipoDispositivo("todos")}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-control border border-line bg-surface-2/60 px-3.5 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-blue-500/40 hover:text-white cursor-pointer"
                     >
                       Ver todas las categorías
                     </button>
                   </div>
                 ) : filtrarSoloEnPresupuesto ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                    <p className="font-semibold text-slate-200">
                       No hay productos registrados dentro del presupuesto de {formatearCOP(presupuestoMax)}.
                     </p>
                     <button
                       type="button"
                       onClick={() => setFiltrarSoloEnPresupuesto(false)}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-control bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
                     >
                       Mostrar todos los productos
                     </button>
                   </div>
                 ) : (
-                  <p className="text-slate-500 dark:text-slate-400">
+                  <p className="text-slate-500">
                     No hay productos registrados en el catálogo en este momento.
                   </p>
                 )}
@@ -1591,13 +1590,13 @@ export default function Home() {
           SECCIÓN 3: OPINIONES DE LA COMUNIDAD (PERSISTIDAS)
       ───────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="rounded-card border border-line bg-surface-1/80 p-5 sm:p-6">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 id="seccion-opiniones" className="flex items-center gap-2 text-lg font-semibold tracking-[-0.02em] text-white sm:text-xl">
                 <span className="text-red-500">/</span> Opiniones de la comunidad ({resenas.length}).
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              <p className="mt-1 text-sm text-slate-400">
                 Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
               </p>
             </div>
@@ -1605,10 +1604,10 @@ export default function Home() {
               type="button"
               onClick={cargarResenas}
               disabled={cargandoResenas}
-              className="self-start sm:self-auto font-doto uppercase tracking-wider rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="self-start rounded-control border border-line bg-surface-2/60 px-3.5 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-blue-500/40 hover:text-white disabled:opacity-50 sm:self-auto cursor-pointer"
               title="Actualizar listado de opiniones desde el servidor"
             >
-              {cargandoResenas ? "Actualizando..." : "🔄 Actualizar"}
+              {cargandoResenas ? "Actualizando..." : "Actualizar"}
             </button>
           </div>
 
@@ -1621,20 +1620,20 @@ export default function Home() {
               value={filtroComentarios}
               onChange={(e) => setFiltroComentarios(e.target.value)}
               placeholder="Buscar por comentario, autor o producto..."
-              className="w-full sm:max-w-md rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+              className="w-full rounded-control border border-line bg-surface-0/80 px-4 py-2.5 text-xs text-white placeholder:text-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 sm:max-w-md"
             />
           </div>
 
           {/* Mensaje de invitación para usuarios anónimos */}
           {!usuarioSesion && (
-            <div className="mb-6 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <p className="text-blue-900 dark:text-blue-200">
-                <span className="font-bold">¿Tienes experiencia con algún dispositivo?</span> Inicia sesión con tu cuenta para publicar una opinión verificada.
+            <div className="mb-6 flex flex-col items-center justify-between gap-3 rounded-control border border-blue-500/25 bg-blue-500/10 p-4 text-xs sm:flex-row">
+              <p className="text-slate-300">
+                <span className="font-semibold text-white">¿Tienes experiencia con algún dispositivo?</span> Inicia sesión con tu cuenta para publicar una opinión verificada.
               </p>
               <button
                 type="button"
                 onClick={() => setModalAuthAbierto(true)}
-                className="font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white transition-colors cursor-pointer shrink-0"
+                className="shrink-0 rounded-control bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 cursor-pointer"
               >
                 Identificarse para opinar
               </button>
@@ -1646,15 +1645,15 @@ export default function Home() {
             <label htmlFor="input-comentario" className="sr-only">Escribe tu opinión</label>
             <div className="flex flex-col gap-3">
               {productosBackend.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                  <label htmlFor="select-producto-comentario" className="font-semibold">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                  <label htmlFor="select-producto-comentario" className="font-medium">
                     Dispositivo a reseñar:
                   </label>
                   <select
                     id="select-producto-comentario"
                     value={idProductoEfectivo}
                     onChange={(e) => setIdProductoComentario(Number(e.target.value))}
-                    className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-blue-700 focus:outline-none"
+                    className="rounded-control border border-line bg-surface-0/80 px-3 py-1.5 text-xs text-white transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
                   >
                     {productosBackend.map((p) => (
                       <option key={p.idProducto} value={p.idProducto}>
@@ -1675,12 +1674,12 @@ export default function Home() {
                       ? `Comentar como ${usuarioSesion.nombre}...`
                       : "Inicia sesión para publicar tu opinión aquí..."
                   }
-                  className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                  className="flex-1 rounded-control border border-line bg-surface-0/80 px-4 py-3 text-sm text-white placeholder:text-slate-500 transition-colors focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30"
                 />
                 <button
                   type="submit"
                   disabled={enviandoComentario}
-                  className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+                  className="rounded-control bg-blue-600 px-6 py-3 text-xs font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50 cursor-pointer"
                 >
                   {enviandoComentario ? "Publicando..." : "Publicar opinión"}
                 </button>
@@ -1695,32 +1694,32 @@ export default function Home() {
 
           {/* Listado de opiniones persistidas */}
           {cargandoResenas && resenas.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-500 font-mono">
+            <div className="py-8 text-center text-xs text-slate-500">
               Cargando opiniones de la comunidad...
             </div>
           ) : resenasFiltradas.length > 0 ? (
             <div className="space-y-3">
               {resenasFiltradas.map((r) => (
-                <div key={r.idResena} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 text-xs transition-colors">
-                  <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-blue-700 dark:text-blue-400">@{r.nombreUsuario || "Usuario"}</span>
+                <div key={r.idResena} className="rounded-control border border-line/80 bg-surface-2/30 p-4 text-xs transition-colors hover:border-line">
+                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2 text-slate-500">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-blue-300">@{r.nombreUsuario || "Usuario"}</span>
                       {r.nombreProducto && (
-                        <span className="text-[10px] font-doto uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md">
+                        <span className="rounded-full border border-line bg-surface-1 px-2 py-0.5 text-[10px] font-medium text-slate-400">
                           {r.nombreProducto}
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] font-mono">
+                    <span className="text-[11px]">
                       {new Date(r.fechaCreacion).toLocaleDateString("es-CO")}
                     </span>
                   </div>
-                  <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{r.comentario}</p>
+                  <p className="text-sm leading-relaxed text-slate-200">{r.comentario}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-xs text-slate-500 font-mono">
+            <div className="rounded-control border border-dashed border-line bg-surface-2/30 p-8 text-center text-xs text-slate-500">
               {filtroComentarios.trim()
                 ? `No se encontraron opiniones que coincidan con "${filtroComentarios}".`
                 : "Aún no hay opiniones registradas. ¡Sé el primero en compartir tu experiencia!"}
@@ -1769,7 +1768,7 @@ export default function Home() {
       />
 
       {/* PIE DE PÁGINA */}
-      <footer className="border-t border-slate-200/70 dark:border-slate-800/70 bg-white/70 dark:bg-slate-950/70 backdrop-blur-md py-8 px-4 text-xs text-slate-500 dark:text-slate-400 text-center transition-colors">
+      <footer className="border-t border-line/70 bg-[#090714]/70 px-4 py-8 text-center text-xs text-slate-500 backdrop-blur-md">
         <p>© 2026 TecReview - Plataforma de Reseñas y Especificaciones Técnicas</p>
       </footer>
     </div>

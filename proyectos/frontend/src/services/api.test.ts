@@ -912,7 +912,7 @@ describe("api.ts - Cliente API del frontend", () => {
       const ofertasEsperadas = [
         {
           idProducto: 10,
-          nombre: "Monitor Gaming 144Hz",
+          nombre: "Laptop Gaming 144Hz",
           precioReferencia: 400,
           precioActual: 300,
           ahorroMonetario: 100,

@@ -231,7 +231,6 @@ Rutas disponibles:
 - `/categorias/tablets`
 - `/categorias/portatiles`
 - `/categorias/auriculares`
-- `/categorias/monitores`
 
 El botón «Todos» de la página principal no abre una página nueva: restablece el
 catálogo completo en la misma vista.

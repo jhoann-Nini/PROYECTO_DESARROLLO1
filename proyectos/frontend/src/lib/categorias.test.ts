@@ -30,6 +30,7 @@ describe("esSlugCategoria", () => {
       expect(esSlugCategoria(definicion.slug)).toBe(true);
     }
     expect(esSlugCategoria("accesorios")).toBe(false);
+    expect(esSlugCategoria("monitores")).toBe(false);
     expect(esSlugCategoria("")).toBe(false);
   });
 });
@@ -70,10 +71,6 @@ describe("resolverCategoriasPorSlug", () => {
     expect(
       resolverCategoriasPorSlug([categoria(5, "Tablets")], "tablets")?.categorias[0].nombre,
     ).toBe("Tablets");
-    expect(
-      resolverCategoriasPorSlug([categoria(6, "Monitores & Pantallas")], "monitores")
-        ?.categorias[0].nombre,
-    ).toBe("Monitores & Pantallas");
   });
 
   it("debe devolver null cuando ninguna categoría coincide con el slug", () => {

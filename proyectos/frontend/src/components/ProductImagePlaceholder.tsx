@@ -84,23 +84,6 @@ function IconoCategoria({
           <line x1="12" y1="18" x2="12.01" y2="18" strokeWidth="2.5" />
         </svg>
       );
-    case "monitores":
-      return (
-        <svg
-          className={className}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="2" y="3" width="20" height="14" rx="2" />
-          <line x1="8" y1="21" x2="16" y2="21" />
-          <line x1="12" y1="17" x2="12" y2="21" />
-        </svg>
-      );
     case "moviles":
     default:
       return (
@@ -157,15 +140,15 @@ export default function ProductImagePlaceholder({
       <div
         role="img"
         aria-label={descripcionAccesible}
-        className={`w-full h-full flex flex-col items-center justify-center rounded-lg bg-slate-100/90 dark:bg-[#0a0e17] text-slate-400 dark:text-slate-500 p-1 border border-dashed border-slate-200 dark:border-slate-800 transition-colors select-none ${className}`}
+        className={`flex h-full w-full select-none flex-col items-center justify-center rounded-control border border-line/70 bg-surface-1/60 p-1 text-slate-500 transition-colors ${className}`}
       >
-        <IconoCategoria tipo={catTipo} className="w-5 h-5 text-slate-500 dark:text-slate-400 mb-0.5 shrink-0" />
+        <IconoCategoria tipo={catTipo} className="mb-0.5 h-5 w-5 shrink-0 text-slate-400" />
         {marcaLimpia ? (
-          <span className="text-[8px] font-bold text-slate-700 dark:text-slate-300 truncate max-w-full leading-none font-doto uppercase">
+          <span className="max-w-full truncate text-[8px] font-medium uppercase leading-none text-slate-300">
             {marcaLimpia}
           </span>
         ) : (
-          <span className="text-[7.5px] font-semibold text-slate-500 dark:text-slate-400 uppercase leading-none">
+          <span className="text-[7.5px] font-medium uppercase leading-none text-slate-500">
             Pendiente
           </span>
         )}
@@ -177,24 +160,24 @@ export default function ProductImagePlaceholder({
     <div
       role="img"
       aria-label={descripcionAccesible}
-      className={`w-full h-full flex flex-col items-center justify-center rounded-xl bg-slate-50/90 dark:bg-[#0a0e17] text-slate-400 dark:text-slate-500 p-4 border border-dashed border-slate-200 dark:border-slate-800/80 transition-colors select-none ${className}`}
+      className={`flex h-full w-full select-none flex-col items-center justify-center rounded-card border border-line/70 bg-surface-1/40 p-4 text-slate-500 transition-colors ${className}`}
     >
-      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300 shadow-2xs mb-2.5">
-        <IconoCategoria tipo={catTipo} className="w-6 h-6" />
+      <div className="mb-2.5 flex h-12 w-12 items-center justify-center rounded-control border border-line bg-surface-1 text-slate-300">
+        <IconoCategoria tipo={catTipo} className="h-6 w-6" />
       </div>
 
       {marcaLimpia && (
-        <span className="font-doto uppercase tracking-wider text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/95 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 shadow-2xs mb-1.5">
+        <span className="mb-1.5 rounded-full border border-line bg-surface-1 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-300">
           {marcaLimpia}
         </span>
       )}
 
-      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+      <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
+        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
         <span>Imagen pendiente</span>
       </div>
 
-      <span className="mt-1 text-[11px] text-slate-400 dark:text-slate-500 font-sans">
+      <span className="mt-1 text-[11px] text-slate-500">
         {catInfo.etiqueta}
       </span>
     </div>

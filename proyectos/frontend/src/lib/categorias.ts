@@ -55,14 +55,6 @@ export const CATEGORIAS_NAVEGABLES = [
       "Auriculares, audífonos y equipos de audio registrados en el catálogo.",
     palabrasClave: ["auricular", "audifono", "audio", "headphone", "earbud"],
   },
-  {
-    slug: "monitores",
-    etiqueta: "Monitores",
-    icono: "🖥️",
-    descripcion:
-      "Monitores y pantallas de escritorio disponibles en el catálogo.",
-    palabrasClave: ["monitor", "pantalla"],
-  },
 ] as const satisfies readonly CategoriaNavegableDefinicion[];
 
 export type CategoriaSlug = (typeof CATEGORIAS_NAVEGABLES)[number]["slug"];

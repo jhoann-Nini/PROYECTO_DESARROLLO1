@@ -111,7 +111,6 @@ La fila de categorías de la página principal enlaza a páginas propias:
 | Tablets     | `/categorias/tablets`     |
 | Portátiles  | `/categorias/portatiles`  |
 | Auriculares | `/categorias/auriculares` |
-| Monitores   | `/categorias/monitores`   |
 
 Cada página resuelve el slug contra los nombres reales de `GET /api/categorias`
 (sin asumir IDs fijos) y consulta `GET /api/productos?idCategoria=<id>`. Incluye
@@ -128,3 +127,16 @@ datos simulados en las páginas de categoría.
   - Al iniciar el cliente, se dispara la solicitud HTTP `GET` a `${NEXT_PUBLIC_API_URL}/api/productos`.
   - Si el backend de Spring Boot se encuentra activo, los datos reales se inyectan en pantalla con el indicador `ONLINE (:8080)`.
   - Si el backend está apagado o en mantenimiento, el cliente activa el modo de prueba con datos simulados y advertencia informativa, garantizando tolerancia a fallos.
+
+### Datos de prueba del catálogo local
+
+`src/data/mockProductos.ts` incluye 4 productos de respaldo, uno por categoría:
+
+| Categoría   | Producto de prueba                     |
+|-------------|----------------------------------------|
+| Móviles     | Nothing Phone (2a) Special Edition     |
+| Tablets     | OnePlus Pad 2                          |
+| Portátiles  | Lenovo ThinkPad E14 Gen 5              |
+| Auriculares | Nothing Ear (2) Transparent White      |
+
+La categoría Monitores fue retirada de la navegación, de las fichas técnicas y de los formularios del panel administrativo.

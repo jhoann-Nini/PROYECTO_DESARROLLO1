@@ -40,20 +40,20 @@ export default function RankingItem({
   return (
     <article
       onClick={() => onVerDetalle?.()}
-      className="group relative flex items-center justify-between gap-3 sm:gap-4 rounded-xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-[#111827]/90 p-3 sm:p-3.5 shadow-2xs transition-all duration-200 hover:border-blue-500/50 hover:bg-slate-50/50 dark:hover:bg-[#151f33] hover:shadow-md cursor-pointer"
+      className="group relative flex cursor-pointer items-center justify-between gap-3 rounded-control border border-line/80 bg-surface-2/30 p-3 transition-all duration-200 hover:border-blue-500/40 hover:bg-surface-2/60 sm:gap-4 sm:p-3.5"
     >
       {/* Columna Izquierda: Posición en el Ranking */}
-      <div className="flex flex-col items-center justify-center min-w-[38px] border-r border-slate-200 dark:border-slate-800/80 pr-2.5 sm:pr-3 shrink-0">
-        <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-doto tracking-wider">
+      <div className="flex min-w-[34px] shrink-0 flex-col items-center justify-center border-r border-line/70 pr-2.5 sm:min-w-[38px] sm:pr-3">
+        <span className="font-display text-base font-semibold tracking-tight text-white sm:text-lg">
           #{ranking}
         </span>
-        <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold font-mono">
+        <span className="text-[10px] font-medium text-blue-400">
           TOP
         </span>
       </div>
 
       {/* Miniatura del producto */}
-      <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0a0e17] p-1 flex items-center justify-center">
+      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border border-line bg-surface-0 p-1.5 sm:h-14 sm:w-14">
         {tieneImagenValida ? (
           <img
             src={imagen!}
@@ -74,31 +74,31 @@ export default function RankingItem({
 
       {/* Información del Dispositivo */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">
-          {marca && <span className="font-extrabold text-slate-900 dark:text-white mr-1.5">{marca}</span>}
-          <span className="text-slate-700 dark:text-slate-300 font-medium">{nombre}</span>
+        <h4 className="truncate text-xs font-semibold text-slate-100 sm:text-sm">
+          {marca && <span className="mr-1.5 font-semibold text-white">{marca}</span>}
+          <span className="font-medium text-slate-300">{nombre}</span>
         </h4>
 
         {descripcion && (
-          <p className="mt-0.5 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
+          <p className="mt-0.5 truncate text-[11px] text-slate-500 sm:text-xs">
             {descripcion}
           </p>
         )}
 
         {/* Métrica real de Mejor Valorados */}
         {metricaTipo === "valoracion" && typeof puntuacion === "number" && (
-          <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-              Nota: <strong className="text-slate-900 dark:text-white font-bold">{puntuacion.toFixed(1)}</strong> / 5.0
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-[11px] font-medium text-slate-400">
+              Nota: <strong className="font-semibold text-white">{puntuacion.toFixed(1)}</strong> / 5.0
             </span>
-            <div className="w-14 sm:w-18 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-1.5 w-14 overflow-hidden rounded-full bg-surface-0 sm:w-18">
               <div
-                className="h-full bg-emerald-500 dark:bg-emerald-400 rounded-full transition-all"
+                className="h-full rounded-full bg-blue-500 transition-all"
                 style={{ width: `${Math.min((puntuacion / 5) * 100, 100)}%` }}
               />
             </div>
             {typeof cantidadValoraciones === "number" && (
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[10px] text-slate-500">
                 ({cantidadValoraciones} {cantidadValoraciones === 1 ? "valoración" : "valoraciones"})
               </span>
             )}
@@ -107,12 +107,14 @@ export default function RankingItem({
 
         {/* Métrica real de Más Comentados */}
         {metricaTipo === "comentario" && typeof cantidadResenas === "number" && (
-          <div className="mt-1.5 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-blue-300">
-              <span>💬</span>
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/25 bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-300">
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.18-3.54A7.38 7.38 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
               <span>{cantidadResenas} {cantidadResenas === 1 ? "reseña" : "reseñas"}</span>
             </span>
-            <span className="text-[10px] text-slate-400 font-mono">
+            <span className="text-[10px] text-slate-500">
               Interacción comunitaria
             </span>
           </div>
@@ -120,13 +122,13 @@ export default function RankingItem({
       </div>
 
       {/* Columna Derecha: Precio de Referencia y Acción */}
-      <div className="flex flex-col items-end justify-center text-right shrink-0 pl-1.5 sm:pl-2">
+      <div className="flex shrink-0 flex-col items-end justify-center pl-1.5 text-right sm:pl-2">
         {precio !== null && precio !== undefined ? (
-          <span className="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
+          <span className="text-xs font-semibold tracking-tight text-emerald-400 sm:text-sm">
             {formatearCOP(precio)}
           </span>
         ) : (
-          <span className="text-[10px] text-slate-400 font-mono">
+          <span className="text-[10px] text-slate-500">
             Consultar precio
           </span>
         )}
@@ -137,7 +139,7 @@ export default function RankingItem({
             onVerDetalle?.();
           }}
           aria-label={`Ver ficha de ${nombre}`}
-          className="mt-1.5 inline-flex items-center gap-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1a2336] px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors hover:border-blue-500 hover:text-blue-600 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#23304a] cursor-pointer"
+          className="mt-1.5 inline-flex items-center gap-1 rounded-control border border-line bg-surface-1 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-blue-500/40 hover:text-white cursor-pointer"
         >
           Ver ficha
         </button>

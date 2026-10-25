@@ -105,7 +105,7 @@ export default function Home() {
   // Cargar preferencia de tema y sincronizar sesión real de Supabase al montar
   useEffect(() => {
     try {
-      document.documentElement.classList.add("dark");
+      // El rediseño utiliza una interfaz clara; no forzar la clase dark global.
     } catch {}
 
     // Sincronización con Supabase Auth y aprovisionamiento de perfil en Spring Boot

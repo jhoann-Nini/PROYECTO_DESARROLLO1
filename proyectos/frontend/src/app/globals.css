@@ -40,13 +40,13 @@ html {
   font-size: 16px;
   line-height: 1.5;
   scroll-behavior: smooth;
-  color-scheme: dark light;
+  color-scheme: light;
 }
 
 body {
   min-height: 100vh;
-  background-color: #090714;
-  color: #f8fafc;
+  background-color: #f3f6fb;
+  color: #10213f;
   font-family: var(--font-sans);
 }
 
@@ -70,19 +70,20 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d131f;
+  background: #e8eef7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #94a3b8;
 }
 
 .dark body {
   background-color: #0a0e17;
   color: #f8fafc;
+  color-scheme: dark;
 }

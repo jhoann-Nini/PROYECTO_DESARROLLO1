@@ -799,15 +799,15 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen dark text-slate-100 transition-colors duration-300">
+    <div className="relative min-h-screen bg-[#f3f6fb] text-[#10213f] transition-colors duration-300">
       
       {/* FONDO GEOMÉTRICO BICOLOR (MODO OSCURO) */}
-      <GeometricBackground tema="oscuro" />
+      <GeometricBackground tema="claro" />
 
       {/* ─────────────────────────────────────────────────────────────
           BARRA SUPERIOR Y SESIÓN
       ───────────────────────────────────────────────────────────── */}
-      <nav aria-label="Navegación superior" className="sticky top-0 z-40 border-b border-blue-900/60 bg-[#07152f]/95 px-4 py-3 text-xs shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
+      <nav aria-label="Navegación superior" className="sticky top-0 z-40 border-b border-blue-950/50 bg-[#07172f]/95 px-4 py-3 text-xs text-white shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5 font-doto text-base font-extrabold uppercase tracking-widest text-white">
@@ -927,19 +927,19 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           CABECERA PRINCIPAL (BANNER HERO CON FONDO TRASLÚCIDO)
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative isolate overflow-hidden border-b border-violet-900/50 bg-gradient-to-br from-[#100d35] via-[#25105c] to-[#101b54] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-30"><div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-blue-500/30 blur-3xl" /><div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-fuchsia-600/20 blur-3xl" /><div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(129,140,248,0.14),transparent_60%)]" /></div>
+      <section className="relative isolate overflow-hidden border-b border-blue-100 bg-gradient-to-br from-[#eaf3ff] via-white to-[#dceaff] px-4 py-8 text-[#10213f] sm:px-6 sm:py-12 lg:px-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10"><div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-blue-300/40 blur-3xl" /><div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-300/30 blur-3xl" /></div>
         <div className="mx-auto max-w-7xl">
           
           {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col gap-6 border-b border-white/10 pb-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-6 border-b border-blue-200/80 pb-8 md:flex-row md:items-center md:justify-between">
             {/* Título de Marca Limpio */}
             <div className="flex items-center">
               <div>
-                <h1 className="font-doto text-4xl font-black uppercase tracking-wider text-white sm:text-5xl lg:text-6xl" aria-label="TecReview">
+                <h1 className="font-doto text-4xl font-black uppercase tracking-wider text-[#10213f] sm:text-5xl lg:text-6xl" aria-label="TecReview">
                   Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
                 </h1>
-                <p className="mt-2 max-w-xl font-mono text-xs font-semibold uppercase tracking-[0.18em] text-blue-100/70 sm:text-sm">
+                <p className="mt-2 max-w-xl font-mono text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 sm:text-sm">
                   {"//"} Guía de compra y especificaciones técnicas
                 </p>
               </div>
@@ -960,8 +960,8 @@ export default function Home() {
                   onClick={() => setTipoDispositivo(cat.id)}
                   className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
                     tipoDispositivo === cat.id
-                      ? "border-blue-400 bg-blue-600 text-white shadow-lg shadow-blue-950/30"
-                      : "border-white/10 bg-[#0b1731]/80 text-slate-200 hover:border-blue-400/70 hover:bg-blue-950/80 hover:text-white"
+                      ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-900/20"
+                      : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800"
                   }`}
                 >
                   <span aria-hidden="true">{cat.icon}</span>
@@ -977,23 +977,23 @@ export default function Home() {
             {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
             <div className="lg:col-span-8 flex flex-col justify-between gap-6">
               <div>
-                <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-blue-400/40 bg-blue-950/50 px-3 py-1.5 text-xs font-bold font-doto uppercase tracking-widest text-blue-200 shadow-sm">
+                <span className="mb-4 inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-white/90 px-3 py-1.5 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 shadow-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
                   CATÁLOGO Y GUÍA DE COMPRA
                 </span>
 
-                <h2 className="max-w-3xl font-doto text-3xl font-black uppercase leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">
-                  Encuentra y compara tu próximo dispositivo.
+                <h2 className="max-w-3xl font-doto text-3xl font-black uppercase leading-tight tracking-wide text-[#10213f] sm:text-4xl md:text-5xl">
+                  Encuentra tu próximo dispositivo.
                 </h2>
 
-                <p className="mt-4 max-w-xl text-base leading-7 text-blue-100/75 sm:text-lg">
+                <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
                   Consulta fichas técnicas completas, análisis imparciales y precios de referencia en pesos colombianos (COP).
                 </p>
               </div>
 
               {/* Buscador Rápido Accesible */}
               <div>
-                <label htmlFor="buscador-principal" className="mb-2 block font-doto text-xs font-bold uppercase tracking-wider text-blue-100/80">
+                <label htmlFor="buscador-principal" className="mb-2 block font-doto text-xs font-bold uppercase tracking-wider text-slate-600">
                   Buscar dispositivos tecnológicos
                 </label>
                 <div className="relative flex items-center">
@@ -1009,7 +1009,7 @@ export default function Home() {
                     onChange={(e) => setBusqueda(e.target.value)}
                     placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
                     aria-label="Buscar dispositivos por marca, modelo o características"
-                    className="w-full rounded-2xl border border-white/15 bg-[#0b1731] py-4 pl-12 pr-20 text-sm text-white shadow-xl shadow-slate-950/20 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 bg-white py-4 pl-12 pr-20 text-sm text-slate-900 shadow-lg shadow-blue-950/5 transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   />
                   {busqueda && (
                     <button
@@ -1027,11 +1027,11 @@ export default function Home() {
               </div>
 
               {/* Slider de Presupuesto en COP */}
-              <div className="rounded-2xl border border-white/10 bg-[#0b1731]/85 p-5 shadow-xl shadow-slate-950/20 backdrop-blur sm:p-6">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                    <span className="text-xs font-bold font-doto text-slate-700 dark:text-slate-200 uppercase tracking-wider">
+                    <span className="text-xs font-bold font-doto text-slate-700 uppercase tracking-wider">
                       Presupuesto máximo
                     </span>
                   </div>
@@ -1068,7 +1068,7 @@ export default function Home() {
 
             {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
             <div className="lg:col-span-4 flex flex-col">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm flex flex-col h-full">
+              <div className="flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>

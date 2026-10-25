@@ -930,7 +930,7 @@ export default function Home() {
       </nav>
 
       {/* PORTADA REDISEÑADA — composición fiel al prototipo */}
-      <section className="relative overflow-hidden border-b border-blue-950/20 bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#245fbd] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
+      <section style={{ backgroundColor: "#0c2347", backgroundImage: "linear-gradient(115deg, #0c2347 0%, #174b91 54%, #245fbd 100%)", color: "#ffffff" }} className="relative overflow-hidden border-b border-[#0c2347] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/20 blur-3xl" />
           <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-300/15 blur-3xl" />
@@ -938,14 +938,14 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
             <div className="py-3 sm:py-8">
-              <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-100 shadow-sm backdrop-blur">
+              <span style={{ color: "#eaf2ff", backgroundColor: "rgba(255,255,255,.12)", borderColor: "rgba(255,255,255,.28)" }} className="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-wide shadow-sm backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 Tu guía de tecnología
               </span>
-              <h2 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              <h2 style={{ color: "#ffffff", textShadow: "0 1px 2px rgba(0,0,0,.12)" }} className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
                 Tu guía confiable para elegir la mejor tecnología.
               </h2>
-              <p className="mt-5 max-w-xl text-base leading-7 text-blue-100 sm:text-lg">
+              <p style={{ color: "#e5efff" }} className="mt-5 max-w-xl text-base leading-7 sm:text-lg">
                 Explora dispositivos, consulta fichas técnicas y opiniones, y conoce precios de referencia en pesos colombianos.
               </p>
               <div className="mt-7 max-w-xl rounded-2xl bg-white p-1.5 shadow-xl shadow-slate-950/20">
@@ -959,13 +959,13 @@ export default function Home() {
                 </div>
                 <p className="mt-2 px-2 text-xs text-slate-500">Busca por marca, modelo o categoría.</p>
               </div>
-              <div className="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4 shadow-md backdrop-blur sm:p-5">
+              <div style={{ backgroundColor: "rgba(255,255,255,.12)", borderColor: "rgba(255,255,255,.24)" }} className="mt-5 rounded-2xl border p-4 shadow-md backdrop-blur sm:p-5">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                   <label htmlFor="presupuesto-principal" className="text-sm font-semibold text-white">Presupuesto máximo</label>
                   <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-blue-700">{formatearCOP(presupuestoMax)}</span>
                 </div>
                 <input id="presupuesto-principal" type="range" min="50" max="1500" step="25" value={presupuestoMax} onChange={(e) => setPresupuestoMax(Number(e.target.value))} aria-label="Ajustar presupuesto máximo" className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600" />
-                <div className="mt-2 flex justify-between text-[11px] text-blue-100"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
+                <div style={{ color: "#e5efff" }} className="mt-2 flex justify-between text-[11px]"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
               </div>
             </div>
             <div className="relative mx-auto w-full max-w-xl">
@@ -994,7 +994,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-8 border-t border-white/20 pt-6">
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Explora por categoría</p>
+            <p style={{ color: "#e5efff" }} className="mb-4 text-xs font-bold uppercase tracking-[0.16em]">Explora por categoría</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Filtrar por categoría">
               {[
                 { id: "todos" as const, label: "Todos", icon: "▦" },

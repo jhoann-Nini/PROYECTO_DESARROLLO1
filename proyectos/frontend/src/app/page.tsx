@@ -982,7 +982,7 @@ export default function Home() {
                     <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=85" alt="" className="h-full w-full rounded-md object-cover" />
                     <div className="absolute -bottom-3 left-1/2 h-3 w-24 -translate-x-1/2 rounded-b-lg bg-slate-300" />
                   </div>
-                  <div className="absolute bottom-3 right-2 flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-white/15 text-3xl shadow-lg backdrop-blur sm:bottom-7 sm:right-7 sm:h-20 sm:w-20" aria-hidden="true">🎧</div>
+                  <div className="absolute bottom-3 right-2 flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-white/15 text-3xl shadow-lg backdrop-blur sm:bottom-7 sm:right-7 sm:h-20 sm:w-20" aria-hidden="true"><svg viewBox="0 0 24 24" className="h-8 w-8 text-white sm:h-9 sm:w-9" fill="none" stroke="currentColor" strokeWidth="1.7"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13v-1a9 9 0 0 1 18 0v1M3 13v4a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2Zm18 0v4a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2Z"/></svg></div>
                 </div>
                 <div className="relative mt-2 flex items-center justify-between gap-3 border-t border-white/20 pt-4 text-white">
                   <div><p className="text-sm font-bold">Encuentra tu próximo dispositivo</p><p className="mt-1 text-xs text-blue-100">Información clara para elegir mejor</p></div>
@@ -1300,7 +1300,7 @@ export default function Home() {
                   ) : (
                     <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-8 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
                       <div className="h-10 w-10 rounded-full bg-slate-100 bg-slate-100 flex items-center justify-center text-lg mb-3">
-                        ❤️
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
                       </div>
                       <p className="font-bold text-slate-800 text-slate-700 text-xs font-doto uppercase tracking-wider mb-1">
                         Sin listas de deseos registradas
@@ -1467,7 +1467,7 @@ export default function Home() {
               type="button"
               onClick={cargarResenas}
               disabled={cargandoResenas}
-              className="self-start sm:self-auto font-doto uppercase tracking-wider rounded-xl border border-slate-300 border-slate-200 bg-white bg-slate-100 px-3.5 py-2 text-xs font-semibold text-slate-700 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="min-h-11 self-start rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
               title="Actualizar listado de opiniones desde el servidor"
             >
               {cargandoResenas ? "Actualizando..." : "Actualizar opiniones"}
@@ -1483,7 +1483,7 @@ export default function Home() {
               value={filtroComentarios}
               onChange={(e) => setFiltroComentarios(e.target.value)}
               placeholder="Buscar por comentario, autor o producto..."
-              className="w-full sm:max-w-md rounded-xl border border-slate-300 border-slate-200 bg-white bg-slate-50 px-4 py-2.5 text-xs text-slate-900 text-slate-900 placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+              className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 transition-colors focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 sm:max-w-md"
             />
           </div>
 

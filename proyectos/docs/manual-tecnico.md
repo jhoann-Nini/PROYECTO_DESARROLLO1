@@ -594,6 +594,62 @@ PostgreSQL
 
 El backend devolverá información en formato JSON.
 
+## 27.1 Navegación por categorías (frontend)
+
+El catálogo cuenta con páginas propias por categoría:
+
+```
+/categorias/celulares
+/categorias/tablets
+/categorias/portatiles
+/categorias/auriculares
+/categorias/monitores
+```
+
+La ruta dinámica `src/app/categorias/[slug]/page.tsx` resuelve el parámetro
+`slug` (en Next.js 16 `params` llega como `Promise`) y lo entrega al componente
+de cliente `CategoriaPageContent`, que consulta la API real.
+
+Resolución del slug:
+
+1. Se consulta `GET /api/categorias`.
+2. `src/lib/categorias.ts` normaliza los nombres (sin tildes ni mayúsculas) y los
+   compara con las palabras clave de cada categoría navegable.
+3. Se obtienen los `idCategoria` reales y se consulta
+   `GET /api/productos?idCategoria=<id>` por cada categoría coincidente.
+4. Si ninguna categoría real coincide con el slug, se muestra «Categoría no
+   encontrada»; no se usan datos de ejemplo.
+
+No se asumen IDs fijos: los identificadores provienen siempre de la API, de modo
+que el frontend sigue funcionando si cambian entre entornos.
+
+Comportamiento de la página:
+
+- Estado de carga, estado vacío y error con botón «Reintentar».
+- Búsqueda local por nombre, marca o descripción.
+- Orden por nombre (A-Z), menor precio y mayor precio.
+- Reutiliza `ProductCard` y `FichaTecnicaModal`, sin duplicar componentes.
+- Enlace de regreso al catálogo principal.
+
+Archivos involucrados:
+
+```
+src/app/categorias/[slug]/page.tsx
+src/app/categorias/[slug]/CategoriaPageContent.tsx
+src/lib/categorias.ts
+src/services/api.ts        (obtenerProductosPorCategoria)
+src/app/page.tsx           (chips de categoría enlazados)
+```
+
+Pruebas automatizadas:
+
+```
+src/lib/categorias.test.ts
+src/app/categorias/[slug]/CategoriaPageContent.test.tsx
+src/app/categorias/[slug]/page.test.tsx
+src/app/page.test.tsx
+```
+
 ---
 
 # 28. Pruebas del backend

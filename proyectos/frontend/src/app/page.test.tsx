@@ -1031,6 +1031,29 @@ describe("Página principal / (Home)", () => {
     });
   });
 
+  describe("35. Navegación por categorías a páginas dedicadas", () => {
+    it("los accesos de categoría deben enlazar a sus páginas propias sin perder el botón 'Todos'", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      const enlacesEsperados: Array<[RegExp, string]> = [
+        [/Teléfonos/i, "/categorias/celulares"],
+        [/Tablets/i, "/categorias/tablets"],
+        [/Portátiles \/ PC/i, "/categorias/portatiles"],
+        [/Auriculares/i, "/categorias/auriculares"],
+        [/Monitores/i, "/categorias/monitores"],
+      ];
+
+      for (const [nombre, href] of enlacesEsperados) {
+        const enlace = screen.getByRole("link", { name: nombre });
+        expect(enlace.getAttribute("href")).toBe(href);
+      }
+
+      expect(screen.getByRole("button", { name: /Todos/i })).toBeDefined();
+    });
+  });
+
   describe("34. Comportamiento del Catálogo General, Búsqueda y Presupuesto", () => {
     const catalogoProductosPrueba: Producto[] = [
       {

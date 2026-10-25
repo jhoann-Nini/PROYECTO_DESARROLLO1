@@ -41,6 +41,10 @@ proyectos/frontend/
 │   │   ├── globals.css         # Importación de fuentes Nothing, temas y utilidades
 │   │   ├── layout.tsx          # Layout raíz con metadata y soporte dark
 │   │   ├── page.tsx            # Página principal (Nothing Movil + Integración API)
+│   │   ├── categorias/
+│   │   │   └── [slug]/
+│   │   │       ├── page.tsx              # Ruta dinámica de categoría
+│   │   │       └── CategoriaPageContent.tsx  # Listado, búsqueda y orden por categoría
 │   │   └── productos/
 │   │       └── page.tsx        # Inspector de endpoint y payload JSON
 │   ├── components/
@@ -48,6 +52,8 @@ proyectos/frontend/
 │   │   └── ProductCard.tsx     # Tarjeta de catálogo de productos
 │   ├── data/
 │   │   └── mockProductos.ts    # Datos de respaldo técnico (fallback si la API está offline)
+│   ├── lib/
+│   │   └── categorias.ts       # Slugs navegables y resolución contra /api/categorias
 │   ├── services/
 │   │   └── api.ts              # Cliente HTTP centralizado (apiFetch, ApiError, obtenerProductos)
 │   └── types/
@@ -92,6 +98,26 @@ npm run lint
 npm run build
 ```
 *Verifica la compilación estática y validación de tipos estricta.*
+
+---
+
+## 🗂️ Navegación por Categorías
+
+La fila de categorías de la página principal enlaza a páginas propias:
+
+| Categoría   | Ruta                     |
+|-------------|--------------------------|
+| Celulares   | `/categorias/celulares`   |
+| Tablets     | `/categorias/tablets`     |
+| Portátiles  | `/categorias/portatiles`  |
+| Auriculares | `/categorias/auriculares` |
+| Monitores   | `/categorias/monitores`   |
+
+Cada página resuelve el slug contra los nombres reales de `GET /api/categorias`
+(sin asumir IDs fijos) y consulta `GET /api/productos?idCategoria=<id>`. Incluye
+búsqueda, orden por nombre/precio, ficha técnica, estados de carga, vacío y error
+con reintento. Si el backend no responde, la página muestra el error: no se usan
+datos simulados en las páginas de categoría.
 
 ---
 

@@ -1198,5 +1198,47 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:http://localhost/test-uuid");
     });
   });
+
+  describe("obtenerProductosPorCategoria", () => {
+    it("debe consultar /api/productos?idCategoria=<id> con el identificador real", async () => {
+      const { obtenerProductosPorCategoria } = await loadApi(DEFAULT_API_URL);
+      const productos = [{ idProducto: 1, nombre: "Equipo" }];
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => productos,
+      } as unknown as Response);
+
+      const resultado = await obtenerProductosPorCategoria(17);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos?idCategoria=17",
+      );
+      expect(resultado).toEqual(productos);
+    });
+
+    it("debe rechazar identificadores inválidos sin llamar a la API", async () => {
+      const { obtenerProductosPorCategoria, ApiError } = await loadApi(DEFAULT_API_URL);
+
+      await expect(obtenerProductosPorCategoria(0)).rejects.toBeInstanceOf(ApiError);
+      await expect(obtenerProductosPorCategoria(-4)).rejects.toBeInstanceOf(ApiError);
+      await expect(obtenerProductosPorCategoria(1.5)).rejects.toBeInstanceOf(ApiError);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("debe lanzar ApiError cuando la respuesta no es una lista", async () => {
+      const { obtenerProductosPorCategoria, ApiError } = await loadApi(DEFAULT_API_URL);
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ productos: [] }),
+      } as unknown as Response);
+
+      await expect(obtenerProductosPorCategoria(3)).rejects.toBeInstanceOf(ApiError);
+    });
+  });
 });
 

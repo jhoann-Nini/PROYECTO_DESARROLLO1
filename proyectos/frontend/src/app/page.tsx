@@ -30,6 +30,10 @@ import {
 import {
   PRODUCTOS_MOCK,
 } from "@/data/mockProductos";
+import {
+  CATEGORIAS_NAVEGABLES,
+  obtenerRutaCategoria,
+} from "@/lib/categorias";
 import RankingItem from "@/components/RankingItem";
 import ProductCard from "@/components/ProductCard";
 import AuthModal from "@/components/AuthModal";
@@ -943,28 +947,31 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Selector de Categorías Accesible con estilo de Matriz Nothing Tech */}
-            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por categoría">
-              {[
-                { id: "todos" as const, label: "Todos", icon: "📱" },
-                { id: "moviles" as const, label: "Teléfonos", icon: "📱" },
-                { id: "tablets" as const, label: "Tablets", icon: "📱" },
-                { id: "laptops" as const, label: "Portátiles / PC", icon: "💻" },
-                { id: "auriculares" as const, label: "Auriculares", icon: "🎧" },
-                { id: "monitores" as const, label: "Monitores", icon: "🖥️" },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setTipoDispositivo(cat.id)}
-                  className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
-                    tipoDispositivo === cat.id
-                      ? "border-blue-700 bg-blue-700 text-white shadow-xs"
-                      : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
-                  }`}
+            {/* Selector de Categorías Accesible con navegación a páginas propias */}
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Explorar por categoría">
+              <button
+                type="button"
+                onClick={() => setTipoDispositivo("todos")}
+                className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
+                  tipoDispositivo === "todos"
+                    ? "border-blue-700 bg-blue-700 text-white shadow-xs"
+                    : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
+                }`}
+              >
+                <span aria-hidden="true">📱</span>
+                Todos
+              </button>
+
+              {CATEGORIAS_NAVEGABLES.map((categoria) => (
+                <Link
+                  key={categoria.slug}
+                  href={obtenerRutaCategoria(categoria.slug)}
+                  className="font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs transition-all"
+                  title={`Ver todos los productos de ${categoria.etiqueta}`}
                 >
-                  <span aria-hidden="true">{cat.icon}</span>
-                  {cat.label}
-                </button>
+                  <span aria-hidden="true">{categoria.icono}</span>
+                  {categoria.etiqueta}
+                </Link>
               ))}
             </div>
           </div>

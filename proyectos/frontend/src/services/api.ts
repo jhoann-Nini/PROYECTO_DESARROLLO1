@@ -158,6 +158,34 @@ export async function obtenerProductos<T = unknown>(): Promise<T[]> {
 }
 
 /**
+ * Consulta únicamente los productos activos de una categoría real.
+ * El identificador debe provenir de `GET /api/categorias`; nunca se asume
+ * un ID fijo para celulares, tablets, portátiles o auriculares.
+ */
+export async function obtenerProductosPorCategoria<T = unknown>(
+  idCategoria: number,
+): Promise<T[]> {
+  if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+    throw new ApiError(
+      "El identificador de categoría debe ser un número entero positivo.",
+      400,
+    );
+  }
+
+  const datos = await apiFetch<unknown>(
+    `/api/productos?idCategoria=${idCategoria}`,
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de productos).",
+    );
+  }
+
+  return datos as T[];
+}
+
+/**
  * Respuesta del endpoint de perfil del backend Spring Boot (GET /api/usuarios/me).
  */
 export interface UsuarioMeResponse {

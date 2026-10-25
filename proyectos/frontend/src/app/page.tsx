@@ -993,8 +993,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-slate-200 pt-6">
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Explora por categoría</p>
+          <div className="mt-8 border-t border-white/20 pt-6">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Explora por categoría</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Filtrar por categoría">
               {[
                 { id: "todos" as const, label: "Todos", icon: "▦" },

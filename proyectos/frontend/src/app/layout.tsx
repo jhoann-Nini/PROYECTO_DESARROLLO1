@@ -16,9 +16,9 @@ const doto = Doto({
 });
 
 export const metadata: Metadata = {
-  title: "TecReview | Plataforma de Reseñas y Especificaciones Técnicas",
+  title: "TecnoReview | Encuentra tu próximo dispositivo",
   description:
-    "TecReview es la plataforma de reseñas imparciales, análisis de hardware y comparativas de dispositivos tecnológicos con lenguaje claro y accesible.",
+    "TecnoReview: explora dispositivos tecnológicos, consulta especificaciones técnicas, precios de referencia en COP y opiniones de la comunidad.",
 };
 
 export default function RootLayout({
@@ -27,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${doto.variable} dark`}>
-      <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-purple-600 selection:text-white">
+    <html lang="es" className={`${inter.variable} ${doto.variable}`}>
+      <body className="min-h-screen bg-[#f3f6fb] text-[#10213f] antialiased font-sans selection:bg-blue-200 selection:text-blue-950">
         {children}
       </body>
     </html>

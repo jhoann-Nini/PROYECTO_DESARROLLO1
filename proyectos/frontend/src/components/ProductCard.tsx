@@ -35,9 +35,9 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 hover:border-blue-300"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/10 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
     >
-      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 ">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 sm:h-52">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
@@ -54,35 +54,35 @@ export default function ProductCard({
             tamano="md"
           />
         )}
-        <div className="absolute left-3 top-3 flex max-w-[70%] flex-wrap gap-1.5">
-          <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm backdrop-blur ">
+        <div className="absolute left-3 top-3 flex max-w-[72%] flex-wrap gap-1.5">
+          <span className="rounded-full border border-slate-200 bg-white/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-slate-700 shadow-sm backdrop-blur">
             {producto.nombreCategoria || `Categoría ${producto.idCategoria}`}
           </span>
-          <span className="rounded-full border border-violet-200 bg-violet-50/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-violet-700 ">
+          <span className="rounded-full border border-blue-100 bg-blue-50/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-blue-800">
             {producto.nombreMarca || `Marca ${producto.idMarca}`}
           </span>
         </div>
-        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-bold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-700 " : "border-slate-200 bg-slate-100 text-slate-600 "}`}>
-          <span aria-hidden="true">{producto.estado ? "● " : "○ "}</span>
+        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-slate-100 text-slate-600"}`}>
+          <span aria-hidden="true" className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${producto.estado ? "bg-emerald-600" : "bg-slate-500"}`} />
           {producto.estado ? "Activo" : "Inactivo"}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700 group-hover:text-blue-700">
+      <div className="flex flex-1 flex-col p-5 sm:p-5">
+        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700">
           {producto.nombre}
         </h3>
-        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-500 ">
+        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-600">
           {producto.descripcion || "Consulta las características y especificaciones técnicas de este dispositivo."}
         </p>
 
-        <div className="mt-4 border-t border-slate-100 pt-4 ">
+        <div className="mt-4 border-t border-slate-100 pt-4">
           <div className="flex min-h-12 items-end justify-between gap-2">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-medium text-slate-500">
                 Precio de referencia
               </p>
-              <p className="mt-0.5 text-lg font-extrabold tracking-tight text-slate-950 ">
+              <p className="mt-1 text-xl font-extrabold tracking-tight text-slate-950">
                 {precioFormateado}
               </p>
             </div>
@@ -102,9 +102,9 @@ export default function ProductCard({
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.99] "
+            className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 active:scale-[0.99]"
           >
-            Ver ficha técnica <span aria-hidden="true">↗</span>
+            Ver ficha técnica <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15 15 5M6 5h9v9" /></svg>
           </button>
         </div>
       </div>

@@ -1108,13 +1108,15 @@ export default function Home() {
                       <p className="mt-3 text-xs text-slate-500 font-mono">Cargando valoraciones reales...</p>
                     </div>
                   ) : errorMejorValorados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMejorValorados}</p>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:p-6 text-center">
+                      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700" aria-hidden="true">!</div>
+                      <p className="text-sm font-semibold text-slate-900">No pudimos cargar las valoraciones</p>
+                      <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-slate-600">Estamos teniendo problemas para conectar con el servicio. Inténtalo de nuevo en unos segundos.</p>
                       <button
                         type="button"
                         onClick={cargarMejorValorados}
                         aria-label="Reintentar valoraciones"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer"
                       >
                         Reintentar valoraciones
                       </button>
@@ -1188,13 +1190,15 @@ export default function Home() {
                       <p className="mt-3 text-xs text-slate-500 font-mono">Cargando reseñas de la comunidad...</p>
                     </div>
                   ) : errorMasComentados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasComentados}</p>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:p-6 text-center">
+                      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700" aria-hidden="true">!</div>
+                      <p className="text-sm font-semibold text-slate-900">No pudimos cargar las reseñas</p>
+                      <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-slate-600">No conseguimos conectar con el servicio de reseñas. Puedes volver a intentarlo.</p>
                       <button
                         type="button"
                         onClick={cargarMasComentados}
                         aria-label="Reintentar comentarios"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer"
                       >
                         Reintentar comentarios
                       </button>

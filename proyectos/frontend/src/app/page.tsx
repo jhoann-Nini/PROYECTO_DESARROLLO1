@@ -1013,6 +1013,35 @@ export default function Home() {
         </div>
       </section>
 
+      {ofertasFiltradas.length > 0 && (
+        <section aria-labelledby="ofertas-recomendadas" className="border-b border-blue-100 bg-white px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">Oportunidades para ti</p>
+                <h2 id="ofertas-recomendadas" className="mt-1 text-xl font-extrabold tracking-tight text-[#10213f] sm:text-2xl">Ofertas destacadas</h2>
+              </div>
+              <span className="text-xs font-medium text-slate-500">{ofertasFiltradas.length} disponibles</span>
+            </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {ofertasFiltradas.slice(0, 3).map((oferta) => (
+                <button key={`oferta-card-${oferta.idProducto}-${oferta.idEstablecimiento}`} type="button" onClick={() => verFichaRanking(oferta)} className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+                  <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-2">
+                    {oferta.imagen?.trim() ? <img src={oferta.imagen} alt={`Imagen de ${oferta.nombre}`} className="h-full w-full object-contain" /> : <ProductImagePlaceholder categoria={oferta.idCategoria} nombre={oferta.nombre} tamano="md" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-2 text-sm font-bold text-slate-800 group-hover:text-blue-700">{oferta.nombre}</p>
+                    <p className="mt-1 truncate text-xs text-slate-500">{oferta.nombreEstablecimiento}</p>
+                    <p className="mt-2 text-base font-extrabold text-blue-700">{formatearCOP(oferta.precioActual)}</p>
+                    {oferta.porcentajeDescuento > 0 && <span className="mt-1 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">-{Math.round(oferta.porcentajeDescuento)}%</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ─────────────────────────────────────────────────────────────
           SELECTOR DE VISTAS (DESTACADOS vs CATÁLOGO)
       ───────────────────────────────────────────────────────────── */}

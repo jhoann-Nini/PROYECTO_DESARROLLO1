@@ -1020,11 +1020,6 @@ export default function Home() {
                   label: "Auriculares",
                   icon: <><path d="M3 13v-1a9 9 0 0 1 18 0v1" /><path d="M3 13v4a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2Zm18 0v4a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2Z" /></>,
                 },
-                {
-                  id: "monitores" as const,
-                  label: "Monitores",
-                  icon: <><rect x="3" y="3" width="18" height="13" rx="1.5" /><path d="M12 16v5m-4 0h8" /></>,
-                },
               ].map((cat) => (
                 <button key={cat.id} type="button" onClick={() => setTipoDispositivo(cat.id)} aria-pressed={tipoDispositivo === cat.id} className={`group flex min-h-[66px] items-center justify-center gap-3 rounded-xl border px-3 py-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-900 ${tipoDispositivo === cat.id ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-950/20" : "border-white/80 bg-white text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50"}`}>
                   <svg aria-hidden="true" viewBox="0 0 24 24" className={`h-5 w-5 shrink-0 transition-colors ${tipoDispositivo === cat.id ? "text-white" : "text-slate-600 group-hover:text-blue-700"}`} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">

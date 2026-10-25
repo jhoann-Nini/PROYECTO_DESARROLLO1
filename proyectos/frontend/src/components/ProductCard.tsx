@@ -4,18 +4,35 @@
 import { Producto } from "@/types/producto";
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
+import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 
 interface ProductCardProps {
   producto: Producto;
   onVerDetalle?: (producto: Producto) => void;
+  limitePresupuestoCOP?: number | null;
 }
 
-export default function ProductCard({ producto, onVerDetalle }: ProductCardProps) {
-  const [imgSrc, setImgSrc] = useState<string>(
-    producto.imagen || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80"
+export default function ProductCard({
+  producto,
+  onVerDetalle,
+  limitePresupuestoCOP,
+}: ProductCardProps) {
+  const [errorImagen, setErrorImagen] = useState(false);
+  const tieneImagenValida = Boolean(
+    producto.imagen && producto.imagen.trim().length > 0 && !errorImagen
   );
 
   const precioFormateado = formatearCOP(producto.precioReferencia);
+
+  const cumplePresupuesto =
+    limitePresupuestoCOP !== undefined &&
+    limitePresupuestoCOP !== null &&
+    producto.precioReferencia !== null &&
+    producto.precioReferencia !== undefined
+      ? (producto.precioReferencia < 10000
+          ? producto.precioReferencia * 4000
+          : producto.precioReferencia) <= limitePresupuestoCOP
+      : null;
 
   return (
     <article
@@ -24,17 +41,22 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
     >
       {/* Contenedor de Fotografía */}
       <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-[#0a0e17] p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800/80">
-        <img
-          src={imgSrc}
-          alt={`Fotografía oficial de ${producto.nombre}`}
-          onError={() =>
-            setImgSrc(
-              "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80"
-            )
-          }
-          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
+        {tieneImagenValida ? (
+          <img
+            src={producto.imagen!}
+            alt={`Fotografía oficial de ${producto.nombre}`}
+            onError={() => setErrorImagen(true)}
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <ProductImagePlaceholder
+            categoria={producto.nombreCategoria || producto.idCategoria}
+            marca={producto.nombreMarca}
+            nombre={producto.nombre}
+            tamano="md"
+          />
+        )}
 
         {/* Etiquetas informativas con estilo técnico */}
         <div className="absolute top-3 left-3 flex gap-1.5 text-xs">
@@ -71,9 +93,28 @@ export default function ProductCard({ producto, onVerDetalle }: ProductCardProps
         {/* Sección de precio y acción principal */}
         <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3.5">
           <div>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider text-[10px]">
-              Precio estimado
-            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
+                Precio estimado
+              </span>
+              {cumplePresupuesto !== null && (
+                cumplePresupuesto ? (
+                  <span
+                    className="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 font-mono tracking-tight"
+                    title="Dentro del presupuesto máximo"
+                  >
+                    ✓ En presupuesto
+                  </span>
+                ) : (
+                  <span
+                    className="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-950/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 font-mono tracking-tight"
+                    title="Supera el presupuesto máximo"
+                  >
+                    Supera presupuesto
+                  </span>
+                )
+              )}
+            </div>
             <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
               {precioFormateado}
             </span>

@@ -7,11 +7,22 @@ import { DISPOSITIVOS_VENDIDOS } from "@/data/mockProductos";
 
 const mockCrearValoracion = vi.fn();
 const mockObtenerMiValoracion = vi.fn();
+const mockObtenerResenas = vi.fn().mockResolvedValue([]);
+const mockCrearResena = vi.fn();
+const mockObtenerValoracionStats = vi.fn().mockResolvedValue({
+  idProducto: 101,
+  promedioPuntuacion: null,
+  cantidadValoraciones: 0,
+});
 
 vi.mock("@/services/api", () => ({
   crearValoracion: (...args: unknown[]) => mockCrearValoracion(...args),
   obtenerMiValoracion: (...args: unknown[]) => mockObtenerMiValoracion(...args),
+  obtenerResenas: (...args: unknown[]) => mockObtenerResenas(...args),
+  crearResena: (...args: unknown[]) => mockCrearResena(...args),
+  obtenerValoracionStats: (...args: unknown[]) => mockObtenerValoracionStats(...args),
 }));
+
 
 describe("Componente FichaTecnicaModal — Fase 4.2: Fichas técnicas dinámicas", () => {
   afterEach(() => {
@@ -336,6 +347,9 @@ describe("Componente FichaTecnicaModal — Fase 4.6: Sistema Real de Valoracione
     mockCrearValoracion.mockReset();
     mockObtenerMiValoracion.mockReset();
     mockObtenerMiValoracion.mockResolvedValue(null);
+    mockObtenerResenas.mockReset();
+    mockObtenerResenas.mockResolvedValue([]);
+    mockCrearResena.mockReset();
   });
 
   afterEach(() => {
@@ -498,5 +512,201 @@ describe("Componente FichaTecnicaModal — Fase 4.6: Sistema Real de Valoracione
       expect(screen.getByText(/Puntuación seleccionada: 4 de 5 estrellas/i)).toBeDefined();
       expect(screen.getByRole("button", { name: /Actualizar valoración/i })).toBeDefined();
     });
+  });
+
+  it("renderiza ProductImagePlaceholder cuando producto no tiene imagen (imagen: null)", () => {
+    const prodSinImg: Producto = {
+      ...productoTest,
+      imagen: null,
+    };
+
+    render(<FichaTecnicaModal producto={prodSinImg} onClose={vi.fn()} />);
+
+    expect(screen.queryByRole("img", { name: /Vista frontal/i })).toBeNull();
+    const placeholder = screen.getByRole("img");
+    expect(placeholder).toBeDefined();
+    expect(placeholder.getAttribute("aria-label")).toContain("Imagen pendiente");
+    expect(screen.getByText("Imagen pendiente")).toBeDefined();
+  });
+
+  it("conmuta a ProductImagePlaceholder cuando la imagen de la ficha técnica falla al cargar", () => {
+    render(<FichaTecnicaModal producto={productoTest} onClose={vi.fn()} />);
+
+    const img = screen.getByRole("img", { name: /Vista frontal de Google Pixel 8 Pro/i });
+    expect(img).toBeDefined();
+
+    fireEvent.error(img);
+
+    expect(screen.queryByRole("img", { name: /Vista frontal de Google Pixel 8 Pro/i })).toBeNull();
+    const placeholder = screen.getByRole("img");
+    expect(placeholder).toBeDefined();
+    expect(screen.getByText("Imagen pendiente")).toBeDefined();
+  });
+});
+
+describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad en la ficha técnica", () => {
+  const productoTablet: Producto = {
+    idProducto: 25,
+    nombre: "Samsung Galaxy Tab S10+",
+    descripcion: "Tablet de alta gama con pantalla Dynamic AMOLED 2X.",
+    idCategoria: 2,
+    idMarca: 2,
+    nombreCategoria: "Tablets",
+    nombreMarca: "Samsung",
+    imagen: "https://example.com/tab-s10.jpg",
+    precioReferencia: 4200000,
+    estado: true,
+  };
+
+  const usuarioSesionTest: UsuarioSesion = {
+    id: "usr-999",
+    nombre: "Nini Cambindo",
+    usuario: "ninicambindo",
+    email: "nini@example.com",
+    rol: "Usuario registrado",
+    idUsuario: 5,
+    activo: true,
+    fechaRegistro: "2026-10-01",
+  };
+
+  beforeEach(() => {
+    mockObtenerResenas.mockReset();
+    mockCrearResena.mockReset();
+    mockObtenerMiValoracion.mockReset();
+    mockObtenerMiValoracion.mockResolvedValue(null);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("recupera las reseñas llamando a obtenerResenas con el idProducto del dispositivo abierto", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([
+      {
+        idResena: 3,
+        idProducto: 25,
+        nombreProducto: "Samsung Galaxy Tab S10+",
+        idUsuario: 5,
+        nombreUsuario: "Nini Cambindo",
+        comentario: "Excelente rendimiento y pantalla",
+        fechaCreacion: "2026-10-22T23:14:00",
+        estado: true,
+      },
+    ]);
+
+    render(<FichaTecnicaModal producto={productoTablet} onClose={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).toHaveBeenCalledWith(25);
+    });
+
+    // Pestaña de opiniones con contador
+    const tabOpiniones = await screen.findByRole("tab", { name: /Opiniones \(1\)/i });
+    expect(tabOpiniones).toBeDefined();
+
+    // Botón de enlace rápido en la columna izquierda
+    expect(screen.getByText(/1 reseña/i)).toBeDefined();
+  });
+
+  it("al seleccionar la pestaña de opiniones muestra el listado con autor, fecha y comentario", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([
+      {
+        idResena: 3,
+        idProducto: 25,
+        nombreProducto: "Samsung Galaxy Tab S10+",
+        idUsuario: 5,
+        nombreUsuario: "Nini Cambindo",
+        comentario: "hola comunidad",
+        fechaCreacion: "2026-10-22T23:14:00",
+        estado: true,
+      },
+    ]);
+
+    render(<FichaTecnicaModal producto={productoTablet} onClose={vi.fn()} />);
+
+    const tabOpiniones = await screen.findByRole("tab", { name: /Opiniones \(1\)/i });
+    fireEvent.click(tabOpiniones);
+
+    // Debe mostrar el autor y el texto de la reseña
+    expect(await screen.findByText("@Nini Cambindo")).toBeDefined();
+    expect(screen.getByText("hola comunidad")).toBeDefined();
+  });
+
+  it("muestra estado amigable si el producto no tiene reseñas registradas", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([]);
+
+    render(<FichaTecnicaModal producto={productoTablet} onClose={vi.fn()} />);
+
+    const tabOpiniones = await screen.findByRole("tab", { name: /Opiniones \(0\)/i });
+    fireEvent.click(tabOpiniones);
+
+    expect(
+      await screen.findByText(
+        /Aún no hay opiniones de la comunidad para este dispositivo. ¡Sé el primero en compartir tu experiencia!/i
+      )
+    ).toBeDefined();
+  });
+
+  it("permite a un usuario autenticado publicar una nueva opinión directamente desde la ficha técnica", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([]);
+    mockCrearResena.mockResolvedValueOnce({
+      idResena: 10,
+      idProducto: 25,
+      nombreProducto: "Samsung Galaxy Tab S10+",
+      idUsuario: 5,
+      nombreUsuario: "Nini Cambindo",
+      comentario: "Una tablet genial para diseño.",
+      fechaCreacion: "2026-10-23T01:00:00",
+      estado: true,
+    });
+
+    const mockOnResenaGuardada = vi.fn();
+
+    render(
+      <FichaTecnicaModal
+        producto={productoTablet}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioSesionTest}
+        onResenaGuardada={mockOnResenaGuardada}
+      />
+    );
+
+    const tabOpiniones = await screen.findByRole("tab", { name: /Opiniones \(0\)/i });
+    fireEvent.click(tabOpiniones);
+
+    const textarea = await screen.findByPlaceholderText(/Comparte tu experiencia con Samsung Galaxy Tab S10\+/i);
+    fireEvent.change(textarea, { target: { value: "Una tablet genial para diseño." } });
+
+    const btnPublicar = await screen.findByRole("button", { name: /Publicar opinión/i });
+    fireEvent.click(btnPublicar);
+
+    await waitFor(() => {
+      expect(mockCrearResena).toHaveBeenCalledWith({
+        idProducto: 25,
+        comentario: "Una tablet genial para diseño.",
+      });
+      expect(mockOnResenaGuardada).toHaveBeenCalled();
+      expect(
+        screen.getByText(/¡Tu opinión ha sido publicada con éxito!/i)
+      ).toBeDefined();
+      expect(screen.getByText("Una tablet genial para diseño.")).toBeDefined();
+    });
+  });
+
+  it("diferencia claramente la puntuación técnica de laboratorio de las opiniones comunitarias", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([]);
+
+    render(<FichaTecnicaModal producto={productoTablet} onClose={vi.fn()} />);
+
+    // Evaluación técnica de laboratorio
+    expect(
+      screen.getByText("Sin evaluación técnica de laboratorio registrada aún.")
+    ).toBeDefined();
+
+    // Calificación por estrellas
+    expect(screen.getByText("TU CALIFICACIÓN (1 A 5 ESTRELLAS)")).toBeDefined();
+
+    // Reseñas comunitarias
+    expect(screen.getByText(/Opiniones de la comunidad:/i)).toBeDefined();
   });
 });

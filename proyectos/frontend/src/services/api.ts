@@ -363,6 +363,32 @@ export async function obtenerMiValoracion(
   }
 }
 
+/**
+ * Estadísticas públicas de valoración de un producto.
+ */
+export interface ValoracionPublicaStats {
+  idProducto: number;
+  promedioPuntuacion: number | null;
+  cantidadValoraciones: number;
+}
+
+/**
+ * Consulta el promedio de estrellas (1 a 5) y el total de valoraciones activas de un producto.
+ * No requiere autenticación. Se usa en la ficha técnica de cada producto.
+ *
+ * @param idProducto Identificador único del producto.
+ * @returns Estadísticas de valoración del producto.
+ */
+export async function obtenerValoracionStats(
+  idProducto: number,
+): Promise<ValoracionPublicaStats> {
+  return apiFetch<ValoracionPublicaStats>(
+    `/api/productos/${idProducto}/valoracion-stats`,
+  );
+}
+
+
+
 
 // ============================================================================
 // SERVICIOS DE PRODUCTOS (CRUD)
@@ -612,4 +638,93 @@ export async function obtenerMasComentados(limit?: number): Promise<ProductoMasC
   }
 
   return datos as ProductoMasComentado[];
+}
+
+/**
+ * Descarga el catálogo completo de productos en formato CSV llamando al endpoint administrativo
+ * protegido GET /api/productos/exportar-csv.
+ *
+ * Utiliza fetch nativo con respuesta en blob para evitar que el CSV sea procesado como JSON.
+ *
+ * @param options Opciones adicionales para la solicitud, como un token explícito.
+ * @returns Promesa con el Blob del archivo CSV y el nombre de archivo extraído del encabezado.
+ */
+export async function descargarCatalogoCsv(options?: {
+  accessToken?: string;
+}): Promise<{ blob: Blob; nombreArchivo: string }> {
+  if (!API_URL) {
+    throw new ApiError("No se ha configurado la URL de la API.");
+  }
+
+  const token = options?.accessToken || (await obtenerTokenAcceso());
+  if (!token) {
+    throw new ApiError(
+      "No se encontró una sesión de autenticación activa para autorizar la descarga del catálogo.",
+      401,
+    );
+  }
+
+  const url = `${API_URL.replace(/\/$/, "")}/api/productos/exportar-csv`;
+  let respuesta: Response;
+
+  try {
+    respuesta = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "text/csv, application/octet-stream, */*",
+      },
+    });
+  } catch {
+    throw new ApiError(
+      "No fue posible conectarse con el servidor para exportar el catálogo. Verifica que el backend esté activo e inténtalo de nuevo.",
+    );
+  }
+
+  if (!respuesta.ok) {
+    let mensajeError = `El servidor respondió con un error (${respuesta.status}) al intentar exportar el catálogo.`;
+    if (respuesta.status === 403) {
+      mensajeError = "No tienes permisos de administrador para exportar el catálogo de productos.";
+    } else if (respuesta.status === 401) {
+      mensajeError = "Tu sesión ha expirado o no es válida. Por favor, inicia sesión nuevamente.";
+    } else {
+      try {
+        const errorJson = await respuesta.json();
+        if (errorJson && typeof errorJson.message === "string" && errorJson.message.trim()) {
+          mensajeError = errorJson.message.trim();
+        } else if (errorJson && typeof errorJson.error === "string" && errorJson.error.trim()) {
+          mensajeError = errorJson.error.trim();
+        }
+      } catch {
+        // Si no es JSON, conservar mensaje por status
+      }
+    }
+    throw new ApiError(mensajeError, respuesta.status);
+  }
+
+  let nombreArchivo = "catalogo_productos.csv";
+  const disposition = respuesta.headers.get("Content-Disposition");
+  if (disposition) {
+    const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+    if (filenameMatch && filenameMatch[1]) {
+      nombreArchivo = filenameMatch[1].replace(/['"]/g, "").trim();
+    }
+  }
+
+  const blob = await respuesta.blob();
+  return { blob, nombreArchivo };
+}
+
+/**
+ * Utilidad para invocar la descarga en el navegador a partir de un Blob.
+ */
+export function dispararDescargaArchivo(blob: Blob, nombreArchivo: string): void {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 }

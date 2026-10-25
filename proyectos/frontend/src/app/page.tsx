@@ -35,6 +35,7 @@ import ProductCard from "@/components/ProductCard";
 import AuthModal from "@/components/AuthModal";
 import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
+import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import GeometricBackground from "@/components/GeometricBackground";
 import { formatearCOP } from "@/data/specsHelper";
 import { createClient } from "@/lib/supabase/client";
@@ -66,6 +67,7 @@ export default function Home() {
   const [busqueda, setBusqueda] = useState("");
   const [tipoDispositivo, setTipoDispositivo] = useState<CategoriaDispositivo>("todos");
   const [presupuestoMax, setPresupuestoMax] = useState<number>(1000);
+  const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] = useState(false);
 
   // Estados de vista
   const [mostrarTodosMejorValorados, setMostrarTodosMejorValorados] = useState(false);
@@ -451,6 +453,7 @@ export default function Home() {
           ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
           : null;
       const matchPrecio =
+        busqueda.trim().length > 0 ||
         precioItemCOP === null ||
         presupuestoMax >= 1500 ||
         precioItemCOP <= limiteCOP;
@@ -471,6 +474,7 @@ export default function Home() {
           ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
           : null;
       const matchPrecio =
+        busqueda.trim().length > 0 ||
         precioItemCOP === null ||
         presupuestoMax >= 1500 ||
         precioItemCOP <= limiteCOP;
@@ -491,6 +495,7 @@ export default function Home() {
           ? (item.precioReferencia < 10000 ? item.precioReferencia * 4000 : item.precioReferencia)
           : null;
       const matchPrecio =
+        busqueda.trim().length > 0 ||
         precioItemCOP === null ||
         presupuestoMax >= 1500 ||
         precioItemCOP <= limiteCOP;
@@ -509,7 +514,10 @@ export default function Home() {
         (item.nombreEstablecimiento && item.nombreEstablecimiento.toLowerCase().includes(busqueda.toLowerCase()));
       const precioItemCOP =
         item.precioActual < 10000 ? item.precioActual * 4000 : item.precioActual;
-      const matchPrecio = presupuestoMax >= 1500 || precioItemCOP <= limiteCOP;
+      const matchPrecio =
+        busqueda.trim().length > 0 ||
+        presupuestoMax >= 1500 ||
+        precioItemCOP <= limiteCOP;
       const matchCat = matchCatRanking(item.idCategoria, tipoDispositivo);
       return matchBusqueda && matchPrecio && matchCat;
     });
@@ -536,14 +544,34 @@ export default function Home() {
     []
   );
 
+  // Límite de presupuesto en COP para comparaciones numéricas precisas
+  const limitePresupuestoCOP = useMemo(() => {
+    return presupuestoMax < 10000 ? presupuestoMax * 4000 : presupuestoMax;
+  }, [presupuestoMax]);
+
+  // Contadores del catálogo y verificación de plataforma
+  const totalProductosVerificados = useMemo(() => {
+    return productosBackend.filter((p) => p.estado !== false).length;
+  }, [productosBackend]);
+
+  const totalEnPresupuesto = useMemo(() => {
+    return productosBackend.filter((p) => {
+      if (p.estado === false) return false;
+      if (p.precioReferencia === null || p.precioReferencia === undefined) return true;
+      const precioCOP =
+        p.precioReferencia < 10000 ? p.precioReferencia * 4000 : p.precioReferencia;
+      return precioCOP <= limitePresupuestoCOP;
+    }).length;
+  }, [productosBackend, limitePresupuestoCOP]);
+
   // Filtrado de catálogo
   const productosBackendFiltrados = useMemo(() => {
     return productosBackend.filter((p) => {
       const matchBusqueda =
+        !busqueda.trim() ||
         p.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
         (p.descripcion && p.descripcion.toLowerCase().includes(busqueda.toLowerCase())) ||
         (p.nombreMarca && p.nombreMarca.toLowerCase().includes(busqueda.toLowerCase()));
-      const matchPrecio = p.precioReferencia === null || p.precioReferencia <= presupuestoMax;
 
       let matchCat = true;
       if (tipoDispositivo !== "todos") {
@@ -579,9 +607,30 @@ export default function Home() {
             nomCat.includes("pantalla");
         }
       }
-      return matchBusqueda && matchPrecio && matchCat;
+
+      // El presupuesto funciona como un filtro explícito:
+      // 1. En la vista general, no excluye productos a menos que el usuario lo active
+      //    explícitamente con "filtrarSoloEnPresupuesto".
+      // 2. Si el usuario busca un modelo concreto (busqueda.trim()), la búsqueda prevalece
+      //    para localizar el producto independientemente del presupuesto.
+      let matchPrecio = true;
+      if (filtrarSoloEnPresupuesto && !busqueda.trim()) {
+        if (p.precioReferencia !== null && p.precioReferencia !== undefined) {
+          const precioCOP =
+            p.precioReferencia < 10000 ? p.precioReferencia * 4000 : p.precioReferencia;
+          matchPrecio = precioCOP <= limitePresupuestoCOP;
+        }
+      }
+
+      return matchBusqueda && matchCat && matchPrecio;
     });
-  }, [productosBackend, busqueda, presupuestoMax, tipoDispositivo]);
+  }, [
+    productosBackend,
+    busqueda,
+    tipoDispositivo,
+    filtrarSoloEnPresupuesto,
+    limitePresupuestoCOP,
+  ]);
 
   // Carga y consulta de opiniones persistidas
   const cargarResenas = useCallback(async () => {
@@ -621,9 +670,13 @@ export default function Home() {
     };
   }, []);
 
-  const idProductoEfectivo = idProductoComentario !== ""
-    ? idProductoComentario
-    : (productosBackend.length > 0 ? productosBackend[0].idProducto : "");
+  // ID del producto seleccionado para comentar en la sección comunitaria
+  const idProductoEfectivo =
+    idProductoComentario !== ""
+      ? idProductoComentario
+      : productosBackend.length > 0
+        ? productosBackend[0].idProducto
+        : "";
 
   // Manejo de opiniones persistidas
   const palabrasMaliciosas = ["spam", "insulto", "estafa", "odio", "tonto", "idiota", "fraude", "mierda", "puta"];
@@ -633,6 +686,11 @@ export default function Home() {
     if (!usuarioSesion) {
       setModalAuthAbierto(true);
       setErrorComentario("Debes iniciar sesión para publicar una opinión.");
+      return;
+    }
+
+    if (!idProductoEfectivo) {
+      setErrorComentario("Por favor selecciona el dispositivo sobre el que deseas opinar.");
       return;
     }
 
@@ -651,16 +709,12 @@ export default function Home() {
       return;
     }
 
-    const idProductoFinal = typeof idProductoEfectivo === "number"
-      ? idProductoEfectivo
-      : 1;
-
     setEnviandoComentario(true);
     setErrorComentario("");
 
     try {
       await crearResena({
-        idProducto: Number(idProductoFinal),
+        idProducto: Number(idProductoEfectivo),
         comentario: comentario.trim(),
       });
       setComentario("");
@@ -1052,14 +1106,19 @@ export default function Home() {
                         className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
                       >
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
-                          <img
-                            src={
-                              oferta.imagen ||
-                              "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80"
-                            }
-                            alt={`Imagen de ${oferta.nombre}`}
-                            className="h-full w-full object-contain"
-                          />
+                          {oferta.imagen && oferta.imagen.trim().length > 0 ? (
+                            <img
+                              src={oferta.imagen}
+                              alt={`Imagen de ${oferta.nombre}`}
+                              className="h-full w-full object-contain"
+                            />
+                          ) : (
+                            <ProductImagePlaceholder
+                              categoria={oferta.idCategoria}
+                              nombre={oferta.nombre}
+                              tamano="sm"
+                            />
+                          )}
                         </div>
 
                         <div className="flex-1 min-w-0">
@@ -1206,6 +1265,7 @@ export default function Home() {
                         nombre={item.nombre}
                         descripcion={item.descripcion}
                         imagen={item.imagen}
+                        categoria={item.idCategoria}
                         precio={item.precioReferencia}
                         metricaTipo="valoracion"
                         puntuacion={item.promedioPuntuacion}
@@ -1285,6 +1345,7 @@ export default function Home() {
                         nombre={item.nombre}
                         descripcion={item.descripcion}
                         imagen={item.imagen}
+                        categoria={item.idCategoria}
                         precio={item.precioReferencia}
                         metricaTipo="comentario"
                         cantidadResenas={item.cantidadResenas}
@@ -1360,6 +1421,7 @@ export default function Home() {
                         nombre={item.nombre}
                         descripcion={item.descripcion}
                         imagen={item.imagen}
+                        categoria={item.idCategoria}
                         precio={item.precioReferencia}
                         metricaTipo="comentario"
                         cantidadResenas={item.cantidadDeseados}
@@ -1392,13 +1454,13 @@ export default function Home() {
       {seccionActiva === "catalogo" && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-6">
               <div>
                 <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
                   <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
-                  {"//"} Productos verificados en la plataforma ({productosBackendFiltrados.length} disponibles)
+                  {"//"} {totalProductosVerificados} productos verificados en la plataforma • {productosBackendFiltrados.length} mostrado{productosBackendFiltrados.length === 1 ? "" : "s"}
                 </p>
               </div>
 
@@ -1417,6 +1479,36 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Barra informativa de presupuesto y selector explícito */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 dark:border-slate-800/80 text-xs font-mono">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-slate-500 dark:text-slate-400">Presupuesto activo:</span>
+                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 px-2 py-0.5 font-bold text-blue-700 dark:text-blue-300 font-sans">
+                  Hasta {formatearCOP(presupuestoMax)}
+                </span>
+                <span className="text-slate-400 dark:text-slate-500">
+                  ({totalEnPresupuesto} de {totalProductosVerificados} dentro del presupuesto)
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFiltrarSoloEnPresupuesto((prev) => !prev)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold font-doto uppercase tracking-wider transition-colors cursor-pointer border ${
+                    filtrarSoloEnPresupuesto
+                      ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-slate-400"
+                  }`}
+                  aria-pressed={filtrarSoloEnPresupuesto}
+                  title="Alternar entre mostrar todo el catálogo o filtrar exclusivamente por presupuesto"
+                >
+                  <span aria-hidden="true">{filtrarSoloEnPresupuesto ? "✓" : "○"}</span>
+                  {filtrarSoloEnPresupuesto ? "Solo en presupuesto" : "Filtrar por presupuesto"}
+                </button>
+              </div>
+            </div>
+
             {cargandoApi ? (
               <div className="flex flex-col items-center justify-center py-20" aria-live="polite" aria-busy="true">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" aria-hidden="true"></div>
@@ -1429,12 +1521,59 @@ export default function Home() {
                     key={`prod-${producto.idProducto}`}
                     producto={producto}
                     onVerDetalle={(prod) => setProductoSeleccionado(prod)}
+                    limitePresupuestoCOP={limitePresupuestoCOP}
                   />
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm text-slate-500 font-mono">
-                No hay productos que coincidan con la búsqueda &ldquo;{busqueda}&rdquo; y presupuesto de {formatearCOP(presupuestoMax)}.
+              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm font-mono">
+                {busqueda.trim() ? (
+                  <div className="space-y-3">
+                    <p className="font-bold text-slate-800 dark:text-slate-200 text-base">
+                      No se encontraron productos para &ldquo;{busqueda}&rdquo;.
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                      No hay coincidencias con ese nombre o modelo en el catálogo. Intenta con otros términos como marca (Samsung, Asus, Sony...) o tipo de dispositivo.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setBusqueda("")}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
+                      Limpiar búsqueda
+                    </button>
+                  </div>
+                ) : tipoDispositivo !== "todos" ? (
+                  <div className="space-y-3">
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      No hay dispositivos disponibles en la categoría &ldquo;{tipoDispositivo}&rdquo;.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setTipoDispositivo("todos")}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
+                      Ver todas las categorías
+                    </button>
+                  </div>
+                ) : filtrarSoloEnPresupuesto ? (
+                  <div className="space-y-3">
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      No hay productos registrados dentro del presupuesto de {formatearCOP(presupuestoMax)}.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFiltrarSoloEnPresupuesto(false)}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
+                      Mostrar todos los productos
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-slate-500 dark:text-slate-400">
+                    No hay productos registrados en el catálogo en este momento.
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -1604,6 +1743,12 @@ export default function Home() {
         usuarioSesion={usuarioSesion}
         onPedirLogin={() => setModalAuthAbierto(true)}
         onValoracionGuardada={cargarMejorValorados}
+        onResenaGuardada={(nueva) => {
+          setResenas((prev) => [
+            nueva,
+            ...prev.filter((r) => r.idResena !== nueva.idResena),
+          ]);
+        }}
       />
 
       {/* ─────────────────────────────────────────────────────────────

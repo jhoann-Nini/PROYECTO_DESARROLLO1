@@ -26,6 +26,8 @@ vi.mock("@/services/api", async () => {
     crearMarca: vi.fn(),
     actualizarMarca: vi.fn(),
     eliminarMarca: vi.fn(),
+    descargarCatalogoCsv: vi.fn(),
+    dispararDescargaArchivo: vi.fn(),
   };
 });
 
@@ -1040,6 +1042,81 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         );
       });
       expect(await screen.findByText(/Producto actualizado exitosamente/i)).toBeDefined();
+    });
+  });
+
+  describe("Fase 4.7.1-B: Exportación del catálogo a CSV", () => {
+    it("debe mostrar el botón 'Exportar catálogo CSV' en la pestaña de productos", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+      expect(btnExportar).toBeDefined();
+    });
+
+    it("al hacer clic en 'Exportar catálogo CSV', descarga el archivo y muestra mensaje de éxito", async () => {
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Prueba"], { type: "text/csv" });
+      vi.mocked(api.descargarCatalogoCsv).mockResolvedValueOnce({
+        blob: fakeBlob,
+        nombreArchivo: "catalogo_productos_20261021.csv",
+      });
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+
+      fireEvent.click(btnExportar);
+
+      await waitFor(() => {
+        expect(api.descargarCatalogoCsv).toHaveBeenCalledTimes(1);
+        expect(api.dispararDescargaArchivo).toHaveBeenCalledWith(
+          fakeBlob,
+          "catalogo_productos_20261021.csv",
+        );
+      });
+
+      expect(await screen.findByText(/Catálogo exportado exitosamente a CSV/i)).toBeDefined();
+    });
+
+    it("al fallar la descarga del CSV, muestra el mensaje de error comprensible en el panel", async () => {
+      vi.mocked(api.descargarCatalogoCsv).mockRejectedValueOnce(
+        new api.ApiError("No tienes permisos de administrador para exportar el catálogo de productos.", 403),
+      );
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+
+      fireEvent.click(btnExportar);
+
+      await waitFor(() => {
+        expect(api.descargarCatalogoCsv).toHaveBeenCalledTimes(1);
+      });
+
+      expect(
+        await screen.findByText(/No tienes permisos de administrador para exportar el catálogo de productos/i),
+      ).toBeDefined();
+      expect(api.dispararDescargaArchivo).not.toHaveBeenCalled();
     });
   });
 });

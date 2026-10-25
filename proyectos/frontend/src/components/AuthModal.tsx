@@ -231,7 +231,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
             <h2 id="auth-modal-title" className="text-lg font-extrabold tracking-tight text-[#10213f]">
-              Bienvenido a <span className="text-blue-700">TecnoReview</span>
+              Bienvenido a <span className="text-blue-700">TecReview</span>
             </h2>
           </div>
           <button

@@ -924,276 +924,85 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ─────────────────────────────────────────────────────────────
-          CABECERA PRINCIPAL (BANNER HERO CON FONDO TRASLÚCIDO)
-      ───────────────────────────────────────────────────────────── */}
-      <section className="relative isolate overflow-hidden border-b border-blue-100 bg-gradient-to-br from-[#eaf3ff] via-white to-[#dceaff] px-4 py-8 text-[#10213f] sm:px-6 sm:py-12 lg:px-8">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10"><div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-blue-300/40 blur-3xl" /><div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-300/30 blur-3xl" /></div>
-        <div className="mx-auto max-w-7xl">
-          
-          {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col gap-5 border-b border-blue-200/80 pb-6 md:flex-row md:items-end md:justify-between">
-            {/* Título de Marca Limpio */}
-            <div className="flex items-center">
-              <div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#10213f] sm:text-4xl lg:text-5xl" aria-label="TecReview">
-                  Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
-                </h1>
-                <p className="mt-2 max-w-xl text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 sm:text-sm">
-                  {"//"} Guía de compra y especificaciones técnicas
-                </p>
+      {/* PORTADA REDISEÑADA — composición fiel al prototipo */}
+      <section className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-br from-[#eaf3ff] via-white to-[#dceaff] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/35 blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+            <div className="py-3 sm:py-8">
+              <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Tu guía de tecnología
+              </span>
+              <h2 className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight text-[#10213f] sm:text-5xl lg:text-6xl">
+                Tu guía confiable para elegir la mejor tecnología.
+              </h2>
+              <p className="mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+                Explora dispositivos, consulta fichas técnicas y opiniones, y conoce precios de referencia en pesos colombianos.
+              </p>
+              <div className="mt-7 max-w-xl">
+                <label htmlFor="buscador-principal" className="sr-only">Buscar dispositivos tecnológicos</label>
+                <div className="relative flex items-center">
+                  <svg className="pointer-events-none absolute left-4 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                  </svg>
+                  <input id="buscador-principal" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="¿Qué dispositivo estás buscando?" aria-label="Buscar dispositivos por marca, modelo o características" className="w-full rounded-xl border border-slate-200 bg-white py-4 pl-12 pr-20 text-sm text-slate-900 shadow-lg shadow-blue-950/5 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
+                  {busqueda && <button type="button" onClick={() => setBusqueda("")} aria-label="Borrar búsqueda" className="absolute right-4 text-xs font-semibold text-blue-700 hover:text-blue-900">Limpiar</button>}
+                </div>
+                <p className="mt-2 text-xs text-slate-500">Busca por marca, modelo o categoría.</p>
+              </div>
+              <div className="mt-6 rounded-2xl border border-blue-100 bg-white/90 p-4 shadow-md shadow-blue-950/5 sm:p-5">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor="presupuesto-principal" className="text-sm font-semibold text-slate-700">Presupuesto máximo</label>
+                  <span className="rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">{formatearCOP(presupuestoMax)}</span>
+                </div>
+                <input id="presupuesto-principal" type="range" min="50" max="1500" step="25" value={presupuestoMax} onChange={(e) => setPresupuestoMax(Number(e.target.value))} aria-label="Ajustar presupuesto máximo" className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600" />
+                <div className="mt-2 flex justify-between text-[11px] text-slate-500"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
               </div>
             </div>
-
-            {/* Selector de Categorías Accesible con estilo de Matriz Nothing Tech */}
-            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por categoría">
-              {[
-                { id: "todos" as const, label: "Todos", icon: "📱" },
-                { id: "moviles" as const, label: "Teléfonos", icon: "📱" },
-                { id: "tablets" as const, label: "Tablets", icon: "📱" },
-                { id: "laptops" as const, label: "Portátiles / PC", icon: "💻" },
-                { id: "auriculares" as const, label: "Auriculares", icon: "🎧" },
-                { id: "monitores" as const, label: "Monitores", icon: "🖥️" },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setTipoDispositivo(cat.id)}
-                  className={`flex min-h-10 items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all cursor-pointer ${
-                    tipoDispositivo === cat.id
-                      ? "border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-900/20"
-                      : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800"
-                  }`}
-                >
-                  <span aria-hidden="true">{cat.icon}</span>
-                  {cat.label}
-                </button>
-              ))}
+            <div className="relative mx-auto w-full max-w-xl">
+              <div className="absolute inset-4 rounded-[2rem] bg-blue-600/15 blur-2xl" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#4b91e2] p-5 shadow-2xl shadow-blue-950/20 sm:p-8">
+                <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full border border-white/20" aria-hidden="true" />
+                <div className="absolute -right-5 -top-5 h-44 w-44 rounded-full border border-white/15" aria-hidden="true" />
+                <div className="relative flex min-h-[280px] items-center justify-center sm:min-h-[340px]">
+                  <div className="absolute left-2 top-7 h-44 w-28 rotate-[-12deg] rounded-[1.4rem] border-[5px] border-slate-800 bg-slate-950 p-1 shadow-xl sm:left-8 sm:h-56 sm:w-36">
+                    <div className="h-full w-full rounded-[1rem] bg-gradient-to-br from-violet-300 via-blue-500 to-slate-950 p-3"><div className="mt-5 h-12 rounded-lg bg-white/20" /><div className="mt-3 h-3 w-2/3 rounded bg-white/30" /></div>
+                  </div>
+                  <div className="absolute right-1 top-4 h-36 w-28 rotate-[8deg] rounded-2xl border-4 border-slate-200 bg-white p-2 shadow-xl sm:right-7 sm:h-48 sm:w-36">
+                    <div className="h-full rounded-xl bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-500 p-2"><div className="mt-3 h-16 rounded-lg bg-white/50" /></div>
+                  </div>
+                  <div className="absolute bottom-8 left-1/2 h-32 w-48 -translate-x-1/2 rounded-xl border-4 border-slate-700 bg-slate-900 p-2 shadow-2xl sm:bottom-5 sm:h-44 sm:w-64">
+                    <div className="h-full rounded-md bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-300"><div className="flex h-full items-end p-3"><span className="text-xs font-bold tracking-widest text-white/90">TECNOLOGÍA PARA TI</span></div></div>
+                    <div className="absolute -bottom-3 left-1/2 h-3 w-24 -translate-x-1/2 rounded-b-lg bg-slate-300" />
+                  </div>
+                  <div className="absolute bottom-3 right-2 flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-white/15 text-3xl shadow-lg backdrop-blur sm:bottom-7 sm:right-7 sm:h-20 sm:w-20" aria-hidden="true">🎧</div>
+                </div>
+                <div className="relative mt-2 flex items-center justify-between gap-3 border-t border-white/20 pt-4 text-white">
+                  <div><p className="text-sm font-bold">Encuentra tu próximo dispositivo</p><p className="mt-1 text-xs text-blue-100">Información clara para elegir mejor</p></div>
+                  <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">TecnoReview</span>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Cuerpo Central del Banner */}
-          <div className="grid grid-cols-1 items-stretch gap-8 pt-8 lg:grid-cols-12">
-            
-            {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
-            <div className="flex flex-col justify-center gap-6 lg:col-span-7">
-              <div>
-                <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 shadow-sm">
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                  CATÁLOGO Y GUÍA DE COMPRA
-                </span>
-
-                <h2 className="max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-[#10213f] sm:text-4xl md:text-5xl">
-                  Encuentra tu próximo dispositivo.
-                </h2>
-
-                <p className="mt-4 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                  Consulta fichas técnicas completas, análisis imparciales y precios de referencia en pesos colombianos (COP).
-                </p>
-              </div>
-
-              {/* Buscador Rápido Accesible */}
-              <div>
-                <label htmlFor="buscador-principal" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-600">
-                  Buscar dispositivos tecnológicos
-                </label>
-                <div className="relative flex items-center">
-                  <div className="absolute left-4 flex items-center pointer-events-none text-slate-400" aria-hidden="true">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    id="buscador-principal"
-                    type="search"
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                    placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
-                    aria-label="Buscar dispositivos por marca, modelo o características"
-                    className="w-full rounded-2xl border border-slate-200 bg-white py-4 pl-12 pr-20 text-sm text-slate-900 shadow-lg shadow-blue-950/5 transition-colors placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  />
-                  {busqueda && (
-                    <button
-                      onClick={() => setBusqueda("")}
-                      aria-label="Borrar texto de búsqueda"
-                      className="absolute right-4 text-xs font-bold font-doto uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
-                    >
-                      Limpiar
-                    </button>
-                  )}
-                </div>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                  {"//"} Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
-                </p>
-              </div>
-
-              {/* Slider de Presupuesto en COP */}
-              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-lg shadow-slate-900/5 sm:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                    <span className="text-xs font-bold font-doto text-slate-700 uppercase tracking-wider">
-                      Presupuesto máximo
-                    </span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3.5 py-1.5">
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400 font-mono">Hasta:</span>
-                    <span className="text-sm font-extrabold font-sans tracking-tight text-blue-700 dark:text-blue-300">
-                      {formatearCOP(presupuestoMax)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <input
-                    type="range"
-                    min="50"
-                    max="1500"
-                    step="25"
-                    value={presupuestoMax}
-                    onChange={(e) => setPresupuestoMax(Number(e.target.value))}
-                    aria-label="Ajustar presupuesto máximo en pesos colombianos"
-                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                  />
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
-                    <span>Mínimo: $ 200.000 COP</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400 font-sans">
-                      Límite: {formatearCOP(presupuestoMax)}
-                    </span>
-                    <span>Máximo: $ 6.000.000+ COP</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
-            <div className="flex flex-col lg:col-span-5">
-              <div className="flex h-full flex-col rounded-3xl border border-blue-100 bg-white p-5 shadow-xl shadow-blue-950/10 sm:p-6">
-                {ofertasFiltradas.length > 0 && (
-                  <div className="relative mb-5 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#dcecff] p-5 text-white">
-                    <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/15 blur-2xl" aria-hidden="true" />
-                    <p className="relative z-10 text-xs font-bold uppercase tracking-[0.16em] text-blue-100">Recomendado en ofertas</p>
-                    <div className="relative z-10 mt-3 flex min-h-36 items-center justify-between gap-3">
-                      <div className="max-w-[55%]">
-                        <h3 className="text-xl font-extrabold leading-tight">{ofertasFiltradas[0].nombre}</h3>
-                        <p className="mt-2 text-sm text-blue-100">{formatearCOP(ofertasFiltradas[0].precioActual)}</p>
-                        <button type="button" onClick={() => verFichaRanking(ofertasFiltradas[0])} className="mt-4 rounded-lg bg-white px-4 py-2 text-xs font-bold text-blue-800 transition hover:bg-blue-50">Ver ficha técnica</button>
-                      </div>
-                      <div className="h-32 w-[42%] shrink-0 rounded-xl bg-white/95 p-2 shadow-lg">
-                        {ofertasFiltradas[0].imagen && ofertasFiltradas[0].imagen.trim().length > 0 ? (
-                          <img src={ofertasFiltradas[0].imagen} alt={`Imagen de ${ofertasFiltradas[0].nombre}`} className="h-full w-full object-contain" />
-                        ) : (
-                          <ProductImagePlaceholder categoria={ofertasFiltradas[0].idCategoria} nombre={ofertasFiltradas[0].nombre} tamano="md" />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
-                    <h3 className="text-xs font-bold font-doto uppercase tracking-wider text-slate-900 dark:text-white">
-                      Ofertas destacadas.
-                    </h3>
-                  </div>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
-                    En promoción ({ofertasFiltradas.length})
-                  </span>
-                </div>
-
-                {/* Lista de ofertas */}
-                <div className="space-y-3 flex-1">
-                  {cargandoOfertas ? (
-                    <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
-                    </div>
-                  ) : errorOfertas ? (
-                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
-                      <button
-                        type="button"
-                        onClick={cargarOfertas}
-                        aria-label="Reintentar ofertas"
-                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
-                      >
-                        Reintentar ofertas
-                      </button>
-                    </div>
-                  ) : ofertasFiltradas.length > 0 ? (
-                    (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
-                      <div
-                        key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
-                        onClick={() => verFichaRanking(oferta)}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
-                      >
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
-                          {oferta.imagen && oferta.imagen.trim().length > 0 ? (
-                            <img
-                              src={oferta.imagen}
-                              alt={`Imagen de ${oferta.nombre}`}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <ProductImagePlaceholder
-                              categoria={oferta.idCategoria}
-                              nombre={oferta.nombre}
-                              tamano="sm"
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
-                            {oferta.nombre}
-                          </p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            {oferta.nombreEstablecimiento}
-                            {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
-                          </p>
-                          {oferta.ahorroMonetario > 0 && (
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
-                              Ahorras: {formatearCOP(oferta.ahorroMonetario)}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          {oferta.porcentajeDescuento > 0 && (
-                            <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
-                              -{Math.round(oferta.porcentajeDescuento)}%
-                            </span>
-                          )}
-                          <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
-                            {formatearCOP(oferta.precioActual)}
-                          </div>
-                          {oferta.precioReferencia && (
-                            <div className="text-[10px] text-slate-400 line-through">
-                              {formatearCOP(oferta.precioReferencia)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
-                      No hay ofertas coincidentes con este filtro.
-                    </div>
-                  )}
-                </div>
-
-                {ofertasFiltradas.length > 3 && (
-                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
-                      className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
-                    >
-                      {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
-                    </button>
-                  </div>
-                )}
-              </div>
+          <div className="mt-8 border-t border-blue-200/80 pt-6">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Explora por categoría</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Filtrar por categoría">
+              {[
+                { id: "todos" as const, label: "Todos", icon: "▦" },
+                { id: "moviles" as const, label: "Teléfonos", icon: "▯" },
+                { id: "tablets" as const, label: "Tablets", icon: "▯" },
+                { id: "laptops" as const, label: "Portátiles / PC", icon: "▱" },
+                { id: "auriculares" as const, label: "Auriculares", icon: "◖" },
+                { id: "monitores" as const, label: "Monitores", icon: "▣" },
+              ].map((cat) => (
+                <button key={cat.id} type="button" onClick={() => setTipoDispositivo(cat.id)} aria-pressed={tipoDispositivo === cat.id} className={`flex min-h-[66px] items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-semibold transition-all ${tipoDispositivo === cat.id ? "border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-900/15" : "border-slate-200 bg-white text-slate-700 shadow-sm hover:border-blue-300 hover:bg-blue-50"}`}>
+                  <span aria-hidden="true" className="text-lg">{cat.icon}</span>{cat.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

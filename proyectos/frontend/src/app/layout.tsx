@@ -16,9 +16,9 @@ const doto = Doto({
 });
 
 export const metadata: Metadata = {
-  title: "TecnoReview | Encuentra tu próximo dispositivo",
+  title: "TecReview | Encuentra tu próximo dispositivo",
   description:
-    "TecnoReview: explora dispositivos tecnológicos, consulta especificaciones técnicas, precios de referencia en COP y opiniones de la comunidad.",
+    "TecReview: explora dispositivos tecnológicos, consulta especificaciones técnicas, precios de referencia en COP y opiniones de la comunidad.",
 };
 
 export default function RootLayout({

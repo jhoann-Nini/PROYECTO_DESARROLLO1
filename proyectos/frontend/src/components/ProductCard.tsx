@@ -35,9 +35,9 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-violet-700"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-violet-700"
     >
-      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-violet-50/70 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-violet-950/30">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-violet-950/30">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
@@ -69,7 +69,7 @@ export default function ProductCard({
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-violet-700 dark:text-white dark:group-hover:text-violet-300">
+        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-300">
           {producto.nombre}
         </h3>
         <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
@@ -102,7 +102,7 @@ export default function ProductCard({
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-violet-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 active:scale-[0.99] dark:bg-violet-600 dark:hover:bg-violet-500"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.99] dark:bg-blue-600 dark:hover:bg-blue-500"
           >
             Ver ficha técnica <span aria-hidden="true">↗</span>
           </button>

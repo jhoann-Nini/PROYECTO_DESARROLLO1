@@ -32,16 +32,6 @@ export default function ProductCard({
           : producto.precioReferencia) <= limitePresupuestoCOP
       : null;
 
-  const cumplePresupuesto =
-    limitePresupuestoCOP !== undefined &&
-    limitePresupuestoCOP !== null &&
-    producto.precioReferencia !== null &&
-    producto.precioReferencia !== undefined
-      ? (producto.precioReferencia < 10000
-          ? producto.precioReferencia * 4000
-          : producto.precioReferencia) <= limitePresupuestoCOP
-      : null;
-
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}

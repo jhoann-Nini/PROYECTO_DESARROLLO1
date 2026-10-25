@@ -1051,7 +1051,7 @@ export default function Home() {
           SECCIÓN 1: DISPOSITIVOS DESTACADOS (RANKINGS REALES DEL BACKEND)
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "ranking" && (
-        <section id="opiniones-comunidad" className="scroll-mt-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+        <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* COLUMNA 1: MEJOR VALORADOS */}
@@ -1419,7 +1419,7 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           SECCIÓN 3: OPINIONES DE LA COMUNIDAD (PERSISTIDAS)
       ───────────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
+      <section id="opiniones-comunidad" className="scroll-mt-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -1427,7 +1427,7 @@ export default function Home() {
                 <span className="text-red-500">/</span> Opiniones de la comunidad ({resenas.length}).
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
+                Lee experiencias y comparte opiniones sobre dispositivos con la comunidad.
               </p>
             </div>
             <button

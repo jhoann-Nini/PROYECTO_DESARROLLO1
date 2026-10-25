@@ -35,9 +35,9 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-700"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-950/10 hover:border-blue-300"
     >
-      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 dark:border-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950/30">
+      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 ">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
@@ -55,40 +55,40 @@ export default function ProductCard({
           />
         )}
         <div className="absolute left-3 top-3 flex max-w-[70%] flex-wrap gap-1.5">
-          <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-300">
+          <span className="rounded-full border border-slate-200 bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600 shadow-sm backdrop-blur ">
             {producto.nombreCategoria || `Categoría ${producto.idCategoria}`}
           </span>
-          <span className="rounded-full border border-violet-200 bg-violet-50/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-violet-700 dark:border-violet-800 dark:bg-violet-950/90 dark:text-violet-300">
+          <span className="rounded-full border border-violet-200 bg-violet-50/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-violet-700 ">
             {producto.nombreMarca || `Marca ${producto.idMarca}`}
           </span>
         </div>
-        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-bold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300" : "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}>
+        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-bold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-700 " : "border-slate-200 bg-slate-100 text-slate-600 "}`}>
           <span aria-hidden="true">{producto.estado ? "● " : "○ "}</span>
           {producto.estado ? "Activo" : "Inactivo"}
         </span>
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-300">
+        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700 group-hover:text-blue-700">
           {producto.nombre}
         </h3>
-        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
+        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-500 ">
           {producto.descripcion || "Consulta las características y especificaciones técnicas de este dispositivo."}
         </p>
 
-        <div className="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+        <div className="mt-4 border-t border-slate-100 pt-4 ">
           <div className="flex min-h-12 items-end justify-between gap-2">
             <div>
               <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Precio de referencia
               </p>
-              <p className="mt-0.5 text-lg font-extrabold tracking-tight text-slate-950 dark:text-white">
+              <p className="mt-0.5 text-lg font-extrabold tracking-tight text-slate-950 ">
                 {precioFormateado}
               </p>
             </div>
             {cumplePresupuesto !== null && (
               <span
-                className={`mb-1 rounded-full px-2 py-1 text-[10px] font-bold ${cumplePresupuesto ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"}`}
+                className={`mb-1 rounded-full px-2 py-1 text-[10px] font-bold ${cumplePresupuesto ? "bg-emerald-100 text-emerald-800 " : "bg-amber-100 text-amber-800 "}`}
                 title={cumplePresupuesto ? "Dentro del presupuesto máximo" : "Supera el presupuesto máximo"}
               >
                 {cumplePresupuesto ? "✓ En presupuesto" : "Sobre presupuesto"}
@@ -102,7 +102,7 @@ export default function ProductCard({
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.99] dark:bg-blue-600 dark:hover:bg-blue-500"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.99] "
           >
             Ver ficha técnica <span aria-hidden="true">↗</span>
           </button>

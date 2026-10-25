@@ -988,7 +988,7 @@ export default function Home() {
                 </div>
                 <div className="relative mt-2 flex items-center justify-between gap-3 border-t border-white/20 pt-4 text-white">
                   <div><p className="text-sm font-bold">Encuentra tu próximo dispositivo</p><p className="mt-1 text-xs text-blue-100">Información clara para elegir mejor</p></div>
-                  <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">TecnoReview</span>
+                  <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">TecReview</span>
                 </div>
               </div>
             </div>

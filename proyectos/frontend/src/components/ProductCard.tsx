@@ -21,9 +21,7 @@ export default function ProductCard({
   const tieneImagenValida = Boolean(
     producto.imagen && producto.imagen.trim().length > 0 && !errorImagen
   );
-
   const precioFormateado = formatearCOP(producto.precioReferencia);
-
   const cumplePresupuesto =
     limitePresupuestoCOP !== undefined &&
     limitePresupuestoCOP !== null &&
@@ -37,7 +35,7 @@ export default function ProductCard({
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/50 hover:shadow-lg cursor-pointer"
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/10 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
     >
       {/* Contenedor de Fotografía */}
       <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-[#0a0e17] p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800/80">
@@ -63,31 +61,22 @@ export default function ProductCard({
           <span className="rounded-md bg-white/95 dark:bg-[#111827]/90 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 shadow-2xs font-doto uppercase tracking-wider">
             {producto.nombreCategoria || `CAT ${producto.idCategoria}`}
           </span>
-          <span className="rounded-md bg-blue-50/95 dark:bg-blue-950/80 px-2 py-0.5 text-[11px] font-bold text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 shadow-2xs font-doto uppercase tracking-wider">
+          <span className="rounded-full border border-blue-100 bg-blue-50/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-blue-800">
             {producto.nombreMarca || `Marca ${producto.idMarca}`}
           </span>
         </div>
-
-        {/* Indicador de disponibilidad */}
-        {producto.estado ? (
-          <span className="absolute top-3 right-3 rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-2 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-doto uppercase">
-            • DISPONIBLE
-          </span>
-        ) : (
-          <span className="absolute top-3 right-3 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-bold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 font-doto uppercase">
-            NO DISPONIBLE
-          </span>
-        )}
+        <span className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${producto.estado ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-slate-200 bg-slate-100 text-slate-600"}`}>
+          <span aria-hidden="true" className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${producto.estado ? "bg-emerald-600" : "bg-slate-500"}`} />
+          {producto.estado ? "Activo" : "Inactivo"}
+        </span>
       </div>
 
-      {/* Contenido descriptivo del producto */}
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-blue-500 transition-colors font-doto uppercase tracking-wide">
+      <div className="flex flex-1 flex-col p-5 sm:p-5">
+        <h3 className="line-clamp-2 min-h-12 text-base font-bold leading-6 text-slate-900 transition-colors group-hover:text-blue-700">
           {producto.nombre}
         </h3>
-
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 line-clamp-2 flex-1 leading-relaxed">
-          {producto.descripcion || "Especificaciones técnicas detalladas disponibles en la ficha."}
+        <p className="mt-2 line-clamp-2 min-h-10 flex-1 text-sm leading-5 text-slate-600">
+          {producto.descripcion || "Consulta las características y especificaciones técnicas de este dispositivo."}
         </p>
 
         {/* Sección de precio y acción principal */}
@@ -119,7 +108,6 @@ export default function ProductCard({
               {precioFormateado}
             </span>
           </div>
-
           <button
             type="button"
             onClick={(e) => {
@@ -127,9 +115,9 @@ export default function ProductCard({
               onVerDetalle?.(producto);
             }}
             aria-label={`Consultar ficha técnica de ${producto.nombre}`}
-            className="rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-3.5 py-2 text-xs font-bold text-white shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+            className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 active:scale-[0.99]"
           >
-            Ver ficha técnica
+            Ver ficha técnica <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15 15 5M6 5h9v9" /></svg>
           </button>
         </div>
       </div>

@@ -4,34 +4,25 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-doto: 'Doto', monospace;
-
-  /* Superficies y Fondos */
-  --color-surface-base: #f8fafc;
+  --font-doto: var(--font-sans);
+  --color-surface-base: #f4f7fc;
   --color-surface-card: #ffffff;
   --color-surface-muted: #f1f5f9;
-  --color-surface-border: #e2e8f0;
-  --color-surface-border-strong: #cbd5e1;
-
-  /* Jerarquía Tipográfica y Contraste (WCAG 2.1 AA) */
-  --color-text-primary: #0f172a;
+  --color-surface-border: #dce5f1;
+  --color-surface-border-strong: #c3d1e3;
+  --color-text-primary: #10213f;
   --color-text-secondary: #475569;
   --color-text-muted: #64748b;
-
-  /* Acentos de Acción y Enfoque */
-  --color-brand-primary: #1d4ed8;
-  --color-brand-hover: #1e40af;
-  --color-brand-light: #eff6ff;
+  --color-brand-primary: #1764e8;
+  --color-brand-hover: #1452c4;
+  --color-brand-light: #edf4ff;
   --color-brand-focus: #2563eb;
-
-  /* Estados Semánticos Accesibles */
   --color-status-success: #15803d;
   --color-status-success-bg: #f0fdf4;
   --color-status-error: #b91c1c;
   --color-status-error-bg: #fef2f2;
 }
 
-/* Estilos base de Accesibilidad Universal */
 * {
   box-sizing: border-box;
 }
@@ -41,62 +32,89 @@ html {
   line-height: 1.5;
   scroll-behavior: smooth;
   color-scheme: light;
+  background: #f4f7fc;
 }
 
 body {
   min-height: 100vh;
-  background-color: #f1f5f9;
-  color: #0f172a;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(219, 234, 254, .52), transparent 38rem),
+    #f4f7fc;
+  color: #10213f;
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Tipografía de Matriz de Puntos (Estilo Nothing Tech NDot / Doto) */
 .font-doto {
-  font-family: var(--font-doto, 'Doto', monospace, sans-serif);
-  font-variation-settings: 'ROND' 100;
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-variation-settings: normal;
+  letter-spacing: .015em;
 }
 
-/* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
 :focus-visible {
   outline: 2px solid #2563eb;
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-/* Barra de desplazamiento accesible estilo Nothing Tech */
+::selection {
+  background: #dbeafe;
+  color: #10213f;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: #edf2f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
+  background: #c3d1e3;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #8fa6c4;
 }
 
-.dark body {
-  background-color: #f1f5f9;
-  color: #0f172a;
+/* Interacciones y accesibilidad de la interfaz */
+main section {
+  scroll-margin-top: 6rem;
 }
 
-/* Base visual: texto legible por defecto y superficies claras como el prototipo. */
-body,
-body * {
-  text-rendering: optimizeLegibility;
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+a {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 180ms;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  border-radius: .8rem;
 }
 
 input,
 textarea,
 select {
-  color: #0f172a;
+  color: #10213f;
 }
 
 input::placeholder,
@@ -105,12 +123,19 @@ textarea::placeholder {
   opacity: 1;
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
 }
 
-::selection {
-  background: #bfdbfe;
+/* Si se activa la clase dark, mantener superficies legibles. */
+.dark body {
+  background-color: #f1f5f9;
   color: #0f172a;
 }

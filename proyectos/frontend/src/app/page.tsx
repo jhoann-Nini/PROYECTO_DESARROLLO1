@@ -719,11 +719,9 @@ export default function Home() {
       });
       setComentario("");
       await cargarResenas();
-    } catch (err) {
+    } catch {
       setErrorComentario(
-        err instanceof Error
-          ? err.message
-          : "No fue posible guardar tu opinión. Inténtalo de nuevo más tarde."
+        "No pudimos publicar tu opinión. Comprueba tu conexión e inténtalo de nuevo."
       );
     } finally {
       setEnviandoComentario(false);
@@ -798,33 +796,38 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen dark text-slate-100 transition-colors duration-300">
+    <div className="relative min-h-screen bg-[#f3f6fb] text-[#10213f] transition-colors duration-300">
       
       {/* FONDO GEOMÉTRICO BICOLOR (MODO OSCURO) */}
-      <GeometricBackground tema="oscuro" />
+      <GeometricBackground tema="claro" />
 
       {/* ─────────────────────────────────────────────────────────────
           BARRA SUPERIOR Y SESIÓN
       ───────────────────────────────────────────────────────────── */}
-      <nav aria-label="Navegación superior" className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 py-2.5 text-xs shadow-2xs sticky top-0 z-20">
+      <nav aria-label="Navegación superior" className="sticky top-0 z-40 border-b border-blue-950/50 bg-[#07172f]/95 px-4 py-3 text-xs text-white shadow-lg shadow-slate-950/20 backdrop-blur-xl sm:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-doto font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 text-base tracking-widest uppercase">
+            <span className="flex items-center gap-1.5 text-lg font-extrabold tracking-tight text-white">
               <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-              Tec<span className="text-blue-700 dark:text-blue-400">Review</span>
+              Tec<span className="text-blue-400">Review</span>
               <span className="text-red-500">.</span>
             </span>
             <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
-            <span className="hidden md:inline text-slate-600 dark:text-slate-400 font-medium">
+            <span className="hidden md:inline font-medium text-blue-100/80">
               Plataforma de Reseñas y Especificaciones Técnicas
             </span>
           </div>
 
+          <div className="hidden items-center gap-6 text-[12px] font-medium text-blue-50/90 md:flex">
+            <a href="#" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="transition-colors hover:text-white">Inicio</a>
+            <a href="#catalogo-productos" onClick={(event) => { event.preventDefault(); setSeccionActiva("catalogo"); document.getElementById("catalogo-productos")?.scrollIntoView({ behavior: "smooth" }); }} className="transition-colors hover:text-white">Productos</a>
+            <a href="#opiniones-comunidad" onClick={(event) => { event.preventDefault(); document.getElementById("opiniones-comunidad")?.scrollIntoView({ behavior: "smooth" }); }} className="transition-colors hover:text-white">Reseñas</a>
+          </div>
           <div className="flex items-center gap-3">
             {/* Enlace Explorador API disponible para navegación rápida */}
             <Link
               href="/productos"
-              className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-600 hover:text-blue-700 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-600 hover:text-blue-700 text-slate-500 dark:hover:text-blue-400 transition-colors"
               title="Explorar catálogo directo del backend"
             >
               Catálogo API
@@ -862,7 +865,7 @@ export default function Home() {
               </span>
             )}
             {cargandoAuth ? (
-              <span className="text-xs text-slate-400 dark:text-slate-500 animate-pulse px-2 py-1">
+              <span className="text-xs text-slate-400 text-slate-500 animate-pulse px-2 py-1">
                 Verificando...
               </span>
             ) : usuarioSesion ? (
@@ -873,7 +876,7 @@ export default function Home() {
                       ? "text-red-200 bg-red-950/40 border-red-800/60"
                       : esRepre
                       ? "text-amber-200 bg-amber-950/40 border-amber-800/60"
-                      : "text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                      : "text-slate-700 text-slate-700 bg-slate-100 bg-slate-100 border-slate-200 border-slate-200"
                   }`}
                 >
                   <span
@@ -914,273 +917,207 @@ export default function Home() {
                   setErrorSesion(null);
                   setModalAuthAbierto(true);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3 py-1 text-xs font-semibold text-white shadow-2xs transition-colors cursor-pointer"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-blue-950/30 transition-colors hover:bg-blue-500"
               >
-                <span>🔑</span> Iniciar sesión
+                <span aria-hidden="true" className="text-base">↗</span> Iniciar sesión
               </button>
             )}
           </div>
         </div>
       </nav>
 
-      {/* ─────────────────────────────────────────────────────────────
-          CABECERA PRINCIPAL (BANNER HERO CON FONDO TRASLÚCIDO)
-      ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-slate-200/70 dark:border-slate-800/70 bg-white/20 dark:bg-slate-950/20 backdrop-blur-[1px] py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          
-          {/* Fila de Marca (sin la caja TR) y Categorías */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-8 border-b border-slate-200 dark:border-slate-800">
-            {/* Título de Marca Limpio */}
-            <div className="flex items-center">
-              <div>
-                <h1 className="font-doto text-3xl sm:text-4xl lg:text-5xl font-black tracking-wider text-slate-900 dark:text-white uppercase" aria-label="TecReview">
-                  Tec<span className="text-blue-700 dark:text-blue-500">Review</span><span className="text-red-500">.</span>
-                </h1>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5 font-mono">
-                  {"//"} Guía de compra y especificaciones técnicas
-                </p>
+      {/* PORTADA REDISEÑADA — composición fiel al prototipo */}
+      <section style={{ backgroundColor: "#0c2347", backgroundImage: "linear-gradient(115deg, #0c2347 0%, #174b91 54%, #245fbd 100%)", color: "#ffffff" }} className="relative overflow-hidden border-b border-[#0c2347] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/20 blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-300/15 blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+            <div className="py-3 sm:py-8">
+              <span style={{ color: "#eaf2ff", backgroundColor: "rgba(255,255,255,.12)", borderColor: "rgba(255,255,255,.28)" }} className="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-wide shadow-sm backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Tu guía de tecnología
+              </span>
+              <h2 style={{ color: "#ffffff", textShadow: "0 1px 2px rgba(0,0,0,.12)" }} className="max-w-xl text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+                Tu guía confiable para elegir la mejor tecnología.
+              </h2>
+              <p style={{ color: "#e5efff" }} className="mt-5 max-w-xl text-base leading-7 sm:text-lg">
+                Explora dispositivos, consulta fichas técnicas y opiniones, y conoce precios de referencia en pesos colombianos.
+              </p>
+              <div className="mt-7 max-w-xl rounded-2xl bg-white p-1.5 shadow-xl shadow-slate-950/20">
+                <label htmlFor="buscador-principal" className="sr-only">Buscar dispositivos tecnológicos</label>
+                <div className="relative flex items-center">
+                  <svg className="pointer-events-none absolute left-4 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                  </svg>
+                  <input id="buscador-principal" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="¿Qué dispositivo estás buscando?" aria-label="Buscar dispositivos por marca, modelo o características" className="w-full rounded-xl border border-transparent bg-white py-4 pl-12 pr-20 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
+                  {busqueda && <button type="button" onClick={() => setBusqueda("")} aria-label="Borrar búsqueda" className="absolute right-4 text-xs font-semibold text-blue-700 hover:text-blue-900">Limpiar</button>}
+                </div>
+                <p className="mt-2 px-2 text-xs text-slate-500">Busca por marca, modelo o categoría.</p>
+              </div>
+              <div style={{ backgroundColor: "rgba(255,255,255,.12)", borderColor: "rgba(255,255,255,.24)" }} className="mt-5 rounded-2xl border p-4 shadow-md backdrop-blur sm:p-5">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <label htmlFor="presupuesto-principal" className="text-sm font-semibold text-white">Presupuesto máximo</label>
+                  <span className="rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-blue-700">{formatearCOP(presupuestoMax)}</span>
+                </div>
+                <input id="presupuesto-principal" type="range" min="50" max="1500" step="25" value={presupuestoMax} onChange={(e) => setPresupuestoMax(Number(e.target.value))} aria-label="Ajustar presupuesto máximo" className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600" />
+                <div style={{ color: "#e5efff" }} className="mt-2 flex justify-between text-[11px]"><span>$200.000 COP</span><span>$6.000.000+ COP</span></div>
               </div>
             </div>
-
-            {/* Selector de Categorías Accesible con estilo de Matriz Nothing Tech */}
-            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filtrar por categoría">
-              {[
-                { id: "todos" as const, label: "Todos", icon: "📱" },
-                { id: "moviles" as const, label: "Teléfonos", icon: "📱" },
-                { id: "tablets" as const, label: "Tablets", icon: "📱" },
-                { id: "laptops" as const, label: "Portátiles / PC", icon: "💻" },
-                { id: "auriculares" as const, label: "Auriculares", icon: "🎧" },
-                { id: "monitores" as const, label: "Monitores", icon: "🖥️" },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setTipoDispositivo(cat.id)}
-                  className={`font-doto uppercase tracking-wider flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-xs font-bold transition-all cursor-pointer ${
-                    tipoDispositivo === cat.id
-                      ? "border-blue-700 bg-blue-700 text-white shadow-xs"
-                      : "border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-400 shadow-2xs"
-                  }`}
-                >
-                  <span aria-hidden="true">{cat.icon}</span>
-                  {cat.label}
-                </button>
-              ))}
+            <div className="relative mx-auto w-full max-w-xl">
+              <div className="absolute inset-4 rounded-[2rem] bg-blue-600/15 blur-2xl" aria-hidden="true" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/20 bg-white/10 p-5 shadow-2xl shadow-blue-950/20 backdrop-blur-sm sm:p-8">
+                <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full border border-white/20" aria-hidden="true" />
+                <div className="absolute -right-5 -top-5 h-44 w-44 rounded-full border border-white/15" aria-hidden="true" />
+                <div className="relative flex min-h-[280px] items-center justify-center sm:min-h-[340px]">
+                  <div className="absolute left-1 top-7 z-10 h-44 w-28 rotate-[-10deg] overflow-hidden rounded-[1.4rem] border-[5px] border-slate-800 bg-slate-950 p-1 shadow-2xl sm:left-7 sm:h-56 sm:w-36">
+                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=85" alt="" className="h-full w-full rounded-[1rem] object-cover" />
+                  </div>
+                  <div className="absolute right-1 top-4 z-0 h-36 w-28 rotate-[8deg] overflow-hidden rounded-2xl border-4 border-slate-200 bg-white p-1 shadow-xl sm:right-7 sm:h-48 sm:w-36">
+                    <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=500&q=85" alt="" className="h-full w-full rounded-xl object-cover" />
+                  </div>
+                  <div className="absolute bottom-8 left-1/2 z-20 h-32 w-48 -translate-x-1/2 overflow-hidden rounded-xl border-4 border-slate-700 bg-slate-900 p-1 shadow-2xl sm:bottom-5 sm:h-44 sm:w-64">
+                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=85" alt="" className="h-full w-full rounded-md object-cover" />
+                    <div className="absolute -bottom-3 left-1/2 h-3 w-24 -translate-x-1/2 rounded-b-lg bg-slate-300" />
+                  </div>
+                  <div className="absolute bottom-3 right-2 flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-white/15 text-3xl shadow-lg backdrop-blur sm:bottom-7 sm:right-7 sm:h-20 sm:w-20" aria-hidden="true"><svg viewBox="0 0 24 24" className="h-8 w-8 text-white sm:h-9 sm:w-9" fill="none" stroke="currentColor" strokeWidth="1.7"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13v-1a9 9 0 0 1 18 0v1M3 13v4a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2Zm18 0v4a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2Z"/></svg></div>
+                </div>
+                <div className="relative mt-2 flex items-center justify-between gap-3 border-t border-white/20 pt-4 text-white">
+                  <div><p className="text-sm font-bold">Encuentra tu próximo dispositivo</p><p className="mt-1 text-xs text-blue-100">Información clara para elegir mejor</p></div>
+                  <span className="rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-100">TecReview</span>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Cuerpo Central del Banner */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-8">
-            
-            {/* Columna Izquierda: Buscador y Slider de Presupuesto (8 Cols) */}
-            <div className="lg:col-span-8 flex flex-col justify-between gap-6">
-              <div>
-                <span className="inline-flex items-center gap-2 rounded-md bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/80 px-3 py-1 text-xs font-bold font-doto uppercase tracking-widest text-blue-800 dark:text-blue-300 mb-3 shadow-2xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                  CATÁLOGO Y COMPARADOR DE TECNOLOGÍA
-                </span>
-
-                <h2 className="font-doto text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-wide uppercase leading-tight">
-                  Encuentra y compara tu próximo dispositivo.
-                </h2>
-
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
-                  Consulta fichas técnicas completas, análisis imparciales y precios de referencia en pesos colombianos (COP).
-                </p>
-              </div>
-
-              {/* Buscador Rápido Accesible */}
-              <div>
-                <label htmlFor="buscador-principal" className="block text-xs font-bold font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
-                  Buscar dispositivos tecnológicos
-                </label>
-                <div className="relative flex items-center">
-                  <div className="absolute left-4 flex items-center pointer-events-none text-slate-400" aria-hidden="true">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    id="buscador-principal"
-                    type="search"
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                    placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
-                    aria-label="Buscar dispositivos por marca, modelo o características"
-                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 py-3.5 pl-12 pr-20 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 shadow-xs focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
-                  />
-                  {busqueda && (
-                    <button
-                      onClick={() => setBusqueda("")}
-                      aria-label="Borrar texto de búsqueda"
-                      className="absolute right-4 text-xs font-bold font-doto uppercase tracking-wider text-slate-500 hover:text-slate-900 dark:hover:text-white cursor-pointer"
-                    >
-                      Limpiar
-                    </button>
-                  )}
-                </div>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
-                  {"//"} Filtrando por categoría ({tipoDispositivo}) y presupuesto hasta {formatearCOP(presupuestoMax)}.
-                </p>
-              </div>
-
-              {/* Slider de Presupuesto en COP */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-red-600"></span>
-                    <span className="text-xs font-bold font-doto text-slate-700 dark:text-slate-200 uppercase tracking-wider">
-                      Presupuesto máximo
-                    </span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3.5 py-1.5">
-                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400 font-mono">Hasta:</span>
-                    <span className="text-sm font-extrabold font-sans tracking-tight text-blue-700 dark:text-blue-300">
-                      {formatearCOP(presupuestoMax)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <input
-                    type="range"
-                    min="50"
-                    max="1500"
-                    step="25"
-                    value={presupuestoMax}
-                    onChange={(e) => setPresupuestoMax(Number(e.target.value))}
-                    aria-label="Ajustar presupuesto máximo en pesos colombianos"
-                    className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-700"
-                  />
-                  <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-mono">
-                    <span>Mínimo: $ 200.000 COP</span>
-                    <span className="font-bold text-blue-700 dark:text-blue-400 font-sans">
-                      Límite: {formatearCOP(presupuestoMax)}
-                    </span>
-                    <span>Máximo: $ 6.000.000+ COP</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Columna Derecha: Ofertas Destacadas (4 Cols) */}
-            <div className="lg:col-span-4 flex flex-col">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm flex flex-col h-full">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 bg-red-600 rounded-full animate-pulse"></span>
-                    <h3 className="text-xs font-bold font-doto uppercase tracking-wider text-slate-900 dark:text-white">
-                      Ofertas destacadas.
-                    </h3>
-                  </div>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
-                    En promoción ({ofertasFiltradas.length})
-                  </span>
-                </div>
-
-                {/* Lista de ofertas */}
-                <div className="space-y-3 flex-1">
-                  {cargandoOfertas ? (
-                    <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
-                    </div>
-                  ) : errorOfertas ? (
-                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
-                      <button
-                        type="button"
-                        onClick={cargarOfertas}
-                        aria-label="Reintentar ofertas"
-                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
-                      >
-                        Reintentar ofertas
-                      </button>
-                    </div>
-                  ) : ofertasFiltradas.length > 0 ? (
-                    (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
-                      <div
-                        key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
-                        onClick={() => verFichaRanking(oferta)}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
-                      >
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
-                          {oferta.imagen && oferta.imagen.trim().length > 0 ? (
-                            <img
-                              src={oferta.imagen}
-                              alt={`Imagen de ${oferta.nombre}`}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <ProductImagePlaceholder
-                              categoria={oferta.idCategoria}
-                              nombre={oferta.nombre}
-                              tamano="sm"
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
-                            {oferta.nombre}
-                          </p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            {oferta.nombreEstablecimiento}
-                            {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
-                          </p>
-                          {oferta.ahorroMonetario > 0 && (
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
-                              Ahorras: {formatearCOP(oferta.ahorroMonetario)}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          {oferta.porcentajeDescuento > 0 && (
-                            <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
-                              -{Math.round(oferta.porcentajeDescuento)}%
-                            </span>
-                          )}
-                          <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
-                            {formatearCOP(oferta.precioActual)}
-                          </div>
-                          {oferta.precioReferencia && (
-                            <div className="text-[10px] text-slate-400 line-through">
-                              {formatearCOP(oferta.precioReferencia)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
-                      No hay ofertas coincidentes con este filtro.
-                    </div>
-                  )}
-                </div>
-
-                {ofertasFiltradas.length > 3 && (
-                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
-                      className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
-                    >
-                      {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
-                    </button>
-                  </div>
-                )}
-              </div>
+          <div className="mt-8 border-t border-white/20 pt-6">
+            <p style={{ color: "#e5efff" }} className="mb-4 text-xs font-bold uppercase tracking-[0.16em]">Explora por categoría</p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="group" aria-label="Filtrar por categoría">
+              {[
+                {
+                  id: "todos" as const,
+                  label: "Todos",
+                  icon: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+                },
+                {
+                  id: "moviles" as const,
+                  label: "Teléfonos",
+                  icon: <><rect x="6.5" y="2.5" width="11" height="19" rx="2" /><path d="M10 18.5h4" /></>,
+                },
+                {
+                  id: "tablets" as const,
+                  label: "Tablets",
+                  icon: <><rect x="4" y="2.5" width="16" height="19" rx="2" /><path d="M10 18.5h4" /></>,
+                },
+                {
+                  id: "laptops" as const,
+                  label: "Portátiles / PC",
+                  icon: <><rect x="5" y="4" width="14" height="11" rx="1.5" /><path d="M2.5 19h19l-1.5-4H4z" /></>,
+                },
+                {
+                  id: "auriculares" as const,
+                  label: "Auriculares",
+                  icon: <><path d="M3 13v-1a9 9 0 0 1 18 0v1" /><path d="M3 13v4a2 2 0 0 0 2 2h2v-7H5a2 2 0 0 0-2 2Zm18 0v4a2 2 0 0 1-2 2h-2v-7h2a2 2 0 0 1 2 2Z" /></>,
+                },
+              ].map((cat) => (
+                <button key={cat.id} type="button" onClick={() => setTipoDispositivo(cat.id)} aria-pressed={tipoDispositivo === cat.id} className={`group flex min-h-[66px] items-center justify-center gap-3 rounded-xl border px-3 py-3 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-900 ${tipoDispositivo === cat.id ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-950/20" : "border-white/80 bg-white text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50"}`}>
+                  <svg aria-hidden="true" viewBox="0 0 24 24" className={`h-5 w-5 shrink-0 transition-colors ${tipoDispositivo === cat.id ? "text-white" : "text-slate-600 group-hover:text-blue-700"}`} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    {cat.icon}
+                  </svg>
+                  <span>{cat.label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
+      {(cargandoOfertas || errorOfertas || ofertasFiltradas.length > 0) && (
+        <section aria-labelledby="ofertas-recomendadas" className="border-b border-blue-100 bg-white px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-5 flex items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">Oportunidades para ti</p>
+                <h2 id="ofertas-recomendadas" className="mt-1 text-xl font-extrabold tracking-tight text-[#10213f] sm:text-2xl">Ofertas destacadas</h2>
+              </div>
+              {ofertasFiltradas.length > 0 && (
+                <span className="text-xs font-medium text-slate-500">{ofertasFiltradas.length} disponibles</span>
+              )}
+            </div>
+
+            {cargandoOfertas ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center" role="status" aria-live="polite">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700" aria-hidden="true" />
+                <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
+              </div>
+            ) : errorOfertas ? (
+              <div className="rounded-xl border border-red-200 bg-red-50/50 px-4 py-6 text-center text-xs">
+                <p className="font-medium text-red-600">⚠️ {errorOfertas}</p>
+                <button type="button" onClick={cargarOfertas} className="mt-2 cursor-pointer text-xs font-bold text-blue-700 underline hover:no-underline">
+                  Reintentar ofertas
+                </button>
+              </div>
+            ) : ofertasFiltradas.length > 0 ? (
+              <div className="space-y-3">
+                {(mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
+                  <button
+                    key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
+                    type="button"
+                    onClick={() => verFichaRanking(oferta)}
+                    className="group flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  >
+                    <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white p-1">
+                      {oferta.imagen?.trim() ? (
+                        <img src={oferta.imagen} alt={`Imagen de ${oferta.nombre}`} className="h-full w-full object-contain" />
+                      ) : (
+                        <ProductImagePlaceholder categoria={oferta.idCategoria} nombre={oferta.nombre} tamano="sm" />
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-700">{oferta.nombre}</span>
+                      <span className="block truncate text-[11px] text-slate-500">
+                        {oferta.nombreEstablecimiento}{oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
+                      </span>
+                      {oferta.ahorroMonetario > 0 && (
+                        <span className="block text-[10px] font-mono text-emerald-600">Ahorras: {formatearCOP(oferta.ahorroMonetario)}</span>
+                      )}
+                    </span>
+                    <span className="shrink-0 text-right">
+                      {oferta.porcentajeDescuento > 0 && (
+                        <span className="mb-1 inline-block rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">-{Math.round(oferta.porcentajeDescuento)}%</span>
+                      )}
+                      <span className="block text-xs font-bold text-blue-700">{formatearCOP(oferta.precioActual)}</span>
+                      {oferta.precioReferencia && (
+                        <span className="block text-[10px] text-slate-400 line-through">{formatearCOP(oferta.precioReferencia)}</span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs font-mono text-slate-500">No hay ofertas coincidentes con este filtro.</div>
+            )}
+
+            {ofertasFiltradas.length > 3 && !cargandoOfertas && !errorOfertas && (
+              <div className="mt-4 border-t border-slate-200 pt-3 text-center">
+                <button
+                  type="button"
+                  onClick={() => setMostrarTodasOfertas((prev) => !prev)}
+                  className="cursor-pointer text-xs font-semibold text-blue-700 hover:underline"
+                  aria-expanded={mostrarTodasOfertas}
+                >
+                  {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       {/* ─────────────────────────────────────────────────────────────
           SELECTOR DE VISTAS (DESTACADOS vs CATÁLOGO)
       ───────────────────────────────────────────────────────────── */}
-      <div className="border-b border-slate-200/70 dark:border-slate-800/70 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md">
+      <div id="catalogo-productos" className="scroll-mt-24 border-b border-slate-200/70 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-3">
             <button
@@ -1188,24 +1125,24 @@ export default function Home() {
               className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 seccionActiva === "ranking"
                   ? "bg-blue-700 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
+                  : "bg-white bg-white text-slate-700 text-slate-600 border border-slate-300 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              ⭐ Dispositivos destacados
+              Dispositivos destacados
             </button>
             <button
               onClick={() => setSeccionActiva("catalogo")}
               className={`font-doto uppercase tracking-wider rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
                 seccionActiva === "catalogo"
                   ? "bg-blue-700 text-white shadow-xs"
-                  : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-800 hover:bg-slate-50"
+                  : "bg-white bg-white text-slate-700 text-slate-600 border border-slate-300 border-slate-200 hover:bg-slate-50"
               }`}
             >
-              📦 Catálogo general ({productosBackendFiltrados.length})
+              Catálogo general ({productosBackendFiltrados.length})
             </button>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
+          <div className="hidden md:flex items-center gap-2 text-xs text-slate-600 text-slate-500 font-mono">
             <span>{"//"} Filtro activo: {tipoDispositivo} | Hasta {formatearCOP(presupuestoMax)}</span>
           </div>
         </div>
@@ -1219,18 +1156,18 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* COLUMNA 1: MEJOR VALORADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 border-slate-200 bg-white bg-white p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="pb-4 border-b border-slate-200 border-slate-200 mb-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="text-red-500">/</span> Mejor valorados.
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
+                      <span aria-hidden="true" className="text-red-500">—</span> Mejor valorados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 text-slate-500">
                       ({mejorValoradosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="text-[11px] text-slate-500 text-slate-500 mt-1 font-mono">
                     {"//"} Puntuación real de usuarios registrados
                   </p>
                   <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
@@ -1276,7 +1213,7 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                    <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-8 text-center text-sm text-slate-500">
                       {mejorValorados.length === 0
                         ? "Aún no hay productos con valoraciones registradas en el catálogo."
                         : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
@@ -1286,11 +1223,11 @@ export default function Home() {
               </div>
 
               {mejorValoradosFiltrados.length > 4 && (
-                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                <div className="mt-6 pt-4 border-t border-slate-200 border-slate-200 text-center">
                   <button
                     type="button"
                     onClick={() => setMostrarTodosMejorValorados(!mostrarTodosMejorValorados)}
-                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 text-slate-700 transition-colors cursor-pointer"
                   >
                     {mostrarTodosMejorValorados
                       ? "Ocultar listado"
@@ -1301,18 +1238,18 @@ export default function Home() {
             </div>
 
             {/* COLUMNA 2: MÁS COMENTADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 border-slate-200 bg-white bg-white p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="pb-4 border-b border-slate-200 border-slate-200 mb-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
                       <span className="text-red-500">/</span> Más comentados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 text-slate-500">
                       ({masComentadosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="text-[11px] text-slate-500 text-slate-500 mt-1 font-mono">
                     {"//"} Interacción real de reseñas comunitarias
                   </p>
                   <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
@@ -1357,7 +1294,7 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500">
+                    <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-8 text-center text-sm text-slate-500">
                       {masComentados.length === 0
                         ? "Aún no hay reseñas registradas para los productos en la plataforma."
                         : `No se encontraron dispositivos en la categoría "${tipoDispositivo}" dentro de este presupuesto.`}
@@ -1367,11 +1304,11 @@ export default function Home() {
               </div>
 
               {masComentadosFiltrados.length > 4 && (
-                <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-center">
+                <div className="mt-6 pt-4 border-t border-slate-200 border-slate-200 text-center">
                   <button
                     type="button"
                     onClick={() => setMostrarTodosComentados(!mostrarTodosComentados)}
-                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                    className="font-doto uppercase tracking-wider w-full rounded-xl bg-slate-100 bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 py-3 text-xs font-bold text-slate-800 text-slate-700 transition-colors cursor-pointer"
                   >
                     {mostrarTodosComentados
                       ? "Ocultar listado"
@@ -1382,18 +1319,18 @@ export default function Home() {
             </div>
 
             {/* COLUMNA 3: LOS MÁS DESEADOS */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between">
+            <div className="rounded-2xl border border-slate-200 border-slate-200 bg-white bg-white p-6 shadow-sm flex flex-col justify-between">
               <div>
-                <div className="pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
+                <div className="pb-4 border-b border-slate-200 border-slate-200 mb-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                    <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
                       <span className="text-red-500">/</span> Los más deseados.
                     </h3>
-                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-bold font-doto uppercase tracking-wider text-slate-500 text-slate-500">
                       ({masDeseadosFiltrados.length} dispositivos)
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                  <p className="text-[11px] text-slate-500 text-slate-500 mt-1 font-mono">
                     {"//"} Listas de deseos y favoritos de usuarios
                   </p>
                   <div className="mt-2 h-0.5 w-16 bg-blue-700"></div>
@@ -1406,15 +1343,17 @@ export default function Home() {
                       <p className="mt-3 text-xs text-slate-500 font-mono">Consultando listas de deseos...</p>
                     </div>
                   ) : errorMasDeseados ? (
-                    <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 p-6 text-center text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorMasDeseados}</p>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-center sm:p-6" role="status" aria-live="polite">
+                      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700" aria-hidden="true">!</div>
+                      <p className="text-sm font-semibold text-slate-900">No pudimos cargar los productos más deseados</p>
+                      <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-slate-600">No conseguimos conectar con las listas de deseos. Puedes intentarlo de nuevo en unos segundos.</p>
                       <button
                         type="button"
                         onClick={cargarMasDeseados}
-                        aria-label="Reintentar deseos"
-                        className="mt-3 font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
+                        aria-label="Reintentar cargar los productos más deseados"
+                        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 cursor-pointer"
                       >
-                        Reintentar deseos
+                        Reintentar
                       </button>
                     </div>
                   ) : masDeseadosFiltrados.length > 0 ? (
@@ -1433,14 +1372,14 @@ export default function Home() {
                       />
                     ))
                   ) : (
-                    <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
-                      <div className="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-lg mb-3">
-                        ❤️
+                    <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-8 text-center text-sm text-slate-500 flex flex-col items-center justify-center">
+                      <div className="h-10 w-10 rounded-full bg-slate-100 bg-slate-100 flex items-center justify-center text-lg mb-3">
+                        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
                       </div>
-                      <p className="font-bold text-slate-800 dark:text-slate-200 text-xs font-doto uppercase tracking-wider mb-1">
+                      <p className="font-bold text-slate-800 text-slate-700 text-xs font-doto uppercase tracking-wider mb-1">
                         Sin listas de deseos registradas
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed">
+                      <p className="text-xs text-slate-500 text-slate-500 max-w-xs leading-relaxed">
                         La funcionalidad de listas de deseos y favoritos estará disponible en una fase posterior. Actualmente la plataforma no muestra datos ficticios.
                       </p>
                     </div>
@@ -1460,7 +1399,7 @@ export default function Home() {
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-6">
               <div>
-                <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
                   <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
@@ -1475,7 +1414,7 @@ export default function Home() {
                     Servidor conectado
                   </span>
                 ) : (
-                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 text-xs text-amber-800 dark:text-amber-300 font-bold">
+                  <span className="font-doto uppercase tracking-wider inline-flex items-center gap-1.5 rounded-md border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/80 px-2.5 py-1 text-xs text-amber-800 text-amber-600 font-bold">
                     <span className="h-2 w-2 rounded-full bg-amber-500"></span>
                     Modo local
                   </span>
@@ -1516,7 +1455,7 @@ export default function Home() {
             {cargandoApi ? (
               <div className="flex flex-col items-center justify-center py-20" aria-live="polite" aria-busy="true">
                 <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-700" aria-hidden="true"></div>
-                <p className="mt-4 text-sm text-slate-600 dark:text-slate-400 font-doto uppercase tracking-wider">Cargando catálogo de dispositivos...</p>
+                <p className="mt-4 text-sm text-slate-600 text-slate-500 font-doto uppercase tracking-wider">Cargando catálogo de dispositivos...</p>
               </div>
             ) : productosBackendFiltrados.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -1587,25 +1526,25 @@ export default function Home() {
       {/* ─────────────────────────────────────────────────────────────
           SECCIÓN 3: OPINIONES DE LA COMUNIDAD (PERSISTIDAS)
       ───────────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+      <section id="opiniones-comunidad" className="scroll-mt-24 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="seccion-opiniones">
+        <div className="rounded-2xl border border-slate-200 border-slate-200 bg-white bg-white p-6 shadow-sm">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                <span className="text-red-500">/</span> Opiniones de la comunidad ({resenas.length}).
+              <h3 id="seccion-opiniones" className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
+                <span aria-hidden="true" className="text-red-500">—</span> Opiniones de la comunidad ({resenas.length}).
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Comparte tu experiencia, dudas o recomendaciones sobre dispositivos con otros usuarios.
+              <p className="text-sm text-slate-600 text-slate-500 mt-1">
+                Lee experiencias y comparte opiniones sobre dispositivos con la comunidad.
               </p>
             </div>
             <button
               type="button"
               onClick={cargarResenas}
               disabled={cargandoResenas}
-              className="self-start sm:self-auto font-doto uppercase tracking-wider rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+              className="min-h-11 self-start rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:self-auto"
               title="Actualizar listado de opiniones desde el servidor"
             >
-              {cargandoResenas ? "Actualizando..." : "🔄 Actualizar"}
+              {cargandoResenas ? "Actualizando..." : "Actualizar opiniones"}
             </button>
           </div>
 
@@ -1618,13 +1557,13 @@ export default function Home() {
               value={filtroComentarios}
               onChange={(e) => setFiltroComentarios(e.target.value)}
               placeholder="Buscar por comentario, autor o producto..."
-              className="w-full sm:max-w-md rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+              className="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 transition-colors focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 sm:max-w-md"
             />
           </div>
 
           {/* Mensaje de invitación para usuarios anónimos */}
           {!usuarioSesion && (
-            <div className="mb-6 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 dark:bg-blue-950/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="mb-6 rounded-xl border border-blue-200 border-blue-200 bg-blue-50/80 dark:bg-blue-950/40 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <p className="text-blue-900 dark:text-blue-200">
                 <span className="font-bold">¿Tienes experiencia con algún dispositivo?</span> Inicia sesión con tu cuenta para publicar una opinión verificada.
               </p>
@@ -1643,7 +1582,7 @@ export default function Home() {
             <label htmlFor="input-comentario" className="sr-only">Escribe tu opinión</label>
             <div className="flex flex-col gap-3">
               {productosBackend.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 text-slate-500">
                   <label htmlFor="select-producto-comentario" className="font-semibold">
                     Dispositivo a reseñar:
                   </label>
@@ -1651,7 +1590,7 @@ export default function Home() {
                     id="select-producto-comentario"
                     value={idProductoEfectivo}
                     onChange={(e) => setIdProductoComentario(Number(e.target.value))}
-                    className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-blue-700 focus:outline-none"
+                    className="rounded-lg border border-slate-300 border-slate-200 bg-white bg-slate-50 px-3 py-1.5 text-xs text-slate-900 text-slate-900 focus:border-blue-700 focus:outline-none"
                   >
                     {productosBackend.map((p) => (
                       <option key={p.idProducto} value={p.idProducto}>
@@ -1672,12 +1611,12 @@ export default function Home() {
                       ? `Comentar como ${usuarioSesion.nombre}...`
                       : "Inicia sesión para publicar tu opinión aquí..."
                   }
-                  className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
+                  className="min-h-11 flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={enviandoComentario}
-                  className="font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-3 text-xs font-bold text-white transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+                  className="min-h-11 rounded-xl bg-blue-700 px-6 py-3 font-doto text-xs font-bold uppercase tracking-wider text-white shadow-2xs transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {enviandoComentario ? "Publicando..." : "Publicar opinión"}
                 </button>
@@ -1698,12 +1637,12 @@ export default function Home() {
           ) : resenasFiltradas.length > 0 ? (
             <div className="space-y-3">
               {resenasFiltradas.map((r) => (
-                <div key={r.idResena} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-4 text-xs transition-colors">
-                  <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
+                <div key={r.idResena} className="rounded-xl border border-slate-200 border-slate-200 bg-slate-50 bg-slate-50/60 p-4 text-xs transition-colors">
+                  <div className="flex items-center justify-between text-slate-500 text-slate-500 mb-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-blue-700 dark:text-blue-400">@{r.nombreUsuario || "Usuario"}</span>
                       {r.nombreProducto && (
-                        <span className="text-[10px] font-doto uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md">
+                        <span className="text-[10px] font-doto uppercase tracking-wider bg-slate-200 bg-slate-100 text-slate-700 text-slate-600 px-2 py-0.5 rounded-md">
                           {r.nombreProducto}
                         </span>
                       )}
@@ -1712,12 +1651,12 @@ export default function Home() {
                       {new Date(r.fechaCreacion).toLocaleDateString("es-CO")}
                     </span>
                   </div>
-                  <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed">{r.comentario}</p>
+                  <p className="text-slate-700 text-slate-700 text-sm leading-relaxed">{r.comentario}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center text-xs text-slate-500 font-mono">
+            <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-8 text-center text-xs text-slate-500 font-mono">
               {filtroComentarios.trim()
                 ? `No se encontraron opiniones que coincidan con "${filtroComentarios}".`
                 : "Aún no hay opiniones registradas. ¡Sé el primero en compartir tu experiencia!"}
@@ -1766,7 +1705,7 @@ export default function Home() {
       />
 
       {/* PIE DE PÁGINA */}
-      <footer className="border-t border-slate-200/70 dark:border-slate-800/70 bg-white/70 dark:bg-slate-950/70 backdrop-blur-md py-8 px-4 text-xs text-slate-500 dark:text-slate-400 text-center transition-colors">
+      <footer className="border-t border-slate-200/70 border-slate-200/70 bg-white/70 bg-slate-50/70 backdrop-blur-md py-8 px-4 text-xs text-slate-500 text-slate-500 text-center transition-colors">
         <p>© 2026 TecReview - Plataforma de Reseñas y Especificaciones Técnicas</p>
       </footer>
     </div>

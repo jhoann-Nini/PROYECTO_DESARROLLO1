@@ -930,10 +930,10 @@ export default function Home() {
       </nav>
 
       {/* PORTADA REDISEÑADA — composición fiel al prototipo */}
-      <section className="relative overflow-hidden border-b border-blue-100 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <section className="relative overflow-hidden border-b border-blue-950/20 bg-gradient-to-br from-[#0c2347] via-[#174b91] to-[#245fbd] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/35 blur-3xl" />
-          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
+          <div className="absolute -right-24 -top-16 h-80 w-80 rounded-full bg-blue-300/20 blur-3xl" />
+          <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-sky-300/15 blur-3xl" />
         </div>
         <div className="relative mx-auto max-w-7xl">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
@@ -957,7 +957,7 @@ export default function Home() {
                   <input id="buscador-principal" type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="¿Qué dispositivo estás buscando?" aria-label="Buscar dispositivos por marca, modelo o características" className="w-full rounded-xl border border-transparent bg-white py-4 pl-12 pr-20 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" />
                   {busqueda && <button type="button" onClick={() => setBusqueda("")} aria-label="Borrar búsqueda" className="absolute right-4 text-xs font-semibold text-blue-700 hover:text-blue-900">Limpiar</button>}
                 </div>
-                <p className="mt-2 px-2 text-xs text-blue-100">Busca por marca, modelo o categoría.</p>
+                <p className="mt-2 px-2 text-xs text-slate-500">Busca por marca, modelo o categoría.</p>
               </div>
               <div className="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4 shadow-md backdrop-blur sm:p-5">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">

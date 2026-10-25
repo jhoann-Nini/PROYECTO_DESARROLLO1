@@ -1049,11 +1049,101 @@ export default function Home() {
                   <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-2">
                     {oferta.imagen?.trim() ? <img src={oferta.imagen} alt={`Imagen de ${oferta.nombre}`} className="h-full w-full object-contain" /> : <ProductImagePlaceholder categoria={oferta.idCategoria} nombre={oferta.nombre} tamano="md" />}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-2 text-sm font-bold text-slate-800 group-hover:text-blue-700">{oferta.nombre}</p>
-                    <p className="mt-1 truncate text-xs text-slate-500">{oferta.nombreEstablecimiento}</p>
-                    <p className="mt-2 text-base font-extrabold text-blue-700">{formatearCOP(oferta.precioActual)}</p>
-                    {oferta.porcentajeDescuento > 0 && <span className="mt-1 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">-{Math.round(oferta.porcentajeDescuento)}%</span>}
+                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
+                    En promoción ({ofertasFiltradas.length})
+                  </span>
+                </div>
+
+                {/* Lista de ofertas */}
+                <div className="space-y-3 flex-1">
+                  {cargandoOfertas ? (
+                    <div className="py-12 flex flex-col items-center justify-center text-center">
+                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
+                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
+                    </div>
+                  ) : errorOfertas ? (
+                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
+                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
+                      <button
+                        type="button"
+                        onClick={cargarOfertas}
+                        aria-label="Reintentar ofertas"
+                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
+                      >
+                        Reintentar ofertas
+                      </button>
+                    </div>
+                  ) : ofertasFiltradas.length > 0 ? (
+                    (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
+                      <div
+                        key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
+                        onClick={() => verFichaRanking(oferta)}
+                        className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
+                      >
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
+                          {oferta.imagen && oferta.imagen.trim().length > 0 ? (
+                            <img
+                              src={oferta.imagen}
+                              alt={`Imagen de ${oferta.nombre}`}
+                              className="h-full w-full object-contain"
+                            />
+                          ) : (
+                            <ProductImagePlaceholder
+                              categoria={oferta.idCategoria}
+                              nombre={oferta.nombre}
+                              tamano="sm"
+                            />
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
+                            {oferta.nombre}
+                          </p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                            {oferta.nombreEstablecimiento}
+                            {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
+                          </p>
+                          {oferta.ahorroMonetario > 0 && (
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
+                              Ahorras: {formatearCOP(oferta.ahorroMonetario)}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          {oferta.porcentajeDescuento > 0 && (
+                            <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
+                              -{Math.round(oferta.porcentajeDescuento)}%
+                            </span>
+                          )}
+                          <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
+                            {formatearCOP(oferta.precioActual)}
+                          </div>
+                          {oferta.precioReferencia && (
+                            <div className="text-[10px] text-slate-400 line-through">
+                              {formatearCOP(oferta.precioReferencia)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
+                      No hay ofertas coincidentes con este filtro.
+                    </div>
+                  )}
+                </div>
+
+                {ofertasFiltradas.length > 3 && (
+                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
+                      className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
+                    >
+                      {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
+                    </button>
                   </div>
                 </button>
               ))}
@@ -1344,13 +1434,13 @@ export default function Home() {
       ───────────────────────────────────────────────────────────── */}
       {seccionActiva === "catalogo" && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="rounded-2xl border border-slate-200 border-slate-200 bg-white bg-white p-6 shadow-sm">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 border-slate-200 mb-6">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800 mb-6">
               <div>
                 <h3 className="text-lg sm:text-xl font-black font-doto uppercase tracking-wider text-slate-900 text-slate-900 flex items-center gap-2">
                   <span className="text-red-500">/</span> Catálogo general de dispositivos.
                 </h3>
-                <p className="text-xs text-slate-500 text-slate-500 mt-0.5 font-mono">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
                   {"//"} {totalProductosVerificados} productos verificados en la plataforma • {productosBackendFiltrados.length} mostrado{productosBackendFiltrados.length === 1 ? "" : "s"}
                 </p>
               </div>
@@ -1371,13 +1461,13 @@ export default function Home() {
             </div>
 
             {/* Barra informativa de presupuesto y selector explícito */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 border-slate-200/80 text-xs font-mono">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-100 dark:border-slate-800/80 text-xs font-mono">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-slate-500 text-slate-500">Presupuesto activo:</span>
+                <span className="text-slate-500 dark:text-slate-400">Presupuesto activo:</span>
                 <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 px-2 py-0.5 font-bold text-blue-700 dark:text-blue-300 font-sans">
                   Hasta {formatearCOP(presupuestoMax)}
                 </span>
-                <span className="text-slate-400 text-slate-500">
+                <span className="text-slate-400 dark:text-slate-500">
                   ({totalEnPresupuesto} de {totalProductosVerificados} dentro del presupuesto)
                 </span>
               </div>
@@ -1389,7 +1479,7 @@ export default function Home() {
                   className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold font-doto uppercase tracking-wider transition-colors cursor-pointer border ${
                     filtrarSoloEnPresupuesto
                       ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
-                      : "bg-white bg-slate-100 text-slate-700 text-slate-600 border-slate-300 border-slate-200 hover:border-slate-400"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-slate-400"
                   }`}
                   aria-pressed={filtrarSoloEnPresupuesto}
                   title="Alternar entre mostrar todo el catálogo o filtrar exclusivamente por presupuesto"
@@ -1417,53 +1507,53 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center sm:px-8" role="status" aria-live="polite">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-700">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="10.8" cy="10.8" r="6.8" /><path strokeLinecap="round" d="m16 16 4.5 4.5" /></svg>
-                </div>
+              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center text-sm font-mono">
                 {busqueda.trim() ? (
                   <div className="space-y-3">
-                    <h3 className="text-base font-semibold text-slate-900">
-                      No encontramos resultados para &ldquo;{busqueda}&rdquo;
-                    </h3>
-                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
-                      Prueba con otro nombre, marca o modelo. También puedes borrar la búsqueda para volver a ver el catálogo.
+                    <p className="font-bold text-slate-800 dark:text-slate-200 text-base">
+                      No se encontraron productos para &ldquo;{busqueda}&rdquo;.
                     </p>
-                    <button type="button" onClick={() => setBusqueda("")} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                      No hay coincidencias con ese nombre o modelo en el catálogo. Intenta con otros términos como marca (Samsung, Asus, Sony...) o tipo de dispositivo.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setBusqueda("")}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
                       Limpiar búsqueda
                     </button>
                   </div>
                 ) : tipoDispositivo !== "todos" ? (
                   <div className="space-y-3">
-                    <h3 className="text-base font-semibold text-slate-900">
-                      No hay dispositivos en esta categoría por ahora
-                    </h3>
-                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
-                      Puedes explorar el catálogo completo para descubrir otros dispositivos.
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      No hay dispositivos disponibles en la categoría &ldquo;{tipoDispositivo}&rdquo;.
                     </p>
-                    <button type="button" onClick={() => setTipoDispositivo("todos")} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
+                    <button
+                      type="button"
+                      onClick={() => setTipoDispositivo("todos")}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
                       Ver todas las categorías
                     </button>
                   </div>
                 ) : filtrarSoloEnPresupuesto ? (
                   <div className="space-y-3">
-                    <h3 className="text-base font-semibold text-slate-900">
-                      No encontramos dispositivos dentro de tu presupuesto
-                    </h3>
-                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
-                      Tu límite actual es {formatearCOP(presupuestoMax)}. Puedes ampliar el presupuesto o consultar todos los productos.
+                    <p className="font-bold text-slate-800 dark:text-slate-200">
+                      No hay productos registrados dentro del presupuesto de {formatearCOP(presupuestoMax)}.
                     </p>
-                    <button type="button" onClick={() => setFiltrarSoloEnPresupuesto(false)} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
+                    <button
+                      type="button"
+                      onClick={() => setFiltrarSoloEnPresupuesto(false)}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
+                    >
                       Mostrar todos los productos
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <h3 className="text-base font-semibold text-slate-900">El catálogo está vacío por ahora</h3>
-                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
-                      No hay productos disponibles para mostrar en este momento. Vuelve a intentarlo más tarde.
-                    </p>
-                  </div>
+                  <p className="text-slate-500 dark:text-slate-400">
+                    No hay productos registrados en el catálogo en este momento.
+                  </p>
                 )}
               </div>
             )}

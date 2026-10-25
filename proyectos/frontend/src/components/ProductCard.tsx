@@ -32,16 +32,27 @@ export default function ProductCard({
           : producto.precioReferencia) <= limitePresupuestoCOP
       : null;
 
+  const cumplePresupuesto =
+    limitePresupuestoCOP !== undefined &&
+    limitePresupuestoCOP !== null &&
+    producto.precioReferencia !== null &&
+    producto.precioReferencia !== undefined
+      ? (producto.precioReferencia < 10000
+          ? producto.precioReferencia * 4000
+          : producto.precioReferencia) <= limitePresupuestoCOP
+      : null;
+
   return (
     <article
       onClick={() => onVerDetalle?.(producto)}
       className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-950/10 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2"
     >
-      <div className="relative flex h-48 items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-5 sm:h-52">
+      {/* Contenedor de Fotografía */}
+      <div className="relative h-48 w-full overflow-hidden bg-slate-50 dark:bg-[#0a0e17] p-4 flex items-center justify-center border-b border-slate-100 dark:border-slate-800/80">
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
-            alt={`Fotografía de ${producto.nombre}`}
+            alt={`Fotografía oficial de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
@@ -54,9 +65,11 @@ export default function ProductCard({
             tamano="md"
           />
         )}
-        <div className="absolute left-3 top-3 flex max-w-[calc(100%-5.5rem)] flex-wrap gap-1.5">
-          <span className="rounded-full border border-slate-200 bg-white/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-slate-700 shadow-sm backdrop-blur">
-            {producto.nombreCategoria || `Categoría ${producto.idCategoria}`}
+
+        {/* Etiquetas informativas con estilo técnico */}
+        <div className="absolute top-3 left-3 flex gap-1.5 text-xs">
+          <span className="rounded-md bg-white/95 dark:bg-[#111827]/90 px-2 py-0.5 text-[11px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 shadow-2xs font-doto uppercase tracking-wider">
+            {producto.nombreCategoria || `CAT ${producto.idCategoria}`}
           </span>
           <span className="rounded-full border border-blue-100 bg-blue-50/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-blue-800">
             {producto.nombreMarca || `Marca ${producto.idMarca}`}
@@ -76,24 +89,34 @@ export default function ProductCard({
           {producto.descripcion || "Consulta las características y especificaciones técnicas de este dispositivo."}
         </p>
 
-        <div className="mt-4 border-t border-slate-100 pt-4">
-          <div className="flex min-h-12 items-end justify-between gap-2">
-            <div>
-              <p className="text-xs font-medium text-slate-500">
-                Precio de referencia
-              </p>
-              <p className="mt-1 text-xl font-extrabold tracking-tight text-slate-950">
-                {precioFormateado}
-              </p>
-            </div>
-            {cumplePresupuesto !== null && (
-              <span
-                className={`mb-1 rounded-full px-2 py-1 text-[10px] font-bold ${cumplePresupuesto ? "bg-emerald-100 text-emerald-800 " : "bg-amber-100 text-amber-800 "}`}
-                title={cumplePresupuesto ? "Dentro del presupuesto máximo" : "Supera el presupuesto máximo"}
-              >
-                {cumplePresupuesto ? "✓ En presupuesto" : "Sobre presupuesto"}
+        {/* Sección de precio y acción principal */}
+        <div className="mt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/80 pt-3.5">
+          <div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 block uppercase tracking-wider">
+                Precio estimado
               </span>
-            )}
+              {cumplePresupuesto !== null && (
+                cumplePresupuesto ? (
+                  <span
+                    className="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-950/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 font-mono tracking-tight"
+                    title="Dentro del presupuesto máximo"
+                  >
+                    ✓ En presupuesto
+                  </span>
+                ) : (
+                  <span
+                    className="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-950/80 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 font-mono tracking-tight"
+                    title="Supera el presupuesto máximo"
+                  >
+                    Supera presupuesto
+                  </span>
+                )
+              )}
+            </div>
+            <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight font-sans">
+              {precioFormateado}
+            </span>
           </div>
           <button
             type="button"

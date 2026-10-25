@@ -1060,7 +1060,7 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={manejarExportarCsv}
                       disabled={exportandoCsv}
-                      className="rounded-lg border border-slate-700 bg-slate-100/80 hover:bg-slate-700 hover:text-slate-900 px-3.5 py-1.5 text-xs font-bold text-slate-300 uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 hover:text-white px-3.5 py-1.5 text-xs font-bold text-slate-300 uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Exportar catálogo de productos a CSV"
                     >
                       {exportandoCsv ? (
@@ -1078,7 +1078,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                      className="rounded-lg bg-red-600 hover:bg-red-500 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider font-doto transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                     >
                       <span>+</span> Nuevo Producto
                     </button>

@@ -329,22 +329,22 @@ export default function FichaTecnicaModal({
       aria-modal="true"
       aria-labelledby="modal-titulo-dispositivo"
     >
-      <div className="relative flex flex-col w-full max-w-4xl lg:max-w-5xl max-h-[92vh] overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl text-slate-900 dark:text-slate-100">
+      <div className="relative flex flex-col w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-3xl border border-blue-100 bg-white shadow-2xl shadow-slate-950/25 text-slate-900">
         
         {/* Cabecera accesible superior */}
-        <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
+        <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b border-slate-200 bg-white shrink-0">
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-md">
               FICHA TÉCNICA
             </span>
 
-            <span className="text-xs font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2.5 py-1 rounded-md flex items-center gap-1.5 font-bold shadow-2xs">
+            <span className="text-xs font-doto uppercase tracking-wider text-slate-700 text-slate-600 bg-white bg-white border border-slate-200 border-slate-200 px-2.5 py-1 rounded-md flex items-center gap-1.5 font-bold shadow-2xs">
               <span aria-hidden="true">{ficha.categoriaIcono}</span>
               <span>{ficha.categoriaEtiqueta}</span>
             </span>
 
             {ranking !== null && (
-              <span className="font-doto hidden sm:inline-block text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 font-bold">
+              <span className="font-doto hidden sm:inline-block text-xs uppercase tracking-wider text-slate-600 text-slate-500 bg-slate-100 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 border-slate-200 font-bold">
                 RANKING #{ranking}
               </span>
             )}
@@ -352,7 +352,7 @@ export default function FichaTecnicaModal({
 
           <button
             onClick={onClose}
-            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
             aria-label="Cerrar ventana de especificaciones técnicas (Escape)"
           >
             ✕ CERRAR
@@ -410,11 +410,11 @@ export default function FichaTecnicaModal({
 
                 {/* Benchmark real (solo si está disponible) */}
                 {ficha.benchmark && (
-                  <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 flex items-center justify-between text-xs">
-                    <span className="text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider font-doto text-[11px]">
+                  <div className="mb-4 rounded-xl border border-slate-200 border-slate-200 bg-white bg-white p-3 flex items-center justify-between text-xs">
+                    <span className="text-slate-600 text-slate-500 font-semibold uppercase tracking-wider font-doto text-[11px]">
                       {ficha.benchmark.etiqueta}:
                     </span>
-                    <span className="text-slate-900 dark:text-white font-bold font-sans tracking-tight">
+                    <span className="text-slate-900 text-slate-900 font-bold font-sans tracking-tight">
                       {ficha.benchmark.valor}
                     </span>
                   </div>
@@ -425,15 +425,15 @@ export default function FichaTecnicaModal({
                   <div className="space-y-3 text-xs">
                     {ficha.metricas.map((metrica, idx) => (
                       <div key={idx}>
-                        <div className="flex justify-between text-slate-700 dark:text-slate-300 mb-1 font-medium">
+                        <div className="flex justify-between text-slate-700 text-slate-600 mb-1 font-medium">
                           <span>{metrica.nombre}</span>
-                          <span className="font-bold text-slate-900 dark:text-white font-sans">
+                          <span className="font-bold text-slate-900 text-slate-900 font-sans">
                             {metrica.puntos.toFixed(1)}
                           </span>
                         </div>
-                        <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-2 w-full bg-slate-200 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-blue-700 dark:bg-blue-500 rounded-full transition-all duration-300"
+                            className="h-full bg-blue-700 bg-blue-600 rounded-full transition-all duration-300"
                             style={{ width: `${Math.min(metrica.puntos * 10, 100)}%` }}
                           ></div>
                         </div>
@@ -501,7 +501,7 @@ export default function FichaTecnicaModal({
 
                 {!usuarioSesion ? (
                   <div className="text-center py-2">
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    <p className="text-xs text-slate-600 text-slate-500 mb-3">
                       Inicia sesión para calificar este dispositivo con estrellas.
                     </p>
                     {onPedirLogin && (
@@ -547,7 +547,7 @@ export default function FichaTecnicaModal({
                     </div>
 
                     <div className="text-center">
-                      <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      <span className="text-xs text-slate-600 text-slate-500 font-medium">
                         {puntuacionSeleccionada > 0
                           ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
                           : "Selecciona de 1 a 5 estrellas"}
@@ -590,11 +590,11 @@ export default function FichaTecnicaModal({
                 </span>
                 <h2
                   id="modal-titulo-dispositivo"
-                  className="text-2xl sm:text-3xl font-black font-doto text-slate-900 dark:text-white mt-1 leading-tight uppercase tracking-wide"
+                  className="text-2xl sm:text-3xl font-black font-doto text-slate-900 text-slate-900 mt-1 leading-tight uppercase tracking-wide"
                 >
                   {ficha.nombre}
                 </h2>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed border-l-3 border-blue-700 dark:border-blue-500 pl-3">
+                <p className="mt-2 text-sm text-slate-600 text-slate-500 leading-relaxed border-l-3 border-blue-700 dark:border-blue-500 pl-3">
                   {ficha.resumen}
                 </p>
               </div>
@@ -824,14 +824,14 @@ export default function FichaTecnicaModal({
                 </div>
               ) : (
                 /* Estado vacío cuando el producto no tiene especificaciones registradas */
-                <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center bg-slate-50/50 dark:bg-slate-950/40 my-auto">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mb-3">
+                <div className="rounded-2xl border border-dashed border-slate-300 border-slate-200 p-8 text-center bg-slate-50/50 bg-slate-50/40 my-auto">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 bg-slate-100 flex items-center justify-center text-2xl mb-3">
                     📋
                   </div>
-                  <h3 className="text-sm font-bold font-doto uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  <h3 className="text-sm font-bold font-doto uppercase tracking-wider text-slate-800 text-slate-700">
                     Sin especificaciones técnicas registradas
                   </h3>
-                  <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  <p className="mt-2 text-xs text-slate-600 text-slate-500 max-w-md mx-auto leading-relaxed">
                     Este producto no dispone de características técnicas detalladas registradas en el catálogo. Podrán ser asignadas a través del módulo de administración en una próxima actualización.
                   </p>
                   <button
@@ -849,10 +849,10 @@ export default function FichaTecnicaModal({
         </div>
 
         {/* Pie de modal */}
-        <div className="flex justify-end px-5 sm:px-7 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
+        <div className="flex justify-end px-5 sm:px-7 py-3.5 border-t border-slate-200 border-slate-200 bg-slate-50 bg-slate-50 shrink-0">
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="rounded-xl border border-slate-300 border-slate-200 bg-white bg-slate-100 px-5 py-2 text-xs font-semibold text-slate-700 text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
           >
             Cerrar ficha técnica
           </button>

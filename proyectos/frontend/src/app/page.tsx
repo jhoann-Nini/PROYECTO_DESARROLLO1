@@ -1033,7 +1033,7 @@ export default function Home() {
         </div>
       </section>
 
-      {ofertasFiltradas.length > 0 && (
+      {(cargandoOfertas || errorOfertas || ofertasFiltradas.length > 0) && (
         <section aria-labelledby="ofertas-recomendadas" className="border-b border-blue-100 bg-white px-4 py-8 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="mb-5 flex items-end justify-between gap-3">
@@ -1041,113 +1041,76 @@ export default function Home() {
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-700">Oportunidades para ti</p>
                 <h2 id="ofertas-recomendadas" className="mt-1 text-xl font-extrabold tracking-tight text-[#10213f] sm:text-2xl">Ofertas destacadas</h2>
               </div>
-              <span className="text-xs font-medium text-slate-500">{ofertasFiltradas.length} disponibles</span>
+              {ofertasFiltradas.length > 0 && (
+                <span className="text-xs font-medium text-slate-500">{ofertasFiltradas.length} disponibles</span>
+              )}
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {ofertasFiltradas.slice(0, 3).map((oferta) => (
-                <button key={`oferta-card-${oferta.idProducto}-${oferta.idEstablecimiento}`} type="button" onClick={() => verFichaRanking(oferta)} className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
-                  <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-2">
-                    {oferta.imagen?.trim() ? <img src={oferta.imagen} alt={`Imagen de ${oferta.nombre}`} className="h-full w-full object-contain" /> : <ProductImagePlaceholder categoria={oferta.idCategoria} nombre={oferta.nombre} tamano="md" />}
-                  </div>
-                  <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
-                    En promoción ({ofertasFiltradas.length})
-                  </span>
-                </div>
 
-                {/* Lista de ofertas */}
-                <div className="space-y-3 flex-1">
-                  {cargandoOfertas ? (
-                    <div className="py-12 flex flex-col items-center justify-center text-center">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"></div>
-                      <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
-                    </div>
-                  ) : errorOfertas ? (
-                    <div className="py-6 px-4 text-center rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 text-xs">
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠️ {errorOfertas}</p>
-                      <button
-                        type="button"
-                        onClick={cargarOfertas}
-                        aria-label="Reintentar ofertas"
-                        className="mt-2 text-xs font-bold text-blue-700 dark:text-blue-400 underline hover:no-underline cursor-pointer"
-                      >
-                        Reintentar ofertas
-                      </button>
-                    </div>
-                  ) : ofertasFiltradas.length > 0 ? (
-                    (mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
-                      <div
-                        key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
-                        onClick={() => verFichaRanking(oferta)}
-                        className="group flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 p-3 transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-2xs cursor-pointer"
-                      >
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 flex items-center justify-center">
-                          {oferta.imagen && oferta.imagen.trim().length > 0 ? (
-                            <img
-                              src={oferta.imagen}
-                              alt={`Imagen de ${oferta.nombre}`}
-                              className="h-full w-full object-contain"
-                            />
-                          ) : (
-                            <ProductImagePlaceholder
-                              categoria={oferta.idCategoria}
-                              nombre={oferta.nombre}
-                              tamano="sm"
-                            />
-                          )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
-                            {oferta.nombre}
-                          </p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                            {oferta.nombreEstablecimiento}
-                            {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
-                          </p>
-                          {oferta.ahorroMonetario > 0 && (
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">
-                              Ahorras: {formatearCOP(oferta.ahorroMonetario)}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          {oferta.porcentajeDescuento > 0 && (
-                            <span className="inline-block text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950 px-1.5 py-0.2 rounded">
-                              -{Math.round(oferta.porcentajeDescuento)}%
-                            </span>
-                          )}
-                          <div className="text-xs font-bold text-blue-700 dark:text-blue-400">
-                            {formatearCOP(oferta.precioActual)}
-                          </div>
-                          {oferta.precioReferencia && (
-                            <div className="text-[10px] text-slate-400 line-through">
-                              {formatearCOP(oferta.precioReferencia)}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-8 text-center text-xs text-slate-500 font-mono">
-                      No hay ofertas coincidentes con este filtro.
-                    </div>
-                  )}
-                </div>
-
-                {ofertasFiltradas.length > 3 && (
-                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setMostrarTodasOfertas(!mostrarTodasOfertas)}
-                      className="text-xs font-semibold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
-                    >
-                      {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
-                    </button>
-                  </div>
+            {cargandoOfertas ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center" role="status" aria-live="polite">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700" aria-hidden="true" />
+                <p className="mt-3 text-xs text-slate-500 font-mono">Cargando ofertas reales...</p>
+              </div>
+            ) : errorOfertas ? (
+              <div className="rounded-xl border border-red-200 bg-red-50/50 px-4 py-6 text-center text-xs">
+                <p className="font-medium text-red-600">⚠️ {errorOfertas}</p>
+                <button type="button" onClick={cargarOfertas} className="mt-2 cursor-pointer text-xs font-bold text-blue-700 underline hover:no-underline">
+                  Reintentar ofertas
                 </button>
-              ))}
-            </div>
+              </div>
+            ) : ofertasFiltradas.length > 0 ? (
+              <div className="space-y-3">
+                {(mostrarTodasOfertas ? ofertasFiltradas : ofertasFiltradas.slice(0, 3)).map((oferta) => (
+                  <button
+                    key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
+                    type="button"
+                    onClick={() => verFichaRanking(oferta)}
+                    className="group flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-left transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  >
+                    <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white p-1">
+                      {oferta.imagen?.trim() ? (
+                        <img src={oferta.imagen} alt={`Imagen de ${oferta.nombre}`} className="h-full w-full object-contain" />
+                      ) : (
+                        <ProductImagePlaceholder categoria={oferta.idCategoria} nombre={oferta.nombre} tamano="sm" />
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-700">{oferta.nombre}</span>
+                      <span className="block truncate text-[11px] text-slate-500">
+                        {oferta.nombreEstablecimiento}{oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
+                      </span>
+                      {oferta.ahorroMonetario > 0 && (
+                        <span className="block text-[10px] font-mono text-emerald-600">Ahorras: {formatearCOP(oferta.ahorroMonetario)}</span>
+                      )}
+                    </span>
+                    <span className="shrink-0 text-right">
+                      {oferta.porcentajeDescuento > 0 && (
+                        <span className="mb-1 inline-block rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">-{Math.round(oferta.porcentajeDescuento)}%</span>
+                      )}
+                      <span className="block text-xs font-bold text-blue-700">{formatearCOP(oferta.precioActual)}</span>
+                      {oferta.precioReferencia && (
+                        <span className="block text-[10px] text-slate-400 line-through">{formatearCOP(oferta.precioReferencia)}</span>
+                      )}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-xs font-mono text-slate-500">No hay ofertas coincidentes con este filtro.</div>
+            )}
+
+            {ofertasFiltradas.length > 3 && !cargandoOfertas && !errorOfertas && (
+              <div className="mt-4 border-t border-slate-200 pt-3 text-center">
+                <button
+                  type="button"
+                  onClick={() => setMostrarTodasOfertas((prev) => !prev)}
+                  className="cursor-pointer text-xs font-semibold text-blue-700 hover:underline"
+                  aria-expanded={mostrarTodasOfertas}
+                >
+                  {mostrarTodasOfertas ? "Ocultar ofertas adicionales" : "Ver todas las ofertas disponibles"}
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}

@@ -1422,53 +1422,53 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-slate-300 border-slate-200 p-12 text-center text-sm font-mono">
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center sm:px-8" role="status" aria-live="polite">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+                  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7"><circle cx="10.8" cy="10.8" r="6.8" /><path strokeLinecap="round" d="m16 16 4.5 4.5" /></svg>
+                </div>
                 {busqueda.trim() ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 text-slate-700 text-base">
-                      No se encontraron productos para &ldquo;{busqueda}&rdquo;.
+                    <h3 className="text-base font-semibold text-slate-900">
+                      No encontramos resultados para &ldquo;{busqueda}&rdquo;
+                    </h3>
+                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
+                      Prueba con otro nombre, marca o modelo. También puedes borrar la búsqueda para volver a ver el catálogo.
                     </p>
-                    <p className="text-xs text-slate-500 text-slate-500 max-w-md mx-auto">
-                      No hay coincidencias con ese nombre o modelo en el catálogo. Intenta con otros términos como marca (Samsung, Asus, Sony...) o tipo de dispositivo.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setBusqueda("")}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
-                    >
+                    <button type="button" onClick={() => setBusqueda("")} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
                       Limpiar búsqueda
                     </button>
                   </div>
                 ) : tipoDispositivo !== "todos" ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 text-slate-700">
-                      No hay dispositivos disponibles en la categoría &ldquo;{tipoDispositivo}&rdquo;.
+                    <h3 className="text-base font-semibold text-slate-900">
+                      No hay dispositivos en esta categoría por ahora
+                    </h3>
+                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
+                      Puedes explorar el catálogo completo para descubrir otros dispositivos.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setTipoDispositivo("todos")}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 border-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
-                    >
+                    <button type="button" onClick={() => setTipoDispositivo("todos")} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
                       Ver todas las categorías
                     </button>
                   </div>
                 ) : filtrarSoloEnPresupuesto ? (
                   <div className="space-y-3">
-                    <p className="font-bold text-slate-800 text-slate-700">
-                      No hay productos registrados dentro del presupuesto de {formatearCOP(presupuestoMax)}.
+                    <h3 className="text-base font-semibold text-slate-900">
+                      No encontramos dispositivos dentro de tu presupuesto
+                    </h3>
+                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
+                      Tu límite actual es {formatearCOP(presupuestoMax)}. Puedes ampliar el presupuesto o consultar todos los productos.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setFiltrarSoloEnPresupuesto(false)}
-                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 text-xs font-bold font-doto uppercase tracking-wider cursor-pointer transition-colors"
-                    >
+                    <button type="button" onClick={() => setFiltrarSoloEnPresupuesto(false)} className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2">
                       Mostrar todos los productos
                     </button>
                   </div>
                 ) : (
-                  <p className="text-slate-500 text-slate-500">
-                    No hay productos registrados en el catálogo en este momento.
-                  </p>
+                  <div className="space-y-2">
+                    <h3 className="text-base font-semibold text-slate-900">El catálogo está vacío por ahora</h3>
+                    <p className="mx-auto max-w-md text-sm leading-6 text-slate-600">
+                      No hay productos disponibles para mostrar en este momento. Vuelve a intentarlo más tarde.
+                    </p>
+                  </div>
                 )}
               </div>
             )}

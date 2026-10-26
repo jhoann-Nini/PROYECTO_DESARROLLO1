@@ -1,6 +1,6 @@
 # TecnoReview — Especificación de rediseño
 
-**Estado:** Bloque A (fundaciones) en ejecución.
+**Estado:** Bloque A completado; Bloque B (shell y catálogo) pendiente.
 **Marca:** TecnoReview reemplaza a TecReview.
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecnoreview-redesign` (creada desde `adrian`).
@@ -147,17 +147,17 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ## 8. Criterios de aceptación del Bloque A
 
-- [ ] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
-- [ ] `.theme-tecnoreview` activa fondo claro, texto oscuro y `color-scheme: light`.
-- [ ] `normalizarPrecioCOP` y `formatearCOP` usan la misma regla.
-- [ ] `crearProductoViewModel` mapea identidad, categoría, marca, precio,
+- [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
+- [x] `.theme-tecnoreview` activa fondo claro, texto oscuro y `color-scheme: light`.
+- [x] `normalizarPrecioCOP` y `formatearCOP` usan la misma regla.
+- [x] `crearProductoViewModel` mapea identidad, categoría, marca, precio,
   disponibilidad, imagen, specs, rating y características.
-- [ ] Los datos ausentes quedan en `null` o `0`; no se inventan.
-- [ ] `prepararCatalogo`, `filtrarProductos`, `paginar`, `construirChips` y
+- [x] Los datos ausentes quedan en `null` o `0`; no se inventan.
+- [x] `prepararCatalogo`, `filtrarProductos`, `paginar`, `construirChips` y
   `hayFiltrosActivos` tienen pruebas unitarias.
-- [ ] `npm test` pasa completo.
-- [ ] `npm run build` pasa.
-- [ ] Ninguna página existente cambia de comportamiento en este bloque.
+- [x] `npm test` pasa completo.
+- [x] `npm run build` pasa.
+- [x] Ninguna página existente cambia de comportamiento en este bloque.
 
 ---
 
@@ -171,3 +171,13 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 6. Estados hover/error: variantes derivadas de la paleta, previa aprobación.
 7. Filtros de “alta cámara” y “alto rendimiento”: heurísticas documentadas y
    ajustables con datos reales.
+
+---
+
+## 10. Estado de verificación
+
+- **2026-10-25:** Bloque A completado en `feat/tecnoreview-redesign`.
+- `npm test`: 232 pruebas pasando en 18 archivos.
+- `npm run build`: exitoso con Next.js 16.3.5 y Turbopack.
+- Sin cambios en backend, `.env` ni en el comportamiento de las páginas
+  existentes.

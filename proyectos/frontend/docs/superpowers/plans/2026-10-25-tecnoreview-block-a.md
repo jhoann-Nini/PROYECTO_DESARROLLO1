@@ -1,6 +1,6 @@
 # TecnoReview Bloque A — Fundaciones Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Agregar los tokens del tema claro de TecnoReview y la capa de datos pura (normalización de COP, view model de producto, filtros y paginación) sin cambiar el comportamiento visual existente.
 
@@ -55,7 +55,7 @@
 **Interfaces:**
 - Produces: tokens `--color-brand-blue`, `--color-ink`, `--color-canvas`, `--color-hairline`, `--color-positive`, `--color-star`, `--color-paper`, `--color-subtle`, sombras `--shadow-paper`, `--shadow-paper-hover` y la clase `.theme-tecnoreview`.
 
-- [ ] **Step 1: Agregar los tokens dentro de `@theme`**
+- [x] **Step 1: Agregar los tokens dentro de `@theme`**
 
 Valores exactos:
 
@@ -72,7 +72,7 @@ Valores exactos:
 --shadow-paper-hover: 0 2px 4px rgba(15, 23, 42, 0.08), 0 16px 32px -16px rgba(15, 23, 42, 0.18);
 ```
 
-- [ ] **Step 2: Agregar la clase de alcance**
+- [x] **Step 2: Agregar la clase de alcance**
 
 ```css
 .theme-tecnoreview {
@@ -82,12 +82,12 @@ Valores exactos:
 }
 ```
 
-- [ ] **Step 3: Verificar que los valores sean exactos**
+- [x] **Step 3: Verificar que los valores sean exactos**
 
 Run: `rg -n "color-(brand-blue|ink|canvas|hairline|positive|star|paper|subtle)|shadow-paper|theme-tecnoreview" src/app/globals.css`
 Expected: aparecen los ocho tokens, las dos sombras y la clase, con los hex indicados.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/app/globals.css docs/tecnoreview-redesign.md docs/superpowers/plans/2026-10-25-tecnoreview-block-a.md
@@ -107,7 +107,7 @@ git commit -m "feat: add TecnoReview design tokens and foundation docs"
 - Produces: `TASA_CAMBIO_LEGADO: number`, `UMBRAL_PRECIO_COP: number`, `normalizarPrecioCOP(valor: number | null | undefined): number`.
 - Consumes: `formatearCOP` existente.
 
-- [ ] **Step 1: Escribir la prueba que falla**
+- [x] **Step 1: Escribir la prueba que falla**
 
 `src/data/precios.test.ts`:
 
@@ -142,12 +142,12 @@ describe("normalizarPrecioCOP", () => {
 });
 ```
 
-- [ ] **Step 2: Ejecutar la prueba y verificar el fallo**
+- [x] **Step 2: Ejecutar la prueba y verificar el fallo**
 
 Run: `npx vitest run src/data/precios.test.ts`
 Expected: FAIL porque `./precios` no existe.
 
-- [ ] **Step 3: Implementar `src/data/precios.ts`**
+- [x] **Step 3: Implementar `src/data/precios.ts`**
 
 ```ts
 export const TASA_CAMBIO_LEGADO = 4000;
@@ -165,7 +165,7 @@ export function normalizarPrecioCOP(
 }
 ```
 
-- [ ] **Step 4: Modificar `formatearCOP` para usar la regla compartida**
+- [x] **Step 4: Modificar `formatearCOP` para usar la regla compartida**
 
 Importar `normalizarPrecioCOP` desde `./precios` y reemplazar el cálculo interno:
 
@@ -175,12 +175,12 @@ const monto = normalizarPrecioCOP(valor);
 
 Mantener el retorno `"Consultar disponibilidad"` para `null`/`undefined`.
 
-- [ ] **Step 5: Ejecutar las pruebas y verificar que pasan**
+- [x] **Step 5: Ejecutar las pruebas y verificar que pasan**
 
 Run: `npx vitest run src/data/precios.test.ts src/data/specsHelper.test.ts`
 Expected: PASS en ambos archivos.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/data/precios.ts src/data/precios.test.ts src/data/specsHelper.ts
@@ -246,7 +246,7 @@ export function crearProductoViewModel(
 ): ProductoViewModel;
 ```
 
-- [ ] **Step 1: Escribir las pruebas que fallan**
+- [x] **Step 1: Escribir las pruebas que fallan**
 
 `src/data/productoViewModel.test.ts` debe cubrir, como mínimo:
 
@@ -272,12 +272,12 @@ Valores exactos que deben aparecer en las aserciones:
 - `rating: 5.5` → `rating: 5`; `rating: -1` → `rating: 0`.
 - `normalizarTexto("Móviles Cámara")` → `"moviles camara"`.
 
-- [ ] **Step 2: Ejecutar las pruebas y verificar el fallo**
+- [x] **Step 2: Ejecutar las pruebas y verificar el fallo**
 
 Run: `npx vitest run src/data/productoViewModel.test.ts`
 Expected: FAIL porque `./productoViewModel` no existe.
 
-- [ ] **Step 3: Implementar `src/data/productoViewModel.ts`**
+- [x] **Step 3: Implementar `src/data/productoViewModel.ts`**
 
 Reglas:
 
@@ -309,12 +309,12 @@ Reglas:
   - `gran-bateria`: `>= 5000 mAh` o `>= 12` horas.
 - `textoBusqueda`: concatenar nombre, descripción, marca, categoría, specs y valores string de `caracteristicas`, y normalizar.
 
-- [ ] **Step 4: Ejecutar las pruebas y verificar que pasan**
+- [x] **Step 4: Ejecutar las pruebas y verificar que pasan**
 
 Run: `npx vitest run src/data/productoViewModel.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/data/productoViewModel.ts src/data/productoViewModel.test.ts
@@ -393,7 +393,7 @@ export function hayFiltrosActivos(
 ): boolean;
 ```
 
-- [ ] **Step 1: Escribir las pruebas que fallan**
+- [x] **Step 1: Escribir las pruebas que fallan**
 
 `src/data/catalogo.test.ts` debe cubrir:
 
@@ -413,12 +413,12 @@ it("detecta si hay filtros activos comparando con el rango completo")
 
 Datos de prueba: al menos 5 view models con precios `1_000_000`, `2_000_000`, `3_000_000`, `0` y `4_000_000`; categorías `moviles`, `laptops`, `tablets`, `auriculares`; marcas `Samsung`, `Apple`, `Xiaomi`, `Sony`.
 
-- [ ] **Step 2: Ejecutar las pruebas y verificar el fallo**
+- [x] **Step 2: Ejecutar las pruebas y verificar el fallo**
 
 Run: `npx vitest run src/data/catalogo.test.ts`
 Expected: FAIL porque `./catalogo` no existe.
 
-- [ ] **Step 3: Implementar `src/data/catalogo.ts`**
+- [x] **Step 3: Implementar `src/data/catalogo.ts`**
 
 Reglas:
 
@@ -445,12 +445,12 @@ Reglas:
   - Característica: etiqueta oficial.
 - `hayFiltrosActivos`: verdadero si hay búsqueda, categorías, marcas, características o si `precioMin > rango.min` o `precioMax < rango.max`.
 
-- [ ] **Step 4: Ejecutar las pruebas y verificar que pasan**
+- [x] **Step 4: Ejecutar las pruebas y verificar que pasan**
 
 Run: `npx vitest run src/data/catalogo.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/data/catalogo.ts src/data/catalogo.test.ts
@@ -461,28 +461,39 @@ git commit -m "feat: add catalog filtering and pagination helpers"
 
 ### Task 5: Verificación completa
 
-- [ ] **Step 1: Ejecutar toda la suite**
+- [x] **Step 1: Ejecutar toda la suite**
 
 Run: `npm test`
 Expected: todos los tests pasan, incluidos los nuevos.
 
-- [ ] **Step 2: Ejecutar el build**
+- [x] **Step 2: Ejecutar el build**
 
 Run: `npm run build`
 Expected: build exitoso, sin errores de Tailwind ni TypeScript.
 
-- [ ] **Step 3: Revisar el diff**
+- [x] **Step 3: Revisar el diff**
 
 Run: `git status --short` y `git diff --stat`
 Expected: solo los archivos del Bloque A; sin cambios en backend, `.env` ni páginas existentes.
 
-- [ ] **Step 4: Actualizar el estado del plan**
+- [x] **Step 4: Actualizar el estado del plan**
 
 Marcar las tareas completadas y anotar cualquier desviación en este documento.
 
-- [ ] **Step 5: Commit final si queda algún ajuste**
+- [x] **Step 5: Commit final si queda algún ajuste**
 
 ```bash
 git add docs/superpowers/plans/2026-10-25-tecnoreview-block-a.md
 git commit -m "docs: mark TecnoReview block A progress"
 ```
+
+---
+
+## Estado de ejecución
+
+- **Fecha:** 2026-10-25
+- **Rama:** `feat/tecnoreview-redesign`
+- **Pruebas:** 232 pasando en 18 archivos.
+- **Build:** `npm run build` exitoso.
+- **Commits locales:** tokens y docs, normalización COP, view model, filtros de catálogo.
+- **Pendiente:** Bloque B (shell y catálogo).

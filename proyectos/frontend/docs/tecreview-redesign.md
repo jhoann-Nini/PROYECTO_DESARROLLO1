@@ -1,6 +1,6 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D y E completados; pendiente el Bloque F (reseñas, blog, favoritos, perfil y cierre visual).
+**Estado:** Bloques A, B, C, D, E y F completados; rediseño cerrado.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -59,6 +59,34 @@ necesita un tono derivado, se documenta y se aprueba antes de usarlo.
   para textos grandes o secundarios de bajo énfasis.
 - Tabs, sliders y bottom nav deben funcionar con teclado y tener etiquetas ARIA.
 
+### 2.5 Tema oscuro
+
+El tema oscuro es real, no una variante heredada. La preferencia se guarda en
+`localStorage` con la clave `tecreview:tema`; si no existe, se usa
+`prefers-color-scheme`. Un script `beforeInteractive` aplica `html.dark` antes
+de la hidratación para evitar el destello del tema incorrecto.
+
+| Token | Claro | Oscuro | Uso |
+|---|---|---|---|
+| `--color-canvas` | `#F3F4F6` | `#0F172A` | Fondo de página |
+| `--color-paper` | `#FFFFFF` | `#1E293B` | Cards, modales y header |
+| `--color-ink` | `#0F172A` | `#F3F4F6` | Texto principal |
+| `--color-subtle` | `#64748B` | `#CBD5E1` | Texto secundario |
+| `--color-hairline` | `#E5E7EB` | `#334155` | Bordes |
+| `--color-brand-blue` | `#2563EB` | `#60A5FA` | Enlaces, chips y focos |
+| `--color-brand-solid` | `#2563EB` | `#2563EB` | Botones con texto blanco |
+| `--color-inverse` | `#0F172A` | `#0F172A` | Overlays y bloques con texto blanco |
+| `--color-on-positive` | `#0F172A` | `#0F172A` | Texto sobre el verde positivo |
+
+`--color-brand-blue` se aclara en oscuro para conservar contraste AA sobre las
+superficies oscuras. `--color-brand-solid` se mantiene igual porque los botones
+sólidos siguen usando texto blanco. `--color-inverse` también es fijo: los
+overlays de modales y los bloques con texto blanco no deben invertirse en
+oscuro. El badge sólido verde usa `--color-on-positive` para conservar el texto
+oscuro en ambos temas. El toggle vive en el header, tiene `aria-label`,
+`aria-pressed` e iconos de sol/luna, y se sincroniza entre pestañas y con
+cambios del sistema mientras no haya una preferencia guardada.
+
 ---
 
 ## 3. Rutas
@@ -67,17 +95,21 @@ necesita un tono derivado, se documenta y se aprueba antes de usarlo.
 |---|---|---|
 | `/` | Home editorial | Implementada en Bloque C |
 | `/productos` | Catálogo con filtros | Implementada en Bloque B |
-| `/productos/[id]` | Detalle de producto | Implementada en Bloque D |
+| `/productos/[id]` | Detalle de producto | Implementada en Bloque D; 404 real en F3 |
 | `/comparador` | Comparador | Implementada en Bloque E |
-| `/resenas` | Reseñas de la comunidad | Pendiente, Bloque F |
-| `/blog` | Blog editorial | Pendiente, Bloque F |
-| `/favoritos` | Favoritos | Pendiente, Bloque F |
-| `/perfil` | Perfil de usuario | Pendiente, Bloque F |
+| `/resenas` | Reseñas de la comunidad | Implementada en F1 |
+| `/blog` | Blog editorial | Implementada en F1 |
+| `/blog/[slug]` | Artículo editorial | Implementada en F1 |
+| `/favoritos` | Favoritos | Implementada en F1 |
+| `/perfil` | Perfil de usuario | Implementada en F1 |
+| `/categorias/[slug]` | Categoría del catálogo | Implementada en B/D; migrada en F2 |
 | `/debug/productos` | Inspector de API actual | Implementada y preservada desde el Bloque B |
+| `not-found` | 404 global con shell | Implementada en F3 |
 
-El header enlaza a Inicio, Productos y Comparador; Reseñas y Blog siguen como
-“Próximamente”. El bottom nav móvil enlaza a Inicio, Catálogo y Comparador;
-Perfil sigue como “Próximamente”.
+El header enlaza a Inicio, Productos, Comparador, Reseñas, Blog y Favoritos, e
+incluye el toggle de tema. El bottom nav móvil enlaza a Inicio, Catálogo,
+Comparador, Favoritos y Perfil. No quedan enlaces “Próximamente” en la
+navegación principal.
 
 ---
 
@@ -92,7 +124,12 @@ Perfil sigue como “Próximamente”.
   `ValoracionProducto`, `OpinionesProducto`, `BotonComparador`.
 - **Comparador:** `ComparadorCliente` con selector, tabla, diferencias y
   sugerencia derivada.
-- **Comunes:** `RatingStars`, `ProductImagePlaceholder`, `AuthModal`.
+- **Secundarias:** `ResenasCliente`, `FavoritosCliente`, `PerfilCliente`,
+  `BotonFavorito` y las páginas de blog.
+- **Tema y cierre:** `lib/tema`, `useTema`, `BotonTema`, `app/not-found.tsx` y
+  `productos/[id]/not-found.tsx`.
+- **Comunes:** `RatingStars`, `ProductImagePlaceholder`, `AuthModal`,
+  `BotonFavorito`.
 
 Los componentes nuevos usan exclusivamente los tokens semánticos oficiales.
 La nomenclatura real prioriza nombres en español; las piezas del plan que no se
@@ -114,8 +151,16 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   centraliza en `src/data/precios.ts` y se eliminará cuando todos los datos
   estén normalizados.
 - El comparador se persiste en `localStorage` y no requiere backend. Guarda
-  máximo 4 ids en `tecreview:comparador`. Favoritos se definirá en el Bloque F
-  con el mismo enfoque local, salvo que el backend aporte persistencia.
+  máximo 4 ids en `tecreview:comparador`.
+- Favoritos usa `localStorage` con la clave `tecreview:favoritos`, normaliza
+  ids enteros positivos, evita duplicados y admite hasta 100 productos. Se
+  sincroniza entre pestañas con `storage` y dentro de la misma pestaña con el
+  evento `tecreview:favoritos:cambio`. No requiere sesión ni backend y no se
+  sincroniza entre dispositivos.
+- `/favoritos` cruza los ids guardados con el catálogo real, muestra los
+  productos disponibles y avisa cuántos ya no aparecen; no inventa datos.
+- El tema se persiste en `tecreview:tema`; tampoco se sincroniza entre
+  dispositivos. La preferencia guardada tiene prioridad sobre el sistema.
 - El detalle consume `obtenerProductoPorId`, `obtenerCategorias`,
   `obtenerMarcas`, `obtenerValoracionStats`, `obtenerResenas`,
   `obtenerMiValoracion`, `crearValoracion` y `crearResena`.
@@ -127,24 +172,50 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
 - La sugerencia del comparador se deriva de disponibilidad, precio de
   referencia y cantidad de especificaciones registradas. No declara un ganador
   absoluto ni una calificación editorial.
-- Reseñas: se consumen las existentes. “Compra verificada” no está modelada;
-  se omite hasta que el backend la aporte.
-- Blog: contenido estático o mock aprobado; no se inventan endpoints.
+- Reseñas: se consumen las existentes de `/api/resenas`. `/resenas` permite
+  buscar, filtrar por producto y ordenar por fecha; publicar exige sesión y usa
+  `crearResena`. “Compra verificada” no está modelada; se omite hasta que el
+  backend la aporte.
+- Las estrellas de `/resenas` salen de `obtenerMejorValorados` o de
+  `valoracion-stats`; nunca se derivan de una reseña.
+- Blog: cuatro artículos editoriales estáticos en `src/data/blog.ts`, sin
+  autores, métricas, precios ni afirmaciones inventadas. Enlazan a categorías
+  reales y no crean endpoints ni CMS.
+- Perfil: usa la sesión de Supabase y `GET /api/usuarios/me`; muestra rol,
+  fecha de registro, estado y las reseñas propias filtradas desde
+  `/api/resenas`. Sin sesión ofrece `AuthModal`; con sesión permite cerrar
+  sesión y, si corresponde, abrir el panel de administración.
+- El detalle resuelve el 404 en el Server Component: consulta
+  `obtenerProductoPorId`; un `ApiError` con estado 404 llama `notFound()`.
+  Otros errores se dejan al cliente para no convertir una caída del backend en
+  un 404 falso. El cliente vuelve a consultar el producto para renderizar; se
+  aceptó esa doble consulta para no reestructurar el cliente.
 - Imágenes: se usa la imagen disponible y `ProductImagePlaceholder` como
   fallback. La galería multi-imagen queda pendiente de datos reales.
 
 ---
 
-## 6. Estrategia de convivencia
+## 6. Tema y convivencia final
 
-1. Se agregan los tokens nuevos junto a los actuales, sin borrar el tema oscuro.
-2. Las páginas nuevas usan `.theme-tecreview` y los tokens semánticos.
-3. Las páginas viejas siguen funcionando con el tema oscuro y la clase `dark`.
-4. Cuando todas las vistas estén migradas se retiran `dark`, Doto, Space
-   Grotesk y los tokens antiguos.
-5. Ningún componente nuevo usa clases `dark:` ni colores fuera de la paleta.
+1. Los tokens oficiales viven en `@theme`; `html.dark` redefine sus valores
+   para el tema oscuro.
+2. `.theme-tecreview` conserva el fondo y el texto del tema activo; las vistas
+   nuevas usan solo tokens semánticos.
+3. El tema oscuro reutiliza los mismos componentes: no hay una copia oscura de
+   cada vista.
+4. `--color-brand-blue` se aclara a `#60A5FA` en oscuro para enlaces, chips y
+   focos; `--color-brand-solid` conserva `#2563EB` en botones con texto blanco.
+5. El script `tema-inicial` se inyecta con `beforeInteractive` antes del
+   contenido y el toggle del header mantiene la preferencia.
+6. `BotonTema` usa `dark:` solo para intercambiar los iconos de sol/luna; no es
+   un estilo de contenido.
+7. `debug/productos` conserva el tema oscuro heredado y `auth/callback`
+   mantiene sus clases `slate` con variantes `dark:`; ambas vistas quedan fuera
+   de la migración visual.
+8. No quedan Doto, Space Grotesk ni la clase `dark` forzada en el layout raíz.
 
-Esto permite avanzar por bloques sin una ventana de aplicación rota.
+La convivencia temporal de los bloques A–E se cerró sin dejar una ventana de
+aplicación rota.
 
 ---
 
@@ -161,7 +232,8 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 - **Bloque E — Comparador:** selección persistente, tabla, diferencias y
   sugerencia derivada. Completado.
 - **Bloque F — Secundarias y cierre:** reseñas, blog, favoritos, perfil,
-  responsive final, accesibilidad, documentación y limpieza del tema viejo.
+  migración de categorías y modales, 404 real, modo oscuro persistente,
+  documentación y limpieza del tema viejo. Completado.
 
 ---
 
@@ -284,6 +356,53 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ---
 
+## 8.4 Criterios de aceptación del Bloque F
+
+- [x] `/resenas` lista reseñas reales, permite buscar, filtrar por producto y ordenar por fecha; publicar exige sesión.
+- [x] Las estrellas de `/resenas` salen de rankings o `valoracion-stats`; no se derivan de una reseña.
+- [x] `/blog` y `/blog/[slug]` sirven cuatro artículos estáticos, sin autores, métricas ni datos inventados.
+- [x] `/favoritos` persiste en `tecreview:favoritos`, permite quitar y vaciar, y se sincroniza dentro de la pestaña y entre pestañas.
+- [x] `/favoritos` avisa de los ids guardados que ya no aparecen en el catálogo real.
+- [x] `/perfil` usa la sesión de Supabase y `/api/usuarios/me`, muestra rol, fecha, estado y reseñas propias, y permite cerrar sesión.
+- [x] Sin sesión, `/perfil` ofrece `AuthModal`; con rol administrador abre el panel.
+- [x] Header y bottom nav enlazan a todas las rutas reales; no quedan “Próximamente”.
+- [x] `/categorias/[slug]` usa `AppShell`, `TarjetaProducto` y tokens oficiales; se retiraron `ProductCard` y `GeometricBackground` de la vista.
+- [x] `AuthModal`, `FichaTecnicaModal` y `AdminPanelModal` usan tokens claros y conservan su lógica y textos.
+- [x] El panel admin usa azul para acciones principales, rojo solo para eliminar/errores y ámbar para editar.
+- [x] `/productos/999999` y `/productos/abc` responden 404 real; el 404 global y el de producto incluyen el shell.
+- [x] El modo oscuro se activa desde el header, persiste en `tecreview:tema` y respeta `prefers-color-scheme` como valor inicial.
+- [x] El script `tema-inicial` se sirve antes del contenido y evita el destello; no hay errores de hidratación.
+- [x] Los tokens oscuros se aplican a vistas y modales.
+- [x] No se modificaron backend, `.env` ni base de datos.
+- [x] `npm test`, `npm run build` y `npm run lint` pasan.
+- [x] Documentación actualizada y commits locales en español.
+
+### Desviaciones registradas del Bloque F
+
+1. Favoritos es local y admite hasta 100 ids; no se sincroniza entre
+   dispositivos ni se asocia a la cuenta.
+2. El tema también es local; no se sincroniza entre dispositivos.
+3. El blog es contenido estático en el repositorio. No hay CMS, autores ni
+   métricas de lectura inventadas.
+4. El detalle consulta el producto dos veces: una en servidor para el 404 y otra
+   en cliente para renderizar. Se aceptó para no reestructurar el cliente.
+5. `debug/productos` conserva el tema oscuro heredado y `auth/callback` conserva
+   sus estilos `slate` con variantes `dark:`; no se migraron en F2.
+6. Los modales se migraron solo en lo visual; su lógica, textos y pruebas se
+   conservaron.
+7. `--color-brand-blue` se aclara a `#60A5FA` en oscuro para mantener contraste
+   AA; `--color-brand-solid` se mantiene en `#2563EB` para botones con texto
+   blanco.
+8. Un id no numérico y un 404 de la API devuelven 404; otros errores de la API
+   quedan al cliente con su estado de error y reintento, para no ocultar una
+   caída del backend.
+9. `BotonTema` usa `dark:` únicamente para intercambiar los iconos de sol y luna.
+10. Los tokens oscuros antiguos (`--color-surface-0`, `--color-surface-1`,
+    `--color-surface-2`, `--color-line`) permanecen en `@theme` porque
+    `debug/productos` y `auth/callback` aún los usan.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -306,13 +425,16 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
    rating agregado. Evaluar un endpoint batch para las tarjetas.
 2. “Compra verificada”: omitir hasta que exista en el modelo.
 3. Galería: una imagen + placeholders hasta tener varias por producto.
-4. Blog: contenido estático aprobado o vista omitida.
-5. Perfil: datos reales de Supabase y alcance de edición.
-6. Estados hover/error: variantes derivadas de la paleta, previa aprobación.
+4. Blog: contenido estático aprobado e implementado; no se prevé un CMS a
+   corto plazo.
+5. Perfil: datos reales de Supabase implementados; la edición de perfil no está
+   incluida.
+6. Estados hover/error: resueltos con opacidad y la paleta oficial; cualquier
+   tono nuevo requiere aprobación.
 7. Filtros de “alta cámara” y “alto rendimiento”: heurísticas documentadas y
    ajustables con datos reales.
-8. 404 del detalle: evaluar `notFound()` en el Server Component para devolver
-   un estado HTTP 404 real sin duplicar la consulta del producto.
+8. 404 del detalle: resuelto con `notFound()` en el Server Component. La doble
+   consulta del producto queda como deuda técnica aceptada.
 
 ---
 
@@ -334,4 +456,12 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
   `/debug/productos` responden 200 en el servidor de desarrollo. Un id
   inexistente muestra el estado “Producto no encontrado” en cliente, con HTTP
   200 (ver desviación D.3).
+- **2026-10-26:** Bloque F completado en `feat/tecreview-redesign`.
+  `npm test`: 385 pruebas en 39 archivos; `npm run build` y `npm run lint`
+  exitosos. Rutas verificadas en el servidor de desarrollo:
+  `/resenas`, `/blog`, `/favoritos`, `/perfil`, `/comparador` y
+  `/categorias/moviles` responden 200; `/productos/24` responde 200;
+  `/productos/999999`, `/productos/abc` y `/ruta-inexistente` responden 404.
+  Las dos UIs 404 contienen su texto y el shell. El HTML servido incluye el
+  script `tema-inicial` antes del contenido.
 - Sin cambios en backend, `.env` ni base de datos.

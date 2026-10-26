@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ApiError, obtenerProductoPorId } from "@/services/api";
 import DetalleProductoCliente from "./DetalleProductoCliente";
 
 export const metadata = {
@@ -19,6 +20,16 @@ export default async function DetalleProductoPage({
 
   if (!Number.isInteger(idProducto) || idProducto <= 0) {
     notFound();
+  }
+
+  try {
+    await obtenerProductoPorId(idProducto);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      notFound();
+    }
+    // Otros errores se dejan al cliente para que muestre su estado de error
+    // con reintento, sin convertir una caída del backend en un 404 falso.
   }
 
   return <DetalleProductoCliente key={idProducto} idProducto={idProducto} />;

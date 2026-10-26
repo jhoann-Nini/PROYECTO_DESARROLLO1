@@ -82,7 +82,7 @@ export default function ProductCard({
 
       {/* Contenido descriptivo del producto */}
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="line-clamp-1 font-display text-base font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-blue-300">
+        <h3 className="line-clamp-1 text-base font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-blue-300">
           {producto.nombre}
         </h3>
 

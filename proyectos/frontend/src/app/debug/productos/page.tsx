@@ -39,7 +39,7 @@ export default function ProductosPage() {
             <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-300">
               Inspector de API
             </span>
-            <h1 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
               TecReview Explorador.
             </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
@@ -93,7 +93,7 @@ export default function ProductosPage() {
                     key={prod.idProducto}
                     className="group flex flex-col rounded-card border border-line bg-surface-1/80 p-5 transition-all duration-200 hover:border-blue-500/40 hover:bg-surface-1"
                   >
-                    <h3 className="line-clamp-1 font-display text-base font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-blue-300">
+                    <h3 className="line-clamp-1 text-base font-semibold tracking-[-0.01em] text-white transition-colors group-hover:text-blue-300">
                       {prod.nombre}
                     </h3>
                     <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-slate-400">

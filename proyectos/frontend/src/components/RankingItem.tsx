@@ -13,10 +13,11 @@ export interface RankingItemProps {
   descripcion?: string | null;
   imagen?: string | null;
   precio?: number | null;
-  metricaTipo: "valoracion" | "comentario";
+  metricaTipo: "valoracion" | "comentario" | "deseo";
   puntuacion?: number;
   cantidadValoraciones?: number;
   cantidadResenas?: number;
+  cantidadDeseados?: number;
   onVerDetalle?: () => void;
 }
 
@@ -32,6 +33,7 @@ export default function RankingItem({
   puntuacion,
   cantidadValoraciones,
   cantidadResenas,
+  cantidadDeseados,
   onVerDetalle,
 }: RankingItemProps) {
   const [errorImagen, setErrorImagen] = useState(false);
@@ -116,6 +118,20 @@ export default function RankingItem({
             </span>
             <span className="text-[10px] text-[var(--color-subtle)]">
               Interacción comunitaria
+            </span>
+          </div>
+        )}
+        {/* Métrica real de Más Deseados */}
+        {metricaTipo === "deseo" && typeof cantidadDeseados === "number" && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-star)]/25 bg-[var(--color-star)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--color-ink)]">
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+              </svg>
+              <span>{cantidadDeseados} {cantidadDeseados === 1 ? "deseo" : "deseos"}</span>
+            </span>
+            <span className="text-[10px] text-[var(--color-subtle)]">
+              Interés de la comunidad
             </span>
           </div>
         )}

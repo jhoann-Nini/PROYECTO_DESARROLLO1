@@ -24,6 +24,10 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}));
+
 const mockObtenerProductos = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
 const mockObtenerResenas = vi.fn();
@@ -87,7 +91,6 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       // Cambiar a la pestaña del catálogo general para observar la sección dinámica
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       expect(
         screen.getByText("Cargando catálogo de dispositivos..."),
@@ -118,7 +121,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Servidor conectado")).toBeDefined();
@@ -138,7 +140,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -165,7 +166,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -191,7 +191,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -217,7 +216,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -243,7 +241,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -1099,7 +1096,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1114,7 +1110,6 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       // Cambiar al catálogo general
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1135,7 +1130,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1143,7 +1137,7 @@ describe("Página principal / (Home)", () => {
 
       // Escribir en el buscador
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Samsung Galaxy Tab S10 Ultra" },
@@ -1159,14 +1153,13 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
 
       // 4a. Coincidencia existente
@@ -1190,7 +1183,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -1200,7 +1192,7 @@ describe("Página principal / (Home)", () => {
 
       // Filtrar por texto
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Buds" },
@@ -1217,14 +1209,13 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
 
       // Aplicar filtro de búsqueda
@@ -1239,6 +1230,70 @@ describe("Página principal / (Home)", () => {
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
       expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+    });
+
+    it("7. El filtro explícito de presupuesto oculta los productos que lo superan", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Filtrar por presupuesto" }),
+      );
+
+      expect(
+        screen
+          .getByRole("button", { name: "Solo en presupuesto" })
+          .getAttribute("aria-pressed"),
+      ).toBe("true");
+
+      await waitFor(() => {
+        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
+      });
+      expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
+      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+
+      // El catálogo original no se altera: al desactivar el filtro reaparecen.
+      fireEvent.click(
+        screen.getByRole("button", { name: "Solo en presupuesto" }),
+      );
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+    });
+
+    it("8. Los productos sin precio se conservan y se excluyen al activar el presupuesto", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        {
+          idProducto: 90,
+          nombre: "Producto Sin Precio",
+          descripcion: "Disponibilidad por confirmar",
+          precioReferencia: null,
+          idCategoria: 1,
+          idMarca: 1,
+          nombreCategoria: "Móviles",
+          nombreMarca: "Samsung",
+          imagen: null,
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Producto Sin Precio")).toBeDefined();
+      });
+      expect(screen.getByText("Consultar disponibilidad")).toBeDefined();
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Filtrar por presupuesto" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText("Producto Sin Precio")).toBeNull();
+      });
     });
   });
 });

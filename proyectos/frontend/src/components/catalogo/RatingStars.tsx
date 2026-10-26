@@ -2,6 +2,7 @@ interface RatingStarsProps {
   rating: number | null;
   cantidadResenas?: number | null;
   tamano?: "sm" | "md";
+  etiquetaCantidad?: "reseñas" | "valoraciones";
 }
 
 const ESTRELLAS = [1, 2, 3, 4, 5];
@@ -10,6 +11,7 @@ export default function RatingStars({
   rating,
   cantidadResenas = null,
   tamano = "sm",
+  etiquetaCantidad = "reseñas",
 }: RatingStarsProps) {
   if (rating === null) {
     return (
@@ -54,7 +56,7 @@ export default function RatingStars({
       </span>
       {cantidadResenas !== null && (
         <span className="text-xs text-[var(--color-subtle)]">
-          ({cantidadResenas} reseñas)
+          ({cantidadResenas} {etiquetaCantidad})
         </span>
       )}
     </span>

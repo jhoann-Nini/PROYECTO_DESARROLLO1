@@ -23,6 +23,11 @@ export interface ProductImagePlaceholderProps {
    * Modo de tamaño ("sm" para miniaturas compactas en rankings; "md", "lg" o "auto" para tarjetas y modales)
    */
   tamano?: "sm" | "md" | "lg" | "auto";
+  /**
+   * Tema visual. "oscuro" conserva el aspecto histórico; "claro" usa los
+   * tokens del rediseño de TecReview.
+   */
+  tema?: "oscuro" | "claro";
 }
 
 /**
@@ -115,6 +120,7 @@ export default function ProductImagePlaceholder({
   nombre,
   className = "",
   tamano = "auto",
+  tema = "oscuro",
 }: ProductImagePlaceholderProps) {
   // Detección consistente de la categoría usando el helper existente
   const catTipo: CategoriaDispositivo = detectarCategoria({
@@ -126,6 +132,7 @@ export default function ProductImagePlaceholder({
 
   const catInfo = INFO_CATEGORIAS[catTipo] || INFO_CATEGORIAS.moviles;
   const marcaLimpia = marca && marca.trim().length > 0 ? marca.trim() : null;
+  const esClaro = tema === "claro";
 
   const descripcionAccesible = [
     "Imagen pendiente",
@@ -140,15 +147,32 @@ export default function ProductImagePlaceholder({
       <div
         role="img"
         aria-label={descripcionAccesible}
-        className={`flex h-full w-full select-none flex-col items-center justify-center rounded-control border border-line/70 bg-surface-1/60 p-1 text-slate-500 transition-colors ${className}`}
+        className={`flex h-full w-full select-none flex-col items-center justify-center rounded-control border p-1 transition-colors ${
+          esClaro
+            ? "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]"
+            : "border-line/70 bg-surface-1/60 text-slate-500"
+        } ${className}`}
       >
-        <IconoCategoria tipo={catTipo} className="mb-0.5 h-5 w-5 shrink-0 text-slate-400" />
+        <IconoCategoria
+          tipo={catTipo}
+          className={`mb-0.5 h-5 w-5 shrink-0 ${
+            esClaro ? "text-[var(--color-subtle)]" : "text-slate-400"
+          }`}
+        />
         {marcaLimpia ? (
-          <span className="max-w-full truncate text-[8px] font-medium uppercase leading-none text-slate-300">
+          <span
+            className={`max-w-full truncate text-[8px] font-medium uppercase leading-none ${
+              esClaro ? "text-[var(--color-ink)]" : "text-slate-300"
+            }`}
+          >
             {marcaLimpia}
           </span>
         ) : (
-          <span className="text-[7.5px] font-medium uppercase leading-none text-slate-500">
+          <span
+            className={`text-[7.5px] font-medium uppercase leading-none ${
+              esClaro ? "text-[var(--color-subtle)]" : "text-slate-500"
+            }`}
+          >
             Pendiente
           </span>
         )}
@@ -160,24 +184,48 @@ export default function ProductImagePlaceholder({
     <div
       role="img"
       aria-label={descripcionAccesible}
-      className={`flex h-full w-full select-none flex-col items-center justify-center rounded-card border border-line/70 bg-surface-1/40 p-4 text-slate-500 transition-colors ${className}`}
+      className={`flex h-full w-full select-none flex-col items-center justify-center rounded-card border p-4 transition-colors ${
+        esClaro
+          ? "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]"
+          : "border-line/70 bg-surface-1/40 text-slate-500"
+      } ${className}`}
     >
-      <div className="mb-2.5 flex h-12 w-12 items-center justify-center rounded-control border border-line bg-surface-1 text-slate-300">
+      <div
+        className={`mb-2.5 flex h-12 w-12 items-center justify-center rounded-control border ${
+          esClaro
+            ? "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)]"
+            : "border-line bg-surface-1 text-slate-300"
+        }`}
+      >
         <IconoCategoria tipo={catTipo} className="h-6 w-6" />
       </div>
 
       {marcaLimpia && (
-        <span className="mb-1.5 rounded-full border border-line bg-surface-1 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-300">
+        <span
+          className={`mb-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
+            esClaro
+              ? "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)]"
+              : "border-line bg-surface-1 text-slate-300"
+          }`}
+        >
           {marcaLimpia}
         </span>
       )}
 
-      <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
-        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" aria-hidden="true" />
+      <div
+        className={`flex items-center gap-1.5 text-xs font-medium ${
+          esClaro ? "text-[var(--color-subtle)]" : "text-slate-400"
+        }`}
+      >
+        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-star)]" aria-hidden="true" />
         <span>Imagen pendiente</span>
       </div>
 
-      <span className="mt-1 text-[11px] text-slate-500">
+      <span
+        className={`mt-1 text-[11px] ${
+          esClaro ? "text-[var(--color-subtle)]" : "text-slate-500"
+        }`}
+      >
         {catInfo.etiqueta}
       </span>
     </div>

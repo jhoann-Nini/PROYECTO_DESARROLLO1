@@ -15,6 +15,12 @@ vi.mock("@/services/api", async (importOriginal) => {
   };
 });
 
+const mockPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 import {
   obtenerCategorias,
   obtenerMarcas,
@@ -196,5 +202,21 @@ describe("Página de categoría (CategoriaPageContent)", () => {
     const tarjetas = screen.getAllByRole("article");
     expect(tarjetas[0].textContent).toContain("Apple iPhone 16");
     expect(tarjetas[1].textContent).toContain("Samsung Galaxy S25");
+  });
+
+  it("navega al detalle real al consultar la ficha de un producto", async () => {
+    render(<CategoriaPageContent slug="celulares" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Samsung Galaxy S25")).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Consultar ficha técnica de Samsung Galaxy S25",
+      }),
+    );
+
+    expect(mockPush).toHaveBeenCalledWith("/productos/501");
   });
 });

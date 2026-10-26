@@ -17,6 +17,12 @@ vi.mock("@/services/api", async (importOriginal) => {
   };
 });
 
+const mockPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 import {
   ApiError,
   obtenerCategorias,
@@ -227,5 +233,19 @@ describe("CatalogoCliente", () => {
 
     expect(screen.getByText("Producto 13")).toBeDefined();
     expect(screen.queryByText("Producto 1")).toBeNull();
+  });
+
+  it("navega al detalle real al pulsar Ver detalle", async () => {
+    configurarExito([crearProducto(7)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto 7")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Ver detalle" }));
+
+    expect(mockPush).toHaveBeenCalledWith("/productos/7");
   });
 });

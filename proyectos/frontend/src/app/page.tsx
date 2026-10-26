@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   crearResena,
   obtenerCategorias,
@@ -17,7 +18,6 @@ import {
   esAdministrador,
   esRepresentante,
   type CategoriaResponse,
-  type DispositivoKimovil,
   type MarcaResponse,
   type Producto,
   type ProductoDeseado,
@@ -40,7 +40,6 @@ import SiteFooter from "@/components/shell/SiteFooter";
 import BottomNav from "@/components/shell/BottomNav";
 import SearchBar from "@/components/SearchBar";
 import AuthModal from "@/components/AuthModal";
-import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import ResumenSesion from "@/components/home/ResumenSesion";
 import CategoriasHome from "@/components/home/CategoriasHome";
@@ -120,6 +119,8 @@ function filtrarOfertas(
 }
 
 export default function Home() {
+  const router = useRouter();
+
   // Catálogo y enriquecimiento desde la API
   const [productosBackend, setProductosBackend] = useState<Producto[]>([]);
   const [categoriasApi, setCategoriasApi] = useState<CategoriaResponse[]>([]);
@@ -147,11 +148,6 @@ export default function Home() {
     () => esRepresentante(usuarioSesion),
     [usuarioSesion],
   );
-
-  // Ficha técnica
-  const [productoSeleccionado, setProductoSeleccionado] = useState<
-    DispositivoKimovil | Producto | null
-  >(null);
 
   // Búsqueda y presupuesto
   const [busqueda, setBusqueda] = useState("");
@@ -557,6 +553,13 @@ export default function Home() {
     [ofertas, busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
   );
 
+  const irAlDetalle = useCallback(
+    (idProducto: number) => {
+      router.push(`/productos/${idProducto}`);
+    },
+    [router],
+  );
+
   const verFichaRanking = useCallback(
     (
       item:
@@ -565,45 +568,16 @@ export default function Home() {
         | ProductoOferta
         | ProductoDeseado,
     ) => {
-      setProductoSeleccionado({
-        idProducto: item.idProducto,
-        nombre: item.nombre,
-        descripcion: item.descripcion,
-        idCategoria: item.idCategoria,
-        idMarca: item.idMarca,
-        imagen: item.imagen,
-        precioReferencia:
-          "precioActual" in item && typeof item.precioActual === "number"
-            ? item.precioActual
-            : item.precioReferencia,
-        estado: true,
-        caracteristicas: item.caracteristicas,
-      });
+      irAlDetalle(item.idProducto);
     },
-    [],
+    [irAlDetalle],
   );
 
   const abrirDetalle = useCallback(
     (vista: ProductoViewModel) => {
-      const original = productosBackend.find(
-        (producto) => producto.idProducto === vista.idProducto,
-      );
-
-      setProductoSeleccionado(
-        original ?? {
-          idProducto: vista.idProducto,
-          nombre: vista.nombre,
-          descripcion: null,
-          idCategoria: 0,
-          idMarca: 0,
-          imagen: vista.imagen,
-          precioReferencia: vista.precioCOP > 0 ? vista.precioCOP : null,
-          estado: vista.disponible,
-          caracteristicas: null,
-        },
-      );
+      irAlDetalle(vista.idProducto);
     },
-    [productosBackend],
+    [irAlDetalle],
   );
 
   const idProductoEfectivo =
@@ -866,27 +840,6 @@ export default function Home() {
         isOpen={modalAuthAbierto}
         onClose={() => setModalAuthAbierto(false)}
         onLoginSuccess={establecerUsuario}
-      />
-
-      <FichaTecnicaModal
-        key={
-          productoSeleccionado
-            ? "ranking" in productoSeleccionado
-              ? `kim_${productoSeleccionado.id}`
-              : `prod_${productoSeleccionado.idProducto}`
-            : "modal_cerrado"
-        }
-        producto={productoSeleccionado}
-        onClose={() => setProductoSeleccionado(null)}
-        usuarioSesion={usuarioSesion}
-        onPedirLogin={() => setModalAuthAbierto(true)}
-        onValoracionGuardada={cargarMejorValorados}
-        onResenaGuardada={(nueva) => {
-          setResenas((previas) => [
-            nueva,
-            ...previas.filter((resena) => resena.idResena !== nueva.idResena),
-          ]);
-        }}
       />
 
       <AdminPanelModal

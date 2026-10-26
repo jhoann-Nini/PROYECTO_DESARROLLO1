@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   obtenerCategorias,
   obtenerMarcas,
@@ -13,7 +14,6 @@ import {
   type ResolucionCategoria,
 } from "@/lib/categorias";
 import ProductCard from "@/components/ProductCard";
-import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 import GeometricBackground from "@/components/GeometricBackground";
 
 type OrdenProductos = "nombre" | "precio-asc" | "precio-desc";
@@ -42,6 +42,7 @@ function precioNumerico(producto: Producto): number | null {
 export default function CategoriaPageContent({
   slug,
 }: CategoriaPageContentProps) {
+  const router = useRouter();
   const [categoria, setCategoria] = useState<ResolucionCategoria | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -50,8 +51,6 @@ export default function CategoriaPageContent({
 
   const [busqueda, setBusqueda] = useState("");
   const [orden, setOrden] = useState<OrdenProductos>("nombre");
-  const [productoSeleccionado, setProductoSeleccionado] =
-    useState<Producto | null>(null);
   const [intento, setIntento] = useState(0);
 
   const consultar = useCallback(async (): Promise<ResultadoConsulta> => {
@@ -318,7 +317,9 @@ export default function CategoriaPageContent({
                   <ProductCard
                     key={producto.idProducto}
                     producto={producto}
-                    onVerDetalle={setProductoSeleccionado}
+                    onVerDetalle={(producto) =>
+                      router.push(`/productos/${producto.idProducto}`)
+                    }
                   />
                 ))}
               </section>
@@ -353,11 +354,6 @@ export default function CategoriaPageContent({
           </>
         )}
       </div>
-
-      <FichaTecnicaModal
-        producto={productoSeleccionado}
-        onClose={() => setProductoSeleccionado(null)}
-      />
     </main>
   );
 }

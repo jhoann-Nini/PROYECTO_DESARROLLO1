@@ -24,8 +24,11 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+const mockPush = vi.fn();
+
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
+  useRouter: () => ({ push: mockPush }),
 }));
 
 const mockObtenerProductos = vi.fn();
@@ -988,7 +991,7 @@ describe("Página principal / (Home)", () => {
       });
     });
 
-    it("permite abrir el modal de ficha técnica desde un elemento de ranking", async () => {
+    it("navega al detalle real desde un elemento de ranking", async () => {
       const mejorValorados: ProductoMejorValorado[] = [
         {
           idProducto: 204,
@@ -1019,11 +1022,7 @@ describe("Página principal / (Home)", () => {
       fireEvent.click(btnFicha);
 
       await waitFor(() => {
-        expect(screen.getByRole("dialog")).toBeDefined();
-        expect(screen.getByText("FICHA TÉCNICA")).toBeDefined();
-        expect(
-          screen.getByRole("heading", { level: 2, name: "Laptop Gamer Asus ROG" })
-        ).toBeDefined();
+        expect(mockPush).toHaveBeenCalledWith("/productos/204");
       });
     });
   });

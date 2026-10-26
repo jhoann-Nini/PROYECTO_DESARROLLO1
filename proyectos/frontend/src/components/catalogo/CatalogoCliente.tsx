@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   CategoriaResponse,
   MarcaResponse,
@@ -23,7 +24,6 @@ import {
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import SearchBar from "@/components/SearchBar";
-import FichaTecnicaModal from "@/components/FichaTecnicaModal";
 import TarjetaProducto from "./TarjetaProducto";
 import FilterSidebar from "./FilterSidebar";
 import FilterChips from "./FilterChips";
@@ -43,6 +43,7 @@ function filtrosBase(): FiltrosCatalogo {
 }
 
 export default function CatalogoCliente() {
+  const router = useRouter();
   const [productosApi, setProductosApi] = useState<Producto[]>([]);
   const [categoriasApi, setCategoriasApi] = useState<CategoriaResponse[]>([]);
   const [marcasApi, setMarcasApi] = useState<MarcaResponse[]>([]);
@@ -50,7 +51,6 @@ export default function CatalogoCliente() {
   const [error, setError] = useState("");
   const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase());
   const [pagina, setPagina] = useState(1);
-  const [productoDetalle, setProductoDetalle] = useState<Producto | null>(null);
 
   useEffect(() => {
     let activo = true;
@@ -156,10 +156,7 @@ export default function CatalogoCliente() {
   }
 
   function abrirDetalle(vista: ProductoViewModel) {
-    const original = productosApi.find(
-      (producto) => producto.idProducto === vista.idProducto
-    );
-    setProductoDetalle(original ?? null);
+    router.push(`/productos/${vista.idProducto}`);
   }
 
   return (
@@ -267,11 +264,6 @@ export default function CatalogoCliente() {
           </section>
         </div>
       )}
-
-      <FichaTecnicaModal
-        producto={productoDetalle}
-        onClose={() => setProductoDetalle(null)}
-      />
     </main>
   );
 }

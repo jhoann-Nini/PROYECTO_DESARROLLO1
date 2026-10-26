@@ -213,7 +213,7 @@ describe("Página de categoría (CategoriaPageContent)", () => {
 
     fireEvent.click(
       screen.getByRole("button", {
-        name: "Consultar ficha técnica de Samsung Galaxy S25",
+        name: "Ver detalle de Samsung Galaxy S25",
       }),
     );
 

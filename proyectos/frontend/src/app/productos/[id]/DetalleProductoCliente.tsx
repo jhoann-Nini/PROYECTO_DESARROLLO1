@@ -23,6 +23,7 @@ import EspecificacionesProducto from "@/components/detalle/EspecificacionesProdu
 import ValoracionProducto from "@/components/detalle/ValoracionProducto";
 import OpinionesProducto from "@/components/detalle/OpinionesProducto";
 import BotonComparador from "@/components/detalle/BotonComparador";
+import BotonFavorito from "@/components/favoritos/BotonFavorito";
 
 interface DetalleProductoClienteProps {
   idProducto: number;
@@ -218,7 +219,7 @@ export default function DetalleProductoCliente({
           </p>
           <Link
             href="/productos"
-            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Volver al catálogo
           </Link>
@@ -243,7 +244,7 @@ export default function DetalleProductoCliente({
           <button
             type="button"
             onClick={reintentarProducto}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Reintentar
           </button>
@@ -341,8 +342,12 @@ export default function DetalleProductoCliente({
             </p>
           )}
 
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap items-start gap-3">
             <BotonComparador
+              idProducto={producto.idProducto}
+              nombreProducto={producto.nombre}
+            />
+            <BotonFavorito
               idProducto={producto.idProducto}
               nombreProducto={producto.nombre}
             />

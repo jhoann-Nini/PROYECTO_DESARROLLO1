@@ -4,6 +4,7 @@
 import { useState } from "react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import RatingStars from "./RatingStars";
 
 interface TarjetaProductoProps {
@@ -52,10 +53,18 @@ export default function TarjetaProducto({
           )}
         </button>
 
+        <div className="absolute left-3 top-3">
+          <BotonFavorito
+            idProducto={producto.idProducto}
+            nombreProducto={producto.nombre}
+            compacto
+          />
+        </div>
+
         <span
           className={`absolute right-3 top-3 rounded-md px-2 py-1 text-[11px] font-semibold ${
             producto.disponible
-              ? "bg-[var(--color-positive)] text-[var(--color-ink)]"
+              ? "bg-[var(--color-positive)] text-[var(--color-on-positive)]"
               : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
           }`}
         >
@@ -133,7 +142,7 @@ export default function TarjetaProducto({
           <button
             type="button"
             onClick={() => onVerDetalle?.(producto)}
-            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Ver detalle
           </button>

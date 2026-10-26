@@ -4,8 +4,6 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-brand: var(--font-doto), 'Doto', monospace;
 
   /* Escala de radios coherente: controles 12px, tarjetas y modales 16px */
   --radius-sm: 0.5rem;
@@ -49,8 +47,18 @@
   --color-status-error: #b91c1c;
   --color-status-error-bg: #fef2f2;
 
-  /* TecReview — tokens oficiales del tema claro (convivencia temporal) */
+  /* TecReview — tokens oficiales del tema claro */
+  /* Acento interactivo: texto, bordes, focos y chips. En oscuro se aclara
+     para conservar el contraste AA sobre las superficies oscuras. */
   --color-brand-blue: #2563eb;
+  /* Azul sólido de botones y acciones: se mantiene en ambos temas para que
+     el texto blanco conserve su contraste. */
+  --color-brand-solid: #2563eb;
+  /* Superficie inversa fija: overlays de modales y bloques con texto blanco.
+     No se redefine en oscuro para no invertir el contraste. */
+  --color-inverse: #0f172a;
+  /* Texto sobre el verde positivo: fijo para conservar AA en ambos temas. */
+  --color-on-positive: #0f172a;
   --color-ink: #0f172a;
   --color-canvas: #f3f4f6;
   --color-hairline: #e5e7eb;
@@ -71,35 +79,46 @@ html {
   font-size: 16px;
   line-height: 1.5;
   scroll-behavior: smooth;
-  color-scheme: dark light;
+  color-scheme: light;
 }
 
 body {
   min-height: 100vh;
   overflow-x: clip;
-  background-color: #090714;
-  color: #f8fafc;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
 }
 
-/* Alcance del tema claro de TecReview. Permite convivir con el tema oscuro
-   actual mientras se migran las vistas una por una. */
+/* Alcance del tema de TecReview. Los tokens cambian bajo html.dark. */
 .theme-tecreview {
   color-scheme: light;
   background-color: var(--color-canvas);
   color: var(--color-ink);
 }
 
+/* Tema oscuro real. La clase .dark la aplica el script previo a la
+   hidratación y la mantiene el toggle persistente. */
+html.dark {
+  color-scheme: dark;
+  --color-canvas: #0f172a;
+  --color-paper: #1e293b;
+  --color-ink: #f3f4f6;
+  --color-subtle: #cbd5e1;
+  --color-hairline: #334155;
+  --color-brand-blue: #60a5fa;
+  --color-brand-solid: #2563eb;
+  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  --shadow-paper-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 32px -16px rgba(0, 0, 0, 0.6);
+}
+
+html.dark .theme-tecreview {
+  color-scheme: dark;
+}
+
 img,
 svg {
   max-width: 100%;
-}
-
-/* Marca: se conserva la matriz de puntos solo en el wordmark */
-.font-brand {
-  font-family: var(--font-brand);
-  font-variation-settings: 'ROND' 100;
-  letter-spacing: 0.06em;
 }
 
 /* Animaciones sutiles y accesibles */
@@ -160,30 +179,25 @@ p {
 
 /* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-brand-blue);
   outline-offset: 2px;
 }
 
-/* Barra de desplazamiento accesible estilo Nothing Tech */
+/* Barra de desplazamiento accesible del tema claro */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0d131f;
+  background: var(--color-hairline);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: var(--color-subtle);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-.dark body {
-  background-color: #090714;
-  color: #f8fafc;
+  background: var(--color-ink);
 }

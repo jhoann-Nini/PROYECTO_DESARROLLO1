@@ -32,7 +32,9 @@ export default function FilterSidebar({
   hayFiltros,
 }: FilterSidebarProps) {
   const { rangoPrecio } = catalogo;
-  const rangoValido = rangoPrecio.max > rangoPrecio.min;
+  const rangoValido = rangoPrecio.max > 0;
+  const minActual = Math.max(filtros.precioMin, rangoPrecio.min);
+  const maxActual = Math.min(filtros.precioMax, rangoPrecio.max);
 
   return (
     <aside
@@ -118,40 +120,46 @@ export default function FilterSidebar({
         </legend>
         <div className="mt-2 space-y-3">
           <label className="block text-xs text-[var(--color-subtle)]">
-            Mínimo: {formatearCOP(filtros.precioMin)}
+            Mínimo: {formatearCOP(minActual)}
             <input
               type="range"
               aria-label="Precio mínimo"
               min={rangoPrecio.min}
               max={rangoPrecio.max}
               step={100000}
-              value={filtros.precioMin}
+              value={minActual}
               onChange={(event) => {
-                const precioMin = Number(event.target.value);
+                const valor = Number(event.target.value);
+                const precioMin =
+                  valor <= rangoPrecio.min ? 0 : valor;
                 onCambiar({
                   ...filtros,
                   precioMin,
-                  precioMax: Math.max(precioMin, filtros.precioMax),
+                  precioMax: Math.max(filtros.precioMax, valor),
                 });
               }}
               className="mt-1 w-full accent-[var(--color-brand-blue)]"
             />
           </label>
           <label className="block text-xs text-[var(--color-subtle)]">
-            Máximo: {formatearCOP(filtros.precioMax)}
+            Máximo: {formatearCOP(maxActual)}
             <input
               type="range"
               aria-label="Precio máximo"
               min={rangoPrecio.min}
               max={rangoPrecio.max}
               step={100000}
-              value={filtros.precioMax}
+              value={maxActual}
               onChange={(event) => {
-                const precioMax = Number(event.target.value);
+                const valor = Number(event.target.value);
+                const precioMax =
+                  valor >= rangoPrecio.max
+                    ? Number.MAX_SAFE_INTEGER
+                    : valor;
                 onCambiar({
                   ...filtros,
                   precioMax,
-                  precioMin: Math.min(filtros.precioMin, precioMax),
+                  precioMin: Math.min(filtros.precioMin, valor),
                 });
               }}
               className="mt-1 w-full accent-[var(--color-brand-blue)]"

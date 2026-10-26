@@ -110,6 +110,28 @@ describe("CatalogoCliente", () => {
     expect(screen.getAllByText(/Móviles/).length).toBeGreaterThan(0);
   });
 
+  it("incluye productos sin precio y no muestra chip de precio al cargar", async () => {
+    configurarExito([
+      crearProducto(1),
+      crearProducto(2, {
+        nombre: "Producto sin precio",
+        precioReferencia: null,
+      }),
+    ]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/2 productos/)).toBeDefined();
+    });
+
+    expect(screen.getByText("Producto sin precio")).toBeDefined();
+    expect(screen.getByText("Consultar disponibilidad")).toBeDefined();
+    expect(
+      screen.queryAllByRole("button", { name: /^Quitar filtro \$/ })
+    ).toHaveLength(0);
+  });
+
   it("filtra por categoría y vuelve a la página 1", async () => {
     const productos = Array.from({ length: 13 }, (_, indice) =>
       crearProducto(indice + 1)

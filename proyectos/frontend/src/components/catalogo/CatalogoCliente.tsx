@@ -19,7 +19,6 @@ import {
   prepararCatalogo,
   type ChipFiltro,
   type FiltrosCatalogo,
-  type RangoPrecio,
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
@@ -32,13 +31,13 @@ import Pagination from "./Pagination";
 
 const POR_PAGINA = 12;
 
-function filtrosBase(rango: RangoPrecio): FiltrosCatalogo {
+function filtrosBase(): FiltrosCatalogo {
   return {
     busqueda: "",
     categorias: [],
     marcas: [],
-    precioMin: rango.min,
-    precioMax: rango.max > 0 ? rango.max : Number.MAX_SAFE_INTEGER,
+    precioMin: 0,
+    precioMax: Number.MAX_SAFE_INTEGER,
     caracteristicas: [],
   };
 }
@@ -49,9 +48,7 @@ export default function CatalogoCliente() {
   const [marcasApi, setMarcasApi] = useState<MarcaResponse[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [filtros, setFiltros] = useState<FiltrosCatalogo>(() =>
-    filtrosBase({ min: 0, max: 0 })
-  );
+  const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase());
   const [pagina, setPagina] = useState(1);
   const [productoDetalle, setProductoDetalle] = useState<Producto | null>(null);
 
@@ -68,11 +65,7 @@ export default function CatalogoCliente() {
         setProductosApi(productos);
         setCategoriasApi(categorias);
         setMarcasApi(marcas);
-
-        const preparado = prepararCatalogo(
-          construirCatalogo({ productos, categorias, marcas })
-        );
-        setFiltros(filtrosBase(preparado.rangoPrecio));
+        setFiltros(filtrosBase());
       })
       .catch((err: unknown) => {
         if (!activo) return;
@@ -122,7 +115,7 @@ export default function CatalogoCliente() {
   }
 
   function limpiarFiltros() {
-    actualizarFiltros(filtrosBase(catalogo.rangoPrecio));
+    actualizarFiltros(filtrosBase());
   }
 
   function quitarChip(chip: ChipFiltro) {
@@ -147,11 +140,8 @@ export default function CatalogoCliente() {
       case "precio":
         actualizarFiltros({
           ...filtros,
-          precioMin: catalogo.rangoPrecio.min,
-          precioMax:
-            catalogo.rangoPrecio.max > 0
-              ? catalogo.rangoPrecio.max
-              : Number.MAX_SAFE_INTEGER,
+          precioMin: 0,
+          precioMax: Number.MAX_SAFE_INTEGER,
         });
         break;
       case "caracteristica":

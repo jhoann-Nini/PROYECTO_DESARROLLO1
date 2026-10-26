@@ -17,7 +17,7 @@ function crearVista(
     nombre: "Producto",
     marca: "Samsung",
     categoria: "moviles",
-    categoriaEtiqueta: "Celulares",
+    categoriaEtiqueta: "Móviles",
     imagen: null,
     precioCOP: 1_000_000,
     precioFormateado: "$ 1.000.000 COP",
@@ -44,7 +44,7 @@ const productos: ProductoViewModel[] = [
     nombre: "Samsung Galaxy S24 Ultra",
     marca: "Samsung",
     categoria: "moviles",
-    categoriaEtiqueta: "Celulares",
+    categoriaEtiqueta: "Móviles",
     precioCOP: 5_000_000,
     caracteristicas: [
       "5g",
@@ -60,7 +60,7 @@ const productos: ProductoViewModel[] = [
     nombre: "iPhone 15",
     marca: "Apple",
     categoria: "moviles",
-    categoriaEtiqueta: "Celulares",
+    categoriaEtiqueta: "Móviles",
     precioCOP: 4_000_000,
     caracteristicas: ["5g", "buena-camara", "alto-rendimiento"],
     textoBusqueda: "apple iphone 15 camara 48 mp 5g celulares",
@@ -80,7 +80,7 @@ const productos: ProductoViewModel[] = [
     nombre: "MacBook Air M3",
     marca: "Apple",
     categoria: "laptops",
-    categoriaEtiqueta: "Laptops y PC",
+    categoriaEtiqueta: "Laptops / PCs",
     precioCOP: 6_000_000,
     caracteristicas: ["alto-rendimiento", "gran-bateria"],
     textoBusqueda: "apple macbook air m3 laptops y pc",
@@ -100,7 +100,7 @@ const productos: ProductoViewModel[] = [
     nombre: "Samsung Galaxy A05",
     marca: "Samsung",
     categoria: "moviles",
-    categoriaEtiqueta: "Celulares",
+    categoriaEtiqueta: "Móviles",
     precioCOP: 0,
     precioFormateado: "Consultar disponibilidad",
     caracteristicas: [],
@@ -124,8 +124,8 @@ describe("prepararCatalogo", () => {
     const catalogo = prepararCatalogo(productos);
 
     expect(catalogo.categorias).toEqual([
-      { valor: "moviles", etiqueta: "Celulares", cantidad: 3 },
-      { valor: "laptops", etiqueta: "Laptops y PC", cantidad: 1 },
+      { valor: "moviles", etiqueta: "Móviles", cantidad: 3 },
+      { valor: "laptops", etiqueta: "Laptops / PCs", cantidad: 1 },
       { valor: "tablets", etiqueta: "Tablets", cantidad: 1 },
       { valor: "auriculares", etiqueta: "Auriculares", cantidad: 1 },
     ]);
@@ -265,7 +265,7 @@ describe("construirChips", () => {
     expect(chips).toEqual(
       expect.arrayContaining([
         { tipo: "busqueda", valor: "iphone", etiqueta: "Búsqueda: iphone" },
-        { tipo: "categoria", valor: "moviles", etiqueta: "Celulares" },
+        { tipo: "categoria", valor: "moviles", etiqueta: "Móviles" },
         { tipo: "marca", valor: "Apple", etiqueta: "Apple" },
         { tipo: "caracteristica", valor: "5g", etiqueta: "5G" },
       ])

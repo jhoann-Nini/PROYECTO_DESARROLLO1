@@ -86,7 +86,7 @@ describe("FilterSidebar", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("checkbox", { name: /Celulares/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Móviles/i }));
 
     expect(onCambiar).toHaveBeenCalledWith({
       ...filtros,

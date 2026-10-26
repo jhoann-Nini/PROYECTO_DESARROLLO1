@@ -41,8 +41,8 @@ export interface OpcionesProductoViewModel {
 }
 
 export const ETIQUETAS_CATEGORIA: Record<CategoriaDispositivo, string> = {
-  moviles: "Celulares",
-  laptops: "Laptops y PC",
+  moviles: "Móviles",
+  laptops: "Laptops / PCs",
   tablets: "Tablets",
   auriculares: "Auriculares",
 };

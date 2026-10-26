@@ -33,7 +33,7 @@ describe("crearProductoViewModel", () => {
     expect(vista.nombre).toBe("Samsung Galaxy S24 Ultra");
     expect(vista.marca).toBe("Samsung");
     expect(vista.categoria).toBe("moviles");
-    expect(vista.categoriaEtiqueta).toBe("Celulares");
+    expect(vista.categoriaEtiqueta).toBe("Móviles");
     expect(vista.imagen).toBe("https://example.com/s24.png");
     expect(vista.disponible).toBe(true);
   });

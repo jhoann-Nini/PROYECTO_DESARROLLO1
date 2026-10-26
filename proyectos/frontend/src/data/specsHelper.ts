@@ -69,7 +69,7 @@ export function formatearCOP(valor: number | null | undefined): string {
  * Detecta la categoría de un dispositivo de forma robusta y jerárquica:
  * 1. Propiedad explícita 'categoria' (DispositivoKimovil)
  * 2. Propiedad 'nombreCategoria' del backend (Producto)
- * 3. Identificador 'idCategoria' (1: móviles, 2: tablets, 3: laptops, 4: auriculares)
+ * 3. Identificador 'idCategoria' (1: móviles, 2: laptops/PCs, 3: tablets, 4: auriculares)
  * 4. Inferencia por nombre con límites de palabra para evitar clasificaciones erróneas
  *    por coincidencias parciales dentro de una descripción.
  */
@@ -105,8 +105,8 @@ export function detectarCategoria(
   // 3. Verificación por idCategoria del backend
   if ("idCategoria" in producto && typeof producto.idCategoria === "number") {
     if (producto.idCategoria === 4) return "auriculares";
-    if (producto.idCategoria === 3) return "laptops";
-    if (producto.idCategoria === 2) return "tablets";
+    if (producto.idCategoria === 3) return "tablets";
+    if (producto.idCategoria === 2) return "laptops";
     if (producto.idCategoria === 1) return "moviles";
   }
 

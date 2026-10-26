@@ -38,12 +38,12 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(producto)).toBe("auriculares");
   });
 
-  it("detecta portátiles por idCategoria = 3 o nombreCategoria", () => {
+  it("detecta portátiles por idCategoria = 2 o nombreCategoria", () => {
     const prodId: Producto = {
       idProducto: 20,
       nombre: "Workstation",
       descripcion: "Equipo para oficina",
-      idCategoria: 3,
+      idCategoria: 2,
       idMarca: 2,
       imagen: null,
       precioReferencia: 4500000,
@@ -65,12 +65,12 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(prodNombre)).toBe("laptops");
   });
 
-  it("detecta tablets por idCategoria = 2 o nombreCategoria", () => {
+  it("detecta tablets por idCategoria = 3 o nombreCategoria", () => {
     const prod: Producto = {
       idProducto: 30,
       nombre: "Media Tab",
       descripcion: "Pantalla táctil grande",
-      idCategoria: 2,
+      idCategoria: 3,
       idMarca: 3,
       imagen: null,
       precioReferencia: 1800000,

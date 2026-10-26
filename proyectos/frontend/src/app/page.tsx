@@ -1,17 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
 import {
-  ApiError,
   crearResena,
-  mapearPerfilABusinessSession,
   obtenerCategorias,
   obtenerMarcas,
   obtenerMasComentados,
   obtenerMasDeseados,
   obtenerMejorValorados,
-  obtenerMiPerfil,
   obtenerOfertas,
   obtenerProductos,
   obtenerResenas,
@@ -28,7 +24,6 @@ import {
   type ProductoMasComentado,
   type ProductoMejorValorado,
   type ProductoOferta,
-  type UsuarioSesion,
 } from "@/types/producto";
 import { PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
@@ -39,7 +34,7 @@ import {
   type ProductoViewModel,
 } from "@/data/productoViewModel";
 import { formatearCOP } from "@/data/specsHelper";
-import { createClient } from "@/lib/supabase/client";
+import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import BottomNav from "@/components/shell/BottomNav";
@@ -135,9 +130,15 @@ export default function Home() {
   );
 
   // Sesión y roles confirmados por el backend
-  const [usuarioSesion, setUsuarioSesion] = useState<UsuarioSesion | null>(null);
-  const [cargandoAuth, setCargandoAuth] = useState(true);
-  const [errorSesion, setErrorSesion] = useState<string | null>(null);
+  const {
+    usuario: usuarioSesion,
+    cargando: cargandoAuth,
+    error: errorSesion,
+    establecerUsuario,
+    limpiarError,
+    cerrarSesion,
+    reintentar: reintentarSincronizacion,
+  } = useSesionTecReview();
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
 
@@ -196,119 +197,6 @@ export default function Home() {
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState("");
   const [filtroComentarios, setFiltroComentarios] = useState("");
-
-  // Sincronización de Supabase Auth y aprovisionamiento del perfil
-  useEffect(() => {
-    let montado = true;
-    let ultimoTokenProcesado: string | null = null;
-    let peticionEnVuelo: Promise<void> | null = null;
-    let suscripcion: { unsubscribe: () => void } | null = null;
-
-    async function sincronizarPerfil(session: Session | null) {
-      if (!session?.access_token || !session.user) {
-        ultimoTokenProcesado = null;
-        if (montado) {
-          setUsuarioSesion(null);
-          setCargandoAuth(false);
-        }
-        return;
-      }
-
-      if (session.access_token === ultimoTokenProcesado) {
-        if (peticionEnVuelo) {
-          await peticionEnVuelo;
-        }
-        return;
-      }
-
-      ultimoTokenProcesado = session.access_token;
-      if (montado) {
-        setCargandoAuth(true);
-        setErrorSesion(null);
-      }
-
-      const tarea = (async () => {
-        try {
-          const perfil = await obtenerMiPerfil(session.access_token);
-          if (montado) {
-            setUsuarioSesion(
-              mapearPerfilABusinessSession(perfil, session.user),
-            );
-            setErrorSesion(null);
-          }
-        } catch (err) {
-          const esErrorDefinitivo =
-            err instanceof ApiError &&
-            (err.status === 401 || err.status === 403 || err.status === 409);
-
-          const mensaje =
-            err instanceof Error
-              ? err.message
-              : "No fue posible verificar tu perfil en el servidor.";
-
-          if (esErrorDefinitivo) {
-            ultimoTokenProcesado = null;
-            if (montado) {
-              setUsuarioSesion(null);
-              setErrorSesion(mensaje);
-            }
-            try {
-              const supabase = createClient();
-              await supabase.auth.signOut({ scope: "local" });
-            } catch {}
-          } else if (montado) {
-            setErrorSesion(mensaje);
-            setUsuarioSesion((prev) => (prev ? prev : null));
-          }
-        } finally {
-          if (montado) {
-            setCargandoAuth(false);
-          }
-        }
-      })();
-
-      peticionEnVuelo = tarea;
-      await tarea;
-      if (peticionEnVuelo === tarea) {
-        peticionEnVuelo = null;
-      }
-    }
-
-    try {
-      const supabase = createClient();
-
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (_event, session) => {
-          if (!montado) return;
-          sincronizarPerfil(session);
-        },
-      );
-      suscripcion = authListener.subscription;
-
-      supabase.auth
-        .getSession()
-        .then(({ data: { session }, error }) => {
-          if (!montado || error) return;
-          sincronizarPerfil(session);
-        })
-        .catch(() => {
-          if (montado) {
-            setCargandoAuth(false);
-          }
-        });
-    } catch {
-      queueMicrotask(() => {
-        if (montado) {
-          setCargandoAuth(false);
-        }
-      });
-    }
-
-    return () => {
-      montado = false;
-      suscripcion?.unsubscribe();
-    };
-  }, []);
 
   const recargarProductosCatalogo = useCallback(async () => {
     try {
@@ -808,60 +696,6 @@ export default function Home() {
     );
   }, [resenas, filtroComentarios]);
 
-  const cerrarSesion = async () => {
-    setErrorSesion(null);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        try {
-          const { error: errorLocal } = await supabase.auth.signOut({
-            scope: "local",
-          });
-          if (errorLocal) {
-            setErrorSesion(
-              "No fue posible cerrar la sesión. Inténtalo de nuevo.",
-            );
-            return;
-          }
-          setUsuarioSesion(null);
-        } catch {
-          setErrorSesion("Error de conexión al cerrar la sesión.");
-          return;
-        }
-      } else {
-        setUsuarioSesion(null);
-      }
-    } catch {
-      setErrorSesion("Error al conectar con el servicio de autenticación.");
-    }
-  };
-
-  const reintentarSincronizacion = async () => {
-    setErrorSesion(null);
-    setCargandoAuth(true);
-    try {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        const perfil = await obtenerMiPerfil(session.access_token);
-        setUsuarioSesion(mapearPerfilABusinessSession(perfil, session.user));
-        setErrorSesion(null);
-      } else {
-        setUsuarioSesion(null);
-      }
-    } catch (err) {
-      const mensaje =
-        err instanceof Error ? err.message : "Error al reintentar la conexión.";
-      setErrorSesion(mensaje);
-    } finally {
-      setCargandoAuth(false);
-    }
-  };
-
   const seleccionarTodos = useCallback(() => {
     setBusqueda("");
     setFiltrarSoloEnPresupuesto(false);
@@ -877,7 +711,7 @@ export default function Home() {
           esAdmin={esAdmin}
           esRepresentante={esRepre}
           onAbrirAuth={() => {
-            setErrorSesion(null);
+            limpiarError();
             setModalAuthAbierto(true);
           }}
           onCerrarSesion={cerrarSesion}
@@ -1031,7 +865,7 @@ export default function Home() {
       <AuthModal
         isOpen={modalAuthAbierto}
         onClose={() => setModalAuthAbierto(false)}
-        onLoginSuccess={(usuario) => setUsuarioSesion(usuario)}
+        onLoginSuccess={establecerUsuario}
       />
 
       <FichaTecnicaModal

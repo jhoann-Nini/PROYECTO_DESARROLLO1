@@ -48,6 +48,18 @@
   --color-status-success-bg: #f0fdf4;
   --color-status-error: #b91c1c;
   --color-status-error-bg: #fef2f2;
+
+  /* TecnoReview — tokens oficiales del tema claro (convivencia temporal) */
+  --color-brand-blue: #2563eb;
+  --color-ink: #0f172a;
+  --color-canvas: #f3f4f6;
+  --color-hairline: #e5e7eb;
+  --color-positive: #10b981;
+  --color-star: #f59e0b;
+  --color-paper: #ffffff;
+  --color-subtle: #64748b;
+  --shadow-paper: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
+  --shadow-paper-hover: 0 2px 4px rgba(15, 23, 42, 0.08), 0 16px 32px -16px rgba(15, 23, 42, 0.18);
 }
 
 /* Estilos base de Accesibilidad Universal */
@@ -68,6 +80,14 @@ body {
   background-color: #090714;
   color: #f8fafc;
   font-family: var(--font-sans);
+}
+
+/* Alcance del tema claro de TecnoReview. Permite convivir con el tema oscuro
+   actual mientras se migran las vistas una por una. */
+.theme-tecnoreview {
+  color-scheme: light;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
 }
 
 img,

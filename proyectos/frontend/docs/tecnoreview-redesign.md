@@ -1,6 +1,6 @@
 # TecnoReview — Especificación de rediseño
 
-**Estado:** Bloque A completado; Bloque B (shell y catálogo) pendiente.
+**Estado:** Bloque A completado; Bloque B (shell y catálogo) completado; Bloque C (home) pendiente.
 **Marca:** TecnoReview reemplaza a TecReview.
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecnoreview-redesign` (creada desde `adrian`).
@@ -145,7 +145,30 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ---
 
-## 8. Criterios de aceptación del Bloque A
+## 8. Criterios de aceptación del Bloque B
+
+- [x] El shell (header, bottom nav, footer) usa solo tokens oficiales y `.theme-tecnoreview`.
+- [x] `/productos` muestra el catálogo real con búsqueda, filtros, chips y paginación de 12.
+- [x] Las marcas y categorías se enriquecen desde `/api/marcas` y `/api/categorias`.
+- [x] La tarjeta muestra disponibilidad, precio COP y “Sin reseñas” cuando no hay rating.
+- [x] El inspector de API se conserva en `/debug/productos` con sus pruebas.
+- [x] Las rutas aún no implementadas se muestran como “Próximamente”, sin 404.
+- [x] `npm test`, `npm run build` y `npm run lint` pasan.
+
+### Desviaciones registradas del Bloque B
+
+1. El header no incluye buscador global: la búsqueda vive en el catálogo hasta
+   que exista una ruta de búsqueda unificada.
+2. “Ver detalle” abre `FichaTecnicaModal`; la ruta `/productos/[id]` llega en
+   el Bloque D y reemplazará ese disparador.
+3. Las etiquetas de categoría se alinearon con la API: `Móviles`,
+   `Laptops / PCs`, `Tablets`, `Auriculares`.
+4. El disparador de detalle de la tarjeta es un botón accesible (imagen y
+   “Ver detalle”), no la tarjeta completa, para evitar controles anidados.
+
+---
+
+## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
 - [x] `.theme-tecnoreview` activa fondo claro, texto oscuro y `color-scheme: light`.
@@ -161,7 +184,7 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ---
 
-## 9. Decisiones abiertas
+## 10. Decisiones abiertas
 
 1. Rating agregado: calcular en cliente desde reseñas o pedir endpoint batch.
 2. “Compra verificada”: omitir hasta que exista en el modelo.
@@ -174,10 +197,12 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ---
 
-## 10. Estado de verificación
+## 11. Estado de verificación
 
 - **2026-10-25:** Bloque A completado en `feat/tecnoreview-redesign`.
-- `npm test`: 232 pruebas pasando en 18 archivos.
-- `npm run build`: exitoso con Next.js 16.3.5 y Turbopack.
-- Sin cambios en backend, `.env` ni en el comportamiento de las páginas
-  existentes.
+  `npm test`: 232 pruebas en 18 archivos; `npm run build` exitoso.
+- **2026-10-25:** Bloque B completado.
+  `npm test`: 261 pruebas en 23 archivos; `npm run build` y `npm run lint`
+  exitosos; `/productos` y `/debug/productos` responden 200 en el servidor de
+  desarrollo.
+- Sin cambios en backend, `.env` ni en la home `/`.

@@ -25,13 +25,12 @@ export default function CtaComparador() {
             >
               Explorar catálogo
             </Link>
-            <span
-              aria-disabled="true"
-              title="Próximamente"
-              className="inline-flex cursor-not-allowed items-center gap-2 rounded-md border border-white/20 px-4 py-2.5 text-sm font-semibold text-white/50"
+            <Link
+              href="/comparador"
+              className="inline-flex items-center gap-2 rounded-md border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white/40 hover:bg-white/10"
             >
               Ir al comparador
-            </span>
+            </Link>
           </div>
         </div>
       </div>

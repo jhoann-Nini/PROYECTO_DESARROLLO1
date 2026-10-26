@@ -44,7 +44,7 @@ interface ItemNavegacion {
 const ITEMS: ItemNavegacion[] = [
   { href: "/", etiqueta: "Inicio", icono: ICONO_INICIO },
   { href: "/productos", etiqueta: "Catálogo", icono: ICONO_CATALOGO },
-  { etiqueta: "Comparador", icono: ICONO_COMPARADOR },
+  { href: "/comparador", etiqueta: "Comparador", icono: ICONO_COMPARADOR },
   { etiqueta: "Perfil", icono: ICONO_PERFIL },
 ];
 

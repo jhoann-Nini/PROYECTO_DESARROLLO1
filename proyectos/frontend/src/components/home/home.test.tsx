@@ -557,15 +557,13 @@ describe("OpinionesHome", () => {
 });
 
 describe("CtaComparador", () => {
-  it("enlaza al catálogo y marca el comparador como próximamente", () => {
+  it("enlaza al catálogo y al comparador", () => {
     render(<CtaComparador />);
 
     const catalogo = screen.getByRole("link", { name: "Explorar catálogo" });
     expect(catalogo.getAttribute("href")).toBe("/productos");
 
-    const comparador = screen.getByText("Ir al comparador");
-    expect(comparador.getAttribute("aria-disabled")).toBe("true");
-    expect(comparador.getAttribute("title")).toBe("Próximamente");
-    expect(comparador.closest("a")).toBeNull();
+    const comparador = screen.getByRole("link", { name: "Ir al comparador" });
+    expect(comparador.getAttribute("href")).toBe("/comparador");
   });
 });

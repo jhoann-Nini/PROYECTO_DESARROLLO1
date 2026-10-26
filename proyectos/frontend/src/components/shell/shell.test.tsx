@@ -28,13 +28,18 @@ describe("Shell de TecReview", () => {
     const productos = within(header).getByRole("link", { name: "Productos" });
     expect(productos.getAttribute("href")).toBe("/productos");
     expect(productos.getAttribute("aria-current")).toBe("page");
+
+    const comparador = within(header).getByRole("link", {
+      name: "Comparador",
+    });
+    expect(comparador.getAttribute("href")).toBe("/comparador");
   });
 
   it("marca las rutas futuras como no disponibles sin href", () => {
     render(<SiteHeader />);
 
     const header = screen.getByRole("banner");
-    for (const etiqueta of ["Comparador", "Reseñas", "Blog"]) {
+    for (const etiqueta of ["Reseñas", "Blog"]) {
       const item = within(header).getByText(etiqueta);
       expect(item.getAttribute("aria-disabled")).toBe("true");
       expect(item.getAttribute("title")).toBe("Próximamente");
@@ -64,8 +69,10 @@ describe("Shell de TecReview", () => {
     expect(within(nav).getByRole("link", { name: "Inicio" })).toBeDefined();
     expect(within(nav).getByRole("link", { name: "Catálogo" })).toBeDefined();
 
-    const comparador = within(nav).getByText("Comparador");
-    expect(comparador.getAttribute("aria-disabled")).toBe("true");
+    const comparador = within(nav).getByRole("link", {
+      name: "Comparador",
+    });
+    expect(comparador.getAttribute("href")).toBe("/comparador");
     const perfil = within(nav).getByText("Perfil");
     expect(perfil.getAttribute("aria-disabled")).toBe("true");
   });

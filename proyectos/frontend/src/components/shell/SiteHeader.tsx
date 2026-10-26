@@ -12,7 +12,7 @@ interface EnlaceNavegacion {
 const ENLACES: EnlaceNavegacion[] = [
   { href: "/", etiqueta: "Inicio" },
   { href: "/productos", etiqueta: "Productos" },
-  { etiqueta: "Comparador" },
+  { href: "/comparador", etiqueta: "Comparador" },
   { etiqueta: "Reseñas" },
   { etiqueta: "Blog" },
 ];

@@ -202,7 +202,7 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 - **2026-10-25:** Bloque A completado en `feat/tecnoreview-redesign`.
   `npm test`: 232 pruebas en 18 archivos; `npm run build` exitoso.
 - **2026-10-25:** Bloque B completado.
-  `npm test`: 261 pruebas en 23 archivos; `npm run build` y `npm run lint`
+  `npm test`: 262 pruebas en 23 archivos; `npm run build` y `npm run lint`
   exitosos; `/productos` y `/debug/productos` responden 200 en el servidor de
   desarrollo.
 - Sin cambios en backend, `.env` ni en la home `/`.

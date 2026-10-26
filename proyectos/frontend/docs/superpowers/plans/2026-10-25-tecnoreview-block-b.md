@@ -14,7 +14,7 @@
 
 - **Fecha:** 2026-10-25
 - **Rama:** `feat/tecnoreview-redesign`
-- **Pruebas:** 261 pasando en 23 archivos.
+- **Pruebas:** 262 pasando en 23 archivos.
 - **Build y lint:** `npm run build` y `npm run lint` exitosos.
 - **Commits locales:** shell, enriquecido de catálogo, tarjeta v2, filtros y catálogo real.
 - **Pendiente:** Bloque C (home).

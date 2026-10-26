@@ -9,11 +9,13 @@ import RatingStars from "./RatingStars";
 interface TarjetaProductoProps {
   producto: ProductoViewModel;
   onVerDetalle?: (producto: ProductoViewModel) => void;
+  presupuesto?: "dentro" | "fuera" | null;
 }
 
 export default function TarjetaProducto({
   producto,
   onVerDetalle,
+  presupuesto = null,
 }: TarjetaProductoProps) {
   const [errorImagen, setErrorImagen] = useState(false);
 
@@ -104,17 +106,29 @@ export default function TarjetaProducto({
         )}
 
         <div className="mt-4 flex items-end justify-between gap-3 border-t border-[var(--color-hairline)] pt-3">
-          <span
-            className={`text-base font-semibold ${
-              producto.precioCOP > 0
-                ? "text-[var(--color-ink)]"
-                : "text-[var(--color-subtle)]"
-            }`}
-          >
-            {producto.precioCOP > 0
-              ? producto.precioFormateado
-              : "Consultar disponibilidad"}
-          </span>
+          <div className="min-w-0">
+            {presupuesto === "dentro" && (
+              <span className="mb-1 inline-flex items-center rounded-md bg-[var(--color-positive)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-ink)]">
+                ✓ En presupuesto
+              </span>
+            )}
+            {presupuesto === "fuera" && (
+              <span className="mb-1 inline-flex items-center rounded-md bg-[var(--color-hairline)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-subtle)]">
+                Supera presupuesto
+              </span>
+            )}
+            <span
+              className={`block text-base font-semibold ${
+                producto.precioCOP > 0
+                  ? "text-[var(--color-ink)]"
+                  : "text-[var(--color-subtle)]"
+              }`}
+            >
+              {producto.precioCOP > 0
+                ? producto.precioFormateado
+                : "Consultar disponibilidad"}
+            </span>
+          </div>
 
           <button
             type="button"

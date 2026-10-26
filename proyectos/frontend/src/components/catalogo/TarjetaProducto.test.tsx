@@ -127,4 +127,35 @@ describe("TarjetaProducto", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ver detalle" }));
     expect(onVerDetalle).toHaveBeenCalledTimes(2);
   });
+
+  it("muestra '✓ En presupuesto' cuando el producto cabe en el límite", () => {
+    render(
+      <TarjetaProducto
+        producto={crearProducto({ precioCOP: 1_000_000 })}
+        presupuesto="dentro"
+      />
+    );
+
+    expect(screen.getByText("✓ En presupuesto")).toBeDefined();
+    expect(screen.queryByText("Supera presupuesto")).toBeNull();
+  });
+
+  it("muestra 'Supera presupuesto' cuando el producto excede el límite", () => {
+    render(
+      <TarjetaProducto
+        producto={crearProducto({ precioCOP: 5_499_000 })}
+        presupuesto="fuera"
+      />
+    );
+
+    expect(screen.getByText("Supera presupuesto")).toBeDefined();
+    expect(screen.queryByText("✓ En presupuesto")).toBeNull();
+  });
+
+  it("no muestra badge de presupuesto si no se pasa la prop", () => {
+    render(<TarjetaProducto producto={crearProducto()} />);
+
+    expect(screen.queryByText("✓ En presupuesto")).toBeNull();
+    expect(screen.queryByText("Supera presupuesto")).toBeNull();
+  });
 });

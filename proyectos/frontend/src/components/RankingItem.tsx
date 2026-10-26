@@ -40,20 +40,20 @@ export default function RankingItem({
   return (
     <article
       onClick={() => onVerDetalle?.()}
-      className="group relative flex cursor-pointer items-center justify-between gap-3 rounded-control border border-line/80 bg-surface-2/30 p-3 transition-all duration-200 hover:border-blue-500/40 hover:bg-surface-2/60 sm:gap-4 sm:p-3.5"
+      className="group relative flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-paper)] transition-shadow duration-200 hover:border-[var(--color-brand-blue)]/30 hover:shadow-[var(--shadow-paper-hover)] sm:gap-4 sm:p-3.5"
     >
       {/* Columna Izquierda: Posición en el Ranking */}
-      <div className="flex min-w-[34px] shrink-0 flex-col items-center justify-center border-r border-line/70 pr-2.5 sm:min-w-[38px] sm:pr-3">
-        <span className="font-display text-base font-semibold tracking-tight text-white sm:text-lg">
+      <div className="flex min-w-[34px] shrink-0 flex-col items-center justify-center border-r border-[var(--color-hairline)] pr-2.5 sm:min-w-[38px] sm:pr-3">
+        <span className="text-base font-semibold tracking-tight text-[var(--color-ink)] sm:text-lg">
           #{ranking}
         </span>
-        <span className="text-[10px] font-medium text-blue-400">
+        <span className="text-[10px] font-semibold text-[var(--color-brand-blue)]">
           TOP
         </span>
       </div>
 
       {/* Miniatura del producto */}
-      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border border-line bg-surface-0 p-1.5 sm:h-14 sm:w-14">
+      <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-1.5 sm:h-14 sm:w-14">
         {tieneImagenValida ? (
           <img
             src={imagen!}
@@ -74,13 +74,13 @@ export default function RankingItem({
 
       {/* Información del Dispositivo */}
       <div className="flex-1 min-w-0">
-        <h4 className="truncate text-xs font-semibold text-slate-100 sm:text-sm">
-          {marca && <span className="mr-1.5 font-semibold text-white">{marca}</span>}
-          <span className="font-medium text-slate-300">{nombre}</span>
+        <h4 className="truncate text-xs font-semibold text-[var(--color-ink)] sm:text-sm">
+          {marca && <span className="mr-1.5 font-semibold text-[var(--color-ink)]">{marca}</span>}
+          <span className="font-medium text-[var(--color-ink)]/80">{nombre}</span>
         </h4>
 
         {descripcion && (
-          <p className="mt-0.5 truncate text-[11px] text-slate-500 sm:text-xs">
+          <p className="mt-0.5 truncate text-[11px] text-[var(--color-subtle)] sm:text-xs">
             {descripcion}
           </p>
         )}
@@ -88,17 +88,17 @@ export default function RankingItem({
         {/* Métrica real de Mejor Valorados */}
         {metricaTipo === "valoracion" && typeof puntuacion === "number" && (
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[11px] font-medium text-slate-400">
-              Nota: <strong className="font-semibold text-white">{puntuacion.toFixed(1)}</strong> / 5.0
+            <span className="text-[11px] font-medium text-[var(--color-subtle)]">
+              Nota: <strong className="font-semibold text-[var(--color-ink)]">{puntuacion.toFixed(1)}</strong> / 5.0
             </span>
-            <div className="h-1.5 w-14 overflow-hidden rounded-full bg-surface-0 sm:w-18">
+            <div className="h-1.5 w-14 overflow-hidden rounded-full bg-[var(--color-hairline)] sm:w-18">
               <div
-                className="h-full rounded-full bg-blue-500 transition-all"
+                className="h-full rounded-full bg-[var(--color-star)] transition-all"
                 style={{ width: `${Math.min((puntuacion / 5) * 100, 100)}%` }}
               />
             </div>
             {typeof cantidadValoraciones === "number" && (
-              <span className="text-[10px] text-slate-500">
+              <span className="text-[10px] text-[var(--color-subtle)]">
                 ({cantidadValoraciones} {cantidadValoraciones === 1 ? "valoración" : "valoraciones"})
               </span>
             )}
@@ -108,13 +108,13 @@ export default function RankingItem({
         {/* Métrica real de Más Comentados */}
         {metricaTipo === "comentario" && typeof cantidadResenas === "number" && (
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/25 bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-300">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--color-brand-blue)]">
               <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.18-3.54A7.38 7.38 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
               <span>{cantidadResenas} {cantidadResenas === 1 ? "reseña" : "reseñas"}</span>
             </span>
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[10px] text-[var(--color-subtle)]">
               Interacción comunitaria
             </span>
           </div>
@@ -124,11 +124,11 @@ export default function RankingItem({
       {/* Columna Derecha: Precio de Referencia y Acción */}
       <div className="flex shrink-0 flex-col items-end justify-center pl-1.5 text-right sm:pl-2">
         {precio !== null && precio !== undefined ? (
-          <span className="text-xs font-semibold tracking-tight text-emerald-400 sm:text-sm">
+          <span className="text-xs font-semibold tracking-tight text-[var(--color-ink)] sm:text-sm">
             {formatearCOP(precio)}
           </span>
         ) : (
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[10px] text-[var(--color-subtle)]">
             Consultar precio
           </span>
         )}
@@ -139,7 +139,7 @@ export default function RankingItem({
             onVerDetalle?.();
           }}
           aria-label={`Ver ficha de ${nombre}`}
-          className="mt-1.5 inline-flex items-center gap-1 rounded-control border border-line bg-surface-1 px-2.5 py-1 text-xs font-medium text-slate-300 transition-colors hover:border-blue-500/40 hover:text-white cursor-pointer"
+          className="mt-1.5 inline-flex cursor-pointer items-center gap-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1 text-xs font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-brand-blue)]"
         >
           Ver ficha
         </button>

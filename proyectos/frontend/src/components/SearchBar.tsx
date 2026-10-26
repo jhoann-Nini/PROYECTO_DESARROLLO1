@@ -4,18 +4,20 @@ interface SearchBarProps {
   value?: string;
   onChange?: (val: string) => void;
   placeholder?: string;
+  ariaLabel?: string;
 }
 
 export default function SearchBar({
   value = "",
   onChange,
   placeholder = "Buscar por marca, modelo o categoría (ej. iPhone, Lenovo)...",
+  ariaLabel = "Buscar dispositivos tecnológicos por marca o modelo",
 }: SearchBarProps) {
   return (
     <div className="relative flex items-center w-full">
       {/* Icono decorativo de búsqueda */}
       <div
-        className="pointer-events-none absolute left-4 text-slate-400 flex items-center justify-center"
+        className="pointer-events-none absolute left-4 flex items-center justify-center text-[var(--color-subtle)]"
         aria-hidden="true"
       >
         <svg
@@ -39,8 +41,8 @@ export default function SearchBar({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        aria-label="Buscar dispositivos tecnológicos por marca o modelo"
-        className="w-full rounded-xl border border-slate-300 bg-white py-3.5 pl-11 pr-12 text-sm text-slate-900 placeholder:text-slate-500 shadow-xs transition-colors hover:border-slate-400 focus:border-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+        aria-label={ariaLabel}
+        className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-3.5 pl-11 pr-12 text-sm text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-colors placeholder:text-[var(--color-subtle)] hover:border-[var(--color-subtle)]/40 focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
       />
 
       {/* Botón para limpiar búsqueda con etiqueta accesible */}
@@ -49,7 +51,7 @@ export default function SearchBar({
           type="button"
           onClick={() => onChange?.("")}
           aria-label="Borrar texto de búsqueda"
-          className="absolute right-3.5 flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+          className="absolute right-3.5 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
         >
           <svg
             className="h-4 w-4"

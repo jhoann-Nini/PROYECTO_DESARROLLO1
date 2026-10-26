@@ -702,7 +702,7 @@ export default function Home() {
                 <div>
                   <span className="inline-flex items-center gap-2 rounded-md border border-[var(--color-brand-blue)]/20 bg-[var(--color-brand-blue)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-blue)]"
+                      className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-solid)]"
                       aria-hidden="true"
                     />
                     Catálogo y comparador de tecnología

@@ -103,7 +103,7 @@ function ColumnaRanking({
                 type="button"
                 onClick={onReintentar}
                 aria-label={etiquetaReintento}
-                className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+                className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 {etiquetaReintento}
               </button>

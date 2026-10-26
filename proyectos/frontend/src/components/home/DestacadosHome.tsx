@@ -127,7 +127,7 @@ export default function DestacadosHome({
               <button
                 type="button"
                 onClick={onLimpiarBusqueda}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 Limpiar búsqueda
               </button>
@@ -141,7 +141,7 @@ export default function DestacadosHome({
               <button
                 type="button"
                 onClick={onMostrarTodos}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 Mostrar todos los productos
               </button>

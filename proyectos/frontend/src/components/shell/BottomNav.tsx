@@ -35,6 +35,14 @@ const ICONO_PERFIL = (
   </>
 );
 
+const ICONO_FAVORITOS = (
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    d="M12 20.25s-7.5-4.5-7.5-9.75A4.5 4.5 0 0 1 12 7.5a4.5 4.5 0 0 1 7.5 3c0 5.25-7.5 9.75-7.5 9.75Z"
+  />
+);
+
 interface ItemNavegacion {
   href?: string;
   etiqueta: string;
@@ -45,7 +53,8 @@ const ITEMS: ItemNavegacion[] = [
   { href: "/", etiqueta: "Inicio", icono: ICONO_INICIO },
   { href: "/productos", etiqueta: "Catálogo", icono: ICONO_CATALOGO },
   { href: "/comparador", etiqueta: "Comparador", icono: ICONO_COMPARADOR },
-  { etiqueta: "Perfil", icono: ICONO_PERFIL },
+  { href: "/favoritos", etiqueta: "Favoritos", icono: ICONO_FAVORITOS },
+  { href: "/perfil", etiqueta: "Perfil", icono: ICONO_PERFIL },
 ];
 
 export default function BottomNav() {

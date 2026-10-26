@@ -22,7 +22,7 @@ export default function PresupuestoHome({
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <span
-            className="h-2 w-2 rounded-full bg-[var(--color-brand-blue)]"
+            className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"
             aria-hidden="true"
           />
           <h3 className="text-sm font-semibold text-[var(--color-ink)]">

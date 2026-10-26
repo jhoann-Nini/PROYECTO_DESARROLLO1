@@ -20,7 +20,7 @@ export default function CategoriasHome({
       <button
         type="button"
         onClick={onSeleccionarTodos}
-        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+        className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
       >
         <svg
           className="h-4 w-4"

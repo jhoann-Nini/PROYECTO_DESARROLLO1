@@ -35,15 +35,17 @@ describe("Shell de TecReview", () => {
     expect(comparador.getAttribute("href")).toBe("/comparador");
   });
 
-  it("marca las rutas futuras como no disponibles sin href", () => {
+  it("enlaza las rutas secundarias del rediseño", () => {
     render(<SiteHeader />);
 
     const header = screen.getByRole("banner");
-    for (const etiqueta of ["Reseñas", "Blog"]) {
-      const item = within(header).getByText(etiqueta);
-      expect(item.getAttribute("aria-disabled")).toBe("true");
-      expect(item.getAttribute("title")).toBe("Próximamente");
-      expect(item.closest("a")).toBeNull();
+    for (const [etiqueta, href] of [
+      ["Reseñas", "/resenas"],
+      ["Blog", "/blog"],
+      ["Favoritos", "/favoritos"],
+    ]) {
+      const item = within(header).getByRole("link", { name: etiqueta });
+      expect(item.getAttribute("href")).toBe(href);
     }
   });
 
@@ -60,6 +62,16 @@ describe("Shell de TecReview", () => {
     ).toBeDefined();
   });
 
+  it("el header incluye el control de tema accesible", () => {
+    render(<SiteHeader />);
+
+    const header = screen.getByRole("banner");
+    const botonTema = within(header).getByRole("button", {
+      name: /Cambiar.*tema/i,
+    });
+    expect(botonTema.getAttribute("aria-label")).toMatch(/Cambiar/i);
+  });
+
   it("el bottom nav expone navegación accesible", () => {
     render(<BottomNav />);
 
@@ -73,8 +85,12 @@ describe("Shell de TecReview", () => {
       name: "Comparador",
     });
     expect(comparador.getAttribute("href")).toBe("/comparador");
-    const perfil = within(nav).getByText("Perfil");
-    expect(perfil.getAttribute("aria-disabled")).toBe("true");
+
+    const favoritos = within(nav).getByRole("link", { name: "Favoritos" });
+    expect(favoritos.getAttribute("href")).toBe("/favoritos");
+
+    const perfil = within(nav).getByRole("link", { name: "Perfil" });
+    expect(perfil.getAttribute("href")).toBe("/perfil");
   });
 
   it("el footer muestra la marca y el tagline", () => {

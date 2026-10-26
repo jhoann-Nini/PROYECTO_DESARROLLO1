@@ -172,7 +172,7 @@ export default function ComparadorCliente() {
               setError(null);
               setIntento((valor) => valor + 1);
             }}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
+            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Reintentar
           </button>
@@ -285,7 +285,7 @@ export default function ComparadorCliente() {
                         ? `${producto.nombre} ya está en el comparador`
                         : `Agregar ${producto.nombre} al comparador`
                     }
-                    className="cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)] hover:text-white disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent"
+                    className="cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-white disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent"
                   >
                     {seleccionado
                       ? "En el comparador"

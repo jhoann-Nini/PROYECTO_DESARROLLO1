@@ -145,7 +145,7 @@ export default function OpinionesProducto({
           <button
             type="submit"
             disabled={enviando}
-            className="cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {enviando ? "Publicando…" : "Publicar opinión"}
           </button>
@@ -196,7 +196,7 @@ export default function OpinionesProducto({
           <button
             type="button"
             onClick={onReintentar}
-            className="mt-3 cursor-pointer rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-semibold text-red-800 transition-colors hover:bg-red-100"
+            className="mt-3 cursor-pointer rounded-md border border-red-300 bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-red-800 transition-colors hover:bg-red-100"
           >
             Reintentar opiniones
           </button>

@@ -104,7 +104,7 @@ export default function EspecificacionesProducto({
                   className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--color-hairline)]"
                 >
                   <div
-                    className="h-full rounded-full bg-[var(--color-brand-blue)]"
+                    className="h-full rounded-full bg-[var(--color-brand-solid)]"
                     style={{
                       width: `${Math.min(100, Math.max(0, metrica.puntos * 10))}%`,
                     }}

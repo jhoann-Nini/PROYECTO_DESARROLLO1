@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import BotonTema from "./BotonTema";
 
 interface EnlaceNavegacion {
   href?: string;
@@ -13,8 +14,9 @@ const ENLACES: EnlaceNavegacion[] = [
   { href: "/", etiqueta: "Inicio" },
   { href: "/productos", etiqueta: "Productos" },
   { href: "/comparador", etiqueta: "Comparador" },
-  { etiqueta: "Reseñas" },
-  { etiqueta: "Blog" },
+  { href: "/resenas", etiqueta: "Reseñas" },
+  { href: "/blog", etiqueta: "Blog" },
+  { href: "/favoritos", etiqueta: "Favoritos" },
 ];
 
 export default function SiteHeader({ children }: { children?: ReactNode }) {
@@ -66,11 +68,12 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <BotonTema />
           {children}
 
           <Link
             href="/productos"
-            className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90 sm:inline-flex"
+            className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex"
           >
             Explorar catálogo
           </Link>

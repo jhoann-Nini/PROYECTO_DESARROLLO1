@@ -1,23 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Doto, Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import { SCRIPT_TEMA } from "@/lib/tema";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-space-grotesk",
-});
-
-const doto = Doto({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-doto",
 });
 
 export const metadata: Metadata = {
@@ -32,11 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${doto.variable} dark`}
-    >
-      <body className="min-h-screen bg-[#090714] text-slate-100 antialiased font-sans selection:bg-blue-600 selection:text-white">
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-[var(--color-canvas)] font-sans text-[var(--color-ink)] antialiased selection:bg-[var(--color-brand-solid)] selection:text-white">
+        <Script
+          id="tema-inicial"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }}
+        />
         {children}
       </body>
     </html>

@@ -36,9 +36,14 @@ export default function ResumenSesion({
       {error && (
         <span
           role="alert"
-          className="hidden items-center gap-1.5 rounded-md border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 px-2 py-1 text-[11px] font-medium text-[var(--color-ink)] lg:inline-flex"
+          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 px-2 py-1 text-[11px] font-medium text-[var(--color-ink)]"
         >
-          <span className="max-w-[16rem] truncate">⚠️ {error}</span>
+          <span className="sr-only lg:not-sr-only lg:max-w-[16rem] lg:truncate">
+            ⚠️ {error}
+          </span>
+          <span aria-hidden="true" className="lg:hidden">
+            ⚠️
+          </span>
           <button
             type="button"
             onClick={onReintentar}
@@ -95,7 +100,7 @@ export default function ResumenSesion({
             type="button"
             onClick={onCerrarSesion}
             title="Cerrar sesión"
-            className="hidden cursor-pointer text-xs text-[var(--color-subtle)] transition-colors hover:text-[var(--color-ink)] sm:inline"
+            className="cursor-pointer text-xs text-[var(--color-subtle)] transition-colors hover:text-[var(--color-ink)]"
           >
             Cerrar sesión
           </button>

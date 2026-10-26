@@ -70,7 +70,7 @@
 - `SearchBar` agrega `ariaLabel?: string`; conserva `value`, `onChange` y `placeholder`.
 - `TarjetaProducto` agrega `presupuesto?: "dentro" | "fuera" | null`.
 
-- [ ] **Step 1: Escribir las pruebas que fallan**
+- [x] **Step 1: Escribir las pruebas que fallan**
 
 En `TarjetaProducto.test.tsx`:
 
@@ -80,12 +80,12 @@ it("muestra 'Supera presupuesto' cuando el producto excede el límite")
 it("no muestra badge de presupuesto si no se pasa la prop")
 ```
 
-- [ ] **Step 2: Ejecutar y verificar el fallo**
+- [x] **Step 2: Ejecutar y verificar el fallo**
 
 Run: `npx vitest run src/components/catalogo/TarjetaProducto.test.tsx`
 Expected: FAIL por la prop y los textos ausentes.
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 `SearchBar`: reemplazar clases slate/blue por tokens (`--color-paper`, `--color-ink`, `--color-subtle`, `--color-hairline`, `--color-brand-blue`), `rounded-lg`, `shadow-[var(--shadow-paper)]`, y `aria-label={ariaLabel ?? "Buscar dispositivos tecnológicos por marca o modelo"}`.
 
@@ -102,12 +102,12 @@ Expected: FAIL por la prop y los textos ausentes.
 )}
 ```
 
-- [ ] **Step 4: Ejecutar y verificar que pasan**
+- [x] **Step 4: Ejecutar y verificar que pasan**
 
 Run: `npx vitest run src/components/catalogo/TarjetaProducto.test.tsx src/components/RankingItem.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/SearchBar.tsx src/components/RankingItem.tsx src/components/catalogo/TarjetaProducto.tsx src/components/catalogo/TarjetaProducto.test.tsx
@@ -140,7 +140,7 @@ interface ResumenSesionProps {
 }
 ```
 
-- [ ] **Step 1: Escribir las pruebas que fallan**
+- [x] **Step 1: Escribir las pruebas que fallan**
 
 `ResumenSesion.test.tsx`:
 
@@ -158,12 +158,12 @@ it("muestra el error y permite reintentar")
 it("el header renderiza las acciones que recibe")
 ```
 
-- [ ] **Step 2: Ejecutar y verificar el fallo**
+- [x] **Step 2: Ejecutar y verificar el fallo**
 
 Run: `npx vitest run src/components/home/ResumenSesion.test.tsx src/components/shell/shell.test.tsx`
 Expected: FAIL por módulo y prop inexistentes.
 
-- [ ] **Step 3: Implementar**
+- [x] **Step 3: Implementar**
 
 `ResumenSesion` replica los textos y roles accesibles de la barra superior anterior:
 
@@ -176,12 +176,12 @@ Expected: FAIL por módulo y prop inexistentes.
 
 `SiteHeader` acepta `children?: React.ReactNode` y los renderiza antes del CTA “Explorar catálogo”; el CTA se oculta en móvil (`hidden sm:inline-flex`).
 
-- [ ] **Step 4: Ejecutar y verificar que pasan**
+- [x] **Step 4: Ejecutar y verificar que pasan**
 
 Run: `npx vitest run src/components/home/ResumenSesion.test.tsx src/components/shell/shell.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/home/ResumenSesion.tsx src/components/home/ResumenSesion.test.tsx src/components/shell/SiteHeader.tsx src/components/shell/shell.test.tsx
@@ -241,7 +241,7 @@ OpinionesHome({
 CtaComparador()
 ```
 
-- [ ] **Step 1: Escribir las pruebas que fallan**
+- [x] **Step 1: Escribir las pruebas que fallan**
 
 `home.test.tsx`:
 
@@ -256,12 +256,12 @@ it("OpinionesHome muestra el aviso de login y el formulario")
 it("CtaComparador enlaza al catálogo y marca el comparador como próximamente")
 ```
 
-- [ ] **Step 2: Ejecutar y verificar el fallo**
+- [x] **Step 2: Ejecutar y verificar el fallo**
 
 Run: `npx vitest run src/components/home/home.test.tsx`
 Expected: FAIL por módulos inexistentes.
 
-- [ ] **Step 3: Implementar las secciones**
+- [x] **Step 3: Implementar las secciones**
 
 Reglas visuales y de contenido:
 
@@ -274,12 +274,12 @@ Reglas visuales y de contenido:
 - `OpinionesHome`: conserva “Opiniones de la comunidad (N)”, “Actualizar”, “Filtrar opiniones de la comunidad”, el aviso de login, “Escribe tu opinión”, “Publicar opinión” y el listado.
 - `CtaComparador`: enlace “Explorar catálogo” a `/productos`; texto “Ir al comparador” con `aria-disabled="true"`, `title="Próximamente"` y sin `href`.
 
-- [ ] **Step 4: Ejecutar y verificar que pasan**
+- [x] **Step 4: Ejecutar y verificar que pasan**
 
 Run: `npx vitest run src/components/home/home.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/home
@@ -299,7 +299,7 @@ git commit -F <archivo-utf8> # "feat: construir las secciones del inicio de TecR
 - Nuevos estados: `categoriasApi`, `marcasApi`.
 - Nuevas derivadas: `vistas`, `productosFiltrados`, `limitePresupuestoCOP`.
 
-- [ ] **Step 1: Escribir/adaptar las pruebas que fallan**
+- [x] **Step 1: Escribir/adaptar las pruebas que fallan**
 
 En `page.test.tsx`:
 
@@ -318,12 +318,12 @@ it("el filtro explícito de presupuesto oculta los productos que lo superan")
 it("el contador distingue productos verificados de productos mostrados")
 ```
 
-- [ ] **Step 2: Ejecutar y verificar el fallo**
+- [x] **Step 2: Ejecutar y verificar el fallo**
 
 Run: `npx vitest run src/app/page.test.tsx`
 Expected: FAIL por la estructura anterior.
 
-- [ ] **Step 3: Implementar la nueva home**
+- [x] **Step 3: Implementar la nueva home**
 
 Estructura:
 
@@ -378,12 +378,12 @@ Rankings: filtrar por búsqueda y presupuesto explícito; sin filtro de categor�
 
 `verFichaRanking(item)` conserva la conversión a `Producto` de la home anterior.
 
-- [ ] **Step 4: Ejecutar y verificar que pasan**
+- [x] **Step 4: Ejecutar y verificar que pasan**
 
 Run: `npx vitest run src/app/page.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/app/page.tsx src/app/page.test.tsx
@@ -394,38 +394,45 @@ git commit -F <archivo-utf8> # "feat: rediseñar el inicio de TecReview"
 
 ### Task 5: Verificación y documentación
 
-- [ ] **Step 1: Suite completa**
+- [x] **Step 1: Suite completa**
 
 Run: `npm test`
 Expected: todas las pruebas pasan.
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 Run: `npm run build`
 Expected: exit 0; `/` presente.
 
-- [ ] **Step 3: Lint**
+- [x] **Step 3: Lint**
 
 Run: `npm run lint`
 Expected: sin errores.
 
-- [ ] **Step 4: Rutas**
+- [x] **Step 4: Rutas**
 
 Run: `Invoke-WebRequest http://localhost:3000/`, `/productos`, `/debug/productos`
 Expected: 200.
 
-- [ ] **Step 5: Revisar diff**
+- [x] **Step 5: Revisar diff**
 
 Run: `git status --short` y `git diff --stat`
 Expected: solo archivos del Bloque C; sin backend, `.env` ni base de datos.
 
-- [ ] **Step 6: Documentación**
+- [x] **Step 6: Documentación**
 
 Actualizar `docs/tecreview-redesign.md` con el estado del Bloque C, criterios de aceptación y desviaciones. Marcar este plan.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add docs
 git commit -F <archivo-utf8> # "docs: registrar el avance del bloque C"
 ```
+
+---
+
+**Estado:** Bloque C completado el 2026-10-25 en `feat/tecreview-redesign`.
+Suite: 288 pruebas en 25 archivos; build y lint exitosos; `/`, `/productos` y
+`/debug/productos` responden 200. Todos los commits permanecen locales, sin
+push ni merge.

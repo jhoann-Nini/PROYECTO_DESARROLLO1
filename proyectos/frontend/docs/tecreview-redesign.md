@@ -1,6 +1,6 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloque A completado; Bloque B (shell y catálogo) completado; Bloque C (home) pendiente.
+**Estado:** Bloque A completado; Bloque B (shell y catálogo) completado; Bloque C (home) completado.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -168,6 +168,40 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ---
 
+## 8.1 Criterios de aceptación del Bloque C
+
+- [x] La home usa `.theme-tecreview`, el shell del Bloque B y la paleta oficial.
+- [x] El hero incluye búsqueda, categorías navegables, presupuesto y ofertas.
+- [x] El presupuesto es un filtro explícito: por defecto no oculta productos.
+- [x] La búsqueda prevalece sobre el presupuesto y permite localizar productos
+      que lo superan.
+- [x] Los productos sin precio se conservan y muestran “Consultar
+      disponibilidad”; al activar el filtro de presupuesto quedan fuera.
+- [x] Los rankings de valorados, comentados y deseados tienen estados de carga,
+      error, vacío y reintento; no se inventan datos.
+- [x] Las opiniones conservan el listado, el filtro, el formulario, el aviso de
+      login y la publicación real.
+- [x] La sesión se muestra en el header con rol, administración y cierre de
+      sesión; el error de sesión permite reintentar.
+- [x] El comparador se anuncia como “Próximamente” sin `href`.
+- [x] `npm test`, `npm run build` y `npm run lint` pasan.
+- [x] `/`, `/productos` y `/debug/productos` responden 200.
+
+### Desviaciones registradas del Bloque C
+
+1. El filtro de categoría de la home se retiró: las categorías navegan a sus
+   páginas dedicadas y el botón “Todos” limpia búsqueda y presupuesto.
+2. Los rankings dejaron de filtrarse por categoría y el presupuesto solo se
+   aplica cuando el usuario lo activa. Los productos de ranking sin precio se
+   conservan.
+3. `RankingItem` distingue la métrica de “deseos” de las reseñas para no
+   etiquetar los favoritos como comentarios.
+4. La ficha técnica sigue abriéndose en `FichaTecnicaModal` hasta el Bloque D.
+5. El slot de sesión del header se usa solo en la home; el resto de vistas
+   conserva el header sin acciones por ahora.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -205,4 +239,8 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
   `npm test`: 262 pruebas en 23 archivos; `npm run build` y `npm run lint`
   exitosos; `/productos` y `/debug/productos` responden 200 en el servidor de
   desarrollo.
-- Sin cambios en backend, `.env` ni en la home `/`.
+- **2026-10-25:** Bloque C completado en `feat/tecreview-redesign`.
+  `npm test`: 288 pruebas en 25 archivos; `npm run build` y `npm run lint`
+  exitosos; `/`, `/productos` y `/debug/productos` responden 200 en el servidor
+  de desarrollo.
+- Sin cambios en backend, `.env` ni base de datos.

@@ -40,7 +40,7 @@ export default function ProductosPage() {
               Inspector de API
             </span>
             <h1 className="mt-2 font-display text-3xl font-semibold tracking-[-0.03em] text-white sm:text-4xl">
-              TecnoReview Explorador.
+              TecReview Explorador.
             </h1>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">
               Consulta directa al catálogo del backend y sus precios de

@@ -24,7 +24,7 @@ import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import SearchBar from "@/components/SearchBar";
 import FichaTecnicaModal from "@/components/FichaTecnicaModal";
-import ProductCardTecno from "./ProductCardTecno";
+import TarjetaProducto from "./TarjetaProducto";
 import FilterSidebar from "./FilterSidebar";
 import FilterChips from "./FilterChips";
 import Pagination from "./Pagination";
@@ -246,7 +246,7 @@ export default function CatalogoCliente() {
               <>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {paginaActual.items.map((vista) => (
-                    <ProductCardTecno
+                    <TarjetaProducto
                       key={vista.idProducto}
                       producto={vista}
                       onVerDetalle={abrirDetalle}

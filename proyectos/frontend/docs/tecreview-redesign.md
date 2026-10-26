@@ -1,9 +1,9 @@
-# TecnoReview — Especificación de rediseño
+# TecReview — Especificación de rediseño
 
 **Estado:** Bloque A completado; Bloque B (shell y catálogo) completado; Bloque C (home) pendiente.
-**Marca:** TecnoReview reemplaza a TecReview.
+**Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
-**Rama:** `feat/tecnoreview-redesign` (creada desde `adrian`).
+**Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
 
 ---
 
@@ -120,7 +120,7 @@ Los componentes nuevos usan exclusivamente los tokens semánticos oficiales.
 ## 6. Estrategia de convivencia
 
 1. Se agregan los tokens nuevos junto a los actuales, sin borrar el tema oscuro.
-2. Las páginas nuevas usan `.theme-tecnoreview` y los tokens semánticos.
+2. Las páginas nuevas usan `.theme-tecreview` y los tokens semánticos.
 3. Las páginas viejas siguen funcionando con el tema oscuro y la clase `dark`.
 4. Cuando todas las vistas estén migradas se retiran `dark`, Doto, Space
    Grotesk y los tokens antiguos.
@@ -147,7 +147,7 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ## 8. Criterios de aceptación del Bloque B
 
-- [x] El shell (header, bottom nav, footer) usa solo tokens oficiales y `.theme-tecnoreview`.
+- [x] El shell (header, bottom nav, footer) usa solo tokens oficiales y `.theme-tecreview`.
 - [x] `/productos` muestra el catálogo real con búsqueda, filtros, chips y paginación de 12.
 - [x] Las marcas y categorías se enriquecen desde `/api/marcas` y `/api/categorias`.
 - [x] La tarjeta muestra disponibilidad, precio COP y “Sin reseñas” cuando no hay rating.
@@ -171,7 +171,7 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
-- [x] `.theme-tecnoreview` activa fondo claro, texto oscuro y `color-scheme: light`.
+- [x] `.theme-tecreview` activa fondo claro, texto oscuro y `color-scheme: light`.
 - [x] `normalizarPrecioCOP` y `formatearCOP` usan la misma regla.
 - [x] `crearProductoViewModel` mapea identidad, categoría, marca, precio,
   disponibilidad, imagen, specs, rating y características.
@@ -199,7 +199,7 @@ Esto permite avanzar por bloques sin una ventana de aplicación rota.
 
 ## 11. Estado de verificación
 
-- **2026-10-25:** Bloque A completado en `feat/tecnoreview-redesign`.
+- **2026-10-25:** Bloque A completado en `feat/tecreview-redesign`.
   `npm test`: 232 pruebas en 18 archivos; `npm run build` exitoso.
 - **2026-10-25:** Bloque B completado.
   `npm test`: 262 pruebas en 23 archivos; `npm run build` y `npm run lint`

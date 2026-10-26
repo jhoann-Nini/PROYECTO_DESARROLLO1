@@ -6,15 +6,15 @@ import type { ProductoViewModel } from "@/data/productoViewModel";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import RatingStars from "./RatingStars";
 
-interface ProductCardTecnoProps {
+interface TarjetaProductoProps {
   producto: ProductoViewModel;
   onVerDetalle?: (producto: ProductoViewModel) => void;
 }
 
-export default function ProductCardTecno({
+export default function TarjetaProducto({
   producto,
   onVerDetalle,
-}: ProductCardTecnoProps) {
+}: TarjetaProductoProps) {
   const [errorImagen, setErrorImagen] = useState(false);
 
   const tieneImagen =

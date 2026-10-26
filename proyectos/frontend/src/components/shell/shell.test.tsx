@@ -14,12 +14,12 @@ afterEach(() => {
   cleanup();
 });
 
-describe("Shell de TecnoReview", () => {
+describe("Shell de TecReview", () => {
   it("el header muestra la marca y enlaza a rutas existentes", () => {
     render(<SiteHeader />);
 
     const header = screen.getByRole("banner");
-    expect(within(header).getByText("Tecno")).toBeDefined();
+    expect(within(header).getByText("Tec")).toBeDefined();
     expect(within(header).getByText("Review")).toBeDefined();
 
     const inicio = within(header).getByRole("link", { name: "Inicio" });
@@ -62,7 +62,7 @@ describe("Shell de TecnoReview", () => {
 
     const footer = screen.getByRole("contentinfo");
     expect(
-      within(footer).getByText(/© 2026 TecnoReview/i),
+      within(footer).getByText(/© 2026 TecReview/i),
     ).toBeDefined();
     expect(
       within(footer).getByText(/Compara · Analiza · Decide/i),

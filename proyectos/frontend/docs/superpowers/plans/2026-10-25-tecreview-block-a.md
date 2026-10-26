@@ -1,14 +1,14 @@
-# TecnoReview Bloque A — Fundaciones Implementation Plan
+# TecReview Bloque A — Fundaciones Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
-**Goal:** Agregar los tokens del tema claro de TecnoReview y la capa de datos pura (normalización de COP, view model de producto, filtros y paginación) sin cambiar el comportamiento visual existente.
+**Goal:** Agregar los tokens del tema claro de TecReview y la capa de datos pura (normalización de COP, view model de producto, filtros y paginación) sin cambiar el comportamiento visual existente.
 
 **Architecture:** Capa de convivencia. Los tokens semánticos nuevos viven junto a los tokens oscuros actuales. Módulos TypeScript puros transforman los productos de la API en un view model listo para UI y ofrecen filtrado/paginación deterministas. Este bloque no contiene React ni llamadas de red.
 
 **Tech Stack:** Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Vitest 3.
 
-**Spec:** `docs/tecnoreview-redesign.md`
+**Spec:** `docs/tecreview-redesign.md`
 
 ## Global Constraints
 
@@ -40,9 +40,9 @@
 - Create: `src/data/catalogo.ts` — conteos, filtros, chips y paginación.
 - Create: `src/data/catalogo.test.ts` — pruebas de catálogo.
 - Modify: `src/data/specsHelper.ts` — `formatearCOP` usa `normalizarPrecioCOP`.
-- Modify: `src/app/globals.css` — tokens nuevos y `.theme-tecnoreview`.
-- Create: `docs/tecnoreview-redesign.md` — especificación (ya creada).
-- Create: `docs/superpowers/plans/2026-10-25-tecnoreview-block-a.md` — este plan.
+- Modify: `src/app/globals.css` — tokens nuevos y `.theme-tecreview`.
+- Create: `docs/tecreview-redesign.md` — especificación (ya creada).
+- Create: `docs/superpowers/plans/2026-10-25-tecreview-block-a.md` — este plan.
 
 ---
 
@@ -53,7 +53,7 @@
 - Test: verificación por `grep` y build final
 
 **Interfaces:**
-- Produces: tokens `--color-brand-blue`, `--color-ink`, `--color-canvas`, `--color-hairline`, `--color-positive`, `--color-star`, `--color-paper`, `--color-subtle`, sombras `--shadow-paper`, `--shadow-paper-hover` y la clase `.theme-tecnoreview`.
+- Produces: tokens `--color-brand-blue`, `--color-ink`, `--color-canvas`, `--color-hairline`, `--color-positive`, `--color-star`, `--color-paper`, `--color-subtle`, sombras `--shadow-paper`, `--shadow-paper-hover` y la clase `.theme-tecreview`.
 
 - [x] **Step 1: Agregar los tokens dentro de `@theme`**
 
@@ -75,7 +75,7 @@ Valores exactos:
 - [x] **Step 2: Agregar la clase de alcance**
 
 ```css
-.theme-tecnoreview {
+.theme-tecreview {
   color-scheme: light;
   background-color: var(--color-canvas);
   color: var(--color-ink);
@@ -84,14 +84,14 @@ Valores exactos:
 
 - [x] **Step 3: Verificar que los valores sean exactos**
 
-Run: `rg -n "color-(brand-blue|ink|canvas|hairline|positive|star|paper|subtle)|shadow-paper|theme-tecnoreview" src/app/globals.css`
+Run: `rg -n "color-(brand-blue|ink|canvas|hairline|positive|star|paper|subtle)|shadow-paper|theme-tecreview" src/app/globals.css`
 Expected: aparecen los ocho tokens, las dos sombras y la clase, con los hex indicados.
 
 - [x] **Step 4: Commit**
 
 ```bash
-git add src/app/globals.css docs/tecnoreview-redesign.md docs/superpowers/plans/2026-10-25-tecnoreview-block-a.md
-git commit -m "feat: add TecnoReview design tokens and foundation docs"
+git add src/app/globals.css docs/tecreview-redesign.md docs/superpowers/plans/2026-10-25-tecreview-block-a.md
+git commit -m "feat: add TecReview design tokens and foundation docs"
 ```
 
 ---
@@ -318,7 +318,7 @@ Expected: PASS.
 
 ```bash
 git add src/data/productoViewModel.ts src/data/productoViewModel.test.ts
-git commit -m "feat: add product view model for TecnoReview catalog"
+git commit -m "feat: add product view model for TecReview catalog"
 ```
 
 ---
@@ -483,8 +483,8 @@ Marcar las tareas completadas y anotar cualquier desviación en este documento.
 - [x] **Step 5: Commit final si queda algún ajuste**
 
 ```bash
-git add docs/superpowers/plans/2026-10-25-tecnoreview-block-a.md
-git commit -m "docs: mark TecnoReview block A progress"
+git add docs/superpowers/plans/2026-10-25-tecreview-block-a.md
+git commit -m "docs: mark TecReview block A progress"
 ```
 
 ---
@@ -492,7 +492,7 @@ git commit -m "docs: mark TecnoReview block A progress"
 ## Estado de ejecución
 
 - **Fecha:** 2026-10-25
-- **Rama:** `feat/tecnoreview-redesign`
+- **Rama:** `feat/tecreview-redesign`
 - **Pruebas:** 232 pasando en 18 archivos.
 - **Build:** `npm run build` exitoso.
 - **Commits locales:** tokens y docs, normalización COP, view model, filtros de catálogo.

@@ -1,4 +1,4 @@
-# Frontend - TecnoReview (Nothing Movil UI)
+# Frontend - TecReview (Nothing Movil UI)
 
 Plataforma frontend desarrollada con **Next.js 16**, **React 19**, **TypeScript** y **Tailwind CSS**, con arquitectura orientada al consumo de servicios REST en Spring Boot y diseño industrial inspirado en **Nothing Phone (Nothing OS)** sobre la estructura comparativa de **Kimovil**.
 

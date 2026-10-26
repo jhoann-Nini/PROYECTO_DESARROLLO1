@@ -25,9 +25,9 @@ export default function SiteHeader() {
         <Link
           href="/"
           className="flex shrink-0 items-baseline gap-0 text-lg font-bold tracking-tight"
-          aria-label="TecnoReview, ir al inicio"
+          aria-label="TecReview, ir al inicio"
         >
-          <span className="text-[var(--color-ink)]">Tecno</span>
+          <span className="text-[var(--color-ink)]">Tec</span>
           <span className="text-[var(--color-brand-blue)]">Review</span>
         </Link>
 

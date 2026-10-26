@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import ProductCardTecno from "./ProductCardTecno";
+import TarjetaProducto from "./TarjetaProducto";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 
 afterEach(() => {
@@ -37,9 +37,9 @@ function crearProducto(
   };
 }
 
-describe("ProductCardTecno", () => {
+describe("TarjetaProducto", () => {
   it("muestra nombre, marca, categoría y precio formateado", () => {
-    render(<ProductCardTecno producto={crearProducto()} />);
+    render(<TarjetaProducto producto={crearProducto()} />);
 
     expect(
       screen.getByRole("heading", { name: "Samsung Galaxy S24 Ultra" })
@@ -51,7 +51,7 @@ describe("ProductCardTecno", () => {
 
   it("muestra 'Consultar disponibilidad' cuando no hay precio", () => {
     render(
-      <ProductCardTecno
+      <TarjetaProducto
         producto={crearProducto({
           precioCOP: 0,
           precioFormateado: "Consultar disponibilidad",
@@ -63,21 +63,21 @@ describe("ProductCardTecno", () => {
   });
 
   it("muestra 'No disponible' cuando estado es false", () => {
-    render(<ProductCardTecno producto={crearProducto({ disponible: false })} />);
+    render(<TarjetaProducto producto={crearProducto({ disponible: false })} />);
 
     expect(screen.getByText("No disponible")).toBeDefined();
     expect(screen.queryByText("Disponible")).toBeNull();
   });
 
   it("muestra 'Sin reseñas' cuando no hay rating", () => {
-    render(<ProductCardTecno producto={crearProducto()} />);
+    render(<TarjetaProducto producto={crearProducto()} />);
 
     expect(screen.getByText("Sin reseñas")).toBeDefined();
   });
 
   it("muestra el rating numérico cuando existe", () => {
     render(
-      <ProductCardTecno
+      <TarjetaProducto
         producto={crearProducto({ rating: 4.5, cantidadResenas: 120 })}
       />
     );
@@ -91,7 +91,7 @@ describe("ProductCardTecno", () => {
 
   it("omite especificaciones ausentes", () => {
     render(
-      <ProductCardTecno
+      <TarjetaProducto
         producto={crearProducto({
           especificaciones: {
             pantalla: null,
@@ -114,7 +114,7 @@ describe("ProductCardTecno", () => {
     const producto = crearProducto();
 
     render(
-      <ProductCardTecno producto={producto} onVerDetalle={onVerDetalle} />
+      <TarjetaProducto producto={producto} onVerDetalle={onVerDetalle} />
     );
 
     fireEvent.click(

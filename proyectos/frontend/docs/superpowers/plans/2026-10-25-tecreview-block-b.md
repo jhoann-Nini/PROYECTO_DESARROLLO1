@@ -1,19 +1,19 @@
-# TecnoReview Bloque B — Shell y catálogo Implementation Plan
+# TecReview Bloque B — Shell y catálogo Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
-**Goal:** Construir el shell responsive de TecnoReview (header, bottom nav y footer) y reemplazar `/productos` por el catálogo real con búsqueda, filtros, chips y paginación.
+**Goal:** Construir el shell responsive de TecReview (header, bottom nav y footer) y reemplazar `/productos` por el catálogo real con búsqueda, filtros, chips y paginación.
 
 **Architecture:** El catálogo vive en un componente cliente (`CatalogoCliente`) que consume la API, enriquece productos con marcas y categorías, y delega el cálculo en las funciones puras del Bloque A. El shell se monta con `src/app/productos/layout.tsx`, de modo que `/productos` y la futura `/productos/[id]` lo compartan. El inspector actual se mueve a `/debug/productos` sin perder sus pruebas.
 
 **Tech Stack:** Next.js 16, React 19, TypeScript 5, Tailwind CSS 4, Vitest 3 + Testing Library.
 
-**Spec:** `docs/tecnoreview-redesign.md`
+**Spec:** `docs/tecreview-redesign.md`
 
 ## Estado de ejecución
 
 - **Fecha:** 2026-10-25
-- **Rama:** `feat/tecnoreview-redesign`
+- **Rama:** `feat/tecreview-redesign`
 - **Pruebas:** 262 pasando en 23 archivos.
 - **Build y lint:** `npm run build` y `npm run lint` exitosos.
 - **Commits locales:** shell, enriquecido de catálogo, tarjeta v2, filtros y catálogo real.
@@ -24,7 +24,7 @@
 - Paleta oficial únicamente: `#2563EB`, `#0F172A`, `#F3F4F6`, `#E5E7EB`, `#10B981`, `#F59E0B`, `#FFFFFF`, `#64748B`.
 - Tipografía Inter, pesos 400/500/600/700; sin Doto ni Space Grotesk en componentes nuevos.
 - Radios de 8 px a 12 px; sombras suaves; iconos outline de 1.5–2 px.
-- Todo componente nuevo usa `.theme-tecnoreview` o sus tokens; nada de clases `dark:`.
+- Todo componente nuevo usa `.theme-tecreview` o sus tokens; nada de clases `dark:`.
 - No modificar backend, `.env`, base de datos ni la home `/` en este bloque.
 - No inventar ratings, especificaciones ni disponibilidad: rating `null` se muestra como “Sin reseñas”.
 - El inspector de API existente no se elimina: se traslada a `/debug/productos`.
@@ -50,8 +50,8 @@
 - Create: `src/data/catalogoApi.ts` — enriquecido `Producto` + catálogos → view models.
 - Create: `src/data/catalogoApi.test.ts` — pruebas del enriquecido.
 - Create: `src/components/catalogo/RatingStars.tsx` — estrellas o “Sin reseñas”.
-- Create: `src/components/catalogo/ProductCardTecno.tsx` — tarjeta v2.
-- Create: `src/components/catalogo/ProductCardTecno.test.tsx` — pruebas de la tarjeta.
+- Create: `src/components/catalogo/TarjetaProducto.tsx` — tarjeta v2.
+- Create: `src/components/catalogo/TarjetaProducto.test.tsx` — pruebas de la tarjeta.
 - Create: `src/components/catalogo/FilterSidebar.tsx` — categorías, marcas, precio y características.
 - Create: `src/components/catalogo/FilterChips.tsx` — chips removibles.
 - Create: `src/components/catalogo/Pagination.tsx` — paginación accesible.
@@ -79,11 +79,11 @@
 
 Reglas de contenido:
 
-- Marca: `TecnoReview` con `Tecno` en `--color-ink` y `Review` en `--color-brand-blue`.
+- Marca: `TecReview` con `Tec` en `--color-ink` y `Review` en `--color-brand-blue`.
 - Navegación desktop: Inicio (`/`), Productos (`/productos`), Comparador, Reseñas, Blog.
 - Comparador, Reseñas y Blog aún no existen: se renderizan como `aria-disabled="true"` con `title="Próximamente"` y **sin** `href`, para no producir 404.
 - Bottom nav móvil: Inicio, Catálogo, Comparador y Perfil con la misma regla de disponibilidad.
-- Footer: `© 2026 TecnoReview — Compara · Analiza · Decide.`
+- Footer: `© 2026 TecReview — Compara · Analiza · Decide.`
 
 - [x] **Step 1: Escribir las pruebas que fallan**
 
@@ -91,7 +91,7 @@ Reglas de contenido:
 
 ```ts
 it("el header muestra la marca y enlaza a rutas existentes")
-// TecnoReview visible; Inicio con href "/"; Productos con href "/productos".
+// TecReview visible; Inicio con href "/"; Productos con href "/productos".
 
 it("marca las rutas futuras como no disponibles sin href")
 // Comparador, Reseñas y Blog: aria-disabled="true" y sin atributo href.
@@ -120,7 +120,7 @@ Expected: FAIL por módulos inexistentes.
 ```tsx
 export default function ProductosLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="theme-tecnoreview flex min-h-screen flex-col">
+    <div className="theme-tecreview flex min-h-screen flex-col">
       <SiteHeader />
       <div className="flex-1 pb-20 md:pb-0">{children}</div>
       <SiteFooter />
@@ -139,7 +139,7 @@ Expected: PASS.
 
 ```bash
 git add src/components/shell src/app/productos/layout.tsx
-git commit -m "feat: add TecnoReview responsive shell"
+git commit -m "feat: add TecReview responsive shell"
 ```
 
 ---
@@ -207,8 +207,8 @@ git commit -m "feat: enrich catalog products with brand and category names"
 
 **Files:**
 - Create: `src/components/catalogo/RatingStars.tsx`
-- Create: `src/components/catalogo/ProductCardTecno.tsx`
-- Create: `src/components/catalogo/ProductCardTecno.test.tsx`
+- Create: `src/components/catalogo/TarjetaProducto.tsx`
+- Create: `src/components/catalogo/TarjetaProducto.test.tsx`
 
 **Interfaces:**
 - Produces:
@@ -220,7 +220,7 @@ export function RatingStars(props: {
   tamano?: "sm" | "md";
 }): React.ReactElement;
 
-export default function ProductCardTecno(props: {
+export default function TarjetaProducto(props: {
   producto: ProductoViewModel;
   onVerDetalle?: (producto: ProductoViewModel) => void;
 }): React.ReactElement;
@@ -250,23 +250,23 @@ it("invoca onVerDetalle al pulsar la tarjeta y el botón")
 
 - [x] **Step 2: Ejecutar y verificar el fallo**
 
-Run: `npx vitest run src/components/catalogo/ProductCardTecno.test.tsx`
+Run: `npx vitest run src/components/catalogo/TarjetaProducto.test.tsx`
 Expected: FAIL por módulo inexistente.
 
-- [x] **Step 3: Implementar `RatingStars` y `ProductCardTecno`**
+- [x] **Step 3: Implementar `RatingStars` y `TarjetaProducto`**
 
 `RatingStars` usa `role="img"` con `aria-label` tipo `Valoración 4,5 de 5`; cuando `rating === null` renderiza `<span>Sin reseñas</span>` sin iconos.
 
 - [x] **Step 4: Ejecutar y verificar que pasan**
 
-Run: `npx vitest run src/components/catalogo/ProductCardTecno.test.tsx`
+Run: `npx vitest run src/components/catalogo/TarjetaProducto.test.tsx`
 Expected: PASS.
 
 - [x] **Step 5: Commit**
 
 ```bash
-git add src/components/catalogo/RatingStars.tsx src/components/catalogo/ProductCardTecno.tsx src/components/catalogo/ProductCardTecno.test.tsx
-git commit -m "feat: add TecnoReview product card with rating and availability"
+git add src/components/catalogo/RatingStars.tsx src/components/catalogo/TarjetaProducto.tsx src/components/catalogo/TarjetaProducto.test.tsx
+git commit -m "feat: add TecReview product card with rating and availability"
 ```
 
 ---
@@ -358,7 +358,7 @@ git commit -m "feat: add catalog filter sidebar, chips and pagination"
 - Delete: `src/app/productos/page.test.tsx`
 
 **Interfaces:**
-- Consumes: `obtenerProductos`, `obtenerCategorias`, `obtenerMarcas`, `construirCatalogo`, `prepararCatalogo`, `filtrarProductos`, `paginar`, `construirChips`, `hayFiltrosActivos`, `ProductCardTecno`, `FilterSidebar`, `FilterChips`, `Pagination`, `SearchBar`, `FichaTecnicaModal`.
+- Consumes: `obtenerProductos`, `obtenerCategorias`, `obtenerMarcas`, `construirCatalogo`, `prepararCatalogo`, `filtrarProductos`, `paginar`, `construirChips`, `hayFiltrosActivos`, `TarjetaProducto`, `FilterSidebar`, `FilterChips`, `Pagination`, `SearchBar`, `FichaTecnicaModal`.
 - Produces: `CatalogoCliente` sin props.
 
 Reglas:
@@ -402,7 +402,7 @@ Expected: PASS.
 
 ```bash
 git add src/app/productos src/app/debug src/components/catalogo
-git commit -m "feat: replace products page with real TecnoReview catalog"
+git commit -m "feat: replace products page with real TecReview catalog"
 ```
 
 ---
@@ -431,11 +431,11 @@ Expected: solo archivos del Bloque B; sin backend, `.env` ni home.
 
 - [x] **Step 5: Actualizar documentación**
 
-Marcar las tareas y anotar desviaciones en este documento y en `docs/tecnoreview-redesign.md`.
+Marcar las tareas y anotar desviaciones en este documento y en `docs/tecreview-redesign.md`.
 
 - [x] **Step 6: Commit**
 
 ```bash
 git add docs
-git commit -m "docs: mark TecnoReview block B progress"
+git commit -m "docs: mark TecReview block B progress"
 ```

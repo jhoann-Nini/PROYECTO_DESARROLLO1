@@ -42,6 +42,19 @@ describe("Shell de TecReview", () => {
     }
   });
 
+  it("el header renderiza las acciones que recibe", () => {
+    render(
+      <SiteHeader>
+        <button type="button">Acción de sesión</button>
+      </SiteHeader>
+    );
+
+    const header = screen.getByRole("banner");
+    expect(
+      within(header).getByRole("button", { name: "Acción de sesión" }),
+    ).toBeDefined();
+  });
+
   it("el bottom nav expone navegación accesible", () => {
     render(<BottomNav />);
 

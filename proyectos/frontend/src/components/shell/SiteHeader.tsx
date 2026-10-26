@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +17,7 @@ const ENLACES: EnlaceNavegacion[] = [
   { etiqueta: "Blog" },
 ];
 
-export default function SiteHeader() {
+export default function SiteHeader({ children }: { children?: ReactNode }) {
   const rutaActual = usePathname();
 
   return (
@@ -64,12 +65,16 @@ export default function SiteHeader() {
           )}
         </nav>
 
-        <Link
-          href="/productos"
-          className="inline-flex shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
-        >
-          Explorar catálogo
-        </Link>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {children}
+
+          <Link
+            href="/productos"
+            className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-blue)] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90 sm:inline-flex"
+          >
+            Explorar catálogo
+          </Link>
+        </div>
       </div>
     </header>
   );

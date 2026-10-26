@@ -38,9 +38,6 @@ export default function ComparadorCliente() {
   useEffect(() => {
     let activo = true;
 
-    setCargando(true);
-    setError(null);
-
     Promise.all([
       obtenerProductos<Producto>(),
       obtenerCategorias(),
@@ -170,7 +167,11 @@ export default function ComparadorCliente() {
           <p className="mt-2 text-sm text-red-800">{error}</p>
           <button
             type="button"
-            onClick={() => setIntento((valor) => valor + 1)}
+            onClick={() => {
+              setCargando(true);
+              setError(null);
+              setIntento((valor) => valor + 1);
+            }}
             className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
           >
             Reintentar

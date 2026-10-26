@@ -45,10 +45,15 @@ export function useComparador(): UseComparadorResultado {
   }, []);
 
   useEffect(() => {
+    let montado = true;
     const inicial = leerIdsComparador(obtenerStorage());
     idsRef.current = inicial;
-    setIds(inicial);
-    setHidratado(true);
+
+    queueMicrotask(() => {
+      if (!montado) return;
+      setIds(inicial);
+      setHidratado(true);
+    });
 
     const alCambiarStorage = (event: StorageEvent) => {
       if (event.key !== CLAVE_COMPARADOR && event.key !== null) return;
@@ -59,7 +64,10 @@ export function useComparador(): UseComparadorResultado {
     };
 
     window.addEventListener("storage", alCambiarStorage);
-    return () => window.removeEventListener("storage", alCambiarStorage);
+    return () => {
+      montado = false;
+      window.removeEventListener("storage", alCambiarStorage);
+    };
   }, []);
 
   const agregar = useCallback(

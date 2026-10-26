@@ -37,17 +37,13 @@ export default function ValoracionProducto({
   useEffect(() => {
     let activo = true;
 
-    if (!usuario) {
-      setMiValoracion(null);
-      setSeleccion(0);
-      return;
-    }
+    if (!usuario) return;
 
     obtenerMiValoracion(idProducto)
       .then((valoracion) => {
-        if (!activo || !valoracion) return;
-        setMiValoracion(valoracion.puntuacion);
-        setSeleccion(valoracion.puntuacion);
+        if (!activo) return;
+        setMiValoracion(valoracion?.puntuacion ?? null);
+        setSeleccion(valoracion?.puntuacion ?? 0);
       })
       .catch(() => {
         // La valoración previa es opcional; no bloquea el detalle.
@@ -150,7 +146,7 @@ export default function ValoracionProducto({
       <form onSubmit={manejarEnvio} className="mt-5 border-t border-[var(--color-hairline)] pt-4">
         <fieldset>
           <legend className="text-sm font-semibold text-[var(--color-ink)]">
-            {miValoracion
+            {usuario && miValoracion
               ? `Tu valoración actual: ${miValoracion} ${
                   miValoracion === 1 ? "estrella" : "estrellas"
                 }`

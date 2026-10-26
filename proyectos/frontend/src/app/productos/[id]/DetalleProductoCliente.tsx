@@ -76,12 +76,6 @@ export default function DetalleProductoCliente({
   useEffect(() => {
     let activo = true;
 
-    setCargando(true);
-    setError(null);
-    setNoEncontrado(false);
-    setProducto(null);
-    setErrorImagen(false);
-
     Promise.allSettled([
       obtenerProductoPorId(idProducto),
       obtenerCategorias(),
@@ -127,9 +121,6 @@ export default function DetalleProductoCliente({
   useEffect(() => {
     let activo = true;
 
-    setCargandoResenas(true);
-    setErrorResenas(null);
-
     Promise.allSettled([
       obtenerValoracionStats(idProducto),
       obtenerResenas(idProducto),
@@ -169,6 +160,21 @@ export default function DetalleProductoCliente({
       // Mantener las estadísticas previas si la consulta falla.
     }
   }, [idProducto]);
+
+  const reintentarProducto = useCallback(() => {
+    setCargando(true);
+    setError(null);
+    setNoEncontrado(false);
+    setProducto(null);
+    setErrorImagen(false);
+    setIntento((valor) => valor + 1);
+  }, []);
+
+  const reintentarResenas = useCallback(() => {
+    setCargandoResenas(true);
+    setErrorResenas(null);
+    setIntentoResenas((valor) => valor + 1);
+  }, []);
 
   const ficha = useMemo(
     () => (producto ? normalizarFichaProducto(producto) : null),
@@ -236,7 +242,7 @@ export default function DetalleProductoCliente({
           </p>
           <button
             type="button"
-            onClick={() => setIntento((valor) => valor + 1)}
+            onClick={reintentarProducto}
             className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-blue)]/90"
           >
             Reintentar
@@ -434,7 +440,7 @@ export default function DetalleProductoCliente({
             resenas={resenas}
             cargando={cargandoResenas}
             error={errorResenas}
-            onReintentar={() => setIntentoResenas((valor) => valor + 1)}
+            onReintentar={reintentarResenas}
             onResenaCreada={(nueva) =>
               setResenas((previas) => [
                 nueva,

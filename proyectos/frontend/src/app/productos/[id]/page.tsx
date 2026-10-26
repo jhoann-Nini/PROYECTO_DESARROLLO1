@@ -21,5 +21,5 @@ export default async function DetalleProductoPage({
     notFound();
   }
 
-  return <DetalleProductoCliente idProducto={idProducto} />;
+  return <DetalleProductoCliente key={idProducto} idProducto={idProducto} />;
 }

@@ -55,7 +55,7 @@ export default function BotonComparador({
           className={`cursor-pointer rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
             yaSeleccionado
               ? "border border-[var(--color-brand-blue)] bg-[var(--color-paper)] text-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)]"
-              : "bg-[var(--color-brand-solid)] text-white hover:bg-[var(--color-brand-solid)]/90"
+              : "bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] hover:bg-[var(--color-brand-solid)]/90"
           }`}
         >
           {!hidratado

@@ -1,6 +1,7 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D, E y F completados; rediseño cerrado.
+**Estado:** Bloques A, B, C, D, E, F y G completados; identidad kiwi aplicada
+en el Bloque H.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -23,20 +24,32 @@ camino. Este documento es la fuente de verdad visual y funcional.
 
 ### 2.1 Paleta
 
-| Token semántico | Valor | Uso |
-|---|---|---|
-| `--color-brand-blue` | `#2563EB` | CTA, enlaces, acciones |
-| `--color-ink` | `#0F172A` | Navbar, headings, texto principal |
-| `--color-canvas` | `#F3F4F6` | Fondo de página |
-| `--color-hairline` | `#E5E7EB` | Bordes suaves |
-| `--color-positive` | `#10B981` | Disponibilidad y tags positivas |
-| `--color-star` | `#F59E0B` | Estrellas y ratings |
-| `--color-paper` | `#FFFFFF` | Cards y modales |
-| `--color-subtle` | `#64748B` | Texto secundario |
+Modo oscuro (principal): negro neutro + kiwi. Modo claro: piedra + kiwi.
+
+| Token semántico | Claro | Oscuro | Uso |
+|---|---|---|---|
+| `--color-brand-solid` | `#A3E635` | `#A3E635` | Botones y CTAs; texto `--color-on-solid` |
+| `--color-on-solid` | `#18181B` | `#0A0A0A` | Texto e iconos sobre kiwi |
+| `--color-brand-blue` | `#4D7C0F` | `#A3E635` | Enlaces, chips y focos (nombre legacy) |
+| `--color-ink` | `#18181B` | `#F4F4F5` | Texto principal |
+| `--color-canvas` | `#F5F5F4` | `#0A0A0A` | Fondo de página |
+| `--color-paper` | `#FFFFFF` | `#161616` | Cards, modales y header |
+| `--color-hairline` | `#E4E4E7` | `#262626` | Bordes suaves |
+| `--color-subtle` | `#6E6E77` | `#A1A1AA` | Texto secundario |
+| `--color-positive` | `#10B981` | `#10B981` | Disponibilidad y tags positivas |
+| `--color-star` | `#F59E0B` | `#F59E0B` | Estrellas y ratings |
+| `--color-inverse` | `#18181B` | `#18181B` | Overlays y bloque CTA con texto blanco |
+
+Se conservan los nombres `--color-brand-blue` y `--color-brand-solid` para no
+romper los usos existentes; solo cambian sus valores. La familia heredada
+`--color-brand-primary`, `--color-brand-hover`, `--color-brand-light` y
+`--color-brand-focus` se alinea a la gama lima. `--color-positive` se mantiene
+en esmeralda para que “Disponible” no se confunda con el kiwi de marca.
 
 No se inventan colores principales nuevos. Los estados hover, focus y error
-se resuelven con opacidad, con `#0F172A` o con `#2563EB`; si más adelante se
-necesita un tono derivado, se documenta y se aprueba antes de usarlo.
+se resuelven con opacidad, con `--color-ink` o con los tonos lima; si más
+adelante se necesita un tono derivado, se documenta y se aprueba antes de
+usarlo.
 
 ### 2.2 Tipografía
 
@@ -47,45 +60,58 @@ necesita un tono derivado, se documenta y se aprueba antes de usarlo.
 ### 2.3 Radios, sombras e iconos
 
 - Radios de 8 px a 12 px (`rounded-sm` a `rounded-lg` en el tema actual).
-- Sombras suaves derivadas de `rgba(15, 23, 42, ...)`.
+- Sombras suaves derivadas de `rgba(24, 24, 27, ...)` en claro y de negro en
+  oscuro.
 - Iconos SVG outline con trazo uniforme de 1.5 px o 2 px.
-- Foco visible de 2 px con `#2563EB` y offset de 2 px.
+- Foco visible de 2 px con `#4D7C0F` en claro y `#A3E635` en oscuro, con offset
+  de 2 px.
 
 ### 2.4 Accesibilidad de la paleta
 
-- Sobre `#10B981` se usa texto `#0F172A`; blanco sobre verde no alcanza AA.
-- Las estrellas `#F59E0B` se acompañan de contorno oscuro y del valor numérico.
-- `#64748B` se usa sobre blanco para texto normal; sobre `#F3F4F6` se reserva
-  para textos grandes o secundarios de bajo énfasis.
+- Sobre el kiwi `#A3E635` se usa siempre texto oscuro (`--color-on-solid`):
+  `#18181B` da 11.75:1 en claro y `#0A0A0A` da 13.13:1 en oscuro. Blanco sobre
+  kiwi da 1.51:1 y queda prohibido.
+- Kiwi sobre negro `#0A0A0A` = 13.13:1; sobre paper `#161616` = 12.00:1.
+- Enlaces `#4D7C0F` sobre blanco = 4.99:1 y sobre `#F5F5F4` = 4.58:1 (AA).
+- Texto secundario `#6E6E77` sobre `#F5F5F4` = 4.63:1 y sobre blanco = 5.05:1
+  (AA). Se descartó `#71717A` porque se quedaba en 4.43:1 sobre el lienzo.
+- Texto principal `#F4F4F5` sobre `#0A0A0A` = 18.01:1; secundario `#A1A1AA`
+  sobre `#161616` = 7.06:1.
+- Sobre `#10B981` se usa texto oscuro (`--color-on-positive`); blanco sobre
+  verde no alcanza AA y además el esmeralda se reserva para “Disponible”.
+- Las estrellas `#F59E0B` se acompañan del valor numérico.
 - Tabs, sliders y bottom nav deben funcionar con teclado y tener etiquetas ARIA.
 
 ### 2.5 Tema oscuro
 
-El tema oscuro es real, no una variante heredada. La preferencia se guarda en
-`localStorage` con la clave `tecreview:tema`; si no existe, se usa
-`prefers-color-scheme`. Un script `beforeInteractive` aplica `html.dark` antes
-de la hidratación para evitar el destello del tema incorrecto.
+El tema oscuro es el tema principal de TecReview y se aplica por defecto en la
+primera visita. La preferencia se guarda en `localStorage` con la clave
+`tecreview:tema`; el tema claro solo se activa cuando el usuario lo elige con el
+toggle. Un script `beforeInteractive` aplica `html.dark` antes de la hidratación
+para evitar el destello del tema incorrecto.
 
 | Token | Claro | Oscuro | Uso |
 |---|---|---|---|
-| `--color-canvas` | `#F3F4F6` | `#0F172A` | Fondo de página |
-| `--color-paper` | `#FFFFFF` | `#1E293B` | Cards, modales y header |
-| `--color-ink` | `#0F172A` | `#F3F4F6` | Texto principal |
-| `--color-subtle` | `#64748B` | `#CBD5E1` | Texto secundario |
-| `--color-hairline` | `#E5E7EB` | `#334155` | Bordes |
-| `--color-brand-blue` | `#2563EB` | `#60A5FA` | Enlaces, chips y focos |
-| `--color-brand-solid` | `#2563EB` | `#2563EB` | Botones con texto blanco |
-| `--color-inverse` | `#0F172A` | `#0F172A` | Overlays y bloques con texto blanco |
-| `--color-on-positive` | `#0F172A` | `#0F172A` | Texto sobre el verde positivo |
+| `--color-canvas` | `#F5F5F4` | `#0A0A0A` | Fondo de página |
+| `--color-paper` | `#FFFFFF` | `#161616` | Cards, modales y header |
+| `--color-ink` | `#18181B` | `#F4F4F5` | Texto principal |
+| `--color-subtle` | `#6E6E77` | `#A1A1AA` | Texto secundario |
+| `--color-hairline` | `#E4E4E7` | `#262626` | Bordes |
+| `--color-brand-blue` | `#4D7C0F` | `#A3E635` | Enlaces, chips y focos |
+| `--color-brand-solid` | `#A3E635` | `#A3E635` | Botones con texto oscuro |
+| `--color-on-solid` | `#18181B` | `#0A0A0A` | Texto sobre kiwi |
+| `--color-inverse` | `#18181B` | `#18181B` | Overlays y bloques con texto blanco |
+| `--color-on-positive` | `#18181B` | `#18181B` | Texto sobre el verde positivo |
 
-`--color-brand-blue` se aclara en oscuro para conservar contraste AA sobre las
-superficies oscuras. `--color-brand-solid` se mantiene igual porque los botones
-sólidos siguen usando texto blanco. `--color-inverse` también es fijo: los
-overlays de modales y los bloques con texto blanco no deben invertirse en
-oscuro. El badge sólido verde usa `--color-on-positive` para conservar el texto
-oscuro en ambos temas. El toggle vive en el header, tiene `aria-label`,
-`aria-pressed` e iconos de sol/luna, y se sincroniza entre pestañas y con
-cambios del sistema mientras no haya una preferencia guardada.
+`--color-brand-blue` se aclara a kiwi en oscuro para conservar contraste AA
+sobre las superficies oscuras. `--color-brand-solid` es kiwi en ambos temas y
+siempre se acompaña de `--color-on-solid`; nunca de blanco. `--color-inverse`
+también es fijo: los overlays de modales y los bloques con texto blanco no deben
+invertirse en oscuro. El badge sólido verde usa `--color-on-positive` para
+conservar el texto oscuro en ambos temas. El toggle vive en el header, tiene
+`aria-label`, `aria-pressed` e iconos de sol/luna, y se sincroniza entre
+pestañas. No sigue `prefers-color-scheme` porque el oscuro es la identidad de
+marca; la elección explícita del usuario es la única que puede cambiarlo.
 
 ---
 
@@ -390,9 +416,10 @@ aplicación rota.
    sus estilos `slate` con variantes `dark:`; no se migraron en F2.
 6. Los modales se migraron solo en lo visual; su lógica, textos y pruebas se
    conservaron.
-7. `--color-brand-blue` se aclara a `#60A5FA` en oscuro para mantener contraste
-   AA; `--color-brand-solid` se mantiene en `#2563EB` para botones con texto
-   blanco.
+7. En el Bloque F `--color-brand-blue` se aclaraba a `#60A5FA` en oscuro y
+   `--color-brand-solid` se mantenía en `#2563EB` para botones con texto
+   blanco. El Bloque H sustituyó esa paleta por kiwi; esta nota queda como
+   historial.
 8. Un id no numérico y un 404 de la API devuelven 404; otros errores de la API
    quedan al cliente con su estado de error y reintento, para no ocultar una
    caída del backend.
@@ -429,6 +456,45 @@ aplicación rota.
    solo cambia la presentación.
 3. Los iconos de categoría son SVG inline en el componente. El campo `icono` de
    `lib/categorias.ts` no se modifica para no afectar a otros consumidores.
+
+---
+
+## 8.6 Criterios de aceptación del Bloque H — Identidad kiwi
+
+- [x] El tema oscuro (negro neutro + kiwi) es el principal y se aplica por
+  defecto en la primera visita.
+- [x] El tema claro usa piedra + kiwi: canvas `#F5F5F4`, paper `#FFFFFF` e ink
+  `#18181B`.
+- [x] `--color-brand-solid` es kiwi `#A3E635` en ambos temas y todos los
+  botones/CTAs usan `--color-on-solid`, nunca blanco.
+- [x] `--color-brand-blue` conserva su nombre y pasa a `#4D7C0F` en claro y
+  `#A3E635` en oscuro.
+- [x] `--color-positive` sigue en esmeralda para distinguir “Disponible” del
+  kiwi de marca.
+- [x] El glow del slider de `FichaTecnicaModal` es kiwi.
+- [x] `prefers-color-scheme` ya no decide el tema inicial; solo la preferencia
+  guardada puede activar el claro.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+- [x] Capturas reales en Edge headless de home, catálogo, detalle y modal de
+  acceso en claro y oscuro.
+
+### Decisiones registradas del Bloque H
+
+1. Se conservan los nombres de tokens (`--color-brand-blue`,
+   `--color-brand-solid`) para no tocar los usos existentes; solo cambian los
+   valores.
+2. El kiwi sólido siempre lleva texto oscuro: blanco sobre `#A3E635` da 1.51:1
+   y falla WCAG AA.
+3. El modo oscuro es el valor por defecto porque es la identidad principal; el
+   claro se guarda solo cuando el usuario lo elige. No se sigue
+   `prefers-color-scheme`.
+4. `--color-subtle` en claro se ajustó de `#71717A` a `#6E6E77` para pasar AA
+   sobre el lienzo `#F5F5F4` (4.63:1).
+5. `--color-positive` se mantiene en esmeralda para que el estado “Disponible”
+   no se confunda con la marca kiwi.
+6. Los componentes legacy sin uso (`Header`, `ProductCard`, `DeviceListItem`,
+   `GeometricBackground`) y `debug/productos` conservan sus azules heredados;
+   no se migraron para no ampliar el alcance.
 
 ---
 
@@ -498,4 +564,11 @@ aplicación rota.
   `npm run build` exitosos. Destacados queda limitado a 6 productos (o a todos
   los resultados si hay filtros activos), los rankings usan una ficha compacta
   y las categorías usan SVG inline.
+- **2026-10-26:** Bloque H completado en `feat/tecreview-redesign`.
+  `npm test`: 394 pruebas en 40 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. El tema oscuro (negro neutro + kiwi) es el valor
+  por defecto; el claro (piedra + kiwi) se guarda solo si el usuario lo elige.
+  Capturas reales en Edge headless de home, catálogo, detalle y modal de acceso
+  en ambos temas; una visita nueva arranca con `html.dark` y
+  `color-scheme: dark` sin preferencia guardada.
 - Sin cambios en backend, `.env` ni base de datos.

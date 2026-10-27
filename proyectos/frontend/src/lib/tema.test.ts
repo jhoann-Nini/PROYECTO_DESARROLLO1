@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   CLAVE_TEMA,
   SCRIPT_TEMA,
@@ -8,27 +8,7 @@ import {
   leerTemaGuardado,
   obtenerTemaDelDocumento,
   obtenerTemaInicial,
-  prefiereTemaOscuro,
 } from "./tema";
-
-const matchMediaOriginal = window.matchMedia;
-
-function simularSistemaOscuro(matches: boolean) {
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
-      matches,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  });
-}
 
 function limpiarDocumento() {
   document.documentElement.classList.remove("dark");
@@ -39,17 +19,11 @@ function limpiarDocumento() {
 beforeEach(() => {
   localStorage.clear();
   limpiarDocumento();
-  simularSistemaOscuro(false);
 });
 
 afterEach(() => {
   localStorage.clear();
   limpiarDocumento();
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    writable: true,
-    value: matchMediaOriginal,
-  });
 });
 
 describe("preferencia de tema", () => {
@@ -66,21 +40,18 @@ describe("preferencia de tema", () => {
     expect(leerTemaGuardado()).toBe("claro");
   });
 
-  it("la preferencia guardada tiene prioridad sobre el sistema", () => {
-    simularSistemaOscuro(true);
-    localStorage.setItem(CLAVE_TEMA, "claro");
-
-    expect(prefiereTemaOscuro()).toBe(true);
-    expect(obtenerTemaInicial()).toBe("claro");
-  });
-
-  it("usa prefers-color-scheme cuando no hay preferencia guardada", () => {
-    simularSistemaOscuro(true);
-
+  it("la preferencia guardada tiene prioridad sobre el tema por defecto", () => {
     expect(obtenerTemaInicial()).toBe("oscuro");
 
-    simularSistemaOscuro(false);
+    localStorage.setItem(CLAVE_TEMA, "claro");
     expect(obtenerTemaInicial()).toBe("claro");
+
+    localStorage.setItem(CLAVE_TEMA, "oscuro");
+    expect(obtenerTemaInicial()).toBe("oscuro");
+  });
+
+  it("usa oscuro por defecto cuando no hay preferencia guardada", () => {
+    expect(obtenerTemaInicial()).toBe("oscuro");
   });
 
   it("aplica la clase, el dataset y color-scheme", () => {
@@ -106,6 +77,14 @@ describe("preferencia de tema", () => {
 });
 
 describe("script previo a la hidratación", () => {
+  it("aplica oscuro por defecto antes de renderizar", () => {
+    new Function(SCRIPT_TEMA)();
+
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(document.documentElement.dataset.tema).toBe("oscuro");
+    expect(document.documentElement.style.colorScheme).toBe("dark");
+  });
+
   it("aplica oscuro desde localStorage antes de renderizar", () => {
     localStorage.setItem(CLAVE_TEMA, "oscuro");
 
@@ -116,22 +95,13 @@ describe("script previo a la hidratación", () => {
     expect(document.documentElement.style.colorScheme).toBe("dark");
   });
 
-  it("respeta el tema claro guardado aunque el sistema sea oscuro", () => {
-    simularSistemaOscuro(true);
+  it("respeta el tema claro guardado", () => {
     localStorage.setItem(CLAVE_TEMA, "claro");
 
     new Function(SCRIPT_TEMA)();
 
     expect(document.documentElement.classList.contains("dark")).toBe(false);
     expect(document.documentElement.dataset.tema).toBe("claro");
-  });
-
-  it("usa el sistema cuando no hay preferencia guardada", () => {
-    simularSistemaOscuro(true);
-
-    new Function(SCRIPT_TEMA)();
-
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(document.documentElement.dataset.tema).toBe("oscuro");
+    expect(document.documentElement.style.colorScheme).toBe("light");
   });
 });

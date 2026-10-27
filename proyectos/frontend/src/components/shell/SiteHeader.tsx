@@ -73,7 +73,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
           <Link
             href="/productos"
-            className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex"
+            className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex"
           >
             Explorar catálogo
           </Link>

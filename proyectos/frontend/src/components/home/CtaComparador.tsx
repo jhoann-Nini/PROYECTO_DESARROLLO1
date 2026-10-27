@@ -21,7 +21,7 @@ export default function CtaComparador() {
           <div className="flex shrink-0 flex-wrap items-center gap-3">
             <Link
               href="/productos"
-              className="inline-flex items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="inline-flex items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Explorar catálogo
             </Link>

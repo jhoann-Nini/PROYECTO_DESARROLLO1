@@ -36,10 +36,10 @@
   --color-text-muted: #64748b;
 
   /* Acentos de Acción y Enfoque */
-  --color-brand-primary: #1d4ed8;
-  --color-brand-hover: #1e40af;
-  --color-brand-light: #eff6ff;
-  --color-brand-focus: #2563eb;
+  --color-brand-primary: #3f6212;
+  --color-brand-hover: #365314;
+  --color-brand-light: #f7fee7;
+  --color-brand-focus: #4d7c0f;
 
   /* Estados Semánticos Accesibles */
   --color-status-success: #15803d;
@@ -50,24 +50,28 @@
   /* TecReview — tokens oficiales del tema claro */
   /* Acento interactivo: texto, bordes, focos y chips. En oscuro se aclara
      para conservar el contraste AA sobre las superficies oscuras. */
-  --color-brand-blue: #2563eb;
-  /* Azul sólido de botones y acciones: se mantiene en ambos temas para que
-     el texto blanco conserve su contraste. */
-  --color-brand-solid: #2563eb;
+  --color-brand-blue: #4d7c0f;
+  /* Kiwi sólido de botones y acciones: en ambos temas usa texto oscuro
+     (--color-on-solid) porque el blanco no alcanza contraste AA. */
+  --color-brand-solid: #a3e635;
+  /* Texto sobre el kiwi sólido: fijo para conservar AA en ambos temas. */
+  --color-on-solid: #18181b;
   /* Superficie inversa fija: overlays de modales y bloques con texto blanco.
      No se redefine en oscuro para no invertir el contraste. */
-  --color-inverse: #0f172a;
+  --color-inverse: #18181b;
   /* Texto sobre el verde positivo: fijo para conservar AA en ambos temas. */
-  --color-on-positive: #0f172a;
-  --color-ink: #0f172a;
-  --color-canvas: #f3f4f6;
-  --color-hairline: #e5e7eb;
+  --color-on-positive: #18181b;
+  --color-ink: #18181b;
+  --color-canvas: #f5f5f4;
+  --color-hairline: #e4e4e7;
   --color-positive: #10b981;
   --color-star: #f59e0b;
   --color-paper: #ffffff;
-  --color-subtle: #64748b;
-  --shadow-paper: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px -12px rgba(15, 23, 42, 0.12);
-  --shadow-paper-hover: 0 2px 4px rgba(15, 23, 42, 0.08), 0 16px 32px -16px rgba(15, 23, 42, 0.18);
+  /* #6E6E77 mantiene AA (4.63:1) sobre el lienzo #F5F5F4; #71717A se quedaba
+     en 4.43:1 y no alcanzaba el mínimo para texto normal. */
+  --color-subtle: #6e6e77;
+  --shadow-paper: 0 1px 2px rgba(24, 24, 27, 0.06), 0 8px 24px -12px rgba(24, 24, 27, 0.12);
+  --shadow-paper-hover: 0 2px 4px rgba(24, 24, 27, 0.08), 0 16px 32px -16px rgba(24, 24, 27, 0.18);
 }
 
 /* Estilos base de Accesibilidad Universal */
@@ -101,15 +105,16 @@ body {
    hidratación y la mantiene el toggle persistente. */
 html.dark {
   color-scheme: dark;
-  --color-canvas: #0f172a;
-  --color-paper: #1e293b;
-  --color-ink: #f3f4f6;
-  --color-subtle: #cbd5e1;
-  --color-hairline: #334155;
-  --color-brand-blue: #60a5fa;
-  --color-brand-solid: #2563eb;
-  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -12px rgba(0, 0, 0, 0.55);
-  --shadow-paper-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 32px -16px rgba(0, 0, 0, 0.6);
+  --color-canvas: #0a0a0a;
+  --color-paper: #161616;
+  --color-ink: #f4f4f5;
+  --color-subtle: #a1a1aa;
+  --color-hairline: #262626;
+  --color-brand-blue: #a3e635;
+  --color-brand-solid: #a3e635;
+  --color-on-solid: #0a0a0a;
+  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  --shadow-paper-hover: 0 2px 4px rgba(0, 0, 0, 0.55), 0 16px 32px -16px rgba(0, 0, 0, 0.8);
 }
 
 html.dark .theme-tecreview {

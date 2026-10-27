@@ -24,20 +24,10 @@ export function leerTemaGuardado(): Tema | null {
   }
 }
 
-/**
- * Indica si el sistema operativo prefiere el tema oscuro. Es solo el valor
- * inicial: una vez que el usuario elige, su preferencia tiene prioridad.
- */
-export function prefiereTemaOscuro(): boolean {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return false;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
-}
-
 export function obtenerTemaInicial(): Tema {
-  return leerTemaGuardado() ?? (prefiereTemaOscuro() ? "oscuro" : "claro");
+  // El tema oscuro es la identidad principal de TecReview. El claro solo se
+  // aplica cuando el usuario lo elige y queda guardado.
+  return leerTemaGuardado() ?? "oscuro";
 }
 
 export function obtenerTemaDelDocumento(): Tema {
@@ -78,6 +68,6 @@ export function guardarTema(tema: Tema): void {
  * Aplica el tema antes de la hidratación para evitar el destello del tema
  * incorrecto. Se inyecta como script beforeInteractive en el layout raíz.
  */
-export const SCRIPT_TEMA = `(function(){var oscuro=false;try{var guardado=window.localStorage.getItem(${JSON.stringify(
+export const SCRIPT_TEMA = `(function(){var oscuro=true;try{var guardado=window.localStorage.getItem(${JSON.stringify(
   CLAVE_TEMA,
-)});oscuro=guardado==="oscuro"||(guardado!=="claro"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);}catch(e){oscuro=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;}var raiz=document.documentElement;raiz.classList.toggle("dark",oscuro);raiz.dataset.tema=oscuro?"oscuro":"claro";raiz.style.colorScheme=oscuro?"dark":"light";})();`;
+)});if(guardado==="claro"){oscuro=false;}}catch(e){}var raiz=document.documentElement;raiz.classList.toggle("dark",oscuro);raiz.dataset.tema=oscuro?"oscuro":"claro";raiz.style.colorScheme=oscuro?"dark":"light";})();`;

@@ -386,7 +386,7 @@ export default function FichaTecnicaModal({
                   {ficha.marca}
                 </span>
 
-                <span className="absolute bottom-3 right-3 rounded-full bg-[var(--color-brand-solid)] px-3 py-1 text-sm font-semibold tracking-tight text-white shadow-[var(--shadow-paper-hover)]">
+                <span className="absolute bottom-3 right-3 rounded-full bg-[var(--color-brand-solid)] px-3 py-1 text-sm font-semibold tracking-tight text-[var(--color-on-solid)] shadow-[var(--shadow-paper-hover)]">
                   {precioFormateado}
                 </span>
               </div>
@@ -508,7 +508,7 @@ export default function FichaTecnicaModal({
                       <button
                         type="button"
                         onClick={onPedirLogin}
-                        className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                        className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                       >
                         Identificarse para valorar
                       </button>
@@ -569,7 +569,7 @@ export default function FichaTecnicaModal({
                     <button
                       type="submit"
                       disabled={enviandoValoracion || puntuacionSeleccionada === 0}
-                      className="w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {enviandoValoracion
                         ? "Guardando..."
@@ -635,7 +635,7 @@ export default function FichaTecnicaModal({
                         <span
                           className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
                             activa
-                              ? "bg-[var(--color-brand-solid)] scale-125 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
+                              ? "bg-[var(--color-brand-solid)] scale-125 shadow-[0_0_8px_rgba(163,230,53,0.8)]"
                               : "bg-[var(--color-subtle)]/50 group-hover:bg-[var(--color-brand-blue)]/60 group-hover:scale-110"
                           }`}
                           aria-hidden="true"
@@ -737,7 +737,7 @@ export default function FichaTecnicaModal({
                           <button
                             type="button"
                             onClick={onPedirLogin}
-                            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                           >
                             Identificarse
                           </button>
@@ -767,7 +767,7 @@ export default function FichaTecnicaModal({
                             type="submit"
                             onClick={manejarGuardarResena}
                             disabled={enviandoResena}
-                            className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                            className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                           >
                             {enviandoResena ? "Publicando..." : "Publicar opinión"}
                           </button>
@@ -839,7 +839,7 @@ export default function FichaTecnicaModal({
                   <button
                     type="button"
                     onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
-                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                   >
                     <span aria-hidden="true">💬</span>
                     <span>Ver opiniones de la comunidad ({resenasProducto.length})</span>

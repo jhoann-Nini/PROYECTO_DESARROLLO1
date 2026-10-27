@@ -213,7 +213,7 @@ export default function CategoriaPageContent({
           </p>
           <Link
             href="/productos"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             ← Volver al catálogo
           </Link>
@@ -230,7 +230,7 @@ export default function CategoriaPageContent({
           <button
             type="button"
             onClick={reintentar}
-            className="mt-5 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-5 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Reintentar
           </button>
@@ -326,7 +326,7 @@ export default function CategoriaPageContent({
                   <button
                     type="button"
                     onClick={() => setBusqueda("")}
-                    className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                    className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                   >
                     Limpiar búsqueda
                   </button>

@@ -1070,7 +1070,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                     >
                       <span>+</span> Nuevo Producto
                     </button>
@@ -1407,7 +1407,7 @@ export default function AdminPanelModal({
                       <button
                         type="submit"
                         disabled={guardando}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardando ? (
                           <>
@@ -1439,7 +1439,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primer Producto
                     </button>
@@ -1548,7 +1548,7 @@ export default function AdminPanelModal({
                   <button
                     type="button"
                     onClick={abrirCrearCategoria}
-                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                   >
                     <span>+</span> Nueva Categoría
                   </button>
@@ -1636,7 +1636,7 @@ export default function AdminPanelModal({
                       <button
                         type="submit"
                         disabled={guardandoCat}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoCat ? (
                           <>
@@ -1668,7 +1668,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrearCategoria}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Categoría
                     </button>
@@ -1752,7 +1752,7 @@ export default function AdminPanelModal({
                   <button
                     type="button"
                     onClick={abrirCrearMarca}
-                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                   >
                     <span>+</span> Nueva Marca
                   </button>
@@ -1832,7 +1832,7 @@ export default function AdminPanelModal({
                       <button
                         type="submit"
                         disabled={guardandoMarca}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoMarca ? (
                           <>
@@ -1864,7 +1864,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrearMarca}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Marca
                     </button>
@@ -2095,7 +2095,7 @@ export default function AdminPanelModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-2 text-xs font-bold text-white uppercase tracking-wider transition-colors cursor-pointer"
+            className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-2 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer"
           >
             Cerrar
           </button>

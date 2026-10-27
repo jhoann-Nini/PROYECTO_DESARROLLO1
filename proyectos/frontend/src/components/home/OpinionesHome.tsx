@@ -97,7 +97,7 @@ export default function OpinionesHome({
             <button
               type="button"
               onClick={onPedirLogin}
-              className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Identificarse para opinar
             </button>
@@ -146,7 +146,7 @@ export default function OpinionesHome({
               <button
                 type="submit"
                 disabled={enviando}
-                className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-6 py-3 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-6 py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {enviando ? "Publicando..." : "Publicar opinión"}
               </button>

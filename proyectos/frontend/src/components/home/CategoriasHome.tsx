@@ -68,7 +68,7 @@ export default function CategoriasHome({
       <button
         type="button"
         onClick={onSeleccionarTodos}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[var(--color-brand-solid)] px-4 py-2 text-[13px] font-semibold text-white shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[var(--color-brand-solid)] px-4 py-2 text-[13px] font-semibold text-[var(--color-on-solid)] shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
       >
         <span
           className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15"

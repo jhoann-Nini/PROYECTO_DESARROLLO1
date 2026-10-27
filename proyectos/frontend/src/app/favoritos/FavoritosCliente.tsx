@@ -122,7 +122,7 @@ export default function FavoritosCliente() {
           <button
             type="button"
             onClick={reintentar}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Reintentar
           </button>
@@ -198,7 +198,7 @@ export default function FavoritosCliente() {
           </p>
           <Link
             href="/productos"
-            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Explorar catálogo
           </Link>

@@ -147,7 +147,7 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
             <div className="mt-3 flex flex-wrap gap-3">
               <Link
                 href={`/categorias/${articulo.categoriaSlug}`}
-                className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 Ver {articulo.categoriaEtiqueta}
               </Link>

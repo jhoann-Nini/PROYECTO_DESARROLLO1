@@ -16,7 +16,7 @@ export default function ProductoNoEncontrado() {
       <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
         <Link
           href="/productos"
-          className="inline-flex rounded-lg bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+          className="inline-flex rounded-lg bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
         >
           Volver al catálogo
         </Link>

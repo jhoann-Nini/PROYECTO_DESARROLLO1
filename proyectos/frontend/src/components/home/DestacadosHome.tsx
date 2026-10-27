@@ -74,7 +74,7 @@ export default function DestacadosHome({
 
           <Link
             href="/productos"
-            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white shadow-[var(--shadow-paper)] transition-colors hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] shadow-[var(--shadow-paper)] transition-colors hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
           >
             Ver catálogo completo
             <svg
@@ -129,7 +129,7 @@ export default function DestacadosHome({
           <div className="mt-8 flex justify-center">
             <Link
               href="/productos"
-              className="group inline-flex items-center gap-2 rounded-lg bg-[var(--color-brand-solid)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+              className="group inline-flex items-center gap-2 rounded-lg bg-[var(--color-brand-solid)] px-5 py-3 text-sm font-semibold text-[var(--color-on-solid)] shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
             >
               Explorar todos los productos ({totalVerificados})
               <svg
@@ -162,7 +162,7 @@ export default function DestacadosHome({
               <button
                 type="button"
                 onClick={onLimpiarBusqueda}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 Limpiar búsqueda
               </button>
@@ -176,7 +176,7 @@ export default function DestacadosHome({
               <button
                 type="button"
                 onClick={onMostrarTodos}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
               >
                 Mostrar todos los productos
               </button>

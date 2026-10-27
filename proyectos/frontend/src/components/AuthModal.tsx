@@ -345,7 +345,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             <button
               type="submit"
               disabled={cargando}
-              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-white transition-all hover:bg-[var(--color-brand-solid)]/90 ${
+              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-all hover:bg-[var(--color-brand-solid)]/90 ${
                 cargando ? "cursor-not-allowed opacity-70" : "cursor-pointer"
               }`}
             >
@@ -453,7 +453,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             <button
               type="submit"
               disabled={cargando}
-              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-white transition-all hover:bg-[var(--color-brand-solid)]/90 ${
+              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-all hover:bg-[var(--color-brand-solid)]/90 ${
                 cargando ? "cursor-not-allowed opacity-70" : "cursor-pointer"
               }`}
             >

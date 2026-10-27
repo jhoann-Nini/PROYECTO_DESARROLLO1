@@ -142,7 +142,7 @@ export default function TarjetaProducto({
           <button
             type="button"
             onClick={() => onVerDetalle?.(producto)}
-            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
           >
             Ver detalle
           </button>

@@ -17,7 +17,9 @@ function obtenerInstantanea(): Tema {
 }
 
 function obtenerInstantaneaServidor(): Tema {
-  return "claro";
+  // El tema principal de TecReview es oscuro: el HTML servido y el script
+  // anti-destello arrancan en oscuro hasta que el usuario elija claro.
+  return "oscuro";
 }
 
 /**
@@ -38,30 +40,12 @@ export function useTema() {
       alCambiar();
     };
 
-    const consultaSistema =
-      typeof window.matchMedia === "function"
-        ? window.matchMedia("(prefers-color-scheme: dark)")
-        : null;
-
-    const alCambiarSistema = (evento: MediaQueryListEvent) => {
-      // La preferencia del sistema solo manda mientras el usuario no haya
-      // elegido un tema de forma explícita.
-      if (leerTemaGuardado() !== null) {
-        return;
-      }
-
-      aplicarTema(evento.matches ? "oscuro" : "claro");
-      alCambiar();
-    };
-
     window.addEventListener(EVENTO_TEMA, alCambiar);
     window.addEventListener("storage", alCambiarAlmacenamiento);
-    consultaSistema?.addEventListener("change", alCambiarSistema);
 
     return () => {
       window.removeEventListener(EVENTO_TEMA, alCambiar);
       window.removeEventListener("storage", alCambiarAlmacenamiento);
-      consultaSistema?.removeEventListener("change", alCambiarSistema);
     };
   }, []);
 

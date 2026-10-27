@@ -319,7 +319,7 @@ export default function ResenasCliente() {
                 <button
                   type="submit"
                   disabled={enviando || cargandoSesion}
-                  className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {enviando ? "Publicando…" : "Publicar reseña"}
                 </button>
@@ -452,7 +452,7 @@ export default function ResenasCliente() {
                 <button
                   type="button"
                   onClick={reintentar}
-                  className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                  className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                 >
                   Reintentar
                 </button>
@@ -575,7 +575,7 @@ export default function ResenasCliente() {
             </p>
             <Link
               href="/comparador"
-              className="mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Ir al comparador
             </Link>

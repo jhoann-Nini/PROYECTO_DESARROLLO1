@@ -146,7 +146,7 @@ export default function PerfilCliente() {
                 limpiarError();
                 setModalAuthAbierto(true);
               }}
-              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Iniciar sesión
             </button>
@@ -358,7 +358,7 @@ export default function PerfilCliente() {
             </p>
             <Link
               href="/resenas"
-              className="mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Ir a reseñas
             </Link>

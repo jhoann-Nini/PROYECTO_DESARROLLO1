@@ -194,7 +194,7 @@ export default function ValoracionProducto({
             <button
               type="submit"
               disabled={seleccion === 0 || enviando}
-              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {enviando ? "Guardando…" : "Guardar valoración"}
             </button>
@@ -205,7 +205,7 @@ export default function ValoracionProducto({
                 setError("Debes iniciar sesión para valorar este dispositivo.");
                 onPedirLogin();
               }}
-              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
             >
               Inicia sesión para valorar
             </button>

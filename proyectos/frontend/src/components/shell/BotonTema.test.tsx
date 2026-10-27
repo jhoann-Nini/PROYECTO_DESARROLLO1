@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   cleanup,
   fireEvent,
@@ -10,31 +10,11 @@ import {
 import BotonTema from "./BotonTema";
 import { CLAVE_TEMA } from "@/lib/tema";
 
-const matchMediaOriginal = window.matchMedia;
-
-function simularSistemaOscuro(matches: boolean) {
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
-      matches,
-      media: query,
-      onchange: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  });
-}
-
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.classList.remove("dark");
   delete document.documentElement.dataset.tema;
   document.documentElement.style.colorScheme = "";
-  simularSistemaOscuro(false);
 });
 
 afterEach(() => {
@@ -43,56 +23,53 @@ afterEach(() => {
   document.documentElement.classList.remove("dark");
   delete document.documentElement.dataset.tema;
   document.documentElement.style.colorScheme = "";
-  Object.defineProperty(window, "matchMedia", {
-    configurable: true,
-    writable: true,
-    value: matchMediaOriginal,
-  });
 });
 
 describe("BotonTema", () => {
-  it("alterna entre claro y oscuro, y persiste la elección", async () => {
+  it("arranca en oscuro y alterna a claro, persistiendo la elección", async () => {
     render(<BotonTema />);
 
-    const botonOscuro = await screen.findByRole("button", {
-      name: "Cambiar a tema oscuro",
+    const botonClaro = await screen.findByRole("button", {
+      name: "Cambiar a tema claro",
     });
 
-    fireEvent.click(botonOscuro);
-
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(localStorage.getItem(CLAVE_TEMA)).toBe("oscuro");
-    expect(
-      screen.getByRole("button", { name: "Cambiar a tema claro" }),
-    ).toBeDefined();
-
-    fireEvent.click(
-      screen.getByRole("button", { name: "Cambiar a tema claro" }),
-    );
+    fireEvent.click(botonClaro);
 
     expect(document.documentElement.classList.contains("dark")).toBe(false);
     expect(localStorage.getItem(CLAVE_TEMA)).toBe("claro");
     expect(
       screen.getByRole("button", { name: "Cambiar a tema oscuro" }),
     ).toBeDefined();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Cambiar a tema oscuro" }),
+    );
+
+    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    expect(localStorage.getItem(CLAVE_TEMA)).toBe("oscuro");
+    expect(
+      screen.getByRole("button", { name: "Cambiar a tema claro" }),
+    ).toBeDefined();
   });
 
   it("respeta la preferencia guardada al montar", async () => {
-    localStorage.setItem(CLAVE_TEMA, "oscuro");
+    localStorage.setItem(CLAVE_TEMA, "claro");
 
     render(<BotonTema />);
 
     await waitFor(() => {
-      expect(document.documentElement.classList.contains("dark")).toBe(true);
+      expect(document.documentElement.classList.contains("dark")).toBe(false);
     });
 
     const boton = screen.getByRole("button", {
-      name: "Cambiar a tema claro",
+      name: "Cambiar a tema oscuro",
     });
-    expect(boton.getAttribute("aria-pressed")).toBe("true");
+    expect(boton.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("sincroniza el tema cuando otra pestaña cambia la preferencia", async () => {
+    localStorage.setItem(CLAVE_TEMA, "claro");
+
     render(<BotonTema />);
 
     await screen.findByRole("button", { name: "Cambiar a tema oscuro" });
@@ -112,44 +89,5 @@ describe("BotonTema", () => {
     expect(
       screen.getByRole("button", { name: "Cambiar a tema claro" }),
     ).toBeDefined();
-  });
-
-  it("aplica el cambio del sistema mientras no haya preferencia guardada", async () => {
-    let alCambiar: ((evento: MediaQueryListEvent) => void) | null = null;
-    const cambiarSistemaAOscuro = () => {
-      alCambiar?.({ matches: true } as MediaQueryListEvent);
-    };
-
-    Object.defineProperty(window, "matchMedia", {
-      configurable: true,
-      writable: true,
-      value: vi.fn().mockImplementation((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: vi.fn(
-          (_tipo: string, listener: (evento: MediaQueryListEvent) => void) => {
-            alCambiar = listener;
-          },
-        ),
-        removeEventListener: vi.fn(),
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      })),
-    });
-
-    render(<BotonTema />);
-
-    await screen.findByRole("button", { name: "Cambiar a tema oscuro" });
-
-    cambiarSistemaAOscuro();
-
-    await waitFor(() => {
-      expect(document.documentElement.classList.contains("dark")).toBe(true);
-      expect(
-        screen.getByRole("button", { name: "Cambiar a tema claro" }),
-      ).toBeDefined();
-    });
   });
 });

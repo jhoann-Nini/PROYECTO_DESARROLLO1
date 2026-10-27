@@ -63,7 +63,7 @@ export default function BlogPage() {
               <div className="mt-5 flex flex-wrap items-center gap-4">
                 <Link
                   href={`/blog/${destacado.slug}`}
-                  className="inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                  className="inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
                 >
                   Leer guía
                 </Link>
@@ -163,7 +163,7 @@ export default function BlogPage() {
         </p>
         <Link
           href="/productos"
-          className="mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-solid)]/90"
+          className="mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
         >
           Explorar catálogo
         </Link>

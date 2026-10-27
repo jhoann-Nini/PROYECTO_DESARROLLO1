@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={inter.variable} suppressHydrationWarning>
-      <body className="min-h-screen bg-[var(--color-canvas)] font-sans text-[var(--color-ink)] antialiased selection:bg-[var(--color-brand-solid)] selection:text-white">
+      <body className="min-h-screen bg-[var(--color-canvas)] font-sans text-[var(--color-ink)] antialiased selection:bg-[var(--color-brand-solid)] selection:text-[var(--color-on-solid)]">
         <Script
           id="tema-inicial"
           strategy="beforeInteractive"

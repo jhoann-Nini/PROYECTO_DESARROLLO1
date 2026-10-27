@@ -24,6 +24,13 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+const mockPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+  useRouter: () => ({ push: mockPush }),
+}));
+
 const mockObtenerProductos = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
 const mockObtenerResenas = vi.fn();
@@ -56,6 +63,7 @@ describe("Página principal / (Home)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    Element.prototype.scrollIntoView = vi.fn();
     mockObtenerResenas.mockResolvedValue([]);
     mockObtenerCategorias.mockResolvedValue([]);
     mockObtenerMarcas.mockResolvedValue([]);
@@ -87,7 +95,6 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       // Cambiar a la pestaña del catálogo general para observar la sección dinámica
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       expect(
         screen.getByText("Cargando catálogo de dispositivos..."),
@@ -102,8 +109,8 @@ describe("Página principal / (Home)", () => {
       const productosBackend: Producto[] = [
         {
           idProducto: 991,
-          nombre: "Monitor Profesional 4K HDR",
-          descripcion: "Monitor IPS de precisión para creadores",
+          nombre: "Laptop Profesional 4K HDR",
+          descripcion: "Portátil IPS de precisión para creadores",
           precioReferencia: 650,
           idCategoria: 3,
           idMarca: 1,
@@ -118,13 +125,12 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Servidor conectado")).toBeDefined();
       });
 
-      expect(screen.getByText("Monitor Profesional 4K HDR")).toBeDefined();
+      expect(screen.getByText("Laptop Profesional 4K HDR")).toBeDefined();
       expect(
         screen.queryByText("Cargando catálogo de dispositivos..."),
       ).toBeNull();
@@ -138,7 +144,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -165,7 +170,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -191,7 +195,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -217,7 +220,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -243,7 +245,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -991,12 +992,12 @@ describe("Página principal / (Home)", () => {
       });
     });
 
-    it("permite abrir el modal de ficha técnica desde un elemento de ranking", async () => {
+    it("navega al detalle real desde un elemento de ranking", async () => {
       const mejorValorados: ProductoMejorValorado[] = [
         {
           idProducto: 204,
-          nombre: "Monitor Gamer Asus ROG",
-          descripcion: "Monitor para eSports 240Hz",
+          nombre: "Laptop Gamer Asus ROG",
+          descripcion: "Portátil para eSports 240Hz",
           precioReferencia: 2100000,
           idCategoria: 3,
           idMarca: 6,
@@ -1013,21 +1014,40 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       await waitFor(() => {
-        expect(screen.getByText("Monitor Gamer Asus ROG")).toBeDefined();
+        expect(screen.getByText("Laptop Gamer Asus ROG")).toBeDefined();
       });
 
       const btnFicha = screen.getByRole("button", {
-        name: "Ver ficha de Monitor Gamer Asus ROG",
+        name: "Ver ficha de Laptop Gamer Asus ROG",
       });
       fireEvent.click(btnFicha);
 
       await waitFor(() => {
-        expect(screen.getByRole("dialog")).toBeDefined();
-        expect(screen.getByText("FICHA TÉCNICA")).toBeDefined();
-        expect(
-          screen.getByRole("heading", { level: 2, name: "Monitor Gamer Asus ROG" })
-        ).toBeDefined();
+        expect(mockPush).toHaveBeenCalledWith("/productos/204");
       });
+    });
+  });
+
+  describe("35. Navegación por categorías a páginas dedicadas", () => {
+    it("los accesos de categoría deben enlazar a sus páginas propias sin perder el botón 'Todos'", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      const enlacesEsperados: Array<[RegExp, string]> = [
+        [/Teléfonos/i, "/categorias/celulares"],
+        [/Tablets/i, "/categorias/tablets"],
+        [/Portátiles \/ PC/i, "/categorias/portatiles"],
+        [/Auriculares/i, "/categorias/auriculares"],
+      ];
+
+      for (const [nombre, href] of enlacesEsperados) {
+        const enlace = screen.getByRole("link", { name: nombre });
+        expect(enlace.getAttribute("href")).toBe(href);
+      }
+
+      expect(screen.queryByRole("link", { name: /Monitores/i })).toBeNull();
+      expect(screen.getByRole("button", { name: /Todos/i })).toBeDefined();
     });
   });
 
@@ -1076,7 +1096,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1091,7 +1110,6 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       // Cambiar al catálogo general
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1112,7 +1130,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
@@ -1120,7 +1137,7 @@ describe("Página principal / (Home)", () => {
 
       // Escribir en el buscador
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Samsung Galaxy Tab S10 Ultra" },
@@ -1136,14 +1153,13 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
 
       // 4a. Coincidencia existente
@@ -1167,7 +1183,6 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(
@@ -1177,7 +1192,7 @@ describe("Página principal / (Home)", () => {
 
       // Filtrar por texto
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Buds" },
@@ -1194,14 +1209,13 @@ describe("Página principal / (Home)", () => {
 
       render(<Home />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Catálogo general/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca/i,
+        name: /Buscar dispositivos por marca, modelo o características/i,
       });
 
       // Aplicar filtro de búsqueda
@@ -1216,6 +1230,102 @@ describe("Página principal / (Home)", () => {
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
       expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+    });
+
+    it("7. El filtro explícito de presupuesto oculta los productos que lo superan", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Filtrar por presupuesto" }),
+      );
+
+      expect(
+        screen
+          .getByRole("button", { name: "Solo en presupuesto" })
+          .getAttribute("aria-pressed"),
+      ).toBe("true");
+
+      await waitFor(() => {
+        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
+      });
+      expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
+      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+
+      // El catálogo original no se altera: al desactivar el filtro reaparecen.
+      fireEvent.click(
+        screen.getByRole("button", { name: "Solo en presupuesto" }),
+      );
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+    });
+
+    it("8. Los productos sin precio se conservan y se excluyen al activar el presupuesto", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        {
+          idProducto: 90,
+          nombre: "Producto Sin Precio",
+          descripcion: "Disponibilidad por confirmar",
+          precioReferencia: null,
+          idCategoria: 1,
+          idMarca: 1,
+          nombreCategoria: "Móviles",
+          nombreMarca: "Samsung",
+          imagen: null,
+          estado: true,
+        },
+      ]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Producto Sin Precio")).toBeDefined();
+      });
+      expect(screen.getByText("Consultar disponibilidad")).toBeDefined();
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Filtrar por presupuesto" }),
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText("Producto Sin Precio")).toBeNull();
+      });
+    });
+
+    it("9. Al soltar el slider aplica el presupuesto y desplaza la vista a destacados", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      const slider = screen.getByLabelText(
+        "Ajustar presupuesto máximo en pesos colombianos",
+      );
+      fireEvent.change(slider, { target: { value: "100" } });
+      fireEvent.pointerUp(slider);
+
+      expect(
+        screen
+          .getByRole("button", { name: "Solo en presupuesto" })
+          .getAttribute("aria-pressed"),
+      ).toBe("true");
+
+      await waitFor(() => {
+        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
+        expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
+        expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      });
+
+      expect(
+        vi.mocked(Element.prototype.scrollIntoView),
+      ).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
     });
   });
 });

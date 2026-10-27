@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Doto } from "next/font/google";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import { SCRIPT_TEMA } from "@/lib/tema";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
-});
-
-const doto = Doto({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-doto",
-  weight: ["600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,8 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${doto.variable}`}>
-      <body className="min-h-screen bg-[#f3f6fb] text-[#10213f] antialiased font-sans selection:bg-blue-200 selection:text-blue-950">
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-[var(--color-canvas)] font-sans text-[var(--color-ink)] antialiased selection:bg-[var(--color-brand-solid)] selection:text-[var(--color-on-solid)]">
+        <Script
+          id="tema-inicial"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: SCRIPT_TEMA }}
+        />
         {children}
       </body>
     </html>

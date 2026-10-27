@@ -6,6 +6,7 @@ import {
   MetricaPuntuacion,
   TiendaPrecio,
 } from "@/types/producto";
+import { normalizarPrecioCOP } from "./precios";
 
 export interface FichaNormalizada {
   categoriaTipo: CategoriaDispositivo;
@@ -51,16 +52,11 @@ export const INFO_CATEGORIAS: Record<
     icono: "📱",
     benchmarkDefault: "Rendimiento Global Tablet",
   },
-  monitores: {
-    etiqueta: "Monitores & Pantallas",
-    icono: "🖥️",
-    benchmarkDefault: "Frecuencia & Calibración de Color",
-  },
 };
 
 export function formatearCOP(valor: number | null | undefined): string {
   if (valor === null || valor === undefined) return "Consultar disponibilidad";
-  const monto = valor < 10000 ? Math.round(valor * 4000) : Math.round(valor);
+  const monto = normalizarPrecioCOP(valor);
   const formateado = new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
@@ -73,9 +69,9 @@ export function formatearCOP(valor: number | null | undefined): string {
  * Detecta la categoría de un dispositivo de forma robusta y jerárquica:
  * 1. Propiedad explícita 'categoria' (DispositivoKimovil)
  * 2. Propiedad 'nombreCategoria' del backend (Producto)
- * 3. Identificador 'idCategoria' (1: móviles, 2: tablets, 3: laptops, 4: auriculares, 5: monitores)
+ * 3. Identificador 'idCategoria' (1: móviles, 2: laptops/PCs, 3: tablets, 4: auriculares)
  * 4. Inferencia por nombre con límites de palabra para evitar clasificaciones erróneas
- *    por coincidencias parciales (ej. "monitor cardíaco" en descripción de un móvil).
+ *    por coincidencias parciales dentro de una descripción.
  */
 export function detectarCategoria(
   producto:
@@ -91,7 +87,6 @@ export function detectarCategoria(
   // 1. Verificación directa de propiedad categoria (e.g. DispositivoKimovil)
   if ("categoria" in producto && producto.categoria) {
     const cat = producto.categoria.toLowerCase().trim();
-    if (cat === "monitores" || cat === "monitor" || cat === "monitors") return "monitores";
     if (cat === "auriculares" || cat === "audio" || cat.includes("headphone") || cat.includes("auricular") || cat.includes("audifono")) return "auriculares";
     if (cat === "laptops" || cat === "laptop" || cat.includes("portatil") || cat.includes("portátil") || cat.includes("notebook")) return "laptops";
     if (cat === "tablets" || cat === "tablet" || cat.includes("ipad")) return "tablets";
@@ -101,7 +96,6 @@ export function detectarCategoria(
   // 2. Verificación por nombreCategoria proveniente del backend
   if ("nombreCategoria" in producto && producto.nombreCategoria) {
     const nomCat = producto.nombreCategoria.toLowerCase().trim();
-    if (nomCat.includes("monitor") || nomCat.includes("pantalla")) return "monitores";
     if (nomCat.includes("auricular") || nomCat.includes("audífono") || nomCat.includes("audifono") || nomCat.includes("audio") || nomCat.includes("headphone")) return "auriculares";
     if (nomCat.includes("laptop") || nomCat.includes("portátil") || nomCat.includes("portatil") || nomCat.includes("computador") || nomCat.includes("notebook") || nomCat.includes("pc")) return "laptops";
     if (nomCat.includes("tablet") || nomCat.includes("ipad")) return "tablets";
@@ -110,18 +104,14 @@ export function detectarCategoria(
 
   // 3. Verificación por idCategoria del backend
   if ("idCategoria" in producto && typeof producto.idCategoria === "number") {
-    if (producto.idCategoria === 5) return "monitores";
     if (producto.idCategoria === 4) return "auriculares";
-    if (producto.idCategoria === 3) return "laptops";
-    if (producto.idCategoria === 2) return "tablets";
+    if (producto.idCategoria === 3) return "tablets";
+    if (producto.idCategoria === 2) return "laptops";
     if (producto.idCategoria === 1) return "moviles";
   }
 
   // 4. Inferencia por nombre con límites de palabra (\b)
   const nombre = (producto.nombre || "").toLowerCase();
-  if (/\b(monitor|monitores|ultrawide|oled display)\b/i.test(nombre)) {
-    return "monitores";
-  }
   if (/\b(auricular|auriculares|audifono|audifonos|audífono|audífonos|headphone|headphones|earbuds|airpods|buds|freebuds|wh-1000|quietcomfort)\b/i.test(nombre)) {
     return "auriculares";
   }
@@ -492,54 +482,6 @@ export function normalizarFichaProducto(
         { nombre: "Calidad de Pantalla & Color", puntos: detalle?.puntuaciones?.pantalla || 9.7 },
         { nombre: "Autonomía de Batería", puntos: detalle?.puntuaciones?.bateria || 8.9 },
         { nombre: "Construcción, Chasis & Refrigeración", puntos: 9.5 },
-      ];
-    } else if (categoria === "monitores") {
-      benchmark = {
-        etiqueta: detalle?.benchmarkEtiqueta || "Frecuencia & Calibración de Color",
-        valor: detalle?.benchmarkValor || "180Hz · 1ms GtG · 99% sRGB",
-      };
-      secciones = [
-        {
-          icono: "🖥️",
-          titulo: "PANEL & RESOLUCIÓN",
-          descripcion:
-            detalle?.pantalla ||
-            "Panel Fast IPS / OLED · Resolución QHD (2560x1440) o 4K · Ángulos de visión amplios 178°.",
-        },
-        {
-          icono: "⚡",
-          titulo: "TASA DE REFRESCO & RESPUESTA",
-          descripcion:
-            detalle?.procesador ||
-            "Tasa de refresco de alta velocidad (144Hz - 240Hz) · Tiempo de respuesta de 1ms GtG con AMD FreeSync / G-Sync.",
-        },
-        {
-          icono: "🎨",
-          titulo: "GAMUT DE COLOR & HDR",
-          descripcion:
-            detalle?.camaras ||
-            "Cobertura 99% sRGB / 95% DCI-P3 · Certificación DisplayHDR para alto contraste y fidelidad de imagen.",
-        },
-        {
-          icono: "🔌",
-          titulo: "PUERTOS & CONECTIVIDAD",
-          descripcion:
-            detalle?.conectividad ||
-            "Entradas DisplayPort 1.4, HDMI 2.0 / 2.1, hub USB integrado y salida de audio jack 3.5mm.",
-        },
-        {
-          icono: "📐",
-          titulo: "ERGONOMÍA & AJUSTES",
-          descripcion:
-            detalle?.ramAlmacenamiento ||
-            "Soporte ergonómico con ajuste de altura, inclinación, giro y pivote vertical · Compatible con anclaje VESA 100x100.",
-        },
-      ];
-      metricas = [
-        { nombre: "Calidad de Imagen & Fidelidad de Color", puntos: detalle?.puntuaciones?.pantalla || 9.6 },
-        { nombre: "Fluidez & Tiempo de Respuesta", puntos: detalle?.puntuaciones?.rendimiento || 9.7 },
-        { nombre: "Conectividad & Puertos", puntos: 9.2 },
-        { nombre: "Ergonomía & Construcción", puntos: 9.4 },
       ];
     } else if (categoria === "tablets") {
       benchmark = {

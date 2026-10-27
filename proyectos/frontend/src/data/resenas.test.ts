@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   MAX_RESENAS_POR_HORA,
   REGLAS_RESENAS,
+  obtenerPalabrasDetectadas,
   type ReglaResenas,
 } from "./resenas";
 
@@ -27,5 +28,38 @@ describe("REGLAS_RESENAS", () => {
     const regla: ReglaResenas = REGLAS_RESENAS;
     expect(regla.mensajes.duplicada).toBeTruthy();
     expect(regla.mensajes.limite).toBeTruthy();
+  });
+});
+
+describe("obtenerPalabrasDetectadas", () => {
+  it("detecta palabras prohibidas ignorando mayúsculas y tildes", () => {
+    expect(obtenerPalabrasDetectadas("Esto es una ESTAFA")).toEqual(["estafa"]);
+    expect(obtenerPalabrasDetectadas("qué estúpida frase")).toEqual([
+      "estupida",
+    ]);
+  });
+
+  it("detecta evasiones con símbolos y espacios", () => {
+    expect(obtenerPalabrasDetectadas("Es una est@fa total")).toEqual([
+      "estafa",
+    ]);
+    expect(obtenerPalabrasDetectadas("es una m i e r d a lo sé")).toEqual([
+      "mierda",
+    ]);
+    expect(obtenerPalabrasDetectadas("qué ESTU-PIDO eres")).toEqual([
+      "estupido",
+    ]);
+  });
+
+  it("no marca texto limpio ni falsos positivos por subcadena", () => {
+    expect(obtenerPalabrasDetectadas("operación bien hecha")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("excelente producto")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("buen rendimiento y batería")).toEqual([]);
+  });
+
+  it("detecta plurales simples", () => {
+    expect(
+      obtenerPalabrasDetectadas("no quiero estafas ni timos")
+    ).toEqual(["estafa", "timo"]);
   });
 });

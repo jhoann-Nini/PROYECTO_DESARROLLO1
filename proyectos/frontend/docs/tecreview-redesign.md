@@ -1,7 +1,7 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D, E, F, G y H completados; filtrado automático
-por presupuesto y scroll a destacados en el Bloque I.
+**Estado:** Bloques A, B, C, D, E, F, G, H e I completados; panel de búsqueda
+global accesible en el Bloque J.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -531,6 +531,52 @@ aplicación rota.
 
 ---
 
+## 8.8 Criterios de aceptación del Bloque J — Panel de búsqueda global
+
+- [x] `PanelBusquedaModal` renderiza `role="dialog"`, `aria-modal="true"` y
+  `aria-labelledby="titulo-busqueda-modal"`, con backdrop
+  `bg-black/60 backdrop-blur-sm` y panel `bg-[var(--color-paper)]`, borde
+  `--color-hairline` y sombra pronunciada.
+- [x] Al abrir enfoca el campo de búsqueda; `Tab` y `Shift+Tab` mantienen el
+  foco dentro del panel; `Escape` y el clic en el backdrop cierran; al cerrarse
+  se devuelve el foco al disparador.
+- [x] Una región `aria-live="polite"` con `aria-atomic="true"` anuncia
+  “Se encontraron N productos” o “Buscando dispositivos...”.
+- [x] El input incluye icono de lupa, placeholder
+  “Buscar por modelo, marca o especificación...”, botón para limpiar y la pista
+  “Esc para cerrar”.
+- [x] Los cinco interruptores (Todos, Celulares, Tablets, Portátiles / PC y
+  Auriculares) usan `aria-pressed` y el estado activo en kiwi.
+- [x] Mientras carga se muestran al menos 4 filas `animate-pulse` con miniatura
+  `h-12 w-12 rounded-md`, título `h-4 w-3/4`, descripción `h-3 w-1/2` y etiqueta
+  de precio.
+- [x] `SiteHeader` muestra el botón de búsqueda con icono y badge `Ctrl K` tanto
+  en móvil como en escritorio, con `aria-haspopup="dialog"`, `aria-expanded` y
+  `aria-keyshortcuts="Control+K Meta+K"`.
+- [x] El atajo global `Ctrl+K` / `Cmd+K` abre el panel desde cualquier vista que
+  use el shell.
+- [x] Cada resultado enlaza a `/productos/[id]`, cierra el panel y notifica la
+  selección mediante `onSeleccionarProducto` cuando se proporciona.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+
+### Decisiones registradas del Bloque J
+
+1. El panel es autocontenido: si recibe `productos` filtra ese catálogo; si no,
+   solicita `obtenerProductos` al abrirse, cae a `PRODUCTOS_MOCK` cuando la API
+   falla o devuelve una lista vacía y construye las vistas con
+   `construirCatalogo`. No se modifican endpoints ni la base de datos.
+2. Los filtros usan `role="group"` y `aria-pressed` en lugar de `tablist`,
+   porque no controlan paneles de pestañas reales.
+3. El catálogo se solicita una sola vez por montaje mediante
+   `catalogoSolicitadoRef`; el estado de carga nace en `true` para evitar un
+   `setState` síncrono dentro del efecto.
+4. El atajo se registra en `SiteHeader` y hace `preventDefault` para no activar
+   la búsqueda del navegador.
+5. El panel se monta fuera del `<header>` para que el diálogo no quede anidado
+   en el landmark; `SiteHeader` conserva su API y sus hijos.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -609,4 +655,9 @@ aplicación rota.
   `npm run build` exitosos. Al soltar el slider se activa el filtro de
   presupuesto y la vista se desplaza suavemente a `#seccion-destacados`, que
   muestra el presupuesto aplicado.
+- **2026-10-26:** Bloque J completado en `feat/tecreview-redesign`.
+  `npm test`: 406 pruebas en 41 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. El botón de búsqueda es visible en móvil y
+  escritorio, `Ctrl+K`/`Cmd+K` abre el panel, el foco queda atrapado y se
+  restaura al cerrar, y la región `aria-live` anuncia los resultados.
 - Sin cambios en backend, `.env` ni base de datos.

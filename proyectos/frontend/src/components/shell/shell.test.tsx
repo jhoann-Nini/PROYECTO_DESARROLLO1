@@ -1,9 +1,20 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/productos",
+}));
+
+vi.mock("@/services/api", () => ({
+  obtenerProductos: vi.fn().mockResolvedValue([]),
 }));
 
 import SiteHeader from "./SiteHeader";
@@ -70,6 +81,31 @@ describe("Shell de TecReview", () => {
       name: /Cambiar.*tema/i,
     });
     expect(botonTema.getAttribute("aria-label")).toMatch(/Cambiar/i);
+  });
+
+  it("abre el panel de búsqueda desde el botón y con Ctrl+K o Cmd+K", async () => {
+    render(<SiteHeader />);
+
+    const header = screen.getByRole("banner");
+    const abrir = within(header).getByRole("button", {
+      name: /Abrir búsqueda/i,
+    });
+    expect(abrir.getAttribute("aria-haspopup")).toBe("dialog");
+
+    fireEvent.click(abrir);
+    expect(await screen.findByRole("dialog")).toBeDefined();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    expect(await screen.findByRole("dialog")).toBeDefined();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    fireEvent.keyDown(window, { key: "k", metaKey: true });
+    expect(await screen.findByRole("dialog")).toBeDefined();
   });
 
   it("el bottom nav expone navegación accesible", () => {

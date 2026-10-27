@@ -288,4 +288,52 @@ describe("ResenasCliente", () => {
       expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
     });
   });
+
+  it("avisa preventivamente cuando el comentario contiene términos bloqueados", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "no simplemente hace esto es un timo" },
+    });
+
+    const aviso = screen
+      .getAllByRole("status")
+      .find((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+      ;
+    expect(aviso?.textContent).toBe(
+      "Tu reseña contiene términos que requieren revisión antes de publicarse."
+    );
+  });
+
+  it("quita el aviso cuando el texto queda limpio", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+    fireEvent.change(area, { target: { value: "esto es un timo" } });
+    expect(
+      screen
+        .getAllByRole("status")
+        .some((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña")),
+    ).toBe(true);
+
+    fireEvent.change(area, { target: { value: "excelente producto" } });
+    expect(
+      screen
+        .queryAllByRole("status")
+        .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+        .length,
+    ).toBe(0);
+  });
 });

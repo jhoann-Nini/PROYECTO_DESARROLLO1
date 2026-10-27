@@ -14,7 +14,10 @@ import type {
   ProductoMejorValorado,
 } from "@/types/producto";
 import { normalizarTexto } from "@/data/productoViewModel";
-import { contieneLenguajeNoPermitido } from "@/data/resenas";
+import {
+  contieneLenguajeNoPermitido,
+  obtenerPalabrasDetectadas,
+} from "@/data/resenas";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
@@ -145,6 +148,12 @@ export default function ResenasCliente() {
   const totalAutores = useMemo(
     () => new Set(resenas.map((resena) => resena.idUsuario)).size,
     [resenas],
+  );
+  // Aviso preventivo (TEC-98): solo informa; el bloqueo clásico al enviar y
+  // la decisión final siguen en manos del backend (TEC-97).
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(comentario),
+    [comentario],
   );
 
   function reintentar() {
@@ -314,6 +323,28 @@ export default function ResenasCliente() {
                   className="mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
                 />
               </div>
+
+              {terminosDetectados.length > 0 && (
+                <p
+                  role="status"
+                  className="flex items-start gap-1.5 text-sm text-[var(--color-star)]"
+                >
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.75}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                  >
+                    <path d="M12 9v4m0 3h.01M10.3 3.9 2.2 18a2 2 0 0 0 1.7 3h16.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+                  </svg>
+                  Tu reseña contiene términos que requieren revisión antes de
+                  publicarse.
+                </p>
+              )}
 
               <div className="flex flex-wrap items-center gap-3">
                 <button

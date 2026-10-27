@@ -29,6 +29,7 @@ import { PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { normalizarPrecioCOP } from "@/data/precios";
+import { seleccionarDestacados } from "@/data/destacados";
 import {
   normalizarTexto,
   type ProductoViewModel,
@@ -509,6 +510,19 @@ export default function Home() {
     [vistas, filtros],
   );
 
+  // En la home se muestran 6 destacados como máximo. Si hay búsqueda o
+  // filtro de presupuesto activo, se respetan todos los resultados filtrados.
+  const hayFiltrosHome =
+    busqueda.trim().length > 0 || filtrarSoloEnPresupuesto;
+
+  const productosDestacados = useMemo(
+    () =>
+      hayFiltrosHome
+        ? productosFiltrados
+        : seleccionarDestacados(productosFiltrados, mejorValorados),
+    [hayFiltrosHome, productosFiltrados, mejorValorados],
+  );
+
   const mejorValoradosFiltrados = useMemo(
     () =>
       filtrarRanking(
@@ -770,9 +784,9 @@ export default function Home() {
         </section>
 
         <DestacadosHome
-          productos={productosFiltrados}
+          productos={productosDestacados}
           totalVerificados={totalProductosVerificados}
-          totalMostrados={productosFiltrados.length}
+          totalMostrados={productosDestacados.length}
           cargando={cargandoApi}
           estadoBackend={estadoBackend}
           busqueda={busqueda}

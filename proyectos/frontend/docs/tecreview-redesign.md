@@ -403,6 +403,35 @@ aplicación rota.
 
 ---
 
+## 8.5 Criterios de aceptación del Bloque G — Home
+
+- [x] `RankingItem` usa una fila superior (posición, miniatura, marca, título y
+  métrica) y una fila inferior para precio y "Ver ficha"; la descripción se
+  limita a dos líneas con `line-clamp-2`.
+- [x] Las tres columnas de rankings comparten altura, `gap` y padding, y los
+  pies "Ver lista completa" quedan alineados.
+- [x] `seleccionarDestacados` devuelve como máximo 6 productos: respeta
+  `posicionRanking`, elimina duplicados y productos fuera del catálogo, y cae a
+  los primeros 6 cuando no hay valoraciones coincidentes.
+- [x] Con búsqueda o filtro de presupuesto activos, Destacados muestra todos los
+  resultados filtrados sin recortar a 6.
+- [x] La cabecera y el pie de Destacados enlazan a `/productos` con CTA visible.
+- [x] `CategoriasHome` usa 5 SVG inline (Todos + 4 categorías), sin emojis, con
+  píldoras redondeadas, hover y foco visibles.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+
+### Decisiones registradas del Bloque G
+
+1. Los destacados usan el ranking real de mejor valorados. No se inventan
+   ratings ni relevancia: si la API no devuelve valoraciones, se muestran los
+   primeros 6 del catálogo.
+2. El ranking conserva el comportamiento de 4 elementos + "Ver lista completa";
+   solo cambia la presentación.
+3. Los iconos de categoría son SVG inline en el componente. El campo `icono` de
+   `lib/categorias.ts` no se modifica para no afectar a otros consumidores.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -464,4 +493,9 @@ aplicación rota.
   `/productos/999999`, `/productos/abc` y `/ruta-inexistente` responden 404.
   Las dos UIs 404 contienen su texto y el shell. El HTML servido incluye el
   script `tema-inicial` antes del contenido.
+- **2026-10-26:** Bloque G completado en `feat/tecreview-redesign`.
+  `npm test`: 395 pruebas en 40 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. Destacados queda limitado a 6 productos (o a todos
+  los resultados si hay filtros activos), los rankings usan una ficha compacta
+  y las categorías usan SVG inline.
 - Sin cambios en backend, `.env` ni base de datos.

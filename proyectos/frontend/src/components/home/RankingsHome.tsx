@@ -61,14 +61,14 @@ function ColumnaRanking({
   children,
 }: ColumnaRankingProps) {
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
-      <div>
+    <div className="flex flex-col justify-between rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
+      <div className="flex flex-1 flex-col">
         <div className="mb-6 border-b border-[var(--color-hairline)] pb-4">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-[var(--color-ink)] sm:text-xl">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-[var(--color-ink)] sm:text-xl">
               <span className="text-[var(--color-brand-blue)]">/</span> {titulo}
             </h3>
-            <span className="text-xs font-medium text-[var(--color-subtle)]">
+            <span className="shrink-0 pt-1 text-[11px] font-medium text-[var(--color-subtle)]">
               ({cantidad} dispositivos)
             </span>
           </div>
@@ -78,7 +78,7 @@ function ColumnaRanking({
           <div className="mt-3 h-0.5 w-12 rounded-full bg-[var(--color-brand-blue)]/70" />
         </div>
 
-        <div className="space-y-3">
+        <div className="flex-1 space-y-3.5">
           {cargando ? (
             <div
               className="flex flex-col items-center justify-center py-12 text-center"
@@ -138,7 +138,7 @@ function BotonListaCompleta({
     <button
       type="button"
       onClick={onAlternar}
-      className="w-full cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-3 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-brand-blue)]"
+      className="w-full cursor-pointer rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-2.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-brand-blue)]"
     >
       {mostrarTodos
         ? "Ocultar listado"
@@ -192,7 +192,7 @@ export default function RankingsHome({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
         <ColumnaRanking
           titulo="Mejor valorados."
           subtitulo="Puntuación real de usuarios registrados"

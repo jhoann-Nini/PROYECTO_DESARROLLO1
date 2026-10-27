@@ -208,6 +208,17 @@ describe("CategoriasHome", () => {
       within(grupo).getByRole("link", { name: /Auriculares/ }).getAttribute("href"),
     ).toBe("/categorias/auriculares");
   });
+
+  it("usa iconos SVG consistentes en lugar de emojis", () => {
+    render(<CategoriasHome onSeleccionarTodos={vi.fn()} />);
+
+    const grupo = screen.getByRole("group", {
+      name: "Explorar por categoría",
+    });
+
+    expect(grupo.querySelectorAll("svg")).toHaveLength(5);
+    expect(grupo.textContent).not.toMatch(/[\u{1F300}-\u{1FAFF}]/u);
+  });
 });
 
 describe("PresupuestoHome", () => {
@@ -346,6 +357,44 @@ describe("DestacadosHome", () => {
     expect(onVerDetalle).toHaveBeenCalledWith(productos[0]);
   });
 
+  it("enlaza al catálogo completo desde la cabecera y al final de la cuadrícula", () => {
+    const productos = [crearVista({ idProducto: 1 })];
+    render(
+      <DestacadosHome
+        {...propsDestacados({
+          productos,
+          totalVerificados: 80,
+          totalMostrados: 1,
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByRole("link", { name: "Ver catálogo completo" }).getAttribute("href"),
+    ).toBe("/productos");
+    expect(
+      screen
+        .getByRole("link", { name: "Explorar todos los productos (80)" })
+        .getAttribute("href"),
+    ).toBe("/productos");
+  });
+
+  it("no muestra el CTA final mientras carga o no hay productos", () => {
+    const { rerender } = render(
+      <DestacadosHome {...propsDestacados({ cargando: true })} />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: /Explorar todos los productos/ }),
+    ).toBeNull();
+
+    rerender(<DestacadosHome {...propsDestacados()} />);
+
+    expect(
+      screen.queryByRole("link", { name: /Explorar todos los productos/ }),
+    ).toBeNull();
+  });
+
   it("muestra el estado vacío de búsqueda y permite limpiarla", () => {
     const onLimpiarBusqueda = vi.fn();
     render(
@@ -425,6 +474,24 @@ describe("RankingsHome", () => {
       ),
     ).toBeDefined();
     expect(screen.getByText("Sin listas de deseos registradas")).toBeDefined();
+  });
+
+  it("sintetiza la ficha con descripción truncada y métrica compacta", () => {
+    const props = propsRankings();
+    props.mejorValorados = [
+      crearMejorValorado({
+        descripcion:
+          "Un teléfono con una ficha técnica extensa que antes ocupaba demasiadas líneas estrechas dentro de la tarjeta.",
+      }),
+    ];
+
+    render(<RankingsHome {...props} />);
+
+    const descripcion = screen.getByText(/ficha técnica extensa/);
+    expect(descripcion.className).toContain("line-clamp-2");
+    expect(screen.getByText("12 valoraciones")).toBeDefined();
+    expect(screen.queryByText("Interacción comunitaria")).toBeNull();
+    expect(screen.queryByText("Interés de la comunidad")).toBeNull();
   });
 
   it("muestra el error y permite reintentar cada ranking", () => {

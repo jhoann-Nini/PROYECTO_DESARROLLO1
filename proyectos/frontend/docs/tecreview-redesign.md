@@ -1,7 +1,7 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D, E, F y G completados; identidad kiwi aplicada
-en el Bloque H.
+**Estado:** Bloques A, B, C, D, E, F, G y H completados; filtrado automático
+por presupuesto y scroll a destacados en el Bloque I.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -498,6 +498,39 @@ aplicación rota.
 
 ---
 
+## 8.7 Criterios de aceptación del Bloque I — Filtro automático por presupuesto
+
+- [x] El valor “Hasta: $ X COP” y el límite mostrado bajo el slider se
+  actualizan en vivo mientras se arrastra (`onChange`).
+- [x] `PresupuestoHome` acepta `onFinalizarAjuste?: (valor: number) => void` y lo
+  invoca al terminar el ajuste por `pointerup`, `mouseup`, `touchend` o `keyup`
+  con el valor actual del control (50–1500), sin romper las props existentes.
+- [x] Al soltar el slider, la home activa `filtrarSoloEnPresupuesto` y desplaza
+  la vista con `scrollIntoView({ behavior: "smooth", block: "start" })` hasta
+  `#seccion-destacados`.
+- [x] `DestacadosHome` expone el ancla en su `<section>`, usa `scroll-mt-16` para
+  compensar el header fijo y mantiene el nombre accesible con
+  `aria-labelledby`.
+- [x] Con el filtro activo, Destacados lista todos los productos cuyo precio es
+  menor o igual al límite y muestra un badge con el presupuesto aplicado.
+- [x] `npm test`, `npx tsc --noEmit` y `npm run lint` pasan.
+
+### Decisiones registradas del Bloque I
+
+1. El callback recibe el valor del slider (50–1500), no el valor convertido a
+   COP. La página lo ignora porque `limitePresupuestoCOP` ya se deriva del estado
+   `presupuestoMax`; así el componente no duplica la regla de normalización.
+2. El botón explícito “Filtrar por presupuesto” se conserva. El filtrado al
+   soltar el slider es una comodidad adicional, no un reemplazo del control
+   manual.
+3. El `id` del ancla se movió del `<h2>` al `<section>` y el título usa
+   `seccion-destacados-titulo`. `scroll-mt-16` evita que el header fijo tape el
+   inicio de la sección.
+4. El badge usa `limitePresupuestoCOP` (valor ya normalizado) en lugar de
+   `presupuestoMax` para no mostrar una cifra ambigua.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -571,4 +604,9 @@ aplicación rota.
   Capturas reales en Edge headless de home, catálogo, detalle y modal de acceso
   en ambos temas; una visita nueva arranca con `html.dark` y
   `color-scheme: dark` sin preferencia guardada.
+- **2026-10-26:** Bloque I completado en `feat/tecreview-redesign`.
+  `npm test`: 397 pruebas en 40 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. Al soltar el slider se activa el filtro de
+  presupuesto y la vista se desplaza suavemente a `#seccion-destacados`, que
+  muestra el presupuesto aplicado.
 - Sin cambios en backend, `.env` ni base de datos.

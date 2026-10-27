@@ -156,6 +156,14 @@ export default function Home() {
   const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] =
     useState(false);
 
+  const manejarFinAjustePresupuesto = useCallback(() => {
+    setFiltrarSoloEnPresupuesto(true);
+    document.getElementById("seccion-destacados")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, []);
+
   // Estados de los rankings y las ofertas
   const [mostrarTodosMejorValorados, setMostrarTodosMejorValorados] =
     useState(false);
@@ -759,6 +767,7 @@ export default function Home() {
                 <PresupuestoHome
                   presupuestoMax={presupuestoMax}
                   onCambiarPresupuesto={setPresupuestoMax}
+                  onFinalizarAjuste={manejarFinAjustePresupuesto}
                   totalEnPresupuesto={totalEnPresupuesto}
                   totalProductos={totalProductosVerificados}
                   filtrarSolo={filtrarSoloEnPresupuesto}

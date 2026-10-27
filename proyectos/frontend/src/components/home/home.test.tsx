@@ -269,6 +269,48 @@ describe("PresupuestoHome", () => {
     const activo = screen.getByRole("button", { name: /Solo en presupuesto/ });
     expect(activo.getAttribute("aria-pressed")).toBe("true");
   });
+
+  it("notifica el fin del ajuste con el valor actual del slider", () => {
+    const onCambiarPresupuesto = vi.fn();
+    const onFinalizarAjuste = vi.fn();
+    const { rerender } = render(
+      <PresupuestoHome
+        presupuestoMax={1000}
+        onCambiarPresupuesto={onCambiarPresupuesto}
+        onFinalizarAjuste={onFinalizarAjuste}
+        totalEnPresupuesto={4}
+        totalProductos={10}
+        filtrarSolo={false}
+        onAlternarFiltro={vi.fn()}
+      />,
+    );
+
+    const slider = screen.getByLabelText(
+      "Ajustar presupuesto máximo en pesos colombianos",
+    );
+    fireEvent.change(slider, { target: { value: "250" } });
+
+    rerender(
+      <PresupuestoHome
+        presupuestoMax={250}
+        onCambiarPresupuesto={onCambiarPresupuesto}
+        onFinalizarAjuste={onFinalizarAjuste}
+        totalEnPresupuesto={4}
+        totalProductos={10}
+        filtrarSolo={false}
+        onAlternarFiltro={vi.fn()}
+      />,
+    );
+
+    expect(onFinalizarAjuste).not.toHaveBeenCalled();
+
+    for (const evento of ["pointerUp", "mouseUp", "touchEnd", "keyUp"] as const) {
+      onFinalizarAjuste.mockClear();
+      fireEvent[evento](slider);
+      expect(onFinalizarAjuste).toHaveBeenCalledTimes(1);
+      expect(onFinalizarAjuste).toHaveBeenCalledWith(250);
+    }
+  });
 });
 
 describe("OfertasHome", () => {
@@ -425,6 +467,32 @@ describe("DestacadosHome", () => {
       screen.getByRole("button", { name: "Mostrar todos los productos" }),
     );
     expect(onMostrarTodos).toHaveBeenCalledTimes(1);
+  });
+
+  it("expone el ancla de destacados y el presupuesto aplicado", () => {
+    const { rerender } = render(
+      <DestacadosHome {...propsDestacados({ filtroPresupuesto: false })} />,
+    );
+
+    const seccion = screen.getByRole("region", {
+      name: "Destacados para ti.",
+    });
+    expect(seccion.getAttribute("id")).toBe("seccion-destacados");
+    expect(seccion.className).toContain("scroll-mt-16");
+    expect(screen.queryByText(/Presupuesto aplicado/)).toBeNull();
+
+    rerender(
+      <DestacadosHome
+        {...propsDestacados({
+          filtroPresupuesto: true,
+          limitePresupuestoCOP: 4_000_000,
+        })}
+      />,
+    );
+
+    expect(
+      screen.getByText(/Presupuesto aplicado:.*4\.000\.000.*COP/),
+    ).toBeDefined();
   });
 
   it("muestra 'Modo local' cuando la API no responde", () => {

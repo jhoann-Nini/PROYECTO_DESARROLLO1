@@ -36,13 +36,14 @@ export default function DestacadosHome({
 }: DestacadosHomeProps) {
   return (
     <section
-      aria-labelledby="seccion-destacados"
-      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
+      id="seccion-destacados"
+      aria-labelledby="seccion-destacados-titulo"
+      className="mx-auto max-w-7xl scroll-mt-16 px-4 py-10 sm:px-6 lg:px-8"
     >
       <div className="mb-6 flex flex-col gap-4 border-b border-[var(--color-hairline)] pb-5 md:flex-row md:items-end md:justify-between">
         <div>
           <h2
-            id="seccion-destacados"
+            id="seccion-destacados-titulo"
             className="text-xl font-semibold tracking-tight text-[var(--color-ink)] sm:text-2xl"
           >
             Destacados para ti.
@@ -54,6 +55,16 @@ export default function DestacadosHome({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {filtroPresupuesto ? (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-brand-solid)]/30 bg-[var(--color-brand-solid)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
+              <span
+                className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"
+                aria-hidden="true"
+              />
+              Presupuesto aplicado: {formatearCOP(limitePresupuestoCOP)}
+            </span>
+          ) : null}
+
           {estadoBackend === "online" ? (
             <span className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-positive)]/30 bg-[var(--color-positive)]/10 px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
               <span

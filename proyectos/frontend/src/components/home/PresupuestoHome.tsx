@@ -1,8 +1,14 @@
+import type { SyntheticEvent } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 
 export interface PresupuestoHomeProps {
   presupuestoMax: number;
   onCambiarPresupuesto: (valor: number) => void;
+  /**
+   * Se invoca al terminar el ajuste del slider (pointer, mouse, touch o teclado)
+   * con el valor actual del control (50–1500), no con el valor en COP.
+   */
+  onFinalizarAjuste?: (valor: number) => void;
   totalEnPresupuesto: number;
   totalProductos: number;
   filtrarSolo: boolean;
@@ -12,11 +18,16 @@ export interface PresupuestoHomeProps {
 export default function PresupuestoHome({
   presupuestoMax,
   onCambiarPresupuesto,
+  onFinalizarAjuste,
   totalEnPresupuesto,
   totalProductos,
   filtrarSolo,
   onAlternarFiltro,
 }: PresupuestoHomeProps) {
+  function manejarFinAjuste(evento: SyntheticEvent<HTMLInputElement>) {
+    onFinalizarAjuste?.(Number(evento.currentTarget.value));
+  }
+
   return (
     <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -48,6 +59,10 @@ export default function PresupuestoHome({
           step="25"
           value={presupuestoMax}
           onChange={(evento) => onCambiarPresupuesto(Number(evento.target.value))}
+          onPointerUp={manejarFinAjuste}
+          onMouseUp={manejarFinAjuste}
+          onTouchEnd={manejarFinAjuste}
+          onKeyUp={manejarFinAjuste}
           aria-label="Ajustar presupuesto máximo en pesos colombianos"
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--color-hairline)] accent-[var(--color-brand-blue)]"
         />

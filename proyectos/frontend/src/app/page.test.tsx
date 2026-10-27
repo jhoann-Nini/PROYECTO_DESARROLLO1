@@ -63,6 +63,7 @@ describe("Página principal / (Home)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    Element.prototype.scrollIntoView = vi.fn();
     mockObtenerResenas.mockResolvedValue([]);
     mockObtenerCategorias.mockResolvedValue([]);
     mockObtenerMarcas.mockResolvedValue([]);
@@ -1293,6 +1294,38 @@ describe("Página principal / (Home)", () => {
       await waitFor(() => {
         expect(screen.queryByText("Producto Sin Precio")).toBeNull();
       });
+    });
+
+    it("9. Al soltar el slider aplica el presupuesto y desplaza la vista a destacados", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      });
+
+      const slider = screen.getByLabelText(
+        "Ajustar presupuesto máximo en pesos colombianos",
+      );
+      fireEvent.change(slider, { target: { value: "100" } });
+      fireEvent.pointerUp(slider);
+
+      expect(
+        screen
+          .getByRole("button", { name: "Solo en presupuesto" })
+          .getAttribute("aria-pressed"),
+      ).toBe("true");
+
+      await waitFor(() => {
+        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
+        expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
+        expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      });
+
+      expect(
+        vi.mocked(Element.prototype.scrollIntoView),
+      ).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
     });
   });
 });

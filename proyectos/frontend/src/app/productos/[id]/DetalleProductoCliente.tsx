@@ -327,7 +327,7 @@ export default function DetalleProductoCliente({
             <RatingStars
               rating={stats?.promedioPuntuacion ?? null}
               cantidadResenas={stats?.cantidadValoraciones ?? null}
-              etiquetaCantidad="valoraciones"
+              etiquetaCantidad="opiniones"
               tamano="md"
             />
           </div>

@@ -159,6 +159,30 @@ describe("crearProductoViewModel", () => {
     expect(basico.caracteristicas).toEqual([]);
   });
 
+  it("extrae las tiendas y el precio mínimo desde las características", () => {
+    const vista = crearProductoViewModel({
+      ...productoBase,
+      caracteristicas: {
+        ...productoBase.caracteristicas,
+        tiendas: [
+          { nombre: "Tienda A", precio: 4_800_000, envioGratis: true },
+          { nombre: "Tienda B", precio: 4_500_000, envioGratis: false },
+          { nombre: "Tienda inválida", precio: "sin precio" },
+        ],
+      },
+    });
+
+    expect(vista.numeroTiendas).toBe(2);
+    expect(vista.precioDesdeCOP).toBe(4_500_000);
+  });
+
+  it("deja las tiendas vacías cuando no hay datos válidos", () => {
+    const vista = crearProductoViewModel(productoBase);
+
+    expect(vista.numeroTiendas).toBe(0);
+    expect(vista.precioDesdeCOP).toBeNull();
+  });
+
   it("construye un texto de búsqueda sin acentos", () => {
     const vista = crearProductoViewModel(productoBase);
 

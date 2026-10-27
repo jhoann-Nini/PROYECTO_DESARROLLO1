@@ -35,7 +35,7 @@ export function seleccionarDestacados(
     if (!producto) continue;
 
     idsAgregados.add(item.idProducto);
-    destacados.push(producto);
+    destacados.push({ ...producto, posicionRanking: item.posicionRanking });
   }
 
   if (destacados.length > 0) {

@@ -131,7 +131,7 @@ export default function ValoracionProducto({
                   rating={promedio}
                   cantidadResenas={stats?.cantidadValoraciones ?? null}
                   tamano="md"
-                  etiquetaCantidad="valoraciones"
+                  etiquetaCantidad="opiniones"
                 />
               </div>
             </>

@@ -69,10 +69,11 @@ describe("TarjetaProducto", () => {
     expect(screen.queryByText("Disponible")).toBeNull();
   });
 
-  it("muestra 'Sin reseñas' cuando no hay rating", () => {
+  it("muestra 'Sin opiniones' cuando no hay rating", () => {
     render(<TarjetaProducto producto={crearProducto()} />);
 
-    expect(screen.getByText("Sin reseñas")).toBeDefined();
+    expect(screen.getByText("0,0")).toBeDefined();
+    expect(screen.getByText("Sin opiniones")).toBeDefined();
   });
 
   it("muestra el rating numérico cuando existe", () => {
@@ -85,8 +86,61 @@ describe("TarjetaProducto", () => {
     expect(
       screen.getByRole("img", { name: /Valoración 4,5 de 5/i })
     ).toBeDefined();
-    expect(screen.getByText(/120 reseñas/)).toBeDefined();
-    expect(screen.queryByText("Sin reseñas")).toBeNull();
+    expect(screen.getByText("4,5")).toBeDefined();
+    expect(screen.getByText("(120 opiniones)")).toBeDefined();
+    expect(screen.queryByText("Sin opiniones")).toBeNull();
+  });
+
+  it("muestra el badge de posición cuando se usa en un ranking", () => {
+    const { rerender } = render(
+      <TarjetaProducto producto={crearProducto()} posicionRanking={1} />
+    );
+
+    expect(screen.getByText("#1 TOP")).toBeDefined();
+
+    rerender(<TarjetaProducto producto={crearProducto()} />);
+
+    expect(screen.queryByText("#1 TOP")).toBeNull();
+  });
+
+  it("muestra el precio desde y la cantidad de tiendas cuando existen", () => {
+    render(
+      <TarjetaProducto
+        producto={crearProducto({
+          numeroTiendas: 3,
+          precioDesdeCOP: 4_800_000,
+        })}
+      />
+    );
+
+    expect(screen.getByText(/Desde \$ 4\.800\.000 COP/)).toBeDefined();
+    expect(screen.getByText(/3 tiendas/)).toBeDefined();
+  });
+
+  it("usa el singular cuando solo hay una tienda", () => {
+    render(
+      <TarjetaProducto
+        producto={crearProducto({
+          numeroTiendas: 1,
+          precioDesdeCOP: 4_800_000,
+        })}
+      />
+    );
+
+    expect(screen.getByText(/1 tienda/)).toBeDefined();
+  });
+
+  it("soporta la variante de lista sin perder el contenido", () => {
+    const { container } = render(
+      <TarjetaProducto producto={crearProducto()} variante="lista" />
+    );
+
+    const articulo = container.querySelector("article");
+    expect(articulo?.getAttribute("data-variante")).toBe("lista");
+    expect(
+      screen.getByRole("heading", { name: "Samsung Galaxy S24 Ultra" })
+    ).toBeDefined();
+    expect(screen.getByText("$ 5.499.000 COP")).toBeDefined();
   });
 
   it("omite especificaciones ausentes", () => {

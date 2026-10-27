@@ -555,7 +555,7 @@ export default function ResenasCliente() {
                         <RatingStars
                           rating={producto.promedioPuntuacion}
                           cantidadResenas={producto.cantidadValoraciones}
-                          etiquetaCantidad="valoraciones"
+                          etiquetaCantidad="opiniones"
                         />
                       </span>
                     </Link>

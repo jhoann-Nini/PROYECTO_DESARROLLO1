@@ -1,7 +1,7 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D, E, F, G, H e I completados; panel de búsqueda
-global accesible en el Bloque J.
+**Estado:** Bloques A, B, C, D, E, F, G, H, I y J completados; tarjeta de
+producto rediseñada y calificaciones unificadas en el Bloque K (TEC-62/TEC-69).
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -168,7 +168,11 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
 - La API real devuelve 80 productos. No hay paginación de servidor.
 - `Producto` no incluye rating agregado ni cantidad de reseñas. El view model
   acepta esos valores como opcionales; si no existen, la UI muestra
-  “Sin reseñas” en lugar de inventar estrellas.
+  `★ 0,0 · Sin opiniones` en lugar de inventar estrellas.
+- `caracteristicas.tiendas` es opcional y se valida antes de usarse. El view
+  model expone `numeroTiendas` y `precioDesdeCOP` (mínimo de las tiendas con
+  precio válido); si no hay tiendas válidas quedan en `0` y `null`. La tarjeta
+  muestra `Desde $ X COP · N tiendas` solo cuando ambos datos existen.
 - `estado` determina la disponibilidad.
 - `caracteristicas` es JSON libre. El view model extrae especificaciones clave
   y devuelve `null` cuando no hay dato; no inventa valores.
@@ -229,8 +233,9 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
    nuevas usan solo tokens semánticos.
 3. El tema oscuro reutiliza los mismos componentes: no hay una copia oscura de
    cada vista.
-4. `--color-brand-blue` se aclara a `#60A5FA` en oscuro para enlaces, chips y
-   focos; `--color-brand-solid` conserva `#2563EB` en botones con texto blanco.
+4. `--color-brand-blue` es `#4D7C0F` en claro y `#A3E635` en oscuro para
+   enlaces, chips y focos; `--color-brand-solid` es kiwi `#A3E635` en ambos
+   temas y siempre se acompaña de `--color-on-solid`.
 5. El script `tema-inicial` se inyecta con `beforeInteractive` antes del
    contenido y el toggle del header mantiene la preferencia.
 6. `BotonTema` usa `dark:` solo para intercambiar los iconos de sol/luna; no es
@@ -577,6 +582,48 @@ aplicación rota.
 
 ---
 
+## 8.9 Criterios de aceptación del Bloque K — Tarjeta de producto y calificaciones (TEC-62 / TEC-69)
+
+- [x] `RatingStars` usa el formato unificado `★ 4,5 · (12 opiniones)`; sin datos
+  muestra `★ 0,0 · Sin opiniones` y mantiene un `aria-label` descriptivo.
+- [x] El plural se resuelve como `(1 opinión)` / `(N opiniones)` y se conserva
+  `etiquetaCantidad` para los consumidores que aún usan “reseñas” o
+  “valoraciones”.
+- [x] `TarjetaProducto` muestra el badge `#N TOP` sobre la imagen solo cuando
+  recibe una `posicionRanking` entera positiva.
+- [x] La tarjeta muestra `Desde $ X COP · N tiendas` cuando
+  `precioDesdeCOP` y `numeroTiendas` existen; si no, conserva el precio de
+  referencia y “Consultar disponibilidad”.
+- [x] Las especificaciones se presentan como chips compactos (máximo dos) y la
+  disponibilidad como píldora dentro del contenido.
+- [x] La tarjeta admite `variante="grid"` (por defecto) y `variante="lista"`,
+  expuestas mediante `data-variante`, sin perder título, precio ni acciones.
+- [x] `seleccionarDestacados` adjunta la `posicionRanking` real y
+  `DestacadosHome` la pasa a la tarjeta.
+- [x] El detalle, las valoraciones y `/resenas` usan la etiqueta “opiniones”.
+- [x] Se conservan `onVerDetalle`, `presupuesto`, favoritos y las pruebas
+  existentes de la tarjeta.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+
+### Decisiones registradas del Bloque K
+
+1. Las tiendas y el precio desde se derivan de `caracteristicas.tiendas` en el
+   view model, no en la tarjeta. Así la regla de validación y el mínimo viven en
+   un solo lugar y la tarjeta solo presenta datos ya normalizados.
+2. `numeroTiendas` y `precioDesdeCOP` son opcionales para no romper fixtures ni
+   consumidores existentes. Sin datos válidos, la tarjeta no inventa tiendas ni
+   descuentos.
+3. `RatingStars` conserva `tamano` y `etiquetaCantidad`; el valor por defecto de
+   la etiqueta pasa a “opiniones”. Los usos de detalle, valoraciones y reseñas se
+   actualizaron explícitamente.
+4. La variante `lista` reutiliza el mismo contenido y solo cambia la composición
+   visual; no se creó un segundo componente.
+5. El badge de ranking se coloca sobre la imagen para no competir con el precio
+   ni con la disponibilidad, y no se muestra en catálogo salvo que el consumidor
+   pase la posición.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -660,4 +707,9 @@ aplicación rota.
   `npm run build` exitosos. El botón de búsqueda es visible en móvil y
   escritorio, `Ctrl+K`/`Cmd+K` abre el panel, el foco queda atrapado y se
   restaura al cerrar, y la región `aria-live` anuncia los resultados.
+- **2026-10-26:** Bloque K completado en `feat/tecreview-redesign` (TEC-62 /
+  TEC-69). `npm test`: 418 pruebas en 42 archivos; `npx tsc --noEmit`,
+  `npm run lint` y `npm run build` exitosos. La tarjeta muestra ranking, tiendas,
+  precio desde, chips y variantes `grid`/`lista`; las calificaciones usan
+  `★ 4,5 · (12 opiniones)` y `★ 0,0 · Sin opiniones`.
 - Sin cambios en backend, `.env` ni base de datos.

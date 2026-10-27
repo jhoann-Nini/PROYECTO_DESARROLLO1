@@ -157,7 +157,7 @@ describe("ResenasCliente", () => {
     expect(
       screen.getByRole("heading", { name: "Mejor valorados" }),
     ).toBeDefined();
-    expect(screen.getByText("(12 valoraciones)")).toBeDefined();
+    expect(screen.getByText("(12 opiniones)")).toBeDefined();
   });
 
   it("filtra por texto y por producto", async () => {

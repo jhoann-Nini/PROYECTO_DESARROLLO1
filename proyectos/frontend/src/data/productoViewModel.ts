@@ -1,4 +1,8 @@
-import type { CategoriaDispositivo, Producto } from "@/types/producto";
+import type {
+  CategoriaDispositivo,
+  Producto,
+  TiendaPrecio,
+} from "@/types/producto";
 import { detectarCategoria, formatearCOP } from "./specsHelper";
 import { normalizarPrecioCOP } from "./precios";
 
@@ -32,6 +36,9 @@ export interface ProductoViewModel {
   especificaciones: EspecificacionesClave;
   caracteristicas: CaracteristicaClave[];
   textoBusqueda: string;
+  posicionRanking?: number | null;
+  numeroTiendas?: number;
+  precioDesdeCOP?: number | null;
 }
 
 export interface OpcionesProductoViewModel {
@@ -267,6 +274,40 @@ function detectarCaracteristicas(
   return resultado;
 }
 
+function extraerTiendas(
+  caracteristicas?: Record<string, unknown> | null
+): TiendaPrecio[] {
+  const tiendas = caracteristicas?.tiendas;
+  if (!Array.isArray(tiendas)) return [];
+
+  const resultado: TiendaPrecio[] = [];
+
+  for (const item of tiendas) {
+    if (!item || typeof item !== "object") continue;
+
+    const registro = item as Record<string, unknown>;
+    const precio = normalizarPrecioCOP(
+      typeof registro.precio === "number"
+        ? registro.precio
+        : Number(registro.precio)
+    );
+
+    if (precio <= 0) continue;
+
+    resultado.push({
+      nombre:
+        typeof registro.nombre === "string" && registro.nombre.trim()
+          ? registro.nombre.trim()
+          : "Tienda",
+      precio,
+      envioGratis: registro.envioGratis === true,
+      url: typeof registro.url === "string" ? registro.url : undefined,
+    });
+  }
+
+  return resultado;
+}
+
 function normalizarRating(valor: number | null | undefined): number | null {
   if (valor === null || valor === undefined || !Number.isFinite(valor)) {
     return null;
@@ -299,6 +340,7 @@ export function crearProductoViewModel(
     opciones.nombreMarca?.trim() ||
     `Marca #${producto.idMarca}`;
   const especificaciones = extraerEspecificaciones(producto.caracteristicas);
+  const tiendas = extraerTiendas(producto.caracteristicas);
   const imagen = producto.imagen?.trim() || null;
   const textoBusqueda = construirTextoBusqueda(
     producto,
@@ -325,5 +367,10 @@ export function crearProductoViewModel(
       textoBusqueda
     ),
     textoBusqueda,
+    numeroTiendas: tiendas.length,
+    precioDesdeCOP:
+      tiendas.length > 0
+        ? Math.min(...tiendas.map((tienda) => tienda.precio))
+        : null,
   };
 }

@@ -248,7 +248,7 @@ describe("DetalleProductoCliente", () => {
       expect(screen.getByText(RESENA.comentario)).toBeDefined();
     });
 
-    expect(screen.getAllByText(/12 valoraciones/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/12 opiniones/).length).toBeGreaterThan(0);
     expect(
       screen.getAllByRole("img", { name: /Valoración 4,5 de 5/i }).length,
     ).toBeGreaterThan(0);

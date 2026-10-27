@@ -103,6 +103,17 @@ describe("seleccionarDestacados", () => {
     expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 2]);
   });
 
+  it("adjunta la posición real del ranking a los destacados", () => {
+    const productos = [crearVista(1), crearVista(2)];
+    const valorados = [crearValorado(2, 1), crearValorado(1, 2)];
+
+    const resultado = seleccionarDestacados(productos, valorados);
+
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([2, 1]);
+    expect(resultado[0].posicionRanking).toBe(1);
+    expect(resultado[1].posicionRanking).toBe(2);
+  });
+
   it("cae a los primeros seis del catálogo cuando no hay valoraciones", () => {
     const productos = Array.from({ length: 8 }, (_, indice) =>
       crearVista(indice + 1),

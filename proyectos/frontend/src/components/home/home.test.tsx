@@ -399,6 +399,20 @@ describe("DestacadosHome", () => {
     expect(onVerDetalle).toHaveBeenCalledWith(productos[0]);
   });
 
+  it("muestra el badge de ranking en los destacados que tienen posición", () => {
+    render(
+      <DestacadosHome
+        {...propsDestacados({
+          productos: [crearVista({ idProducto: 1, posicionRanking: 1 })],
+          totalVerificados: 1,
+          totalMostrados: 1,
+        })}
+      />,
+    );
+
+    expect(screen.getByText("#1 TOP")).toBeDefined();
+  });
+
   it("enlaza al catálogo completo desde la cabecera y al final de la cuadrícula", () => {
     const productos = [crearVista({ idProducto: 1 })];
     render(

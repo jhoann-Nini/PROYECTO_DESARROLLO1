@@ -125,6 +125,7 @@ export default function DestacadosHome({
               <TarjetaProducto
                 key={`prod-${producto.idProducto}`}
                 producto={producto}
+                posicionRanking={producto.posicionRanking}
                 onVerDetalle={onVerDetalle}
                 presupuesto={
                   producto.precioCOP > 0

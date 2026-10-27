@@ -1,9 +1,10 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A–L completados; la tarjeta de producto y las calificaciones
-se unificaron en el Bloque K (TEC-62/TEC-69) y los filtros del catálogo con
+**Estado:** Bloques A–P completados; la tarjeta de producto y las calificaciones
+se unificaron en el Bloque K (TEC-62/TEC-69), los filtros del catálogo con
 cajón móvil, precios manuales, buscador de marcas y ordenamiento en el Bloque L
-(TEC-60).
+(TEC-60), y la moderación y gestión de reseñas en los Bloques M–P
+(TEC-89, TEC-96, TEC-98, TEC-75 y TEC-103).
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -154,8 +155,8 @@ navegación principal.
   `ValoracionProducto`, `OpinionesProducto`, `BotonComparador`.
 - **Comparador:** `ComparadorCliente` con selector, tabla, diferencias y
   sugerencia derivada.
-- **Secundarias:** `ResenasCliente`, `FavoritosCliente`, `PerfilCliente`,
-  `BotonFavorito` y las páginas de blog.
+- **Secundarias:** `ResenasCliente`, `EditarResena`, `ReportarResenaModal`,
+  `FavoritosCliente`, `PerfilCliente`, `BotonFavorito` y las páginas de blog.
 - **Tema y cierre:** `lib/tema`, `useTema`, `BotonTema`, `app/not-found.tsx` y
   `productos/[id]/not-found.tsx`.
 - **Comunes:** `RatingStars`, `ProductImagePlaceholder`, `AuthModal`,
@@ -680,6 +681,93 @@ aplicación rota.
 
 ---
 
+## 8.11 Criterios de aceptación del Bloque M — Reglas de moderación (TEC-89 / TEC-96)
+
+- [x] `MAX_RESENAS_POR_HORA = 5` y `REGLAS_RESENAS` exponen el contrato de tasa
+  y los mensajes oficiales para 409 y 429.
+- [x] Mensaje 409: “Ya has valorado este producto. Puedes editar tu reseña
+  existente.”.
+- [x] Mensaje 429: “Has alcanzado el límite de 5 reseñas por hora. Intenta de
+  nuevo más tarde.”.
+- [x] `PALABRAS_NO_PERMITIDAS` consolida la lista oficial de términos bloqueados
+  y `obtenerPalabrasDetectadas` devuelve las coincidencias canónicas.
+- [x] La detección ignora mayúsculas, tildes, separadores y evasiones leet
+  comunes (`est@fa`, `m i e r d a`, `ESTU-PIDO`) y reconoce plurales simples.
+- [x] No hay falsos positivos por subcadenas de palabras válidas (`operación`).
+- [x] `contieneLenguajeNoPermitido` conserva su firma y comportamiento para los
+  consumidores existentes.
+
+### Decisiones registradas del Bloque M
+
+1. La lista es ajustable y el backend (TEC-97) sigue siendo la autoridad final.
+2. El detector aplana separadores y símbolos tras normalizar tildes; se aceptan
+   las sustituciones leet más comunes (`@`, `$`, `!`, `0`, `1`, `3`, `4`, `€`).
+3. El contrato de reglas se exporta como `REGLAS_RESENAS` para que NM lo use en
+   TEC-90/91/92 sin duplicar literales.
+
+---
+
+## 8.12 Criterios de aceptación del Bloque N — Aviso preventivo (TEC-98)
+
+- [x] Mientras se escribe, si el comentario contiene términos bloqueados se
+  muestra un aviso preventivo con el texto “Tu reseña contiene términos que
+  requieren revisión antes de publicarse.”.
+- [x] El aviso usa `role="status"` y desaparece al limpiar el texto.
+- [x] El aviso no sustituye el bloqueo existente al enviar ni la decisión final
+  del backend.
+
+### Decisiones registradas del Bloque N
+
+1. El tema no tiene un token amarillo propio; el aviso usa `--color-star`
+   (ámbar oficial) para no introducir colores fuera de la paleta.
+
+---
+
+## 8.13 Criterios de aceptación del Bloque O — Edición y eliminación (TEC-75)
+
+- [x] Las reseñas propias muestran “Editar” y “Eliminar” solo con sesión y solo
+  cuando `idUsuario` coincide con el usuario autenticado.
+- [x] Eliminar abre un diálogo con “¿Deseas eliminar tu opinión?”, “Cancelar” y
+  “Eliminar”; cancelar no ejecuta la acción.
+- [x] Editar abre un diálogo con el comentario precargado y “Guardar cambios”.
+- [x] Ambos diálogos atrapan el foco, cierran con Escape y backdrop, bloquean el
+  scroll y muestran un error controlado si el backend falla.
+- [x] La lista se actualiza localmente tras editar o eliminar.
+- [x] Se añadieron los stubs `editarResena` (PUT) y `eliminarResena` (DELETE)
+  sobre `/api/resenas/{id}`.
+
+### Decisiones registradas del Bloque O
+
+1. Los endpoints de MG (TEC-76/77/78) aún no existen; los stubs permiten que la
+   UI quede lista y muestre “No fue posible completar la acción. Inténtalo de
+   nuevo más tarde.” mientras el backend no responda.
+2. La confirmación de borrado es un diálogo modal propio, no `confirm()`, para
+   mantener accesibilidad y consistencia visual.
+
+---
+
+## 8.14 Criterios de aceptación del Bloque P — Reporte de reseñas (TEC-103)
+
+- [x] Las reseñas ajenas muestran un botón discreto “Reportar” con bandera.
+- [x] `ReportarResenaModal` ofrece los motivos Spam, Lenguaje ofensivo, Falso y
+  Otro; “Otro” habilita el detalle.
+- [x] No se envía sin motivo y el error “Selecciona un motivo para continuar.”
+  se muestra en el diálogo.
+- [x] Tras enviar, el modal se cierra y la reseña muestra “Reporte enviado” sin
+  permitir reenviar.
+- [x] El modal atrapa el foco, cierra con Escape, backdrop y “Cancelar”, y
+  bloquea el scroll.
+
+### Decisiones registradas del Bloque P
+
+1. No existe endpoint de reportes ni TEC de backend asignada; el envío se
+   resuelve en estado local y se documenta como pendiente de persistencia.
+2. El botón “Reportar” se muestra también sin sesión (todas las reseñas son
+   ajenas); la autorización real queda para el backend cuando exista el
+   endpoint.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -773,4 +861,12 @@ aplicación rota.
   `npm run build` exitosos. El panel de filtros se abre como cajón en móvil con
   foco atrapado y restaurado, los precios manuales y el buscador de marcas se
   integran con los filtros existentes, y el orden se aplica antes de paginar.
+- **2026-10-26:** Bloques M–P completados en `feat/tecreview-redesign` (TEC-89,
+  TEC-96, TEC-98, TEC-75 y TEC-103). `npm test`: 474 pruebas en 45 archivos;
+  `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos. Se definieron
+  las reglas de tasa y los mensajes 409/429, se consolidó el detector de
+  palabras con tolerancia a evasiones, se añadió el aviso preventivo del
+  formulario, y las reseñas propias ya se pueden editar/eliminar y las ajenas
+  reportar con modales accesibles. La persistencia de edición/eliminación
+  depende de TEC-76/77/78 y la de reportes de un endpoint futuro.
 - Sin cambios en backend, `.env` ni base de datos.

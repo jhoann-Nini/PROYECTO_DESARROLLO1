@@ -22,6 +22,7 @@ import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
 import EditarResena from "./EditarResena";
+import ReportarResenaModal from "./ReportarResenaModal";
 
 type OrdenResenas = "recientes" | "antiguas";
 
@@ -68,6 +69,10 @@ export default function ResenasCliente() {
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
   const [exito, setExito] = useState("");
+  const [resenaAReportar, setResenaAReportar] = useState<number | null>(null);
+  const [resenasReportadas, setResenasReportadas] = useState<Set<number>>(
+    () => new Set(),
+  );
 
   useEffect(() => {
     let activo = true;
@@ -568,6 +573,36 @@ export default function ResenasCliente() {
                         }
                       />
                     )}
+
+                    {(!usuario || resena.idUsuario !== usuario.idUsuario) &&
+                      (resenasReportadas.has(resena.idResena) ? (
+                        <p className="mt-3 text-xs font-medium text-[var(--color-positive)]">
+                          Reporte enviado
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setResenaAReportar(resena.idResena)
+                          }
+                          aria-label="Reportar reseña"
+                          className="mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)]"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth={1.75}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-3.5 w-3.5"
+                          >
+                            <path d="M4 22V4a1 1 0 0 1 1-1h11l-2 4 2 4H5" />
+                          </svg>
+                          Reportar
+                        </button>
+                      ))}
                   </li>
                 ))}
               </ul>
@@ -647,6 +682,21 @@ export default function ResenasCliente() {
           setExito("Sesión iniciada. Ya puedes publicar tu reseña.");
         }}
       />
+
+      {resenaAReportar !== null && (
+        <ReportarResenaModal
+          resenaId={resenaAReportar}
+          abierto
+          onCerrar={() => setResenaAReportar(null)}
+          onReportado={(idResena) =>
+            setResenasReportadas((previas) => {
+              const siguientes = new Set(previas);
+              siguientes.add(idResena);
+              return siguientes;
+            })
+          }
+        />
+      )}
     </main>
   );
 }

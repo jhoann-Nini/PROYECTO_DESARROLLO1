@@ -384,5 +384,64 @@ describe("ResenasCliente", () => {
     expect(
       screen.queryByRole("button", { name: "Eliminar reseña" })
     ).toBeNull();
+    expect(
+      screen.getAllByRole("button", { name: "Reportar reseña" })
+    ).toHaveLength(2);
+  });
+
+  it("muestra Reportar en reseñas ajenas y no en las propias", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const listado = screen.getByRole("list", { name: "Listado de reseñas" });
+    const items = within(listado).getAllByRole("listitem");
+    const propia = items.find((item) =>
+      (item.textContent ?? "").includes("Ana Torres")
+    );
+    const ajena = items.find((item) =>
+      (item.textContent ?? "").includes("Luis Pérez")
+    );
+
+    expect(
+      within(propia as HTMLElement).queryByRole("button", {
+        name: "Reportar reseña",
+      })
+    ).toBeNull();
+    expect(
+      within(ajena as HTMLElement).getByRole("button", {
+        name: "Reportar reseña",
+      })
+    ).toBeDefined();
+  });
+
+  it("marca la reseña como reportada tras enviar el reporte", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Cámara muy consistente.")).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reportar reseña" })
+    );
+
+    const dialogo = screen.getByRole("dialog", { name: "Reportar reseña" });
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Spam" }));
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: "Enviar reporte" })
+    );
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByText("Reporte enviado")).toBeDefined();
+    expect(
+      screen.queryByRole("button", { name: "Reportar reseña" })
+    ).toBeNull();
   });
 });

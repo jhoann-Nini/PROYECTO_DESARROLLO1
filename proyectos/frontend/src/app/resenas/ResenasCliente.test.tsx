@@ -311,8 +311,7 @@ describe("ResenasCliente", () => {
     );
   });
 
-  it("quita el aviso cuando el texto queda limpio", async () => {
-    sesionMock.usuario = usuarioMock;
+  it("quita el aviso cuando el texto queda limpio", async () => {    sesionMock.usuario = usuarioMock;
 
     render(<ResenasCliente />);
 
@@ -335,5 +334,55 @@ describe("ResenasCliente", () => {
         .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
         .length,
     ).toBe(0);
+  });
+
+  it("muestra editar y eliminar solo en las reseñas propias", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const listado = screen.getByRole("list", { name: "Listado de reseñas" });
+    const items = within(listado).getAllByRole("listitem");
+    const propia = items.find((item) =>
+      (item.textContent ?? "").includes("Ana Torres")
+    );
+    const ajena = items.find((item) =>
+      (item.textContent ?? "").includes("Luis Pérez")
+    );
+
+    expect(
+      within(propia as HTMLElement).getByRole("button", {
+        name: "Editar reseña",
+      })
+    ).toBeDefined();
+    expect(
+      within(propia as HTMLElement).getByRole("button", {
+        name: "Eliminar reseña",
+      })
+    ).toBeDefined();
+    expect(
+      within(ajena as HTMLElement).queryByRole("button", {
+        name: "Editar reseña",
+      })
+    ).toBeNull();
+  });
+
+  it("no muestra acciones de edición sin sesión", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    expect(
+      screen.queryByRole("button", { name: "Editar reseña" })
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Eliminar reseña" })
+    ).toBeNull();
   });
 });

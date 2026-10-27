@@ -21,6 +21,7 @@ import {
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
+import EditarResena from "./EditarResena";
 
 type OrdenResenas = "recientes" | "antiguas";
 
@@ -545,6 +546,28 @@ export default function ResenasCliente() {
                     <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
                       {resena.comentario}
                     </p>
+
+                    {usuario && resena.idUsuario === usuario.idUsuario && (
+                      <EditarResena
+                        resena={resena}
+                        onEditada={(actualizada) =>
+                          setResenas((previas) =>
+                            previas.map((previa) =>
+                              previa.idResena === actualizada.idResena
+                                ? actualizada
+                                : previa
+                            )
+                          )
+                        }
+                        onEliminada={(idResena) =>
+                          setResenas((previas) =>
+                            previas.filter(
+                              (previa) => previa.idResena !== idResena
+                            )
+                          )
+                        }
+                      />
+                    )}
                   </li>
                 ))}
               </ul>

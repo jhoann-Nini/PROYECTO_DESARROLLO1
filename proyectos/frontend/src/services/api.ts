@@ -321,6 +321,31 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
 }
 
 /**
+ * Actualiza el comentario de una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78); hasta entonces el backend puede
+ * responder 404/405 y la UI muestra un error controlado.
+ */
+export async function editarResena(
+  idResena: number,
+  comentario: string,
+): Promise<ResenaResponse> {
+  return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
+    method: "PUT",
+    body: JSON.stringify({ comentario }),
+  });
+}
+
+/**
+ * Elimina una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78).
+ */
+export async function eliminarResena(idResena: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {
+    method: "DELETE",
+  });
+}
+
+/**
  * Representación de una valoración devuelta por la API REST de TecReview.
  */
 export interface ValoracionResponse {

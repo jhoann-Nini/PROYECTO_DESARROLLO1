@@ -4,6 +4,7 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-doto: var(--font-sans);
 
   /* Escala de radios coherente: controles 12px, tarjetas y modales 16px */
   --radius-sm: 0.5rem;
@@ -74,7 +75,6 @@
   --shadow-paper-hover: 0 2px 4px rgba(24, 24, 27, 0.08), 0 16px 32px -16px rgba(24, 24, 27, 0.18);
 }
 
-/* Estilos base de Accesibilidad Universal */
 * {
   box-sizing: border-box;
 }
@@ -92,6 +92,8 @@ body {
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Alcance del tema de TecReview. Los tokens cambian bajo html.dark. */
@@ -167,28 +169,22 @@ p {
   text-wrap: pretty;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.font-doto {
+  font-family: var(--font-sans);
+  font-variation-settings: normal;
+  letter-spacing: .015em;
 }
 
-/* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
 :focus-visible {
   outline: 2px solid var(--color-brand-blue);
   outline-offset: 2px;
 }
 
-/* Barra de desplazamiento accesible del tema claro */
+::selection {
+  background: var(--color-brand-solid);
+  color: var(--color-on-solid);
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -205,4 +201,43 @@ p {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-ink);
+}
+
+/* Interacciones y accesibilidad de la interfaz */
+main section {
+  scroll-margin-top: 6rem;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+a {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 180ms;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

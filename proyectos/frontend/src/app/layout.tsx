@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TecReview | Plataforma de Reseñas y Especificaciones Técnicas",
+  title: "TecReview | Encuentra tu próximo dispositivo",
   description:
-    "TecReview es la plataforma de reseñas imparciales, análisis de hardware y comparativas de dispositivos tecnológicos con lenguaje claro y accesible.",
+    "TecReview: explora dispositivos tecnológicos, consulta especificaciones técnicas, precios de referencia en COP y opiniones de la comunidad.",
 };
 
 export default function RootLayout({

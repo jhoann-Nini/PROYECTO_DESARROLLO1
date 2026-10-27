@@ -48,6 +48,22 @@ export interface Pagina<T> {
   total: number;
 }
 
+export type OrdenCatalogo =
+  | "relevancia"
+  | "menor-precio"
+  | "mayor-precio"
+  | "mejor-valorados";
+
+export const ORDENES_CATALOGO: {
+  valor: OrdenCatalogo;
+  etiqueta: string;
+}[] = [
+  { valor: "relevancia", etiqueta: "Relevancia" },
+  { valor: "menor-precio", etiqueta: "Menor precio" },
+  { valor: "mayor-precio", etiqueta: "Mayor precio" },
+  { valor: "mejor-valorados", etiqueta: "Mejor valorados" },
+];
+
 export const ETIQUETAS_CARACTERISTICA: Record<CaracteristicaClave, string> = {
   "5g": "5G",
   "buena-camara": "Buena cámara",
@@ -171,6 +187,54 @@ export function filtrarProductos(
   });
 }
 
+function compararPrecio(
+  a: ProductoViewModel,
+  b: ProductoViewModel,
+  descendente: boolean
+): number {
+  const precioA = a.precioCOP > 0 ? a.precioCOP : null;
+  const precioB = b.precioCOP > 0 ? b.precioCOP : null;
+
+  if (precioA === null && precioB === null) return 0;
+  if (precioA === null) return 1;
+  if (precioB === null) return -1;
+
+  return descendente ? precioB - precioA : precioA - precioB;
+}
+
+function compararValoracion(
+  a: ProductoViewModel,
+  b: ProductoViewModel
+): number {
+  if (a.rating === null && b.rating === null) return 0;
+  if (a.rating === null) return 1;
+  if (b.rating === null) return -1;
+
+  const diferenciaRating = b.rating - a.rating;
+  if (diferenciaRating !== 0) return diferenciaRating;
+
+  return (b.cantidadResenas ?? 0) - (a.cantidadResenas ?? 0);
+}
+
+export function ordenarProductos(
+  productos: ProductoViewModel[],
+  orden: OrdenCatalogo
+): ProductoViewModel[] {
+  const copia = [...productos];
+
+  switch (orden) {
+    case "menor-precio":
+      return copia.sort((a, b) => compararPrecio(a, b, false));
+    case "mayor-precio":
+      return copia.sort((a, b) => compararPrecio(a, b, true));
+    case "mejor-valorados":
+      return copia.sort(compararValoracion);
+    case "relevancia":
+    default:
+      return copia;
+  }
+}
+
 export function paginar<T>(
   items: T[],
   pagina: number,
@@ -224,12 +288,21 @@ export function construirChips(filtros: FiltrosCatalogo): ChipFiltro[] {
     filtros.precioMin > 0 ||
     filtros.precioMax < Number.MAX_SAFE_INTEGER
   ) {
+    const tieneMinimo = filtros.precioMin > 0;
+    const tieneMaximo = filtros.precioMax < Number.MAX_SAFE_INTEGER;
+    const etiqueta =
+      tieneMinimo && tieneMaximo
+        ? `${formatearCOP(filtros.precioMin)} - ${formatearCOP(
+            filtros.precioMax
+          )}`
+        : tieneMinimo
+          ? `Desde ${formatearCOP(filtros.precioMin)}`
+          : `Hasta ${formatearCOP(filtros.precioMax)}`;
+
     chips.push({
       tipo: "precio",
       valor: `${filtros.precioMin}-${filtros.precioMax}`,
-      etiqueta: `${formatearCOP(filtros.precioMin)} - ${formatearCOP(
-        filtros.precioMax
-      )}`,
+      etiqueta,
     });
   }
 

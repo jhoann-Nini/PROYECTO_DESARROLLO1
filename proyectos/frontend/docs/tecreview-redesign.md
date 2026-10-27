@@ -1,7 +1,9 @@
 # TecReview — Especificación de rediseño
 
-**Estado:** Bloques A, B, C, D, E, F, G, H, I y J completados; tarjeta de
-producto rediseñada y calificaciones unificadas en el Bloque K (TEC-62/TEC-69).
+**Estado:** Bloques A–L completados; la tarjeta de producto y las calificaciones
+se unificaron en el Bloque K (TEC-62/TEC-69) y los filtros del catálogo con
+cajón móvil, precios manuales, buscador de marcas y ordenamiento en el Bloque L
+(TEC-60).
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
 **Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
@@ -144,8 +146,10 @@ navegación principal.
 - **Shell:** `AppShell`, `SiteHeader`, `SiteFooter`, `BottomNav`, `SearchBar`.
 - **Home:** `CategoriasHome`, `DestacadosHome`, `RankingsHome`, `OfertasHome`,
   `PresupuestoHome`, `OpinionesHome`, `ResumenSesion`, `CtaComparador`.
-- **Catálogo:** `CatalogoCliente`, `TarjetaProducto`, `FichaTecnicaModal`
-  (conservado como ficha secundaria), `ProductCard` (categorías heredadas).
+- **Catálogo:** `CatalogoCliente`, `FilterSidebar` (panel estático en escritorio
+  y cajón accesible en móvil), `FilterChips`, `Pagination`, `TarjetaProducto`,
+  `FichaTecnicaModal` (conservado como ficha secundaria), `ProductCard`
+  (categorías heredadas).
 - **Detalle:** `DetalleProductoCliente`, `EspecificacionesProducto`,
   `ValoracionProducto`, `OpinionesProducto`, `BotonComparador`.
 - **Comparador:** `ComparadorCliente` con selector, tabla, diferencias y
@@ -222,6 +226,11 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   aceptó esa doble consulta para no reestructurar el cliente.
 - Imágenes: se usa la imagen disponible y `ProductImagePlaceholder` como
   fallback. La galería multi-imagen queda pendiente de datos reales.
+- El catálogo filtra y ordena en cliente. `filtrarProductos` aplica búsqueda,
+  categorías, marcas, precio y características; `ordenarProductos` se ejecuta
+  después y antes de `paginar`. “Mejor valorados” usa `rating` y
+  `cantidadResenas` del view model, que hoy llegan en `null` desde
+  `construirCatalogo`; sin ratings agregados conserva el orden de relevancia.
 
 ---
 
@@ -624,6 +633,53 @@ aplicación rota.
 
 ---
 
+## 8.10 Criterios de aceptación del Bloque L — Filtros del catálogo y ordenamiento (TEC-60)
+
+- [x] En pantallas menores a `md`, el panel de filtros se oculta y se abre como
+  cajón lateral desde el botón “Filtros”.
+- [x] El cajón usa `role="dialog"`, `aria-modal`, foco inicial en “Cerrar
+  filtros”, foco atrapado con Tab, cierre con Escape, fondo y “Ver resultados”,
+  bloqueo del scroll del documento y restauración del foco al botón “Filtros”.
+- [x] El panel conserva su comportamiento estático en `md` y superiores.
+- [x] El buscador de marcas filtra sin distinguir mayúsculas ni acentos,
+  mantiene visibles las marcas seleccionadas y muestra “No encontramos marcas.”
+  cuando no hay coincidencias.
+- [x] Los campos “Precio mínimo en pesos” y “Precio máximo en pesos” aceptan
+  valores manuales, se confirman con blur o Enter, se limitan al rango del
+  catálogo y se vacían para quitar el límite.
+- [x] Los chips de precio muestran “Desde …” o “Hasta …” cuando el rango es
+  abierto, y mantienen “$ min - $ max” cuando es cerrado.
+- [x] La toolbar de resultados ofrece Relevancia, Menor precio, Mayor precio y
+  Mejor valorados; el orden se aplica después de filtrar y antes de paginar.
+- [x] Cambiar el orden vuelve a la página 1.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+
+### Decisiones registradas del Bloque L
+
+1. El orden vive en la toolbar de resultados, no dentro del cajón, para que
+   también esté disponible en móvil sin abrir los filtros.
+2. `ordenarProductos` devuelve una copia y usa orden estable. Los productos con
+   precio desconocido (`precioCOP <= 0`) quedan al final en ambos órdenes de
+   precio.
+3. “Mejor valorados” ordena por `rating` descendente y desempata por
+   `cantidadResenas`; los productos sin rating quedan al final. Como
+   `construirCatalogo` todavía no recibe ratings agregados, en el catálogo real
+   esta opción conserva el orden de relevancia hasta que exista un endpoint
+   batch.
+4. Los precios manuales reutilizan la semántica de los sliders: `precioMin = 0`
+   y `precioMax = Number.MAX_SAFE_INTEGER` significan “sin límite”; escribir un
+   valor fuera del rango lo recorta y nunca se genera un rango invertido.
+5. El buscador de marcas es estado local del panel; las marcas seleccionadas se
+   conservan visibles aunque no coincidan con el texto para que el usuario pueda
+   desmarcarlas.
+6. El cajón reutiliza el patrón de accesibilidad de `PanelBusquedaModal`
+   (`SELECTOR_ENFOCABLES`, focus trap y Escape) y mantiene el mismo `aside` para
+   escritorio y móvil, sin duplicar el panel en el DOM.
+7. No se modificaron backend, `.env` ni la base de datos; todos los filtros y el
+   orden se resuelven en cliente sobre el catálogo ya cargado.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -712,4 +768,9 @@ aplicación rota.
   `npm run lint` y `npm run build` exitosos. La tarjeta muestra ranking, tiendas,
   precio desde, chips y variantes `grid`/`lista`; las calificaciones usan
   `★ 4,5 · (12 opiniones)` y `★ 0,0 · Sin opiniones`.
+- **2026-10-26:** Bloque L completado en `feat/tecreview-redesign` (TEC-60).
+  `npm test`: 446 pruebas en 42 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. El panel de filtros se abre como cajón en móvil con
+  foco atrapado y restaurado, los precios manuales y el buscador de marcas se
+  integran con los filtros existentes, y el orden se aplica antes de paginar.
 - Sin cambios en backend, `.env` ni base de datos.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type {
   CategoriaResponse,
@@ -13,13 +13,16 @@ import {
   obtenerProductos,
 } from "@/services/api";
 import {
+  ORDENES_CATALOGO,
   construirChips,
   filtrarProductos,
   hayFiltrosActivos,
+  ordenarProductos,
   paginar,
   prepararCatalogo,
   type ChipFiltro,
   type FiltrosCatalogo,
+  type OrdenCatalogo,
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
@@ -44,13 +47,16 @@ function filtrosBase(): FiltrosCatalogo {
 
 export default function CatalogoCliente() {
   const router = useRouter();
+  const botonFiltrosRef = useRef<HTMLButtonElement>(null);
   const [productosApi, setProductosApi] = useState<Producto[]>([]);
   const [categoriasApi, setCategoriasApi] = useState<CategoriaResponse[]>([]);
   const [marcasApi, setMarcasApi] = useState<MarcaResponse[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase());
+  const [orden, setOrden] = useState<OrdenCatalogo>("relevancia");
   const [pagina, setPagina] = useState(1);
+  const [drawerAbierto, setDrawerAbierto] = useState(false);
 
   useEffect(() => {
     let activo = true;
@@ -99,9 +105,13 @@ export default function CatalogoCliente() {
     () => filtrarProductos(vistas, filtros),
     [vistas, filtros]
   );
+  const ordenados = useMemo(
+    () => ordenarProductos(filtrados, orden),
+    [filtrados, orden]
+  );
   const paginaActual = useMemo(
-    () => paginar(filtrados, pagina, POR_PAGINA),
-    [filtrados, pagina]
+    () => paginar(ordenados, pagina, POR_PAGINA),
+    [ordenados, pagina]
   );
   const chips = useMemo(() => construirChips(filtros), [filtros]);
   const hayFiltros = useMemo(
@@ -116,6 +126,16 @@ export default function CatalogoCliente() {
 
   function limpiarFiltros() {
     actualizarFiltros(filtrosBase());
+  }
+
+  function cambiarOrden(nuevo: OrdenCatalogo) {
+    setOrden(nuevo);
+    setPagina(1);
+  }
+
+  function cerrarFiltros() {
+    setDrawerAbierto(false);
+    botonFiltrosRef.current?.focus();
   }
 
   function quitarChip(chip: ChipFiltro) {
@@ -203,16 +223,65 @@ export default function CatalogoCliente() {
       )}
 
       {!cargando && !error && (
-        <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
+        <div className="grid gap-6 md:grid-cols-[260px_1fr]">
           <FilterSidebar
             catalogo={catalogo}
             filtros={filtros}
             onCambiar={actualizarFiltros}
             onLimpiar={limpiarFiltros}
             hayFiltros={hayFiltros}
+            abierto={drawerAbierto}
+            onCerrar={cerrarFiltros}
           />
 
           <section aria-label="Resultados del catálogo">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <button
+                ref={botonFiltrosRef}
+                type="button"
+                onClick={() => setDrawerAbierto(true)}
+                aria-expanded={drawerAbierto}
+                aria-controls="filtros-catalogo"
+                className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 md:hidden"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  strokeLinecap="round"
+                  className="h-4 w-4"
+                >
+                  <path d="M4 6h16M7 12h10M10 18h4" />
+                </svg>
+                Filtros
+              </button>
+
+              <div className="flex items-center gap-2 sm:ml-auto">
+                <label
+                  htmlFor="orden-catalogo"
+                  className="text-xs font-medium text-[var(--color-subtle)]"
+                >
+                  Ordenar por
+                </label>
+                <select
+                  id="orden-catalogo"
+                  value={orden}
+                  onChange={(event) =>
+                    cambiarOrden(event.target.value as OrdenCatalogo)
+                  }
+                  className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                >
+                  {ORDENES_CATALOGO.map((opcion) => (
+                    <option key={opcion.valor} value={opcion.valor}>
+                      {opcion.etiqueta}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {chips.length > 0 && (
               <div className="mb-4">
                 <FilterChips chips={chips} onQuitar={quitarChip} />

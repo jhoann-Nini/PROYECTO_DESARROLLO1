@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { ProductoViewModel } from "./productoViewModel";
 import {
+  ORDENES_CATALOGO,
   construirChips,
   filtrarProductos,
   hayFiltrosActivos,
+  ordenarProductos,
   paginar,
   prepararCatalogo,
   type FiltrosCatalogo,
 } from "./catalogo";
+import { formatearCOP } from "./specsHelper";
 
 function crearVista(
   overrides: Partial<ProductoViewModel> = {}
@@ -231,6 +234,65 @@ describe("filtrarProductos", () => {
   });
 });
 
+describe("ordenarProductos", () => {
+  it("conserva el orden de relevancia", () => {
+    const resultado = ordenarProductos(productos, "relevancia");
+
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([
+      1, 2, 3, 4, 5, 6,
+    ]);
+  });
+
+  it("ordena por menor y mayor precio dejando los desconocidos al final", () => {
+    expect(
+      ordenarProductos(productos, "menor-precio").map(
+        (producto) => producto.idProducto
+      )
+    ).toEqual([5, 3, 2, 1, 4, 6]);
+
+    expect(
+      ordenarProductos(productos, "mayor-precio").map(
+        (producto) => producto.idProducto
+      )
+    ).toEqual([4, 1, 2, 3, 5, 6]);
+  });
+
+  it("ordena por mejor valorados y desempata por cantidad de reseñas", () => {
+    const valorados = [
+      crearVista({ idProducto: 11, rating: 4.5, cantidadResenas: 100 }),
+      crearVista({ idProducto: 12, rating: 4.8, cantidadResenas: 10 }),
+      crearVista({ idProducto: 13, rating: 4.8, cantidadResenas: 50 }),
+      crearVista({ idProducto: 14, rating: null, cantidadResenas: 999 }),
+      crearVista({ idProducto: 15, rating: 4.2, cantidadResenas: 200 }),
+    ];
+
+    expect(
+      ordenarProductos(valorados, "mejor-valorados").map(
+        (producto) => producto.idProducto
+      )
+    ).toEqual([13, 12, 11, 15, 14]);
+  });
+
+  it("no muta el arreglo original", () => {
+    const copia = [...productos];
+    const resultado = ordenarProductos(productos, "menor-precio");
+
+    expect(resultado).not.toBe(productos);
+    expect(productos).toEqual(copia);
+  });
+});
+
+describe("ORDENES_CATALOGO", () => {
+  it("expone las cuatro opciones con sus etiquetas", () => {
+    expect(ORDENES_CATALOGO).toEqual([
+      { valor: "relevancia", etiqueta: "Relevancia" },
+      { valor: "menor-precio", etiqueta: "Menor precio" },
+      { valor: "mayor-precio", etiqueta: "Mayor precio" },
+      { valor: "mejor-valorados", etiqueta: "Mejor valorados" },
+    ]);
+  });
+});
+
 describe("paginar", () => {
   it("pagina y limita la página al rango válido", () => {
     expect(paginar(productos, 1, 2)).toMatchObject({
@@ -274,6 +336,26 @@ describe("construirChips", () => {
     const chipPrecio = chips.find((chip) => chip.tipo === "precio");
     expect(chipPrecio?.etiqueta).toContain("1.000.000");
     expect(chipPrecio?.etiqueta).toContain("4.000.000");
+  });
+
+  it("usa 'Desde' cuando solo hay un precio mínimo", () => {
+    const chips = construirChips({
+      ...filtrosVacios(),
+      precioMin: 2_000_000,
+    });
+    const chipPrecio = chips.find((chip) => chip.tipo === "precio");
+
+    expect(chipPrecio?.etiqueta).toBe(`Desde ${formatearCOP(2_000_000)}`);
+  });
+
+  it("usa 'Hasta' cuando solo hay un precio máximo", () => {
+    const chips = construirChips({
+      ...filtrosVacios(),
+      precioMax: 4_000_000,
+    });
+    const chipPrecio = chips.find((chip) => chip.tipo === "precio");
+
+    expect(chipPrecio?.etiqueta).toBe(`Hasta ${formatearCOP(4_000_000)}`);
   });
 });
 

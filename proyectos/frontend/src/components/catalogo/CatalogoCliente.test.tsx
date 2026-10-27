@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type {
   CategoriaResponse,
   MarcaResponse,
@@ -233,6 +233,180 @@ describe("CatalogoCliente", () => {
 
     expect(screen.getByText("Producto 13")).toBeDefined();
     expect(screen.queryByText("Producto 1")).toBeNull();
+  });
+
+  it("ordena por menor precio desde la barra de herramientas", async () => {
+    configurarExito([
+      crearProducto(1, { nombre: "Caro", precioReferencia: 3_000_000 }),
+      crearProducto(2, { nombre: "Barato", precioReferencia: 1_000_000 }),
+      crearProducto(3, { nombre: "Medio", precioReferencia: 2_000_000 }),
+    ]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 productos/)).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Ordenar por"), {
+      target: { value: "menor-precio" },
+    });
+
+    expect(
+      screen
+        .getAllByRole("heading", { level: 3 })
+        .map((titulo) => titulo.textContent)
+    ).toEqual(["Barato", "Medio", "Caro"]);
+  });
+
+  it("vuelve a la página 1 al cambiar el orden", async () => {
+    configurarExito(
+      Array.from({ length: 13 }, (_, indice) => crearProducto(indice + 1))
+    );
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/13 productos/)).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Siguiente" }));
+    expect(screen.getByText(/Página 2 de 2/)).toBeDefined();
+
+    fireEvent.change(screen.getByLabelText("Ordenar por"), {
+      target: { value: "mayor-precio" },
+    });
+
+    expect(screen.getByText(/Página 1 de 2/)).toBeDefined();
+    expect(screen.getByText("Producto 13")).toBeDefined();
+    expect(screen.queryByText("Producto 1")).toBeNull();
+  });
+
+  it("mantiene el orden original en Mejor valorados sin calificaciones agregadas", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/2 productos/)).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Ordenar por"), {
+      target: { value: "mejor-valorados" },
+    });
+
+    expect(
+      screen
+        .getAllByRole("heading", { level: 3 })
+        .map((titulo) => titulo.textContent)
+    ).toEqual(["Producto 1", "Producto 2"]);
+  });
+
+  it("abre el cajón de filtros y lo cierra con 'Ver resultados'", async () => {
+    configurarExito([crearProducto(1)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto 1")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Filtros" }));
+
+    const dialogo = screen.getByRole("dialog", {
+      name: "Filtros del catálogo",
+    });
+    expect(dialogo).toBeDefined();
+
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: "Ver resultados" })
+    );
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("devuelve el foco al botón Filtros al cerrar el cajón", async () => {
+    configurarExito([crearProducto(1)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto 1")).toBeDefined();
+    });
+
+    const botonFiltros = screen.getByRole("button", { name: "Filtros" });
+    fireEvent.click(botonFiltros);
+    expect(screen.getByRole("dialog")).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar filtros" }));
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(botonFiltros);
+  });
+
+  it("cierra el cajón con Escape y devuelve el foco", async () => {
+    configurarExito([crearProducto(1)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto 1")).toBeDefined();
+    });
+
+    const botonFiltros = screen.getByRole("button", { name: "Filtros" });
+    fireEvent.click(botonFiltros);
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(botonFiltros);
+  });
+
+  it("aplica el precio mínimo escrito a mano", async () => {
+    configurarExito([
+      crearProducto(1, { nombre: "Económico", precioReferencia: 1_000_000 }),
+      crearProducto(2, { nombre: "Medio", precioReferencia: 2_000_000 }),
+      crearProducto(3, { nombre: "Premium", precioReferencia: 3_000_000 }),
+    ]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/3 productos/)).toBeDefined();
+    });
+
+    const minimo = screen.getByLabelText("Precio mínimo en pesos");
+    fireEvent.change(minimo, { target: { value: "2000000" } });
+    fireEvent.blur(minimo);
+
+    expect(screen.getByText(/2 productos/)).toBeDefined();
+    expect(screen.queryByText("Económico")).toBeNull();
+    expect(screen.getByText("Medio")).toBeDefined();
+    expect(screen.getByText("Premium")).toBeDefined();
+  });
+
+  it("filtra las marcas con el buscador del panel", async () => {
+    configurarExito([
+      crearProducto(1),
+      crearProducto(2, {
+        nombre: "Dell XPS 13",
+        idCategoria: 2,
+        idMarca: 2,
+      }),
+    ]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Dell XPS 13")).toBeDefined();
+    });
+
+    fireEvent.change(
+      screen.getByRole("searchbox", { name: "Buscar marcas" }),
+      { target: { value: "dell" } }
+    );
+
+    expect(screen.getByRole("checkbox", { name: /Dell/i })).toBeDefined();
+    expect(screen.queryByRole("checkbox", { name: /Samsung/i })).toBeNull();
   });
 
   it("navega al detalle real al pulsar Ver detalle", async () => {

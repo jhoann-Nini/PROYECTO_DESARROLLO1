@@ -9,6 +9,12 @@ import {
   quitarIdComparador,
   type ResultadoAgregarComparador,
 } from "@/data/comparador";
+import {
+  CLAVE_COMPARADOS_RECIENTES,
+  guardarComparadosRecientes,
+  leerComparadosRecientes,
+  registrarComparado,
+} from "@/data/comparadosRecientes";
 
 function obtenerStorage(): Storage | null {
   if (typeof window === "undefined") return null;
@@ -22,6 +28,7 @@ function obtenerStorage(): Storage | null {
 
 export interface UseComparadorResultado {
   ids: number[];
+  recientes: number[];
   hidratado: boolean;
   agregar: (id: number) => ResultadoAgregarComparador;
   quitar: (id: number) => void;
@@ -35,8 +42,10 @@ export interface UseComparadorResultado {
  */
 export function useComparador(): UseComparadorResultado {
   const [ids, setIds] = useState<number[]>([]);
+  const [recientes, setRecientes] = useState<number[]>([]);
   const [hidratado, setHidratado] = useState(false);
   const idsRef = useRef<number[]>([]);
+  const recientesRef = useRef<number[]>([]);
 
   const aplicar = useCallback((nuevos: number[]) => {
     idsRef.current = nuevos;
@@ -44,23 +53,39 @@ export function useComparador(): UseComparadorResultado {
     guardarIdsComparador(obtenerStorage(), nuevos);
   }, []);
 
+  const aplicarRecientes = useCallback((nuevos: number[]) => {
+    recientesRef.current = nuevos;
+    setRecientes(nuevos);
+    guardarComparadosRecientes(obtenerStorage(), nuevos);
+  }, []);
+
   useEffect(() => {
     let montado = true;
     const inicial = leerIdsComparador(obtenerStorage());
+    const recientesIniciales = leerComparadosRecientes(obtenerStorage());
     idsRef.current = inicial;
+    recientesRef.current = recientesIniciales;
 
     queueMicrotask(() => {
       if (!montado) return;
-      setIds(inicial);
+      // Si el usuario ya interactuó, los refs tienen el estado más reciente.
+      setIds(idsRef.current);
+      setRecientes(recientesRef.current);
       setHidratado(true);
     });
 
     const alCambiarStorage = (event: StorageEvent) => {
-      if (event.key !== CLAVE_COMPARADOR && event.key !== null) return;
+      if (event.key === CLAVE_COMPARADOR || event.key === null) {
+        const actualizados = leerIdsComparador(obtenerStorage());
+        idsRef.current = actualizados;
+        setIds(actualizados);
+      }
 
-      const actualizados = leerIdsComparador(obtenerStorage());
-      idsRef.current = actualizados;
-      setIds(actualizados);
+      if (event.key === CLAVE_COMPARADOS_RECIENTES || event.key === null) {
+        const actualizados = leerComparadosRecientes(obtenerStorage());
+        recientesRef.current = actualizados;
+        setRecientes(actualizados);
+      }
     };
 
     window.addEventListener("storage", alCambiarStorage);
@@ -73,10 +98,13 @@ export function useComparador(): UseComparadorResultado {
   const agregar = useCallback(
     (id: number) => {
       const resultado = agregarIdComparador(idsRef.current, id);
-      if (resultado.agregado) aplicar(resultado.ids);
+      if (resultado.agregado) {
+        aplicar(resultado.ids);
+        aplicarRecientes(registrarComparado(recientesRef.current, id));
+      }
       return resultado;
     },
-    [aplicar],
+    [aplicar, aplicarRecientes],
   );
 
   const quitar = useCallback(
@@ -88,5 +116,13 @@ export function useComparador(): UseComparadorResultado {
 
   const contiene = useCallback((id: number) => idsRef.current.includes(id), []);
 
-  return { ids, hidratado, agregar, quitar, limpiar, contiene };
+  return {
+    ids,
+    recientes,
+    hidratado,
+    agregar,
+    quitar,
+    limpiar,
+    contiene,
+  };
 }

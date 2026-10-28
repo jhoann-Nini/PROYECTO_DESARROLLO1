@@ -27,7 +27,8 @@ import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function ComparadorCliente() {
-  const { ids, hidratado, agregar, quitar, limpiar } = useComparador();
+  const { ids, recientes, hidratado, agregar, quitar, limpiar } =
+    useComparador();
 
   const [productos, setProductos] = useState<ProductoViewModel[]>([]);
   const [cargando, setCargando] = useState(true);
@@ -87,6 +88,16 @@ export default function ComparadorCliente() {
       .map((id) => porId.get(id))
       .filter((producto): producto is ProductoViewModel => Boolean(producto));
   }, [ids, productos]);
+
+  const productosRecientes = useMemo(() => {
+    const porId = new Map(
+      productos.map((producto) => [producto.idProducto, producto]),
+    );
+
+    return recientes
+      .map((id) => porId.get(id))
+      .filter((producto): producto is ProductoViewModel => Boolean(producto));
+  }, [recientes, productos]);
 
   const filas = useMemo(
     () => construirFilasComparacion(seleccionados),
@@ -494,6 +505,41 @@ export default function ComparadorCliente() {
           </>
         )}
       </section>
+
+      {hidratado && productosRecientes.length > 0 && (
+        <section
+          aria-labelledby="titulo-recientes"
+          className="mt-8 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+        >
+          <h2
+            id="titulo-recientes"
+            className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+          >
+            Comparados recientemente
+          </h2>
+          <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            Retoma la comparación desde los últimos productos que agregaste.
+          </p>
+
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {productosRecientes.map((producto) => (
+              <li key={producto.idProducto}>
+                <Link
+                  href={`/productos/${producto.idProducto}`}
+                  className={`block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                >
+                  <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                    {producto.nombre}
+                  </span>
+                  <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                    {producto.marca} · {producto.categoriaEtiqueta}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }

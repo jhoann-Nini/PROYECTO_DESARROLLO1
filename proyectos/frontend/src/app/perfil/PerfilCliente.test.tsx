@@ -203,4 +203,35 @@ describe("PerfilCliente", () => {
 
     expect(sesionMock.reintentar).toHaveBeenCalledTimes(1);
   });
+
+  it("muestra el error de reseñas con reintento y recupera la lista", async () => {
+    sesionMock.usuario = USUARIO;
+    mockResenas.mockRejectedValueOnce(
+      new Error("Servicio de reseñas no disponible"),
+    );
+
+    render(<PerfilCliente />);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
+    expect(alerta.textContent).toContain("Servicio de reseñas no disponible");
+
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Mi reseña sobre el Galaxy.")).toBeDefined();
+    });
+  });
+
+  it("muestra el estado vacío de reseñas propias", async () => {
+    sesionMock.usuario = USUARIO;
+    mockResenas.mockResolvedValueOnce([]);
+
+    render(<PerfilCliente />);
+
+    const mensaje = await screen.findByText(
+      "Aún no has publicado reseñas.",
+    );
+    expect(mensaje.closest('[data-estado="vacio"]')).not.toBeNull();
+  });
 });

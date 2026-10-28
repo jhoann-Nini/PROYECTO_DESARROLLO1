@@ -276,17 +276,26 @@ describe("ResenasCliente", () => {
 
     render(<ResenasCliente />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("No pudimos cargar las reseñas"),
-      ).toBeDefined();
-    });
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
+    expect(alerta.textContent).toContain("No pudimos cargar las reseñas");
 
     fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
 
     await waitFor(() => {
       expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
     });
+  });
+
+  it("muestra el estado vacío reutilizable cuando no hay reseñas", async () => {
+    mockResenas.mockResolvedValueOnce([]);
+
+    render(<ResenasCliente />);
+
+    const mensaje = await screen.findByText(
+      "Aún no hay reseñas registradas.",
+    );
+    expect(mensaje.closest('[data-estado="vacio"]')).not.toBeNull();
   });
 
   it("avisa preventivamente cuando el comentario contiene términos bloqueados", async () => {

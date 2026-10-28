@@ -24,6 +24,7 @@ import {
 } from "@/data/comparador";
 import { useComparador } from "@/hooks/useComparador";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function ComparadorCliente() {
   const { ids, hidratado, agregar, quitar, limpiar } = useComparador();
@@ -158,26 +159,19 @@ export default function ComparadorCliente() {
   if (error) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-8 text-center"
-        >
-          <p className="text-lg font-semibold text-red-900">
-            No pudimos cargar el catálogo
-          </p>
-          <p className="mt-2 text-sm text-red-800">{error}</p>
-          <button
-            type="button"
-            onClick={() => {
+        <EstadoVacio
+          tipo="error"
+          titulo="No pudimos cargar el catálogo"
+          descripcion={error}
+          accion={{
+            etiqueta: "Reintentar",
+            onClick: () => {
               setCargando(true);
               setError(null);
               setIntento((valor) => valor + 1);
-            }}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-          >
-            Reintentar
-          </button>
-        </div>
+            },
+          }}
+        />
       </main>
     );
   }
@@ -357,18 +351,11 @@ export default function ComparadorCliente() {
             Cargando tu comparador…
           </p>
         ) : seleccionados.length === 0 ? (
-          <div
-            role="status"
-            className="mt-4 rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center"
-          >
-            <p className="text-sm font-semibold text-[var(--color-ink)]">
-              Aún no has agregado productos al comparador.
-            </p>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
-              Usa el selector de arriba para elegir hasta {MAX_COMPARADOR}{" "}
-              productos.
-            </p>
-          </div>
+          <EstadoVacio
+            className="mt-4"
+            titulo="Aún no has agregado productos al comparador."
+            descripcion={`Usa el selector de arriba para elegir hasta ${MAX_COMPARADOR} productos.`}
+          />
         ) : (
           <>
             <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">

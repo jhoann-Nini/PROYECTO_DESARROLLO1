@@ -10,6 +10,7 @@ import { useComparador } from "@/hooks/useComparador";
 import AuthModal from "@/components/AuthModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 
 function formatearFecha(valor?: string): string {
   if (!valor) return "No registrada";
@@ -45,8 +46,15 @@ export default function PerfilCliente() {
   const [resenas, setResenas] = useState<ResenaResponse[]>([]);
   const [cargandoResenas, setCargandoResenas] = useState(false);
   const [errorResenas, setErrorResenas] = useState<string | null>(null);
+  const [intentoResenas, setIntentoResenas] = useState(0);
 
   const esAdmin = useMemo(() => esAdministrador(usuario), [usuario]);
+
+  function reintentarResenas() {
+    setCargandoResenas(true);
+    setErrorResenas(null);
+    setIntentoResenas((valor) => valor + 1);
+  }
 
   useEffect(() => {
     const idUsuario = usuario?.idUsuario;
@@ -86,7 +94,7 @@ export default function PerfilCliente() {
     return () => {
       activo = false;
     };
-  }, [usuario?.idUsuario]);
+  }, [usuario?.idUsuario, intentoResenas]);
 
   if (cargando) {
     return (
@@ -346,24 +354,20 @@ export default function PerfilCliente() {
             Cargando tus reseñas…
           </p>
         ) : errorResenas ? (
-          <p role="alert" className="mt-4 text-sm text-red-700">
-            {errorResenas}
-          </p>
+          <EstadoVacio
+            className="mt-4"
+            tipo="error"
+            titulo="No pudimos cargar tus reseñas"
+            descripcion={errorResenas}
+            accion={{ etiqueta: "Reintentar", onClick: reintentarResenas }}
+          />
         ) : resenas.length === 0 ? (
-          <div className="mt-4 rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center">
-            <p className="text-sm font-semibold text-[var(--color-ink)]">
-              Aún no has publicado reseñas.
-            </p>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
-              Explora el catálogo y comparte tu experiencia con otros usuarios.
-            </p>
-            <Link
-              href="/resenas"
-              className={`mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
-            >
-              Ir a reseñas
-            </Link>
-          </div>
+          <EstadoVacio
+            className="mt-4"
+            titulo="Aún no has publicado reseñas."
+            descripcion="Explora el catálogo y comparte tu experiencia con otros usuarios."
+            accion={{ etiqueta: "Ir a reseñas", href: "/resenas" }}
+          />
         ) : (
           <ul className="mt-4 space-y-3">
             {resenas.map((resena) => (

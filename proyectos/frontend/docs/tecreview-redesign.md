@@ -932,3 +932,39 @@ arquitectura ni la paleta oficial.
 - `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
 - Commit: `refactor(a11y): unificar anillo de foco visible`.
 
+### 12.3 Tarea 3 — estados vacíos y de error unificados
+
+**Criterios**
+
+- Las vistas `/favoritos`, `/resenas`, `/perfil`, `/blog`, `/comparador` y
+  `/productos` comparten el mismo componente de estado vacío o de error.
+- El estado vacío se anuncia con `role="status"`; el error con `role="alert"`.
+- El icono es decorativo (`aria-hidden="true"`) y la acción es opcional.
+- Los errores de red ofrecen «Reintentar» y vuelven a ejecutar la consulta.
+- Se conservan los textos y acciones existentes para no cambiar el
+  comportamiento ni los contratos de las pruebas.
+
+**Decisiones**
+
+- Se creó `src/components/ui/EstadoVacio.tsx` con las props `titulo`,
+  `descripcion`, `tipo` (`vacio`/`error`), `icono` y `accion` (enlace o botón).
+  Expone `data-estado` como punto estable de verificación.
+- La acción usa el anillo de foco compartido de la Tarea 2.
+- El error usa los tokens `--color-status-error` y
+  `--color-status-error-bg`; en tema oscuro el fondo pasa a
+  `--color-paper` y el texto a `--color-ink` para conservar contraste AA sin
+  introducir colores nuevos.
+- En `/perfil` el error de reseñas ahora tiene reintento propio, independiente
+  del reintento de sesión.
+- En `/productos` el reintento reutiliza el estado `intento` para volver a
+  lanzar la consulta del catálogo.
+- `/blog` es contenido estático: no existe error de red. Su estado vacío se
+  activa si `ARTICULOS_BLOG` no tiene artículos y ofrece un enlace al catálogo.
+
+**Verificación**
+
+- `npm test`: 494 pruebas en 48 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `refactor(ui): unificar estados vacíos y de error`.
+
+

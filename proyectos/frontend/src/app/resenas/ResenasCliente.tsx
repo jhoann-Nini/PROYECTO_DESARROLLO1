@@ -22,6 +22,7 @@ import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 import EditarResena from "./EditarResena";
 import ReportarResenaModal from "./ReportarResenaModal";
 
@@ -479,38 +480,27 @@ export default function ResenasCliente() {
                 Cargando reseñas de la comunidad…
               </div>
             ) : error ? (
-              <div
-                role="alert"
-                className="mt-4 rounded-lg border border-red-200 bg-red-50 p-6 text-center"
-              >
-                <p className="text-sm font-semibold text-red-900">
-                  No pudimos cargar las reseñas
-                </p>
-                <p className="mt-1 text-sm text-red-800">{error}</p>
-                <button
-                  type="button"
-                  onClick={reintentar}
-                  className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-                >
-                  Reintentar
-                </button>
-              </div>
+              <EstadoVacio
+                className="mt-4"
+                tipo="error"
+                titulo="No pudimos cargar las reseñas"
+                descripcion={error}
+                accion={{ etiqueta: "Reintentar", onClick: reintentar }}
+              />
             ) : resenasFiltradas.length === 0 ? (
-              <div
-                role="status"
-                className="mt-4 rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center"
-              >
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  {resenas.length === 0
+              <EstadoVacio
+                className="mt-4"
+                titulo={
+                  resenas.length === 0
                     ? "Aún no hay reseñas registradas."
-                    : "No encontramos reseñas con esos filtros."}
-                </p>
-                <p className="mt-1 text-sm text-[var(--color-subtle)]">
-                  {resenas.length === 0
+                    : "No encontramos reseñas con esos filtros."
+                }
+                descripcion={
+                  resenas.length === 0
                     ? "Sé el primero en compartir tu experiencia con un producto."
-                    : "Prueba con otra búsqueda o cambia el producto seleccionado."}
-                </p>
-              </div>
+                    : "Prueba con otra búsqueda o cambia el producto seleccionado."
+                }
+              />
             ) : (
               <ul
                 aria-label="Listado de reseñas"

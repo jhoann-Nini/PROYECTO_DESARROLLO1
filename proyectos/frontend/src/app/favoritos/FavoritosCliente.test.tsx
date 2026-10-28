@@ -97,6 +97,11 @@ describe("FavoritosCliente", () => {
     });
 
     expect(
+      screen
+        .getByText("Aún no tienes productos favoritos.")
+        .closest('[data-estado="vacio"]'),
+    ).not.toBeNull();
+    expect(
       screen.getByRole("link", { name: "Explorar catálogo" }),
     ).toBeDefined();
   });
@@ -169,11 +174,9 @@ describe("FavoritosCliente", () => {
 
     render(<FavoritosCliente />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("No pudimos cargar tus favoritos"),
-      ).toBeDefined();
-    });
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
+    expect(alerta.textContent).toContain("No pudimos cargar tus favoritos");
 
     fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
 

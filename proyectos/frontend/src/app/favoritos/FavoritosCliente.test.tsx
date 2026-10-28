@@ -44,18 +44,24 @@ const mockMarcas = vi.mocked(obtenerMarcas);
 
 const CATEGORIAS: CategoriaResponse[] = [
   { idCategoria: 1, nombre: "Móviles", descripcion: null, estado: true },
+  { idCategoria: 2, nombre: "Laptops / PCs", descripcion: null, estado: true },
+  { idCategoria: 3, nombre: "Tablets", descripcion: null, estado: true },
 ];
 
 const MARCAS: MarcaResponse[] = [
   { idMarca: 1, nombre: "Samsung", descripcion: null, estado: true },
 ];
 
-function crearProducto(id: number, nombre: string): Producto {
+function crearProducto(
+  id: number,
+  nombre: string,
+  idCategoria = 1,
+): Producto {
   return {
     idProducto: id,
     nombre,
     descripcion: `Descripción de ${nombre}`,
-    idCategoria: 1,
+    idCategoria,
     idMarca: 1,
     imagen: null,
     precioReferencia: 1_000_000 + id * 100_000,
@@ -67,6 +73,7 @@ const PRODUCTOS = [
   crearProducto(1, "Galaxy S25"),
   crearProducto(2, "iPhone 16"),
   crearProducto(3, "Pixel 10"),
+  crearProducto(4, "iPad Air", 3),
 ];
 
 function configurarExito() {
@@ -165,6 +172,73 @@ describe("FavoritosCliente", () => {
     expect(
       screen.getByText("Aún no tienes productos favoritos."),
     ).toBeDefined();
+  });
+
+  it("filtra los favoritos por categoría", async () => {
+    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1, 4]));
+
+    render(<FavoritosCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("iPad Air")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Filtrar por categoría"), {
+      target: { value: "tablets" },
+    });
+
+    expect(screen.queryByText("Galaxy S25")).toBeNull();
+    expect(screen.getByText("iPad Air")).toBeDefined();
+  });
+
+  it("ordena los favoritos por precio sin cambiar la selección guardada", async () => {
+    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([4, 1, 2]));
+
+    render(<FavoritosCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("iPad Air")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Ordenar favoritos"), {
+      target: { value: "menor-precio" },
+    });
+
+    const tarjetas = screen.getAllByRole("article");
+    expect(tarjetas.map((tarjeta) => tarjeta.textContent)).toEqual([
+      expect.stringContaining("Galaxy S25"),
+      expect.stringContaining("iPhone 16"),
+      expect.stringContaining("iPad Air"),
+    ]);
+    expect(JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) ?? "[]")).toEqual([
+      4, 1, 2,
+    ]);
+  });
+
+  it("muestra un vacío por filtros y permite quitarlos", async () => {
+    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1]));
+
+    render(<FavoritosCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Galaxy S25")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Filtrar por categoría"), {
+      target: { value: "laptops" },
+    });
+
+    expect(
+      screen
+        .getByText("No hay favoritos en esa categoría.")
+        .closest('[data-estado="vacio"]'),
+    ).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Quitar filtros" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Galaxy S25")).toBeDefined();
+    });
   });
 
   it("muestra el error y permite reintentar", async () => {

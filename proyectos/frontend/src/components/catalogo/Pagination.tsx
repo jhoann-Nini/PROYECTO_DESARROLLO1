@@ -1,5 +1,7 @@
 "use client";
 
+import { CLASE_FOCO } from "@/components/ui/foco";
+
 interface PaginationProps {
   pagina: number;
   totalPaginas: number;
@@ -28,7 +30,7 @@ export default function Pagination({
           type="button"
           onClick={() => onCambiar(pagina - 1)}
           disabled={pagina <= 1}
-          className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50"
+          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
         >
           Anterior
         </button>
@@ -36,7 +38,7 @@ export default function Pagination({
           type="button"
           onClick={() => onCambiar(pagina + 1)}
           disabled={pagina >= totalPaginas}
-          className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50"
+          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
         >
           Siguiente
         </button>

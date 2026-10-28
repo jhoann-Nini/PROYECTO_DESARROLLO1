@@ -6,6 +6,7 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 const SELECTOR_ENFOCABLES = [
   "a[href]",
@@ -166,7 +167,7 @@ export default function ReportarResenaModal({
                         setMotivo(opcion.valor);
                         setError("");
                       }}
-                      className="h-4 w-4 accent-[var(--color-brand-blue)]"
+                      className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                     />
                     {opcion.etiqueta}
                   </label>
@@ -188,7 +189,7 @@ export default function ReportarResenaModal({
                 rows={3}
                 value={detalle}
                 onChange={(evento) => setDetalle(evento.target.value)}
-                className="mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                className={`mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               />
             </div>
           )}
@@ -203,13 +204,13 @@ export default function ReportarResenaModal({
             <button
               type="button"
               onClick={onCerrar}
-              className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)]"
+              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Enviar reporte
             </button>

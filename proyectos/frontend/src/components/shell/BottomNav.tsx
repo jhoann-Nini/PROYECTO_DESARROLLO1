@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 const ICONO_INICIO = (
   <path
@@ -72,7 +73,7 @@ export default function BottomNav() {
               <Link
                 href={item.href}
                 aria-current={rutaActual === item.href ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${
+                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${CLASE_FOCO} ${
                   rutaActual === item.href
                     ? "text-[var(--color-brand-blue)]"
                     : "text-[var(--color-subtle)]"

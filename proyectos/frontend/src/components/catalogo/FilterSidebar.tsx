@@ -16,6 +16,7 @@ import {
 } from "@/data/productoViewModel";
 import type { CategoriaDispositivo } from "@/types/producto";
 import { formatearCOP } from "@/data/specsHelper";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface FilterSidebarProps {
   catalogo: CatalogoPreparado;
@@ -267,7 +268,7 @@ export default function FilterSidebar({
                 type="button"
                 onClick={onCerrar}
                 aria-label="Cerrar filtros"
-                className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 md:hidden"
+                className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] md:hidden ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"
@@ -285,7 +286,7 @@ export default function FilterSidebar({
               type="button"
               onClick={onLimpiar}
               disabled={!hayFiltros}
-              className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50"
+              className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
             >
               Limpiar filtros
             </button>
@@ -312,7 +313,7 @@ export default function FilterSidebar({
                         ),
                       })
                     }
-                    className="h-4 w-4 accent-[var(--color-brand-blue)]"
+                    className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                   />
                   <span className="flex-1">
                     {categoria.etiqueta} ({categoria.cantidad})
@@ -333,7 +334,7 @@ export default function FilterSidebar({
             onChange={(event) => setBusquedaMarca(event.target.value)}
             placeholder="Buscar marca..."
             aria-label="Buscar marcas"
-            className="mt-2 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+            className={`mt-2 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
           />
           {marcasFiltradas.length > 0 ? (
             <ul className="mt-2 max-h-52 space-y-2 overflow-y-auto pr-1">
@@ -349,7 +350,7 @@ export default function FilterSidebar({
                           marcas: alternar(filtros.marcas, marca.nombre),
                         })
                       }
-                      className="h-4 w-4 accent-[var(--color-brand-blue)]"
+                      className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                     />
                     <span className="flex-1">
                       {marca.nombre} ({marca.cantidad})
@@ -394,7 +395,7 @@ export default function FilterSidebar({
                     }
                   }}
                   placeholder={formatearCOP(rangoPrecio.min)}
-                  className="mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                  className={`mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 />
               </label>
               <label className="block text-xs text-[var(--color-subtle)]">
@@ -420,7 +421,7 @@ export default function FilterSidebar({
                     }
                   }}
                   placeholder={formatearCOP(rangoPrecio.max)}
-                  className="mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                  className={`mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 />
               </label>
             </div>
@@ -443,7 +444,7 @@ export default function FilterSidebar({
                     precioMax: Math.max(filtros.precioMax, valor),
                   });
                 }}
-                className="mt-1 w-full accent-[var(--color-brand-blue)]"
+                className={`mt-1 w-full accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               />
             </label>
             <label className="block text-xs text-[var(--color-subtle)]">
@@ -467,7 +468,7 @@ export default function FilterSidebar({
                     precioMin: Math.min(filtros.precioMin, valor),
                   });
                 }}
-                className="mt-1 w-full accent-[var(--color-brand-blue)]"
+                className={`mt-1 w-full accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               />
             </label>
           </div>
@@ -495,7 +496,7 @@ export default function FilterSidebar({
                         ),
                       })
                     }
-                    className="h-4 w-4 accent-[var(--color-brand-blue)]"
+                    className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                   />
                   <span className="flex-1">
                     {caracteristica.etiqueta} ({caracteristica.cantidad})
@@ -511,7 +512,7 @@ export default function FilterSidebar({
             <button
               type="button"
               onClick={onCerrar}
-              className="w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+              className={`w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Ver resultados
             </button>

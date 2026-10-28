@@ -27,6 +27,7 @@ import {
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import SearchBar from "@/components/SearchBar";
+import { CLASE_FOCO } from "@/components/ui/foco";
 import TarjetaProducto from "./TarjetaProducto";
 import FilterSidebar from "./FilterSidebar";
 import FilterChips from "./FilterChips";
@@ -242,7 +243,7 @@ export default function CatalogoCliente() {
                 onClick={() => setDrawerAbierto(true)}
                 aria-expanded={drawerAbierto}
                 aria-controls="filtros-catalogo"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 md:hidden"
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] md:hidden ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"
@@ -271,7 +272,7 @@ export default function CatalogoCliente() {
                   onChange={(event) =>
                     cambiarOrden(event.target.value as OrdenCatalogo)
                   }
-                  className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                  className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 >
                   {ORDENES_CATALOGO.map((opcion) => (
                     <option key={opcion.valor} value={opcion.valor}>
@@ -303,7 +304,7 @@ export default function CatalogoCliente() {
                 <button
                   type="button"
                   onClick={limpiarFiltros}
-                  className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                  className={`mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
                 >
                   Limpiar filtros
                 </button>

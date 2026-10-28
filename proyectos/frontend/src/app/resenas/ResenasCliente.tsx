@@ -21,6 +21,7 @@ import {
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
+import { CLASE_FOCO } from "@/components/ui/foco";
 import EditarResena from "./EditarResena";
 import ReportarResenaModal from "./ReportarResenaModal";
 
@@ -356,7 +357,7 @@ export default function ResenasCliente() {
                 <button
                   type="submit"
                   disabled={enviando || cargandoSesion}
-                  className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
                 >
                   {enviando ? "Publicando…" : "Publicar reseña"}
                 </button>
@@ -365,7 +366,7 @@ export default function ResenasCliente() {
                   <button
                     type="button"
                     onClick={() => setModalAuthAbierto(true)}
-                    className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                    className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                   >
                     Iniciar sesión
                   </button>
@@ -541,7 +542,7 @@ export default function ResenasCliente() {
                       {resena.idProducto > 0 && (
                         <Link
                           href={`/productos/${resena.idProducto}`}
-                          className="max-w-full truncate rounded-md bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/10"
+                          className={`max-w-full truncate rounded-md bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/10 ${CLASE_FOCO}`}
                         >
                           {resena.nombreProducto || `Producto #${resena.idProducto}`}
                         </Link>
@@ -586,7 +587,7 @@ export default function ResenasCliente() {
                             setResenaAReportar(resena.idResena)
                           }
                           aria-label="Reportar reseña"
-                          className="mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)]"
+                          className={`mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
                         >
                           <svg
                             aria-hidden="true"
@@ -635,7 +636,7 @@ export default function ResenasCliente() {
                   <li key={producto.idProducto}>
                     <Link
                       href={`/productos/${producto.idProducto}`}
-                      className="block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)]"
+                      className={`block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
                     >
                       <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
                         {producto.nombre}
@@ -664,7 +665,7 @@ export default function ResenasCliente() {
             </p>
             <Link
               href="/comparador"
-              className="mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className={`mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Ir al comparador
             </Link>

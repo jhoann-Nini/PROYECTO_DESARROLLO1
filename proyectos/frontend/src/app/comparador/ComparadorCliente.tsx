@@ -23,6 +23,7 @@ import {
   generarRecomendacion,
 } from "@/data/comparador";
 import { useComparador } from "@/hooks/useComparador";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 export default function ComparadorCliente() {
   const { ids, hidratado, agregar, quitar, limpiar } = useComparador();
@@ -230,7 +231,7 @@ export default function ComparadorCliente() {
           value={busqueda}
           onChange={(evento) => setBusqueda(evento.target.value)}
           placeholder="Ej. Galaxy S25, Lenovo, laptops…"
-          className="mt-1.5 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          className={`mt-1.5 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
         />
 
         {ids.length >= MAX_COMPARADOR && (
@@ -285,7 +286,7 @@ export default function ComparadorCliente() {
                         ? `${producto.nombre} ya está en el comparador`
                         : `Agregar ${producto.nombre} al comparador`
                     }
-                    className="cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent"
+                    className={`cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent ${CLASE_FOCO}`}
                   >
                     {seleccionado
                       ? "En el comparador"
@@ -336,14 +337,14 @@ export default function ComparadorCliente() {
                   onChange={(evento) =>
                     setSoloDiferencias(evento.target.checked)
                   }
-                  className="h-4 w-4 rounded border-[var(--color-hairline)] accent-[var(--color-brand-blue)]"
+                  className={`h-4 w-4 rounded border-[var(--color-hairline)] accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 />
                 Solo diferencias
               </label>
               <button
                 type="button"
                 onClick={vaciarComparador}
-                className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700"
+                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
               >
                 Vaciar comparador
               </button>
@@ -395,7 +396,7 @@ export default function ComparadorCliente() {
                       >
                         <Link
                           href={`/productos/${producto.idProducto}`}
-                          className="line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)]"
+                          className={`line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                         >
                           {producto.nombre}
                         </Link>
@@ -406,7 +407,7 @@ export default function ComparadorCliente() {
                           type="button"
                           onClick={() => quitarProducto(producto)}
                           aria-label={`Quitar ${producto.nombre} del comparador`}
-                          className="mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700"
+                          className={`mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
                         >
                           Quitar
                         </button>

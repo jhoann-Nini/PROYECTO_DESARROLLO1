@@ -1,6 +1,7 @@
 "use client";
 
 import { useTema } from "@/hooks/useTema";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 export default function BotonTema() {
   const { tema, alternarTema } = useTema();
@@ -15,7 +16,7 @@ export default function BotonTema() {
       aria-label={etiqueta}
       aria-pressed={tema === "oscuro"}
       title={etiqueta}
-      className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50"
+      className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
     >
       <svg
         aria-hidden="true"

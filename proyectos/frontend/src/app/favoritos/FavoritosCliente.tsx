@@ -17,6 +17,7 @@ import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 export default function FavoritosCliente() {
   const router = useRouter();
@@ -151,7 +152,7 @@ export default function FavoritosCliente() {
           <button
             type="button"
             onClick={vaciarFavoritos}
-            className="self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 sm:self-auto"
+            className={`self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 sm:self-auto ${CLASE_FOCO}`}
           >
             Vaciar favoritos
           </button>
@@ -198,7 +199,7 @@ export default function FavoritosCliente() {
           </p>
           <Link
             href="/productos"
-            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className={`mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
           >
             Explorar catálogo
           </Link>

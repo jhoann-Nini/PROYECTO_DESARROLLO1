@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PanelBusquedaModal from "@/components/busqueda/PanelBusquedaModal";
+import { CLASE_FOCO } from "@/components/ui/foco";
 import BotonTema from "./BotonTema";
 
 interface EnlaceNavegacion {
@@ -46,7 +47,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight"
+            className={`group flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight ${CLASE_FOCO}`}
             aria-label="TecReview, ir al inicio"
           >
             <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-xs transition-transform duration-200 group-hover:scale-105">
@@ -77,7 +78,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
                   aria-current={
                     rutaActual === enlace.href ? "page" : undefined
                   }
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${CLASE_FOCO} ${
                     rutaActual === enlace.href
                       ? "bg-[var(--color-canvas)] text-[var(--color-ink)]"
                       : "text-[var(--color-subtle)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)]"
@@ -107,7 +108,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
               aria-expanded={busquedaAbierta}
               aria-keyshortcuts="Control+K Meta+K"
               title="Buscar dispositivos (Ctrl+K)"
-              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50"
+              className={`inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
             >
               <svg
                 className="h-4 w-4"
@@ -135,7 +136,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
             <Link
               href="/productos"
-              className="hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex"
+              className={`hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex ${CLASE_FOCO}`}
             >
               Explorar catálogo
             </Link>

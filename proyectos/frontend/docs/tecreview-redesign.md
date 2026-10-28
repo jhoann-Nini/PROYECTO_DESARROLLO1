@@ -870,3 +870,65 @@ aplicación rota.
   reportar con modales accesibles. La persistencia de edición/eliminación
   depende de TEC-76/77/78 y la de reportes de un endpoint futuro.
 - Sin cambios en backend, `.env` ni base de datos.
+
+---
+
+## 12. Tareas de mejora del frontend
+
+Estas tareas se ejecutan sobre la rama `feat/tecreview-redesign` sin cambiar la
+arquitectura ni la paleta oficial.
+
+### 12.1 Tarea 1 — `next/image` en el header
+
+**Criterios**
+
+- El logo kiwi del header se sirve con `next/image`.
+- Se conservan el recurso `/kiwi-logo.jpg`, el tamaño de 28×28 y el carácter
+  decorativo (`alt=""`, `aria-hidden="true"`).
+- La prueba verifica `src`, `width`, `height` y el marcador `data-nimg` que
+  añade `next/image`.
+
+**Decisión**
+
+- Se usa `Image` con dimensiones explícitas (sin `fill`) porque el logo vive
+  dentro de un contenedor de 28×28 y no necesita `sizes` ni `loader` propio.
+- No se añadieron dominios remotos a `next.config.ts`; el recurso es local.
+
+**Verificación**
+
+- `npm test`: 475 pruebas en 45 archivos (al cerrar la tarea).
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `a55f2fe refactor(header): usar next/image para el logo kiwi`.
+
+### 12.2 Tarea 2 — foco visible unificado
+
+**Criterios**
+
+- Todo control interactivo de las vistas principales muestra un anillo de foco
+  con la paleta oficial (`--color-brand-blue`).
+- El anillo compartido se define en un único lugar y no se introducen colores
+  nuevos.
+- Una prueba de auditoría recorre el DOM renderizado de las vistas y falla si
+  un elemento interactivo no tiene el anillo.
+
+**Decisiones**
+
+- Se creó `src/components/ui/foco.ts` con `CLASE_FOCO`:
+  `focus-visible:outline-none focus-visible:ring-2` y
+  `focus-visible:ring-[var(--color-brand-blue)]`.
+- La auditoría vive en
+  `src/components/accesibilidad/foco.test.tsx` y cubre `SiteHeader`,
+  `BottomNav`, `PanelBusquedaModal`, `FilterSidebar`, `EditarResena`,
+  `ReportarResenaModal`, `ComparadorCliente`, `FavoritosCliente`,
+  `PerfilCliente`, `ResenasCliente` y `CatalogoCliente`.
+- Se excluyen de la auditoría los elementos deshabilitados y los que están
+  dentro de `aria-hidden="true"`.
+- Los anillos que usaban opacidad (`/40`, `/50`) se normalizaron en los flujos
+  auditados para que el foco sea consistente.
+
+**Verificación**
+
+- `npm test`: 486 pruebas en 46 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `refactor(a11y): unificar anillo de foco visible`.
+

@@ -67,7 +67,7 @@ function FilaResultado({
         onSeleccionar?.(producto);
         onCerrar();
       }}
-      className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+      className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
     >
       <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)]">
         {tieneImagen ? (
@@ -293,7 +293,7 @@ export default function PanelBusquedaModal({
               type="button"
               onClick={onCerrar}
               aria-label="Cerrar búsqueda"
-              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50"
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
             >
               <svg
                 className="h-4 w-4"
@@ -345,7 +345,7 @@ export default function PanelBusquedaModal({
                   inputRef.current?.focus();
                 }}
                 aria-label="Limpiar búsqueda"
-                className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -376,7 +376,7 @@ export default function PanelBusquedaModal({
                   type="button"
                   aria-pressed={activa}
                   onClick={() => setCategoria(opcion.valor)}
-                  className={`cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 ${
+                  className={`cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)] ${
                     activa
                       ? "border-[var(--color-brand-solid)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)]"
                       : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-ink)]"

@@ -45,11 +45,23 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className="flex shrink-0 items-baseline gap-0 text-lg font-bold tracking-tight"
+            className="group flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight"
             aria-label="TecReview, ir al inicio"
           >
-            <span className="text-[var(--color-ink)]">Tec</span>
-            <span className="text-[var(--color-brand-blue)]">Review</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-xs transition-transform duration-200 group-hover:scale-105">
+              <img
+                src="/kiwi-logo.jpg"
+                alt=""
+                aria-hidden="true"
+                width={28}
+                height={28}
+                className="h-full w-full object-cover"
+              />
+            </span>
+            <span className="flex items-baseline">
+              <span className="text-[var(--color-ink)]">Tec</span>
+              <span className="text-[var(--color-brand-blue)]">Review</span>
+            </span>
           </Link>
 
           <nav

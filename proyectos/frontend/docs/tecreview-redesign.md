@@ -898,7 +898,8 @@ arquitectura ni la paleta oficial.
 
 - `npm test`: 475 pruebas en 45 archivos (al cerrar la tarea).
 - `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
-- Commit: `a55f2fe refactor(header): usar next/image para el logo kiwi`.
+- Commit: `5b2a44f refactor(header): usar next/image para el logo kiwi`
+  (reescrito desde `a55f2fe` al rebasar sobre `main`; ver 12.4).
 
 ### 12.2 Tarea 2 — foco visible unificado
 
@@ -930,7 +931,8 @@ arquitectura ni la paleta oficial.
 
 - `npm test`: 486 pruebas en 46 archivos.
 - `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
-- Commit: `refactor(a11y): unificar anillo de foco visible`.
+- Commit: `cc06eca refactor(a11y): unificar anillo de foco visible`
+  (reescrito desde `b5f26ad` al rebasar sobre `main`; ver 12.4).
 
 ### 12.3 Tarea 3 — estados vacíos y de error unificados
 
@@ -965,6 +967,64 @@ arquitectura ni la paleta oficial.
 
 - `npm test`: 494 pruebas en 48 archivos.
 - `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
-- Commit: `refactor(ui): unificar estados vacíos y de error`.
+- Commit: `f2ba72e refactor(ui): unificar estados vacíos y de error`
+  (reescrito desde `79ae92d` al rebasar sobre `main`; ver 12.4).
+
+### 12.4 Integración con `main` tras el PR #52
+
+**Contexto**
+
+- El PR #52 se fusionó en `main` con **Squash & Merge** (`d9ed312`), de modo que
+  todo el historial previo de `feat/tecreview-redesign` quedó en un único
+  commit y el punto base común pasó a ser antiguo.
+- GitHub detectaba conflictos **Add/Add** en los 10 componentes modificados por
+  las tareas 1–3, porque las dos ramas añadían los mismos archivos desde bases
+  distintas.
+- Los 4 commits posteriores a `4c40fc4` solo se habían publicado en la rama de
+  trabajo, no en `main`.
+
+**Procedimiento aplicado**
+
+```bash
+git fetch origin --prune
+git rebase --onto origin/main 4c40fc4 feat/tecreview-redesign
+npm test
+git push --force-with-lease origin feat/tecreview-redesign
+```
+
+- El rebase se completó sin conflictos manuales: el contenido de `4c40fc4` ya
+  estaba íntegro en el squash de `main`, así que las adiciones coincidían y git
+  las resolvió de forma automática.
+- Se reescribieron los hashes de los 4 commits; el contenido es idéntico
+  (30 archivos, 1003 inserciones y 234 eliminaciones respecto de `origin/main`).
+
+**Equivalencias de hashes**
+
+| Antes del rebase | Después del rebase | Asunto |
+| --- | --- | --- |
+| `1215fa5` | `23d3c66` | `feat(shell): agregar logo kiwi en el header` |
+| `a55f2fe` | `5b2a44f` | `refactor(header): usar next/image para el logo kiwi` |
+| `b5f26ad` | `cc06eca` | `refactor(a11y): unificar anillo de foco visible` |
+| `79ae92d` | `f2ba72e` | `refactor(ui): unificar estados vacíos y de error` |
+
+**Verificación posterior al rebase**
+
+- `npm test`: 494 pruebas en 48 archivos, todas en verde.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- `git status`: árbol limpio y rama sincronizada con su remoto.
+
+**Aviso para otras copias de la rama**
+
+Al reescribirse el historial, cualquier clon que aún tenga la versión anterior
+debe realinearse antes de seguir trabajando:
+
+```bash
+git fetch origin
+git reset --hard origin/feat/tecreview-redesign
+```
+
+No usar `git pull` sin `--rebase` en esa copia: crearía un merge espurio entre
+el historial antiguo y el reescrito.
+
 
 

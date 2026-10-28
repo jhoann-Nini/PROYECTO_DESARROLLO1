@@ -1026,5 +1026,113 @@ git reset --hard origin/feat/tecreview-redesign
 No usar `git pull` sin `--rebase` en esa copia: crearía un merge espurio entre
 el historial antiguo y el reescrito.
 
+### 12.5 Tarea 4 — botón para compartir el producto
+
+**Criterios**
+
+- La ficha `/productos/[id]` muestra un botón con nombre accesible
+  «Compartir producto».
+- Si el navegador expone `navigator.share`, se abre la hoja nativa de
+  compartir con título, texto y URL del producto.
+- Si Web Share no existe o falla por una razón distinta a la cancelación, se
+  copia la URL al portapapeles y se anuncia «Enlace copiado.» mediante
+  `role="status"`.
+- Cancelar la hoja nativa no se trata como error y no dispara el portapapeles.
+- Ningún rechazo de las APIs del navegador queda sin capturar; si tampoco hay
+  portapapeles se anuncia un fallo controlado.
+
+**Decisiones**
+
+- Se creó `src/components/detalle/BotonCompartir.tsx` con las props `titulo`,
+  `texto` y `url`. La URL es opcional: si no se recibe, se usa
+  `window.location.href` en el momento del clic.
+- Un rechazo con `name === "AbortError"` se considera cancelación del usuario.
+  Cualquier otro fallo de Web Share cae al portapapeles.
+- El aviso accesible se limpia automáticamente a los 4 segundos y usa el anillo
+  de foco compartido de la Tarea 2.
+- El botón se integra junto a comparador y favoritos en la ficha, sin alterar
+  sus contratos ni su estado.
+
+**Verificación**
+
+- Pruebas nuevas en `src/components/detalle/BotonCompartir.test.tsx` (6 casos:
+  Web Share, portapapeles, fallback, cancelación y dos fallos controlados) y
+  una prueba de integración en la ficha.
+- Suite acumulada de las tareas 4–6: `npm test` con 517 pruebas en 51 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `11b21fb feat(detalle): agregar boton para compartir producto`.
+
+### 12.6 Tarea 5 — filtros y orden en favoritos
+
+**Criterios**
+
+- `/favoritos` permite filtrar por categoría y ordenar por relevancia, menor
+  precio, mayor precio o mejor valorados.
+- La lógica reutiliza las categorías y los comparadores del catálogo; no se
+  duplican constantes ni criterios de orden.
+- El selector de categoría muestra siempre las cuatro categorías del catálogo
+  con su conteo, para que un filtro sin resultados sea alcanzable.
+- Cuando el filtro deja la lista vacía se muestra «No hay favoritos en esa
+  categoría.» con la acción «Quitar filtros».
+- Filtrar u ordenar no modifica la selección persistida en `localStorage`.
+
+**Decisiones**
+
+- Se creó `src/data/favoritosCatalogo.ts`. `opcionesCategoriaFavoritos` delega
+  en `prepararCatalogo` y `ordenarFavoritos` en `ordenarProductos`, ambos de
+  `src/data/catalogo.ts`.
+- La vista aplica primero el filtro de categoría y luego el orden, sobre una
+  copia de la lista; la fuente sigue siendo el orden guardado de favoritos.
+- Los controles son dos `select` etiquetados («Filtrar por categoría» y
+  «Ordenar favoritos») y usan `ORDENES_CATALOGO` como única fuente de opciones.
+- El vacío por filtros reutiliza `EstadoVacio`; «Quitar filtros» restablece la
+  categoría a «todas» y conserva el orden elegido, porque el vacío solo puede
+  provenir del filtro de categoría.
+
+**Verificación**
+
+- Pruebas nuevas en `src/data/favoritosCatalogo.test.ts` (3 casos) y en
+  `FavoritosCliente.test.tsx` (filtro, orden sin alterar la selección y vacío
+  con acción de limpieza).
+- Suite acumulada de las tareas 4–6: 517 pruebas en 51 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `c81c2bb feat(favoritos): filtrar y ordenar la lista guardada`.
+
+### 12.7 Tarea 6 — comparados recientemente
+
+**Criterios**
+
+- El comparador recuerda como máximo los 5 productos agregados más
+  recientemente, sin duplicados y con el más reciente primero.
+- El historial persiste en `localStorage` y sobrevive a recargas y pestañas.
+- Si `localStorage` no está disponible o contiene datos inválidos, la vista
+  sigue funcionando y el historial queda vacío.
+- `/comparador` muestra una sección «Comparados recientemente» con enlaces
+  directos a cada ficha cuando existe historial.
+
+**Decisiones**
+
+- Se creó `src/data/comparadosRecientes.ts` con la clave
+  `tecreview:comparados-recientes`, normalización de ids y la función
+  `registrarComparado`, que mueve el id al inicio y recorta a 5.
+- `useComparador` expone `recientes` y registra el historial solo cuando
+  `agregar` tiene éxito; los duplicados y los intentos con el comparador lleno
+  no alteran el historial.
+- La hidratación usa refs con el estado más reciente para no perder clics
+  rápidos antes de que React aplique el estado inicial.
+- El evento `storage` sincroniza tanto la selección como el historial entre
+  pestañas.
+- La sección de recientes solo se renderiza con historial hidratado y productos
+  presentes en el catálogo actual; no duplica enlaces ni acciones dentro de la
+  región.
+
+**Verificación**
+
+- Pruebas nuevas en `src/data/comparadosRecientes.test.ts` (5 casos), en
+  `useComparador.test.tsx` (registro, límite de 5 e hidratación) y en
+  `ComparadorCliente.test.tsx` (sección con enlaces y ausencia sin historial).
+- `npm test`: 517 pruebas en 51 archivos, todas en verde.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `fd3eef7 feat(comparador): recordar los productos comparados recientemente`.
 
 

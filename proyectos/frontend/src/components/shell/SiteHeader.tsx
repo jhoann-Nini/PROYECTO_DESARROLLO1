@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PanelBusquedaModal from "@/components/busqueda/PanelBusquedaModal";
@@ -49,7 +50,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
             aria-label="TecReview, ir al inicio"
           >
             <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-xs transition-transform duration-200 group-hover:scale-105">
-              <img
+              <Image
                 src="/kiwi-logo.jpg"
                 alt=""
                 aria-hidden="true"

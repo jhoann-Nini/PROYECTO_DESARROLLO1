@@ -23,6 +23,7 @@ import EspecificacionesProducto from "@/components/detalle/EspecificacionesProdu
 import ValoracionProducto from "@/components/detalle/ValoracionProducto";
 import OpinionesProducto from "@/components/detalle/OpinionesProducto";
 import BotonComparador from "@/components/detalle/BotonComparador";
+import BotonCompartir from "@/components/detalle/BotonCompartir";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 
 interface DetalleProductoClienteProps {
@@ -351,6 +352,7 @@ export default function DetalleProductoCliente({
               idProducto={producto.idProducto}
               nombreProducto={producto.nombre}
             />
+            <BotonCompartir titulo={producto.nombre} />
           </div>
 
           <dl className="mt-6 grid gap-3 border-t border-[var(--color-hairline)] pt-4 text-sm sm:grid-cols-2">

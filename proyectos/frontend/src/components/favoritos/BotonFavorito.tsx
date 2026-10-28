@@ -1,6 +1,7 @@
 "use client";
 
 import { useFavoritos } from "@/hooks/useFavoritos";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface BotonFavoritoProps {
   idProducto: number;
@@ -39,7 +40,7 @@ export default function BotonFavorito({
         aria-pressed={esFavorito}
         aria-label={etiqueta}
         title={esFavorito ? "Quitar de favoritos" : "Guardar en favoritos"}
-        className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 text-[var(--color-subtle)] shadow-[var(--shadow-paper)] backdrop-blur transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] disabled:cursor-wait disabled:opacity-60 ${
+        className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 text-[var(--color-subtle)] shadow-[var(--shadow-paper)] backdrop-blur transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
           esFavorito ? "text-[var(--color-brand-blue)]" : ""
         } ${className}`}
       >
@@ -67,7 +68,7 @@ export default function BotonFavorito({
       onClick={manejarClick}
       disabled={!hidratado}
       aria-pressed={esFavorito}
-      className={`inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
+      className={`inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
         esFavorito
           ? "border border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] hover:bg-[var(--color-brand-blue)]/15"
           : "border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"

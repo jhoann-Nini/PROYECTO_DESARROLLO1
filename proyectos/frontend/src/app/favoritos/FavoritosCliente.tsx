@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +16,8 @@ import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
+import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function FavoritosCliente() {
   const router = useRouter();
@@ -111,22 +112,12 @@ export default function FavoritosCliente() {
   if (error) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-8 text-center"
-        >
-          <p className="text-lg font-semibold text-red-900">
-            No pudimos cargar tus favoritos
-          </p>
-          <p className="mt-2 text-sm text-red-800">{error}</p>
-          <button
-            type="button"
-            onClick={reintentar}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-          >
-            Reintentar
-          </button>
-        </div>
+        <EstadoVacio
+          tipo="error"
+          titulo="No pudimos cargar tus favoritos"
+          descripcion={error}
+          accion={{ etiqueta: "Reintentar", onClick: reintentar }}
+        />
       </main>
     );
   }
@@ -151,7 +142,7 @@ export default function FavoritosCliente() {
           <button
             type="button"
             onClick={vaciarFavoritos}
-            className="self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 sm:self-auto"
+            className={`self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 sm:self-auto ${CLASE_FOCO}`}
           >
             Vaciar favoritos
           </button>
@@ -171,38 +162,26 @@ export default function FavoritosCliente() {
           Cargando tu lista de favoritos…
         </p>
       ) : favoritos.length === 0 ? (
-        <div
-          role="status"
-          className="rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            className="mx-auto h-10 w-10 text-[var(--color-subtle)]"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 20.25s-7.5-4.5-7.5-9.75A4.5 4.5 0 0 1 12 7.5a4.5 4.5 0 0 1 7.5 3c0 5.25-7.5 9.75-7.5 9.75Z"
-            />
-          </svg>
-          <p className="mt-3 text-sm font-semibold text-[var(--color-ink)]">
-            Aún no tienes productos favoritos.
-          </p>
-          <p className="mt-1 text-sm text-[var(--color-subtle)]">
-            Usa el corazón en cualquier tarjeta o en la ficha de un producto
-            para guardarlo aquí.
-          </p>
-          <Link
-            href="/productos"
-            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-          >
-            Explorar catálogo
-          </Link>
-        </div>
+        <EstadoVacio
+          titulo="Aún no tienes productos favoritos."
+          descripcion="Usa el corazón en cualquier tarjeta o en la ficha de un producto para guardarlo aquí."
+          icono={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              className="h-8 w-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 20.25s-7.5-4.5-7.5-9.75A4.5 4.5 0 0 1 12 7.5a4.5 4.5 0 0 1 7.5 3c0 5.25-7.5 9.75-7.5 9.75Z"
+              />
+            </svg>
+          }
+          accion={{ etiqueta: "Explorar catálogo", href: "/productos" }}
+        />
       ) : (
         <>
           <p className="mb-4 text-sm text-[var(--color-subtle)]">

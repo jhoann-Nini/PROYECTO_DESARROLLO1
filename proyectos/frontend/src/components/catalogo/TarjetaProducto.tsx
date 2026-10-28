@@ -6,6 +6,7 @@ import type { ProductoViewModel } from "@/data/productoViewModel";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
+import { CLASE_FOCO } from "@/components/ui/foco";
 import RatingStars from "./RatingStars";
 
 export type VarianteTarjetaProducto = "grid" | "lista";
@@ -74,7 +75,7 @@ export default function TarjetaProducto({
           type="button"
           onClick={() => onVerDetalle?.(producto)}
           aria-label={`Ver detalle de ${producto.nombre}`}
-          className="flex h-full w-full cursor-pointer items-center justify-center"
+          className={`flex h-full w-full cursor-pointer items-center justify-center ${CLASE_FOCO}`}
         >
           {tieneImagen ? (
             <img
@@ -201,7 +202,7 @@ export default function TarjetaProducto({
           <button
             type="button"
             onClick={() => onVerDetalle?.(producto)}
-            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className={`shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
           >
             Ver detalle
           </button>

@@ -11,6 +11,7 @@ import {
   eliminarResena,
   type ResenaResponse,
 } from "@/services/api";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 const SELECTOR_ENFOCABLES = [
   "a[href]",
@@ -176,7 +177,7 @@ export default function EditarResena({
           type="button"
           onClick={abrirEdicion}
           aria-label="Editar reseña"
-          className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-brand-blue)]"
+          className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
         >
           Editar
         </button>
@@ -184,7 +185,7 @@ export default function EditarResena({
           type="button"
           onClick={abrirEliminacion}
           aria-label="Eliminar reseña"
-          className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)]"
+          className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
         >
           Eliminar
         </button>
@@ -224,7 +225,7 @@ export default function EditarResena({
                   <button
                     type="button"
                     onClick={cerrar}
-                    className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)]"
+                    className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
                   >
                     Cancelar
                   </button>
@@ -232,7 +233,7 @@ export default function EditarResena({
                     type="button"
                     onClick={confirmarEliminacion}
                     disabled={enviando}
-                    className="cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={`cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
                   >
                     {enviando ? "Eliminando…" : "Eliminar"}
                   </button>
@@ -255,7 +256,7 @@ export default function EditarResena({
                   rows={4}
                   value={comentario}
                   onChange={(evento) => setComentario(evento.target.value)}
-                  className="mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                  className={`mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 />
                 {error && (
                   <p role="alert" className="mt-3 text-sm text-red-700">
@@ -266,14 +267,14 @@ export default function EditarResena({
                   <button
                     type="button"
                     onClick={cerrar}
-                    className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)]"
+                    className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60"
+                    className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
                   >
                     {enviando ? "Guardando…" : "Guardar cambios"}
                   </button>

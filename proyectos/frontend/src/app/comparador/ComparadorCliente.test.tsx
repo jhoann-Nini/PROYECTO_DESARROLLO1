@@ -118,6 +118,11 @@ describe("ComparadorCliente", () => {
       screen.getByText("Aún no has agregado productos al comparador."),
     ).toBeDefined();
     expect(
+      screen
+        .getByText("Aún no has agregado productos al comparador.")
+        .closest('[data-estado="vacio"]'),
+    ).not.toBeNull();
+    expect(
       screen.getByLabelText("Buscar productos para comparar"),
     ).toBeDefined();
     expect(
@@ -287,11 +292,9 @@ describe("ComparadorCliente", () => {
 
     render(<ComparadorCliente />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByText("No pudimos cargar el catálogo"),
-      ).toBeDefined();
-    });
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
+    expect(alerta.textContent).toContain("No pudimos cargar el catálogo");
     expect(screen.getByText("Servicio de catálogo no disponible")).toBeDefined();
 
     mockProductos.mockResolvedValue([crearProducto(1)]);

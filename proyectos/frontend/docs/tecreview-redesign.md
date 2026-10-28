@@ -870,3 +870,161 @@ aplicación rota.
   reportar con modales accesibles. La persistencia de edición/eliminación
   depende de TEC-76/77/78 y la de reportes de un endpoint futuro.
 - Sin cambios en backend, `.env` ni base de datos.
+
+---
+
+## 12. Tareas de mejora del frontend
+
+Estas tareas se ejecutan sobre la rama `feat/tecreview-redesign` sin cambiar la
+arquitectura ni la paleta oficial.
+
+### 12.1 Tarea 1 — `next/image` en el header
+
+**Criterios**
+
+- El logo kiwi del header se sirve con `next/image`.
+- Se conservan el recurso `/kiwi-logo.jpg`, el tamaño de 28×28 y el carácter
+  decorativo (`alt=""`, `aria-hidden="true"`).
+- La prueba verifica `src`, `width`, `height` y el marcador `data-nimg` que
+  añade `next/image`.
+
+**Decisión**
+
+- Se usa `Image` con dimensiones explícitas (sin `fill`) porque el logo vive
+  dentro de un contenedor de 28×28 y no necesita `sizes` ni `loader` propio.
+- No se añadieron dominios remotos a `next.config.ts`; el recurso es local.
+
+**Verificación**
+
+- `npm test`: 475 pruebas en 45 archivos (al cerrar la tarea).
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `5b2a44f refactor(header): usar next/image para el logo kiwi`
+  (reescrito desde `a55f2fe` al rebasar sobre `main`; ver 12.4).
+
+### 12.2 Tarea 2 — foco visible unificado
+
+**Criterios**
+
+- Todo control interactivo de las vistas principales muestra un anillo de foco
+  con la paleta oficial (`--color-brand-blue`).
+- El anillo compartido se define en un único lugar y no se introducen colores
+  nuevos.
+- Una prueba de auditoría recorre el DOM renderizado de las vistas y falla si
+  un elemento interactivo no tiene el anillo.
+
+**Decisiones**
+
+- Se creó `src/components/ui/foco.ts` con `CLASE_FOCO`:
+  `focus-visible:outline-none focus-visible:ring-2` y
+  `focus-visible:ring-[var(--color-brand-blue)]`.
+- La auditoría vive en
+  `src/components/accesibilidad/foco.test.tsx` y cubre `SiteHeader`,
+  `BottomNav`, `PanelBusquedaModal`, `FilterSidebar`, `EditarResena`,
+  `ReportarResenaModal`, `ComparadorCliente`, `FavoritosCliente`,
+  `PerfilCliente`, `ResenasCliente` y `CatalogoCliente`.
+- Se excluyen de la auditoría los elementos deshabilitados y los que están
+  dentro de `aria-hidden="true"`.
+- Los anillos que usaban opacidad (`/40`, `/50`) se normalizaron en los flujos
+  auditados para que el foco sea consistente.
+
+**Verificación**
+
+- `npm test`: 486 pruebas en 46 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `cc06eca refactor(a11y): unificar anillo de foco visible`
+  (reescrito desde `b5f26ad` al rebasar sobre `main`; ver 12.4).
+
+### 12.3 Tarea 3 — estados vacíos y de error unificados
+
+**Criterios**
+
+- Las vistas `/favoritos`, `/resenas`, `/perfil`, `/blog`, `/comparador` y
+  `/productos` comparten el mismo componente de estado vacío o de error.
+- El estado vacío se anuncia con `role="status"`; el error con `role="alert"`.
+- El icono es decorativo (`aria-hidden="true"`) y la acción es opcional.
+- Los errores de red ofrecen «Reintentar» y vuelven a ejecutar la consulta.
+- Se conservan los textos y acciones existentes para no cambiar el
+  comportamiento ni los contratos de las pruebas.
+
+**Decisiones**
+
+- Se creó `src/components/ui/EstadoVacio.tsx` con las props `titulo`,
+  `descripcion`, `tipo` (`vacio`/`error`), `icono` y `accion` (enlace o botón).
+  Expone `data-estado` como punto estable de verificación.
+- La acción usa el anillo de foco compartido de la Tarea 2.
+- El error usa los tokens `--color-status-error` y
+  `--color-status-error-bg`; en tema oscuro el fondo pasa a
+  `--color-paper` y el texto a `--color-ink` para conservar contraste AA sin
+  introducir colores nuevos.
+- En `/perfil` el error de reseñas ahora tiene reintento propio, independiente
+  del reintento de sesión.
+- En `/productos` el reintento reutiliza el estado `intento` para volver a
+  lanzar la consulta del catálogo.
+- `/blog` es contenido estático: no existe error de red. Su estado vacío se
+  activa si `ARTICULOS_BLOG` no tiene artículos y ofrece un enlace al catálogo.
+
+**Verificación**
+
+- `npm test`: 494 pruebas en 48 archivos.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- Commit: `f2ba72e refactor(ui): unificar estados vacíos y de error`
+  (reescrito desde `79ae92d` al rebasar sobre `main`; ver 12.4).
+
+### 12.4 Integración con `main` tras el PR #52
+
+**Contexto**
+
+- El PR #52 se fusionó en `main` con **Squash & Merge** (`d9ed312`), de modo que
+  todo el historial previo de `feat/tecreview-redesign` quedó en un único
+  commit y el punto base común pasó a ser antiguo.
+- GitHub detectaba conflictos **Add/Add** en los 10 componentes modificados por
+  las tareas 1–3, porque las dos ramas añadían los mismos archivos desde bases
+  distintas.
+- Los 4 commits posteriores a `4c40fc4` solo se habían publicado en la rama de
+  trabajo, no en `main`.
+
+**Procedimiento aplicado**
+
+```bash
+git fetch origin --prune
+git rebase --onto origin/main 4c40fc4 feat/tecreview-redesign
+npm test
+git push --force-with-lease origin feat/tecreview-redesign
+```
+
+- El rebase se completó sin conflictos manuales: el contenido de `4c40fc4` ya
+  estaba íntegro en el squash de `main`, así que las adiciones coincidían y git
+  las resolvió de forma automática.
+- Se reescribieron los hashes de los 4 commits; el contenido es idéntico
+  (30 archivos, 1003 inserciones y 234 eliminaciones respecto de `origin/main`).
+
+**Equivalencias de hashes**
+
+| Antes del rebase | Después del rebase | Asunto |
+| --- | --- | --- |
+| `1215fa5` | `23d3c66` | `feat(shell): agregar logo kiwi en el header` |
+| `a55f2fe` | `5b2a44f` | `refactor(header): usar next/image para el logo kiwi` |
+| `b5f26ad` | `cc06eca` | `refactor(a11y): unificar anillo de foco visible` |
+| `79ae92d` | `f2ba72e` | `refactor(ui): unificar estados vacíos y de error` |
+
+**Verificación posterior al rebase**
+
+- `npm test`: 494 pruebas en 48 archivos, todas en verde.
+- `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
+- `git status`: árbol limpio y rama sincronizada con su remoto.
+
+**Aviso para otras copias de la rama**
+
+Al reescribirse el historial, cualquier clon que aún tenga la versión anterior
+debe realinearse antes de seguir trabajando:
+
+```bash
+git fetch origin
+git reset --hard origin/feat/tecreview-redesign
+```
+
+No usar `git pull` sin `--rebase` en esa copia: crearía un merge espurio entre
+el historial antiguo y el reescrito.
+
+
+

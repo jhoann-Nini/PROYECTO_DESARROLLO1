@@ -21,6 +21,8 @@ import {
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import RatingStars from "@/components/catalogo/RatingStars";
+import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 import EditarResena from "./EditarResena";
 import ReportarResenaModal from "./ReportarResenaModal";
 
@@ -356,7 +358,7 @@ export default function ResenasCliente() {
                 <button
                   type="submit"
                   disabled={enviando || cargandoSesion}
-                  className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60"
+                  className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
                 >
                   {enviando ? "Publicando…" : "Publicar reseña"}
                 </button>
@@ -365,7 +367,7 @@ export default function ResenasCliente() {
                   <button
                     type="button"
                     onClick={() => setModalAuthAbierto(true)}
-                    className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                    className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                   >
                     Iniciar sesión
                   </button>
@@ -478,38 +480,27 @@ export default function ResenasCliente() {
                 Cargando reseñas de la comunidad…
               </div>
             ) : error ? (
-              <div
-                role="alert"
-                className="mt-4 rounded-lg border border-red-200 bg-red-50 p-6 text-center"
-              >
-                <p className="text-sm font-semibold text-red-900">
-                  No pudimos cargar las reseñas
-                </p>
-                <p className="mt-1 text-sm text-red-800">{error}</p>
-                <button
-                  type="button"
-                  onClick={reintentar}
-                  className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-                >
-                  Reintentar
-                </button>
-              </div>
+              <EstadoVacio
+                className="mt-4"
+                tipo="error"
+                titulo="No pudimos cargar las reseñas"
+                descripcion={error}
+                accion={{ etiqueta: "Reintentar", onClick: reintentar }}
+              />
             ) : resenasFiltradas.length === 0 ? (
-              <div
-                role="status"
-                className="mt-4 rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center"
-              >
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  {resenas.length === 0
+              <EstadoVacio
+                className="mt-4"
+                titulo={
+                  resenas.length === 0
                     ? "Aún no hay reseñas registradas."
-                    : "No encontramos reseñas con esos filtros."}
-                </p>
-                <p className="mt-1 text-sm text-[var(--color-subtle)]">
-                  {resenas.length === 0
+                    : "No encontramos reseñas con esos filtros."
+                }
+                descripcion={
+                  resenas.length === 0
                     ? "Sé el primero en compartir tu experiencia con un producto."
-                    : "Prueba con otra búsqueda o cambia el producto seleccionado."}
-                </p>
-              </div>
+                    : "Prueba con otra búsqueda o cambia el producto seleccionado."
+                }
+              />
             ) : (
               <ul
                 aria-label="Listado de reseñas"
@@ -541,7 +532,7 @@ export default function ResenasCliente() {
                       {resena.idProducto > 0 && (
                         <Link
                           href={`/productos/${resena.idProducto}`}
-                          className="max-w-full truncate rounded-md bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/10"
+                          className={`max-w-full truncate rounded-md bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/10 ${CLASE_FOCO}`}
                         >
                           {resena.nombreProducto || `Producto #${resena.idProducto}`}
                         </Link>
@@ -586,7 +577,7 @@ export default function ResenasCliente() {
                             setResenaAReportar(resena.idResena)
                           }
                           aria-label="Reportar reseña"
-                          className="mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)]"
+                          className={`mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
                         >
                           <svg
                             aria-hidden="true"
@@ -635,7 +626,7 @@ export default function ResenasCliente() {
                   <li key={producto.idProducto}>
                     <Link
                       href={`/productos/${producto.idProducto}`}
-                      className="block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)]"
+                      className={`block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
                     >
                       <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
                         {producto.nombre}
@@ -664,7 +655,7 @@ export default function ResenasCliente() {
             </p>
             <Link
               href="/comparador"
-              className="mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className={`mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Ir al comparador
             </Link>

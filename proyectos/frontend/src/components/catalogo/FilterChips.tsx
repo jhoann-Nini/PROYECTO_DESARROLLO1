@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChipFiltro } from "@/data/catalogo";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface FilterChipsProps {
   chips: ChipFiltro[];
@@ -20,7 +21,7 @@ export default function FilterChips({ chips, onQuitar }: FilterChipsProps) {
               type="button"
               onClick={() => onQuitar(chip)}
               aria-label={`Quitar filtro ${chip.etiqueta}`}
-              className="flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)]"
+              className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] ${CLASE_FOCO}`}
             >
               <svg
                 aria-hidden="true"

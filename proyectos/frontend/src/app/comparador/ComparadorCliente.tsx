@@ -23,6 +23,8 @@ import {
   generarRecomendacion,
 } from "@/data/comparador";
 import { useComparador } from "@/hooks/useComparador";
+import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function ComparadorCliente() {
   const { ids, hidratado, agregar, quitar, limpiar } = useComparador();
@@ -157,26 +159,19 @@ export default function ComparadorCliente() {
   if (error) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <div
-          role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-8 text-center"
-        >
-          <p className="text-lg font-semibold text-red-900">
-            No pudimos cargar el catálogo
-          </p>
-          <p className="mt-2 text-sm text-red-800">{error}</p>
-          <button
-            type="button"
-            onClick={() => {
+        <EstadoVacio
+          tipo="error"
+          titulo="No pudimos cargar el catálogo"
+          descripcion={error}
+          accion={{
+            etiqueta: "Reintentar",
+            onClick: () => {
               setCargando(true);
               setError(null);
               setIntento((valor) => valor + 1);
-            }}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-          >
-            Reintentar
-          </button>
-        </div>
+            },
+          }}
+        />
       </main>
     );
   }
@@ -230,7 +225,7 @@ export default function ComparadorCliente() {
           value={busqueda}
           onChange={(evento) => setBusqueda(evento.target.value)}
           placeholder="Ej. Galaxy S25, Lenovo, laptops…"
-          className="mt-1.5 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          className={`mt-1.5 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
         />
 
         {ids.length >= MAX_COMPARADOR && (
@@ -285,7 +280,7 @@ export default function ComparadorCliente() {
                         ? `${producto.nombre} ya está en el comparador`
                         : `Agregar ${producto.nombre} al comparador`
                     }
-                    className="cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent"
+                    className={`cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent ${CLASE_FOCO}`}
                   >
                     {seleccionado
                       ? "En el comparador"
@@ -336,14 +331,14 @@ export default function ComparadorCliente() {
                   onChange={(evento) =>
                     setSoloDiferencias(evento.target.checked)
                   }
-                  className="h-4 w-4 rounded border-[var(--color-hairline)] accent-[var(--color-brand-blue)]"
+                  className={`h-4 w-4 rounded border-[var(--color-hairline)] accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 />
                 Solo diferencias
               </label>
               <button
                 type="button"
                 onClick={vaciarComparador}
-                className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700"
+                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
               >
                 Vaciar comparador
               </button>
@@ -356,18 +351,11 @@ export default function ComparadorCliente() {
             Cargando tu comparador…
           </p>
         ) : seleccionados.length === 0 ? (
-          <div
-            role="status"
-            className="mt-4 rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center"
-          >
-            <p className="text-sm font-semibold text-[var(--color-ink)]">
-              Aún no has agregado productos al comparador.
-            </p>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
-              Usa el selector de arriba para elegir hasta {MAX_COMPARADOR}{" "}
-              productos.
-            </p>
-          </div>
+          <EstadoVacio
+            className="mt-4"
+            titulo="Aún no has agregado productos al comparador."
+            descripcion={`Usa el selector de arriba para elegir hasta ${MAX_COMPARADOR} productos.`}
+          />
         ) : (
           <>
             <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">
@@ -395,7 +383,7 @@ export default function ComparadorCliente() {
                       >
                         <Link
                           href={`/productos/${producto.idProducto}`}
-                          className="line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)]"
+                          className={`line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                         >
                           {producto.nombre}
                         </Link>
@@ -406,7 +394,7 @@ export default function ComparadorCliente() {
                           type="button"
                           onClick={() => quitarProducto(producto)}
                           aria-label={`Quitar ${producto.nombre} del comparador`}
-                          className="mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700"
+                          className={`mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
                         >
                           Quitar
                         </button>

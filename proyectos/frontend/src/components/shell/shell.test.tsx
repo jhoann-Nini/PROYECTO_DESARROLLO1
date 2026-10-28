@@ -73,6 +73,21 @@ describe("Shell de TecReview", () => {
     ).toBeDefined();
   });
 
+  it("el logo usa next/image y conserva el recurso kiwi en 28x28", () => {
+    render(<SiteHeader />);
+
+    const header = screen.getByRole("banner");
+    const logo = header.querySelector("img");
+
+    expect(logo).not.toBeNull();
+    expect(logo?.getAttribute("src")).toContain("kiwi-logo.jpg");
+    expect(logo?.getAttribute("data-nimg")).not.toBeNull();
+    expect(logo?.getAttribute("width")).toBe("28");
+    expect(logo?.getAttribute("height")).toBe("28");
+    expect(logo?.getAttribute("alt")).toBe("");
+    expect(logo?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("el header incluye el control de tema accesible", () => {
     render(<SiteHeader />);
 

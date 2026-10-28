@@ -97,9 +97,31 @@ describe("CatalogoCliente", () => {
     render(<CatalogoCliente />);
 
     const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
     expect(alerta.textContent).toContain(
       "No fue posible conectarse con el servidor."
     );
+    expect(
+      screen.getByRole("button", { name: "Reintentar" })
+    ).toBeDefined();
+  });
+
+  it("permite reintentar la carga del catálogo tras un error de red", async () => {
+    mockProductos.mockRejectedValueOnce(
+      new ApiError("No fue posible conectarse con el servidor.", 0)
+    );
+    mockCategorias.mockResolvedValue(categorias);
+    mockMarcas.mockResolvedValue(marcas);
+
+    render(<CatalogoCliente />);
+
+    await screen.findByRole("alert");
+    mockProductos.mockResolvedValue([crearProducto(1)]);
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto 1")).toBeDefined();
+    });
   });
 
   it("muestra el total y las tarjetas con datos enriquecidos", async () => {
@@ -210,6 +232,7 @@ describe("CatalogoCliente", () => {
     );
 
     const vacio = await screen.findByRole("status");
+    expect(vacio.getAttribute("data-estado")).toBe("vacio");
     expect(vacio.textContent).toContain(
       "No encontramos productos con esos filtros"
     );

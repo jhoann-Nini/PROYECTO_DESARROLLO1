@@ -27,6 +27,8 @@ import {
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import SearchBar from "@/components/SearchBar";
+import { CLASE_FOCO } from "@/components/ui/foco";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 import TarjetaProducto from "./TarjetaProducto";
 import FilterSidebar from "./FilterSidebar";
 import FilterChips from "./FilterChips";
@@ -53,6 +55,7 @@ export default function CatalogoCliente() {
   const [marcasApi, setMarcasApi] = useState<MarcaResponse[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [intento, setIntento] = useState(0);
   const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase());
   const [orden, setOrden] = useState<OrdenCatalogo>("relevancia");
   const [pagina, setPagina] = useState(1);
@@ -88,7 +91,7 @@ export default function CatalogoCliente() {
     return () => {
       activo = false;
     };
-  }, []);
+  }, [intento]);
 
   const vistas = useMemo(
     () =>
@@ -211,15 +214,19 @@ export default function CatalogoCliente() {
       )}
 
       {!cargando && error && (
-        <div
-          role="alert"
-          className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6"
-        >
-          <p className="text-sm font-semibold text-[var(--color-ink)]">
-            No pudimos cargar el catálogo
-          </p>
-          <p className="mt-1 text-sm text-[var(--color-subtle)]">{error}</p>
-        </div>
+        <EstadoVacio
+          tipo="error"
+          titulo="No pudimos cargar el catálogo"
+          descripcion={error}
+          accion={{
+            etiqueta: "Reintentar",
+            onClick: () => {
+              setCargando(true);
+              setError("");
+              setIntento((valor) => valor + 1);
+            },
+          }}
+        />
       )}
 
       {!cargando && !error && (
@@ -242,7 +249,7 @@ export default function CatalogoCliente() {
                 onClick={() => setDrawerAbierto(true)}
                 aria-expanded={drawerAbierto}
                 aria-controls="filtros-catalogo"
-                className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 md:hidden"
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] md:hidden ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"
@@ -271,7 +278,7 @@ export default function CatalogoCliente() {
                   onChange={(event) =>
                     cambiarOrden(event.target.value as OrdenCatalogo)
                   }
-                  className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+                  className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                 >
                   {ORDENES_CATALOGO.map((opcion) => (
                     <option key={opcion.valor} value={opcion.valor}>
@@ -289,25 +296,11 @@ export default function CatalogoCliente() {
             )}
 
             {paginaActual.total === 0 ? (
-              <div
-                role="status"
-                className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center"
-              >
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  No encontramos productos con esos filtros
-                </p>
-                <p className="mt-1 text-sm text-[var(--color-subtle)]">
-                  Ajusta la búsqueda o limpia los filtros para ver más
-                  resultados.
-                </p>
-                <button
-                  type="button"
-                  onClick={limpiarFiltros}
-                  className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-                >
-                  Limpiar filtros
-                </button>
-              </div>
+              <EstadoVacio
+                titulo="No encontramos productos con esos filtros"
+                descripcion="Ajusta la búsqueda o limpia los filtros para ver más resultados."
+                accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
+              />
             ) : (
               <>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

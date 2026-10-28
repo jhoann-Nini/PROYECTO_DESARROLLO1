@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ARTICULOS_BLOG, calcularMinutosLectura } from "@/data/blog";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export const metadata: Metadata = {
   title: "Blog editorial | TecReview",
@@ -34,7 +35,16 @@ export default function BlogPage() {
         </p>
       </header>
 
-      {destacado && (
+      {ARTICULOS_BLOG.length === 0 ? (
+        <EstadoVacio
+          className="mt-8"
+          titulo="Todavía no hay guías publicadas."
+          descripcion="Mientras preparamos nuevo contenido editorial, puedes explorar las fichas y comparativas del catálogo."
+          accion={{ etiqueta: "Explorar catálogo", href: "/productos" }}
+        />
+      ) : (
+        <>
+          {destacado && (
         <article className="mt-8 overflow-hidden rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">
           <div className="grid gap-0 lg:grid-cols-[1.2fr_1fr]">
             <div className="p-6 sm:p-8">
@@ -168,6 +178,8 @@ export default function BlogPage() {
           Explorar catálogo
         </Link>
       </section>
+        </>
+      )}
     </main>
   );
 }

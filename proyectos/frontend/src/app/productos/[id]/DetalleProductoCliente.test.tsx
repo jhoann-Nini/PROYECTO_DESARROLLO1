@@ -333,6 +333,16 @@ describe("DetalleProductoCliente", () => {
     expect(screen.queryByRole("button", { name: "Guardar valoración" })).toBeNull();
   });
 
+  it("muestra el botón para compartir el producto", async () => {
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Compartir producto" }),
+      ).toBeDefined();
+    });
+  });
+
   it("agrega el producto al comparador y permite quitarlo", async () => {
     render(<DetalleProductoCliente idProducto={204} />);
 

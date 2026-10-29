@@ -6,7 +6,7 @@ import {
   formatearCOP,
 } from "./specsHelper";
 import { Producto } from "@/types/producto";
-import { DISPOSITIVOS_VENDIDOS } from "./mockProductos";
+import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "./mockProductos";
 
 describe("specsHelper — Detección de Categorías", () => {
   it("detecta auriculares por idCategoria = 4", () => {
@@ -38,12 +38,12 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(producto)).toBe("auriculares");
   });
 
-  it("detecta portátiles por idCategoria = 3 o nombreCategoria", () => {
+  it("detecta portátiles por idCategoria = 2 o nombreCategoria", () => {
     const prodId: Producto = {
       idProducto: 20,
       nombre: "Workstation",
       descripcion: "Equipo para oficina",
-      idCategoria: 3,
+      idCategoria: 2,
       idMarca: 2,
       imagen: null,
       precioReferencia: 4500000,
@@ -65,12 +65,12 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(prodNombre)).toBe("laptops");
   });
 
-  it("detecta tablets por idCategoria = 2 o nombreCategoria", () => {
+  it("detecta tablets por idCategoria = 3 o nombreCategoria", () => {
     const prod: Producto = {
       idProducto: 30,
       nombre: "Media Tab",
       descripcion: "Pantalla táctil grande",
-      idCategoria: 2,
+      idCategoria: 3,
       idMarca: 3,
       imagen: null,
       precioReferencia: 1800000,
@@ -79,31 +79,19 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(prod)).toBe("tablets");
   });
 
-  it("detecta monitores por idCategoria = 5 o nombreCategoria", () => {
-    const prodId: Producto = {
-      idProducto: 40,
-      nombre: "UltraGear Gaming",
-      descripcion: "Frecuencia alta",
-      idCategoria: 5,
-      idMarca: 4,
-      imagen: null,
-      precioReferencia: 1200000,
-      estado: true,
-    };
-    expect(detectarCategoria(prodId)).toBe("monitores");
-
+  it("detecta tablets por nombreCategoria aunque el id no sea fijo", () => {
     const prodNom: Producto = {
       idProducto: 41,
-      nombre: "ProDisplay 27",
-      descripcion: "Calibración sRGB",
+      nombre: "Media Pad",
+      descripcion: "Tablet para productividad",
       idCategoria: 99,
       idMarca: 4,
-      nombreCategoria: "Monitores y Pantallas",
+      nombreCategoria: "Tablets",
       imagen: null,
       precioReferencia: 1500000,
       estado: true,
     };
-    expect(detectarCategoria(prodNom)).toBe("monitores");
+    expect(detectarCategoria(prodNom)).toBe("tablets");
   });
 
   it("detecta móviles por idCategoria = 1 o nombreCategoria", () => {
@@ -120,11 +108,11 @@ describe("specsHelper — Detección de Categorías", () => {
     expect(detectarCategoria(prod)).toBe("moviles");
   });
 
-  it("evita clasificar erróneamente un móvil cuya descripción menciona 'monitor cardíaco'", () => {
+  it("prioriza nombreCategoria sobre términos ambiguos de la descripción", () => {
     const movilConSensor: Producto = {
       idProducto: 51,
       nombre: "Xiaomi 14 Ultra Pro",
-      descripcion: "Sensor óptico en pantalla con monitor cardíaco integrado y lector de huellas",
+      descripcion: "Smartphone con pantalla AMOLED y sensor de ritmo cardíaco integrado",
       idCategoria: 1,
       idMarca: 5,
       nombreCategoria: "Móviles",
@@ -132,7 +120,6 @@ describe("specsHelper — Detección de Categorías", () => {
       precioReferencia: 4200000,
       estado: true,
     };
-    // No debe clasificar como monitor a pesar de la palabra 'monitor' en su descripción
     expect(detectarCategoria(movilConSensor)).toBe("moviles");
   });
 });
@@ -140,20 +127,20 @@ describe("specsHelper — Detección de Categorías", () => {
 describe("specsHelper — Mapeo de características de backend (Fase 4.1)", () => {
   it("mapea un diccionario de características reales en secciones de hardware con iconos y títulos", () => {
     const caracteristicas = {
-      panel: "Fast IPS 27'' QHD (2560x1440)",
-      tasa_refresco: "180 Hz con FreeSync Premium",
-      tiempo_respuesta: "1ms GtG",
-      puertos: "2x HDMI 2.0, 1x DisplayPort 1.4",
+      pantalla: "12.1'' LCD 3K (3000x2120) · 144Hz",
+      procesador: "Qualcomm Snapdragon 8 Gen 3",
+      bateria: "9510 mAh con carga de 67W",
+      productividad: "Compatible con stylus y teclado magnético",
     };
 
-    const secciones = mapearCaracteristicasASecciones(caracteristicas, "monitores");
+    const secciones = mapearCaracteristicasASecciones(caracteristicas, "tablets");
     expect(secciones).toHaveLength(4);
-    expect(secciones[0].titulo).toBe("TECNOLOGÍA DE PANEL");
-    expect(secciones[0].descripcion).toContain("Fast IPS 27''");
-    expect(secciones[1].titulo).toBe("TASA DE REFRESCO");
-    expect(secciones[1].descripcion).toContain("180 Hz");
-    expect(secciones[2].titulo).toBe("TIEMPO DE RESPUESTA");
-    expect(secciones[3].titulo).toBe("PUERTOS & CONECTIVIDAD");
+    expect(secciones[0].titulo).toBe("PANTALLA & RENDIMIENTO VISUAL");
+    expect(secciones[0].descripcion).toContain("12.1'' LCD 3K");
+    expect(secciones[1].titulo).toBe("PROCESADOR & RENDIMIENTO");
+    expect(secciones[1].descripcion).toContain("Snapdragon 8 Gen 3");
+    expect(secciones[2].titulo).toBe("BATERÍA & AUTONOMÍA");
+    expect(secciones[3].titulo).toBe("PRODUCTIVIDAD & STYLUS");
   });
 
   it("filtra claves de metadatos internos y campos vacíos al mapear", () => {
@@ -277,5 +264,31 @@ describe("specsHelper — Normalización y no invención de datos ficticios", ()
     expect(formatearCOP(undefined)).toBe("Consultar disponibilidad");
     expect(formatearCOP(350)).toContain("COP");
     expect(formatearCOP(1500000)).toContain("COP");
+  });
+});
+
+describe("PRODUCTOS_MOCK — catálogo de prueba local", () => {
+  it("contiene exactamente 4 productos, uno por cada categoría disponible", () => {
+    expect(PRODUCTOS_MOCK).toHaveLength(4);
+    expect(PRODUCTOS_MOCK.map((producto) => producto.idCategoria).sort()).toEqual([
+      1, 2, 3, 4,
+    ]);
+    expect(PRODUCTOS_MOCK.map((producto) => producto.nombre)).toEqual([
+      "Nothing Phone (2a) Special Edition",
+      "Nothing Ear (2) Transparent White",
+      "OnePlus Pad 2",
+      "Lenovo ThinkPad E14 Gen 5",
+    ]);
+  });
+
+  it("cada producto de prueba expone características reales en su ficha técnica", () => {
+    for (const producto of PRODUCTOS_MOCK) {
+      expect(producto.caracteristicas).toBeTruthy();
+
+      const ficha = normalizarFichaProducto(producto);
+      expect(ficha.tieneEspecificacionesReales).toBe(true);
+      expect(ficha.secciones.length).toBeGreaterThanOrEqual(4);
+      expect(ficha.categoriaTipo).toBe(detectarCategoria(producto));
+    }
   });
 });

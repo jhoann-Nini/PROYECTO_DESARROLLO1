@@ -4,7 +4,17 @@
 
 @theme {
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-doto: 'Doto', monospace;
+  --font-doto: var(--font-sans);
+
+  /* Escala de radios coherente: controles 12px, tarjetas y modales 16px */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
 
   /* Superficies y Fondos */
   --color-surface-base: #f8fafc;
@@ -13,25 +23,58 @@
   --color-surface-border: #e2e8f0;
   --color-surface-border-strong: #cbd5e1;
 
+  /* Superficies del tema oscuro (se conserva la paleta original) */
+  --color-surface-0: #090714;
+  --color-surface-1: #0f172a;
+  --color-surface-2: #141d33;
+  --color-line: #1e293b;
+  --color-line-soft: #172033;
+  --shadow-soft: 0 24px 60px -38px rgba(2, 6, 23, 0.95);
+
   /* Jerarquía Tipográfica y Contraste (WCAG 2.1 AA) */
   --color-text-primary: #0f172a;
   --color-text-secondary: #475569;
   --color-text-muted: #64748b;
 
   /* Acentos de Acción y Enfoque */
-  --color-brand-primary: #1d4ed8;
-  --color-brand-hover: #1e40af;
-  --color-brand-light: #eff6ff;
-  --color-brand-focus: #2563eb;
+  --color-brand-primary: #3f6212;
+  --color-brand-hover: #365314;
+  --color-brand-light: #f7fee7;
+  --color-brand-focus: #4d7c0f;
 
   /* Estados Semánticos Accesibles */
   --color-status-success: #15803d;
   --color-status-success-bg: #f0fdf4;
   --color-status-error: #b91c1c;
   --color-status-error-bg: #fef2f2;
+
+  /* TecReview — tokens oficiales del tema claro */
+  /* Acento interactivo: texto, bordes, focos y chips. En oscuro se aclara
+     para conservar el contraste AA sobre las superficies oscuras. */
+  --color-brand-blue: #4d7c0f;
+  /* Kiwi sólido de botones y acciones: en ambos temas usa texto oscuro
+     (--color-on-solid) porque el blanco no alcanza contraste AA. */
+  --color-brand-solid: #a3e635;
+  /* Texto sobre el kiwi sólido: fijo para conservar AA en ambos temas. */
+  --color-on-solid: #18181b;
+  /* Superficie inversa fija: overlays de modales y bloques con texto blanco.
+     No se redefine en oscuro para no invertir el contraste. */
+  --color-inverse: #18181b;
+  /* Texto sobre el verde positivo: fijo para conservar AA en ambos temas. */
+  --color-on-positive: #18181b;
+  --color-ink: #18181b;
+  --color-canvas: #f5f5f4;
+  --color-hairline: #e4e4e7;
+  --color-positive: #10b981;
+  --color-star: #f59e0b;
+  --color-paper: #ffffff;
+  /* #6E6E77 mantiene AA (4.63:1) sobre el lienzo #F5F5F4; #71717A se quedaba
+     en 4.43:1 y no alcanzaba el mínimo para texto normal. */
+  --color-subtle: #6e6e77;
+  --shadow-paper: 0 1px 2px rgba(24, 24, 27, 0.06), 0 8px 24px -12px rgba(24, 24, 27, 0.12);
+  --shadow-paper-hover: 0 2px 4px rgba(24, 24, 27, 0.08), 0 16px 32px -16px rgba(24, 24, 27, 0.18);
 }
 
-/* Estilos base de Accesibilidad Universal */
 * {
   box-sizing: border-box;
 }
@@ -45,72 +88,156 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: #f1f5f9;
-  color: #0f172a;
+  overflow-x: clip;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Tipografía de Matriz de Puntos (Estilo Nothing Tech NDot / Doto) */
+/* Alcance del tema de TecReview. Los tokens cambian bajo html.dark. */
+.theme-tecreview {
+  color-scheme: light;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/* Tema oscuro real. La clase .dark la aplica el script previo a la
+   hidratación y la mantiene el toggle persistente. */
+html.dark {
+  color-scheme: dark;
+  --color-canvas: #0a0a0a;
+  --color-paper: #161616;
+  --color-ink: #f4f4f5;
+  --color-subtle: #a1a1aa;
+  --color-hairline: #262626;
+  --color-brand-blue: #a3e635;
+  --color-brand-solid: #a3e635;
+  --color-on-solid: #0a0a0a;
+  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  --shadow-paper-hover: 0 2px 4px rgba(0, 0, 0, 0.55), 0 16px 32px -16px rgba(0, 0, 0, 0.8);
+}
+
+html.dark .theme-tecreview {
+  color-scheme: dark;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Animaciones sutiles y accesibles */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in,
+.animate-fadeIn {
+  animation: fade-in 180ms ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Titulares equilibrados y párrafos sin viudas */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
 .font-doto {
-  font-family: var(--font-doto, 'Doto', monospace, sans-serif);
-  font-variation-settings: 'ROND' 100;
-  letter-spacing: 0.08em;
+  font-family: var(--font-sans);
+  font-variation-settings: normal;
+  letter-spacing: .015em;
 }
 
-/* Indicador global de navegación por teclado accesible (WCAG 2.1 AA) */
 :focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-brand-blue);
   outline-offset: 2px;
 }
 
-/* Barra de desplazamiento accesible estilo Nothing Tech */
+::selection {
+  background: var(--color-brand-solid);
+  color: var(--color-on-solid);
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #e2e8f0;
+  background: var(--color-hairline);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: var(--color-subtle);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: var(--color-ink);
 }
 
-.dark body {
-  background-color: #f1f5f9;
-  color: #0f172a;
+/* Interacciones y accesibilidad de la interfaz */
+main section {
+  scroll-margin-top: 6rem;
 }
 
-/* Base visual: texto legible por defecto y superficies claras como el prototipo. */
-body,
-body * {
-  text-rendering: optimizeLegibility;
-}
-
+button,
+a,
 input,
-textarea,
-select {
-  color: #0f172a;
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #64748b;
-  opacity: 1;
+button:not(:disabled),
+a {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 180ms;
 }
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.65;
+  opacity: .55;
 }
 
-::selection {
-  background: #bfdbfe;
-  color: #0f172a;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

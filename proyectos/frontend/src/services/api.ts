@@ -158,6 +158,34 @@ export async function obtenerProductos<T = unknown>(): Promise<T[]> {
 }
 
 /**
+ * Consulta únicamente los productos activos de una categoría real.
+ * El identificador debe provenir de `GET /api/categorias`; nunca se asume
+ * un ID fijo para celulares, tablets, portátiles o auriculares.
+ */
+export async function obtenerProductosPorCategoria<T = unknown>(
+  idCategoria: number,
+): Promise<T[]> {
+  if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+    throw new ApiError(
+      "El identificador de categoría debe ser un número entero positivo.",
+      400,
+    );
+  }
+
+  const datos = await apiFetch<unknown>(
+    `/api/productos?idCategoria=${idCategoria}`,
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de productos).",
+    );
+  }
+
+  return datos as T[];
+}
+
+/**
  * Respuesta del endpoint de perfil del backend Spring Boot (GET /api/usuarios/me).
  */
 export interface UsuarioMeResponse {
@@ -289,6 +317,31 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
   return apiFetchAutenticado<ResenaResponse>("/api/resenas", {
     method: "POST",
     body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Actualiza el comentario de una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78); hasta entonces el backend puede
+ * responder 404/405 y la UI muestra un error controlado.
+ */
+export async function editarResena(
+  idResena: number,
+  comentario: string,
+): Promise<ResenaResponse> {
+  return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
+    method: "PUT",
+    body: JSON.stringify({ comentario }),
+  });
+}
+
+/**
+ * Elimina una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78).
+ */
+export async function eliminarResena(idResena: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {
+    method: "DELETE",
   });
 }
 

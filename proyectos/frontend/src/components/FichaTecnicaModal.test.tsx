@@ -162,40 +162,6 @@ describe("Componente FichaTecnicaModal — Fase 4.2: Fichas técnicas dinámicas
     expect(screen.getByText(/Compatible con Stylus Stylo 2/i)).toBeDefined();
   });
 
-  it("un monitor muestra las características de pantalla disponibles y no incluye batería ni cámaras", () => {
-    const monitor: Producto = {
-      idProducto: 501,
-      nombre: "LG UltraGear 27GR93U",
-      descripcion: "Monitor gaming UHD 4K con panel IPS.",
-      idCategoria: 5,
-      idMarca: 5,
-      nombreCategoria: "Monitores",
-      nombreMarca: "LG",
-      imagen: "https://example.com/lg27.jpg",
-      precioReferencia: 2200000,
-      estado: true,
-      caracteristicas: {
-        panel: "27'' UHD 4K (3840x2160) Fast IPS · 144Hz · 1ms GtG",
-        color_hdr: "95% DCI-P3 · VESA DisplayHDR 400",
-        puertos: "2x HDMI 2.1, 1x DisplayPort 1.4, USB 3.0 Hub",
-        ergonomia: "Ajuste de altura, inclinación y giro vertical",
-      },
-    };
-
-    render(<FichaTecnicaModal producto={monitor} onClose={vi.fn()} />);
-
-    expect(screen.getByText("LG UltraGear 27GR93U")).toBeDefined();
-    expect(screen.getAllByText(/Monitores & Pantallas/i).length).toBeGreaterThan(0);
-    expect(screen.getByRole("tab", { name: /TECNOLOGÍA DE PANEL/i })).toBeDefined();
-    expect(screen.getByRole("tab", { name: /GAMUT DE COLOR & HDR/i })).toBeDefined();
-    expect(screen.getByRole("tab", { name: /PUERTOS & CONECTIVIDAD/i })).toBeDefined();
-    expect(screen.getByRole("tab", { name: /ERGONOMÍA & AJUSTES/i })).toBeDefined();
-
-    // No debe contener características de móviles o laptops irrelevantes
-    expect(screen.queryByText(/BATERÍA/i)).toBeNull();
-    expect(screen.queryByText(/CÁMARAS/i)).toBeNull();
-  });
-
   it("un producto sin características no provoca errores y muestra el estado vacío apropiado", () => {
     const prodSinSpecs: Producto = {
       idProducto: 999,

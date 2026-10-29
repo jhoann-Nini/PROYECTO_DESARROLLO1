@@ -128,7 +128,7 @@ export interface ProductoOferta {
 }
 
 
-export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares" | "monitores";
+export type CategoriaDispositivo = "moviles" | "tablets" | "laptops" | "auriculares";
 
 export interface SeccionHardware {
   icono: string;

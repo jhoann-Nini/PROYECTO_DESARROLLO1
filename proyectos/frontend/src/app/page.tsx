@@ -25,7 +25,7 @@ import {
   type ProductoMejorValorado,
   type ProductoOferta,
 } from "@/types/producto";
-import { PRODUCTOS_MOCK } from "@/data/mockProductos";
+import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { normalizarPrecioCOP } from "@/data/precios";
@@ -40,6 +40,7 @@ import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import BottomNav from "@/components/shell/BottomNav";
 import SearchBar from "@/components/SearchBar";
+import MasVendidosBusqueda from "@/components/home/MasVendidosBusqueda";
 import AuthModal from "@/components/AuthModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import ResumenSesion from "@/components/home/ResumenSesion";
@@ -750,6 +751,12 @@ export default function Home() {
                     placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
                     ariaLabel="Buscar dispositivos por marca, modelo o características"
                   />
+                  {!busqueda.trim() && (
+                    <MasVendidosBusqueda
+                      productos={DISPOSITIVOS_VENDIDOS}
+                      onSeleccionar={setBusqueda}
+                    />
+                  )}
                   <p className="mt-2 text-xs text-[var(--color-subtle)]">
                     Presupuesto de referencia: hasta{" "}
                     {formatearCOP(presupuestoMax)}. Activa el filtro para

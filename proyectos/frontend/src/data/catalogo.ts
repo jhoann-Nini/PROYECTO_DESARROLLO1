@@ -14,6 +14,7 @@ export interface FiltrosCatalogo {
   precioMin: number;
   precioMax: number;
   caracteristicas: CaracteristicaClave[];
+  excluirMarcas?: boolean;
 }
 
 export interface RangoPrecio {
@@ -157,11 +158,11 @@ export function filtrarProductos(
       return false;
     }
 
-    if (
-      filtros.marcas.length > 0 &&
-      !filtros.marcas.includes(producto.marca)
-    ) {
-      return false;
+    if (filtros.marcas.length > 0) {
+      const marcaSeleccionada = filtros.marcas.includes(producto.marca);
+      if (filtros.excluirMarcas ? marcaSeleccionada : !marcaSeleccionada) {
+        return false;
+      }
     }
 
     if (filtroPrecioActivo) {
@@ -281,7 +282,11 @@ export function construirChips(filtros: FiltrosCatalogo): ChipFiltro[] {
   }
 
   for (const marca of filtros.marcas) {
-    chips.push({ tipo: "marca", valor: marca, etiqueta: marca });
+    chips.push({
+      tipo: "marca",
+      valor: marca,
+      etiqueta: filtros.excluirMarcas ? `Excluir: ${marca}` : marca,
+    });
   }
 
   if (

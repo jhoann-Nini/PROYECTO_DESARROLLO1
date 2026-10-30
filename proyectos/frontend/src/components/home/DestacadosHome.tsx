@@ -164,12 +164,12 @@ export default function DestacadosHome({
           {busqueda.trim() ? (
             <div className="space-y-3">
               <p className="text-base font-semibold text-[var(--color-ink)]">
-                No se encontraron productos para &ldquo;{busqueda}&rdquo;.
+                No encontramos productos con &ldquo;{busqueda.trim()}&rdquo;.
               </p>
               <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
-                No hay coincidencias con ese nombre o modelo en el catálogo.
-                Intenta con otros términos como marca (Samsung, Asus, Sony...)
-                o tipo de dispositivo.
+                Prueba con menos palabras, revisa la escritura o busca por marca,
+                modelo o tipo de dispositivo (por ejemplo, Samsung, Asus o
+                audífonos).
               </p>
               <button
                 type="button"

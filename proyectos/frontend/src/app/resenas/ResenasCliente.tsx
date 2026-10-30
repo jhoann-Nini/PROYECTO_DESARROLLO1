@@ -318,9 +318,18 @@ export default function ResenasCliente() {
                 >
                   Tu reseña
                 </label>
+                <p
+                  id="ayuda-comentario-resena"
+                  className="mt-1 text-xs text-[var(--color-subtle)]"
+                >
+                  Cuenta tu experiencia con el producto. No incluyas datos
+                  personales. Máximo 1.000 caracteres.
+                </p>
                 <textarea
                   id="comentario-resena"
                   rows={3}
+                  maxLength={1000}
+                  aria-describedby="ayuda-comentario-resena contador-comentario-resena"
                   value={comentario}
                   onChange={(evento) => setComentario(evento.target.value)}
                   placeholder={
@@ -330,6 +339,13 @@ export default function ResenasCliente() {
                   }
                   className="mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
                 />
+                <p
+                  id="contador-comentario-resena"
+                  aria-live="polite"
+                  className="mt-1 text-right text-xs text-[var(--color-subtle)]"
+                >
+                  {comentario.length}/1.000 caracteres
+                </p>
               </div>
 
               {terminosDetectados.length > 0 && (

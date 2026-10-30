@@ -44,6 +44,7 @@ function filtrosBase(): FiltrosCatalogo {
     precioMin: 0,
     precioMax: Number.MAX_SAFE_INTEGER,
     caracteristicas: [],
+    excluirMarcas: false,
   };
 }
 
@@ -155,11 +156,17 @@ export default function CatalogoCliente() {
         });
         break;
       case "marca":
+      {
+        const marcasRestantes = filtros.marcas.filter(
+          (marca) => marca !== chip.valor
+        );
         actualizarFiltros({
           ...filtros,
-          marcas: filtros.marcas.filter((marca) => marca !== chip.valor),
+          marcas: marcasRestantes,
+          excluirMarcas: marcasRestantes.length > 0 && filtros.excluirMarcas,
         });
         break;
+      }
       case "precio":
         actualizarFiltros({
           ...filtros,
@@ -291,7 +298,11 @@ export default function CatalogoCliente() {
 
             {chips.length > 0 && (
               <div className="mb-4">
-                <FilterChips chips={chips} onQuitar={quitarChip} />
+                <FilterChips
+                  chips={chips}
+                  onQuitar={quitarChip}
+                  onLimpiar={limpiarFiltros}
+                />
               </div>
             )}
 

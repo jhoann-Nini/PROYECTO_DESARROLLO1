@@ -364,6 +364,18 @@ export default function FilterSidebar({
               No encontramos marcas.
             </p>
           )}
+          <label className="mt-3 flex cursor-pointer items-center gap-2 text-xs text-[var(--color-ink)]">
+            <input
+              type="checkbox"
+              checked={Boolean(filtros.excluirMarcas)}
+              disabled={filtros.marcas.length === 0}
+              onChange={(event) =>
+                onCambiar({ ...filtros, excluirMarcas: event.target.checked })
+              }
+              className={`h-4 w-4 accent-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+            />
+            <span>Excluir marcas</span>
+          </label>
         </fieldset>
 
         <fieldset className="mt-5" disabled={!rangoValido}>

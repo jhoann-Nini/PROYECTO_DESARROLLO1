@@ -471,5 +471,21 @@ class ValoracionSecurityIntegrationTest {
                 .andExpect(jsonPath("$.idProducto").value(idProductoValido))
                 .andExpect(jsonPath("$.promedioPuntuacion").value(4.5))
                 .andExpect(jsonPath("$.cantidadValoraciones").value(2));
+
+        // Al ocultar una valoración, no debe influir en el promedio público.
+        var valoracionOculta = valoracionRepository
+                .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
+                        usuarioRepository.findBySupabaseUid(TEST_SUB).get().getIdUsuario(),
+                        idProductoValido
+                )
+                .orElseThrow();
+        valoracionOculta.setEstado(false);
+        valoracionRepository.saveAndFlush(valoracionOculta);
+
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.promedioPuntuacion").value(5.0))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(1));
     }
 }

@@ -2,6 +2,8 @@
 
 Este documento describe las pruebas automatizadas disponibles actualmente en el backend de TecReview y cómo ejecutarlas.
 
+Para los escenarios funcionales y textos visibles del flujo de reseñas/valoraciones, consulta [Casos de prueba y textos de la interfaz](./casos-prueba-textos-interfaz-resenas.md).
+
 ## Requisitos
 
 - Java JDK 21, según la versión declarada en `proyectos/backend/pom.xml`.

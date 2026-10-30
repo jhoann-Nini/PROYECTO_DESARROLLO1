@@ -336,6 +336,75 @@ export default function DetalleProductoCliente({
             {precio}
           </p>
 
+          <section
+            aria-labelledby="titulo-donde-comprar"
+            className="mt-6 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5"
+          >
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2
+                id="titulo-donde-comprar"
+                className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              >
+                Dónde comprar
+              </h2>
+              {ficha.tiendas.length > 0 && (
+                <p className="text-xs text-[var(--color-subtle)]">
+                  {ficha.tiendas.length}{" "}
+                  {ficha.tiendas.length === 1 ? "tienda" : "tiendas"} disponibles
+                </p>
+              )}
+            </div>
+
+            {ficha.tiendas.length > 0 ? (
+              <ul className="mt-4 divide-y divide-[var(--color-hairline)]">
+                {ficha.tiendas.map((tienda, indice) => {
+                  const urlValida =
+                    tienda.url && /^https?:\/\//i.test(tienda.url)
+                      ? tienda.url
+                      : null;
+
+                  return (
+                    <li
+                      key={`${tienda.nombre}-${indice}`}
+                      className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                    >
+                      <div>
+                        <p className="font-semibold text-[var(--color-ink)]">
+                          {tienda.nombre}
+                        </p>
+                        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+                          {tienda.envioGratis
+                            ? "Envío gratis"
+                            : "Envío no especificado"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold text-[var(--color-ink)]">
+                          {formatearCOP(tienda.precio)}
+                        </p>
+                        {urlValida && (
+                          <a
+                            href={urlValida}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)]"
+                          >
+                            Ver tienda
+                            <span className="sr-only">: {tienda.nombre}</span>
+                          </a>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="mt-2 text-sm text-[var(--color-subtle)]">
+                Aún no hay tiendas con precios publicados para este producto.
+              </p>
+            )}
+          </section>
+
           {producto.descripcion && (
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-subtle)]">
               {producto.descripcion}

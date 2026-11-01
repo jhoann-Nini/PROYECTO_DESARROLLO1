@@ -460,7 +460,7 @@ describe("DestacadosHome", () => {
     );
 
     expect(
-      screen.getByText(/No se encontraron productos para/),
+      screen.getByText(/No encontramos productos con/),
     ).toBeDefined();
     fireEvent.click(screen.getByRole("button", { name: "Limpiar búsqueda" }));
     expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);

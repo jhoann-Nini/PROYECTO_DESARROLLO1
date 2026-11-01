@@ -251,4 +251,23 @@ class ResenaSecurityIntegrationTest {
                         .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"   \"}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("POST /api/resenas con título, ventajas y desventajas (S2-12) persiste y retorna todos los campos")
+    void postResenaConTituloVentajasDesventajasPersiste() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Excelente desempeño en juegos.\",\"titulo\":\"Gran rendimiento\",\"ventajas\":\"Pantalla fluida y buena batería\",\"desventajas\":\"Calienta un poco al jugar\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").isNumber())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.comentario").value("Excelente desempeño en juegos."))
+                .andExpect(jsonPath("$.titulo").value("Gran rendimiento"))
+                .andExpect(jsonPath("$.ventajas").value("Pantalla fluida y buena batería"))
+                .andExpect(jsonPath("$.desventajas").value("Calienta un poco al jugar"))
+                .andExpect(jsonPath("$.nombreUsuario").value("Usuario Resenas Test"));
+    }
 }

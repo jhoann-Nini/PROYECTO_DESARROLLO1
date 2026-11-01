@@ -176,7 +176,10 @@ Campo        | Tipo conceptual | Descripción
 id_reseña    | PK              | Identificador de la reseña
 id_usuario    | FK              | Usuario que realiza la reseña
 id_producto    | FK              | Producto reseñado
-comentario    | TEXT          | Contenido de la reseña
+titulo        | VARCHAR(150)   | Título o resumen de la reseña (S2-12)
+comentario    | TEXT           | Contenido o detalle de la reseña
+ventajas      | TEXT           | Aspectos positivos destacados (S2-12)
+desventajas   | TEXT           | Aspectos negativos o limitaciones (S2-12)
 fecha_creacion | TIMESTAMP      | Fecha de publicación
 estado        | BOOLEAN      | Estado de la reseña
 

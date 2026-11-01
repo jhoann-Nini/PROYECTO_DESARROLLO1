@@ -56,7 +56,7 @@ public class ResenaService {
 
         String comentarioLimpio = request.comentario().trim();
 
-        // Si el usuario ya tiene una reseña activa para este producto, se actualiza el comentario y la fecha
+        // Si el usuario ya tiene una reseña activa para este producto, se actualizan sus datos y fecha
         Resena resena = resenaRepository.findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
                 usuario.getIdUsuario(),
                 producto.getIdProducto()
@@ -69,6 +69,9 @@ public class ResenaService {
         });
 
         resena.setComentario(comentarioLimpio);
+        resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
+        resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
+        resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
         resena.setFechaCreacion(LocalDateTime.now());
 
         Resena guardada = resenaRepository.save(resena);
@@ -83,6 +86,9 @@ public class ResenaService {
                 r.getUsuario().getIdUsuario(),
                 r.getUsuario().getNombre(),
                 r.getComentario(),
+                r.getTitulo(),
+                r.getVentajas(),
+                r.getDesventajas(),
                 r.getFechaCreacion(),
                 r.getEstado()
         );

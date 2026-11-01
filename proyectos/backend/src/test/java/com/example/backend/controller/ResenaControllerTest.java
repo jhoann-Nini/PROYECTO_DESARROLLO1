@@ -132,6 +132,65 @@ class ResenaControllerTest {
     }
 
     @Test
+    @DisplayName("POST /api/resenas con título, ventajas y desventajas (S2-12) devuelve 201 Created")
+    void crearResenaConTituloVentajasDesventajasReturnsCreated() throws Exception {
+        ResenaResponse response = new ResenaResponse(
+                3L,
+                10L,
+                "Nothing Phone (2a)",
+                5L,
+                "Usuario Tester",
+                "Gran relación calidad-precio.",
+                "Excelente opción gama media",
+                "Diseño único y buena batería",
+                "Carga algo lenta",
+                LocalDateTime.now(),
+                true
+        );
+
+        when(resenaService.crearOActualizar(any(ResenaRequest.class), any())).thenReturn(response);
+
+        mockMvc.perform(post("/api/resenas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":10,\"comentario\":\"Gran relación calidad-precio.\",\"titulo\":\"Excelente opción gama media\",\"ventajas\":\"Diseño único y buena batería\",\"desventajas\":\"Carga algo lenta\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").value(3))
+                .andExpect(jsonPath("$.titulo").value("Excelente opción gama media"))
+                .andExpect(jsonPath("$.ventajas").value("Diseño único y buena batería"))
+                .andExpect(jsonPath("$.desventajas").value("Carga algo lenta"));
+    }
+
+    @Test
+    @DisplayName("POST /api/productos/{id}/resenas con título, ventajas y desventajas (S2-12) devuelve 201 Created")
+    void crearParaProductoConTituloVentajasDesventajasReturnsCreated() throws Exception {
+        ResenaResponse response = new ResenaResponse(
+                4L,
+                20L,
+                "Pixel 9 Pro",
+                5L,
+                "Usuario Tester",
+                "La mejor cámara del mercado.",
+                "Fotografía excepcional",
+                "Cámaras y software limpio",
+                "Precio elevado",
+                LocalDateTime.now(),
+                true
+        );
+
+        when(resenaService.crearOActualizar(any(ResenaRequest.class), any())).thenReturn(response);
+
+        mockMvc.perform(post("/api/productos/20/resenas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":20,\"comentario\":\"La mejor cámara del mercado.\",\"titulo\":\"Fotografía excepcional\",\"ventajas\":\"Cámaras y software limpio\",\"desventajas\":\"Precio elevado\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").value(4))
+                .andExpect(jsonPath("$.idProducto").value(20))
+                .andExpect(jsonPath("$.titulo").value("Fotografía excepcional"))
+                .andExpect(jsonPath("$.ventajas").value("Cámaras y software limpio"))
+                .andExpect(jsonPath("$.desventajas").value("Precio elevado"));
+    }
+
+    @Test
     @DisplayName("POST /api/resenas con comentario vacío devuelve 400 Bad Request")
     void crearResenaComentarioVacioReturnsBadRequest() throws Exception {
         mockMvc.perform(post("/api/resenas")
@@ -146,6 +205,16 @@ class ResenaControllerTest {
         mockMvc.perform(post("/api/resenas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"comentario\":\"Comentario sin producto.\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /api/resenas con título superior a 150 caracteres devuelve 400 Bad Request")
+    void crearResenaTituloExcesivoReturnsBadRequest() throws Exception {
+        String tituloLargo = "A".repeat(151);
+        mockMvc.perform(post("/api/resenas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":10,\"comentario\":\"Comentario válido.\",\"titulo\":\"" + tituloLargo + "\"}"))
                 .andExpect(status().isBadRequest());
     }
 }

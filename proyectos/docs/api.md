@@ -441,16 +441,41 @@ Los usuarios registrados podrán crear reseñas sobre productos.
 ### 14.1 Consultar reseñas de un producto
 
 GET /api/productos/{productoId}/resenas
+GET /api/resenas (admite query param opcional ?idProducto={id})
 
-Ejemplo:
+Ejemplo de respuesta (200 OK):
 
-GET /api/productos/1/resenas
+[
+  {
+    "idResena": 1,
+    "idProducto": 1,
+    "nombreProducto": "Galaxy S25",
+    "idUsuario": 5,
+    "nombreUsuario": "Juan Pérez",
+    "titulo": "Excelente relación calidad-precio",
+    "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
+    "ventajas": "Batería duradera y pantalla fluida",
+    "desventajas": "Carga rápida mejorable",
+    "fechaCreacion": "2026-11-01T15:30:00",
+    "estado": true
+  }
+]
 
-Ejemplo:
+### 14.2 Publicar o actualizar reseña (S2-12)
+
+POST /api/resenas
+POST /api/productos/{productoId}/resenas
+
+Requiere encabezado Authorization: Bearer <token_supabase>.
+
+Cuerpo de la solicitud (JSON):
 
 {
-  "titulo": "Buena experiencia",
-  "comentario": "El producto tiene buen rendimiento para estudiar."
+  "idProducto": 1,
+  "titulo": "Excelente relación calidad-precio",
+  "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
+  "ventajas": "Batería duradera y pantalla fluida",
+  "desventajas": "Carga rápida mejorable"
 }
 
 El usuario debe estar autenticado.

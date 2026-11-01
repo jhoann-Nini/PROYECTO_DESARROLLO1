@@ -146,6 +146,52 @@ La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto comp
 
 ---
 
+## Resena (Actualizado S2-12)
+
+Permite consultar reseñas de forma pública y publicarlas/actualizarlas con autenticación Bearer (Supabase Auth). En S2-12 se incorporaron los campos `titulo`, `ventajas` y `desventajas` al servidor.
+
+| Método | Endpoint | Body | Respuesta |
+| --- | --- | --- | --- |
+| GET | `/api/resenas` | — | `200` — listado de `ResenaResponse` |
+| GET | `/api/resenas?idProducto={id}` | — | `200` — filtradas por producto |
+| GET | `/api/productos/{id}/resenas` | — | `200` — filtradas por producto |
+| POST | `/api/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
+| POST | `/api/productos/{id}/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
+
+**ResenaRequest**
+
+```json
+{
+  "idProducto": 1,
+  "titulo": "Excelente relación calidad-precio",
+  "comentario": "Gran rendimiento en el día a día.",
+  "ventajas": "Batería duradera y pantalla brillante",
+  "desventajas": "Carga rápida mejorable"
+}
+```
+
+`idProducto`: obligatorio en `/api/resenas` (se toma de la ruta en `/api/productos/{id}/resenas`). `comentario`: obligatorio, máx. 1000 caracteres. `titulo`: opcional, máx. 150 caracteres. `ventajas`, `desventajas`: opcionales, máx. 1000 caracteres.
+
+**ResenaResponse**
+
+```json
+{
+  "idResena": 1,
+  "idProducto": 1,
+  "nombreProducto": "Galaxy S25",
+  "idUsuario": 3,
+  "nombreUsuario": "Carlos Gómez",
+  "titulo": "Excelente relación calidad-precio",
+  "comentario": "Gran rendimiento en el día a día.",
+  "ventajas": "Batería duradera y pantalla brillante",
+  "desventajas": "Carga rápida mejorable",
+  "fechaCreacion": "2026-11-01T15:30:00",
+  "estado": true
+}
+```
+
+---
+
 ## Probar rápido con curl
 
 ```bash
@@ -176,7 +222,6 @@ Entidades documentadas en `modelo-datos.md` que **todavía no tienen CRUD**, por
 
 - **Establecimiento** — sin dependencias de reglas pendientes, se puede construir en cualquier momento.
 - **Usuario / Rol** — requieren definir autenticación (¿JWT? ¿sesión?) antes de exponer registro/login.
-- **Resena** — requiere confirmar si un usuario puede editar/borrar su propia reseña, y si se modera contenido.
 - **Valoracion** — requiere confirmar la escala de puntuación (¿1–5? ¿1–10?).
 - **ProductoEstablecimiento** — requiere confirmar la cardinalidad usuario–establecimiento (relación N:N con precio/disponibilidad por par).
 

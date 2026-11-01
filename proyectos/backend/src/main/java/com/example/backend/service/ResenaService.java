@@ -2,6 +2,7 @@ package com.example.backend.service;
 
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
+import com.example.backend.dto.ResenaUpdateRequest;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Resena;
 import com.example.backend.entity.Usuario;
@@ -10,12 +11,14 @@ import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Servicio de negocio para la consulta y registro de reseñas de productos.
+ * Servicio de negocio para la consulta, registro y actualización de reseñas de productos.
  */
 @Service
 public class ResenaService {
@@ -68,6 +71,38 @@ public class ResenaService {
             return nueva;
         });
 
+        resena.setComentario(comentarioLimpio);
+        resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
+        resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
+        resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
+        resena.setFechaCreacion(LocalDateTime.now());
+
+        Resena guardada = resenaRepository.save(resena);
+        return toResponse(guardada);
+    }
+
+    /**
+     * Actualiza una reseña existente identificada por su ID (S2-17).
+     * Valida que el usuario autenticado sea el autor de la reseña.
+     */
+    @Transactional
+    public ResenaResponse actualizar(Long idResena, ResenaUpdateRequest request, Jwt jwt) {
+        if (idResena == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El id de la reseña es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+
+        Resena resena = resenaRepository.findById(idResena)
+                .filter(r -> Boolean.TRUE.equals(r.getEstado()))
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        // Verificar que el usuario autenticado sea el autor de la reseña
+        if (!resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar esta reseña.");
+        }
+
+        String comentarioLimpio = request.comentario().trim();
         resena.setComentario(comentarioLimpio);
         resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
         resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);

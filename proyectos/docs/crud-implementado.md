@@ -146,7 +146,7 @@ La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto comp
 
 ---
 
-## Resena (Actualizado S2-12)
+## Resena (Actualizado S2-12 y S2-17)
 
 Permite consultar reseñas de forma pública y publicarlas/actualizarlas con autenticación Bearer (Supabase Auth). En S2-12 se incorporaron los campos `titulo`, `ventajas` y `desventajas` al servidor.
 
@@ -157,6 +157,8 @@ Permite consultar reseñas de forma pública y publicarlas/actualizarlas con aut
 | GET | `/api/productos/{id}/resenas` | — | `200` — filtradas por producto |
 | POST | `/api/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
 | POST | `/api/productos/{id}/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
+| PUT | `/api/resenas/{id}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor) |
+| PUT | `/api/productos/{id}/resenas/{idResena}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor) |
 
 **ResenaRequest**
 
@@ -171,6 +173,19 @@ Permite consultar reseñas de forma pública y publicarlas/actualizarlas con aut
 ```
 
 `idProducto`: obligatorio en `/api/resenas` (se toma de la ruta en `/api/productos/{id}/resenas`). `comentario`: obligatorio, máx. 1000 caracteres. `titulo`: opcional, máx. 150 caracteres. `ventajas`, `desventajas`: opcionales, máx. 1000 caracteres.
+
+**ResenaUpdateRequest (S2-17)**
+
+```json
+{
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "titulo": "Título actualizado",
+  "ventajas": "Batería dura 2 días completos",
+  "desventajas": "Ninguna tras semanas de uso"
+}
+```
+
+`comentario`: obligatorio, máx. 1000 caracteres. `titulo`: opcional, máx. 150 caracteres. `ventajas`, `desventajas`: opcionales, máx. 1000 caracteres. No requiere `idProducto` ya que la reseña ya está ligada a su producto. Requiere que el usuario autenticado sea el creador original de la reseña (`403 Forbidden` en caso contrario).
 
 **ResenaResponse**
 

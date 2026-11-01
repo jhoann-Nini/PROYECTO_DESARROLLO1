@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
+import com.example.backend.dto.ResenaUpdateRequest;
 import com.example.backend.service.ResenaService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -11,7 +12,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controlador REST para consultar y publicar reseñas de productos.
+ * Controlador REST para consultar, publicar y actualizar reseñas de productos.
  */
 @RestController
 public class ResenaController {
@@ -67,5 +68,28 @@ public class ResenaController {
                 request.desventajas()
         );
         return resenaService.crearOActualizar(requestEfectivo, jwt);
+    }
+
+    /**
+     * Actualización protegida de reseña por ID (S2-17). Requiere autenticación Bearer y ser el autor.
+     */
+    @PutMapping("/api/resenas/{idResena}")
+    public ResenaResponse actualizar(
+            @PathVariable Long idResena,
+            @Valid @RequestBody ResenaUpdateRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return resenaService.actualizar(idResena, request, jwt);
+    }
+
+    /**
+     * Actualización protegida de reseña especificando producto y reseña en la ruta (S2-17).
+     */
+    @PutMapping("/api/productos/{idProducto}/resenas/{idResena}")
+    public ResenaResponse actualizarParaProducto(
+            @PathVariable Long idProducto,
+            @PathVariable Long idResena,
+            @Valid @RequestBody ResenaUpdateRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return resenaService.actualizar(idResena, request, jwt);
     }
 }

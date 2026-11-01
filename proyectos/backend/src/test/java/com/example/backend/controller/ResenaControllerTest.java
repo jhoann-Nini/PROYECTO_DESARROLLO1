@@ -1,15 +1,18 @@
 package com.example.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
+import com.example.backend.dto.ResenaUpdateRequest;
 import com.example.backend.service.ResenaService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -215,6 +218,87 @@ class ResenaControllerTest {
         mockMvc.perform(post("/api/resenas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\":10,\"comentario\":\"Comentario válido.\",\"titulo\":\"" + tituloLargo + "\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    // =========================================================================
+    // Pruebas S2-17: Endpoint PUT para actualizar reseñas
+    // =========================================================================
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} con datos válidos llama al servicio y devuelve 200 OK (S2-17)")
+    void actualizarResenaReturnsOk() throws Exception {
+        ResenaResponse response = new ResenaResponse(
+                5L,
+                10L,
+                "Nothing Phone (2a)",
+                5L,
+                "Usuario Tester",
+                "Comentario editado y mejorado.",
+                "Nuevo título",
+                "Nuevas ventajas",
+                "Nuevas desventajas",
+                LocalDateTime.now(),
+                true
+        );
+
+        when(resenaService.actualizar(eq(5L), any(ResenaUpdateRequest.class), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/resenas/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario editado y mejorado.\",\"titulo\":\"Nuevo título\",\"ventajas\":\"Nuevas ventajas\",\"desventajas\":\"Nuevas desventajas\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(5))
+                .andExpect(jsonPath("$.comentario").value("Comentario editado y mejorado."))
+                .andExpect(jsonPath("$.titulo").value("Nuevo título"))
+                .andExpect(jsonPath("$.ventajas").value("Nuevas ventajas"))
+                .andExpect(jsonPath("$.desventajas").value("Nuevas desventajas"));
+    }
+
+    @Test
+    @DisplayName("PUT /api/productos/{idProducto}/resenas/{idResena} con datos válidos devuelve 200 OK (S2-17)")
+    void actualizarParaProductoReturnsOk() throws Exception {
+        ResenaResponse response = new ResenaResponse(
+                6L,
+                15L,
+                "Galaxy S25",
+                5L,
+                "Usuario Tester",
+                "Excelente tras actualizar.",
+                "Actualización tras 3 meses de uso",
+                "Muy fluido",
+                "Batería normal",
+                LocalDateTime.now(),
+                true
+        );
+
+        when(resenaService.actualizar(eq(6L), any(ResenaUpdateRequest.class), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/productos/15/resenas/6")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Excelente tras actualizar.\",\"titulo\":\"Actualización tras 3 meses de uso\",\"ventajas\":\"Muy fluido\",\"desventajas\":\"Batería normal\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(6))
+                .andExpect(jsonPath("$.idProducto").value(15))
+                .andExpect(jsonPath("$.titulo").value("Actualización tras 3 meses de uso"));
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} con comentario vacío devuelve 400 Bad Request (S2-17)")
+    void actualizarResenaComentarioVacioReturnsBadRequest() throws Exception {
+        mockMvc.perform(put("/api/resenas/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"   \"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} con título mayor a 150 caracteres devuelve 400 Bad Request (S2-17)")
+    void actualizarResenaTituloExcesivoReturnsBadRequest() throws Exception {
+        String tituloLargo = "B".repeat(151);
+        mockMvc.perform(put("/api/resenas/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario válido.\",\"titulo\":\"" + tituloLargo + "\"}"))
                 .andExpect(status().isBadRequest());
     }
 }

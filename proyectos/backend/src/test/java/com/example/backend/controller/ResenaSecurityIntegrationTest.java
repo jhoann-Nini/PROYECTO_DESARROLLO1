@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -269,5 +270,95 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(jsonPath("$.ventajas").value("Pantalla fluida y buena batería"))
                 .andExpect(jsonPath("$.desventajas").value("Calienta un poco al jugar"))
                 .andExpect(jsonPath("$.nombreUsuario").value("Usuario Resenas Test"));
+    }
+
+    // =========================================================================
+    // Pruebas de integración S2-17: Actualización de reseñas (PUT)
+    // =========================================================================
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} anónimo devuelve 401 Unauthorized (S2-17)")
+    void putResenaAnonimoDevuelve401() throws Exception {
+        mockMvc.perform(put("/api/resenas/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento anónimo de edición\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} por el autor auténtico actualiza en BD y devuelve 200 OK (S2-17)")
+    void putResenaAutorActualizaCorrectamente() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        // 1. Crear reseña inicial
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"titulo\":\"Título inicial\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Actualizar reseña con nuevos datos
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario modificado con éxito\",\"titulo\":\"Título actualizado\",\"ventajas\":\"Ahora tiene mejor rendimiento\",\"desventajas\":\"Ninguna relevante\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(idResena))
+                .andExpect(jsonPath("$.comentario").value("Comentario modificado con éxito"))
+                .andExpect(jsonPath("$.titulo").value("Título actualizado"))
+                .andExpect(jsonPath("$.ventajas").value("Ahora tiene mejor rendimiento"))
+                .andExpect(jsonPath("$.desventajas").value("Ninguna relevante"));
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} por otro usuario distinto al autor devuelve 403 Forbidden (S2-17)")
+    void putResenaOtroUsuarioDevuelve403() throws Exception {
+        String subImpostor = "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f";
+        Rol rolUsuario = rolRepository.findByNombre("Usuario registrado").orElse(null);
+        Usuario impostor = new Usuario();
+        impostor.setNombre("Usuario Impostor");
+        impostor.setCorreo("impostor@example.com");
+        impostor.setSupabaseUid(subImpostor);
+        impostor.setRol(rolUsuario);
+        impostor.setEstado(true);
+        impostor.setFechaRegistro(LocalDateTime.now());
+        usuarioRepository.save(impostor);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenImpostor = generarToken(subImpostor, "impostor@example.com");
+
+        // 1. Crear reseña con el autor
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Opinión original del autor\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Intentar modificar con otro usuario
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenImpostor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de modificación maliciosa\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} para reseña inexistente devuelve 404 Not Found (S2-17)")
+    void putResenaInexistenteDevuelve404() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        mockMvc.perform(put("/api/resenas/999999")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Actualización de reseña fantasma\"}"))
+                .andExpect(status().isNotFound());
     }
 }

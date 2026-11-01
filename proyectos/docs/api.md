@@ -482,6 +482,53 @@ El usuario debe estar autenticado.
 
 El backend debe verificar que el usuario tenga permiso para modificar la reseña.
 
+### 14.3 Actualizar reseña por ID (S2-17)
+
+PUT /api/resenas/{idResena}  
+PUT /api/productos/{productoId}/resenas/{idResena}
+
+Permite a un usuario autenticado modificar su propia reseña existente.
+
+**Seguridad y Reglas de Negocio:**
+- Requiere encabezado `Authorization: Bearer <token_supabase>`.
+- Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
+- Si la reseña con `idResena` no existe o está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Control de autoría:** Solo el autor original de la reseña (`idUsuario`) puede modificarla. Si otro usuario intenta editarla, el servidor devuelve `403 Forbidden` ("No tienes permiso para modificar esta reseña").
+- Validación de campos:
+  - `comentario`: Obligatorio, no vacío, máx. 1000 caracteres.
+  - `titulo`: Opcional, máx. 150 caracteres.
+  - `ventajas`: Opcional, máx. 1000 caracteres.
+  - `desventajas`: Opcional, máx. 1000 caracteres.
+
+**Cuerpo de la solicitud (JSON - ResenaUpdateRequest):**
+
+```json
+{
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "titulo": "Título actualizado",
+  "ventajas": "Batería dura 2 días completos",
+  "desventajas": "Ninguna tras semanas de uso"
+}
+```
+
+**Respuesta exitosa (200 OK - ResenaResponse):**
+
+```json
+{
+  "idResena": 1,
+  "idProducto": 1,
+  "nombreProducto": "Galaxy S25",
+  "idUsuario": 5,
+  "nombreUsuario": "Juan Pérez",
+  "titulo": "Título actualizado",
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "ventajas": "Batería dura 2 días completos",
+  "desventajas": "Ninguna tras semanas de uso",
+  "fechaCreacion": "2026-11-01T17:00:00",
+  "estado": true
+}
+```
+
 14.4 Eliminar reseña
 DELETE /api/resenas/{id}
 

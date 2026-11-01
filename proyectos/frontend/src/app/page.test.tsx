@@ -1173,7 +1173,7 @@ describe("Página principal / (Home)", () => {
         target: { value: "Modelo Inexistente XYZ 999" },
       });
       expect(
-        screen.getByText(/No se encontraron productos para “Modelo Inexistente XYZ 999”/i)
+        screen.getByText(/No encontramos productos con “Modelo Inexistente XYZ 999”/i)
       ).toBeDefined();
       expect(screen.getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
     });

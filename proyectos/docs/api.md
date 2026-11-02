@@ -85,11 +85,14 @@ backend/
 | Marca            | DELETE | `/api/marcas/{id}`                 | Autorizado         |
 | Registro         | POST   | `/api/auth/register`               | Público            |
 | Login            | POST   | `/api/auth/login`                  | Público            |
+| Reseñas          | GET    | `/api/resenas`                     | Público            |
 | Reseñas          | GET    | `/api/productos/{id}/resenas`      | Público            |
+| Reseña           | POST   | `/api/resenas`                     | Usuario            |
 | Reseña           | POST   | `/api/productos/{id}/resenas`      | Usuario            |
 | Reseña           | PUT    | `/api/resenas/{id}`                | Usuario autorizado |
+| Reseña           | PUT    | `/api/productos/{id}/resenas/{idResena}` | Usuario autorizado |
 | Reseña           | DELETE | `/api/resenas/{id}`                | Usuario autorizado |
-| Valoración       | POST   | `/api/productos/{id}/valoraciones` | Usuario            |
+| Reseña           | DELETE | `/api/productos/{id}/resenas/{idResena}` | Usuario autorizado |
 | Comparación      | GET    | `/api/comparador`                  | Público            |
 | Establecimientos | GET    | `/api/establecimientos`            | Público            |
 | Establecimiento  | GET    | `/api/establecimientos/{id}`       | Público            |
@@ -142,8 +145,7 @@ Usuario
 Producto
 Categoria
 Marca
-Resena
-Valoracion
+Resena (incluye puntuación de 1 a 5)
 Establecimiento
 
 ---
@@ -440,7 +442,7 @@ si el usuario no tiene autorización.
 
 # 14. Reseñas
 
-Los usuarios registrados podrán crear reseñas sobre productos.
+Los usuarios registrados podrán crear, actualizar y eliminar reseñas sobre productos. La calificación (escala de 1 a 5) está integrada directamente en la reseña.
 
 ### 14.1 Consultar reseñas de un producto
 
@@ -456,35 +458,33 @@ Ejemplo de respuesta (200 OK):
     "nombreProducto": "Galaxy S25",
     "idUsuario": 5,
     "nombreUsuario": "Juan Pérez",
-    "titulo": "Excelente relación calidad-precio",
     "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
-    "ventajas": "Batería duradera y pantalla fluida",
-    "desventajas": "Carga rápida mejorable",
+    "puntuacion": 5,
     "fechaCreacion": "2026-11-01T15:30:00",
     "estado": true
   }
 ]
 
-### 14.2 Publicar o actualizar reseña (S2-12)
+### 14.2 Publicar reseña
 
 POST /api/resenas
 POST /api/productos/{productoId}/resenas
 
-Requiere encabezado Authorization: Bearer <token_supabase>.
+Requiere encabezado `Authorization: Bearer <token_supabase>`.
 
-Cuerpo de la solicitud (JSON):
+Cuerpo de la solicitud (JSON - ResenaRequest):
 
+```json
 {
   "idProducto": 1,
-  "titulo": "Excelente relación calidad-precio",
   "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
-  "ventajas": "Batería duradera y pantalla fluida",
-  "desventajas": "Carga rápida mejorable"
+  "puntuacion": 5
 }
+```
 
-El usuario debe estar autenticado.
-
-El backend debe verificar que el usuario tenga permiso para modificar la reseña.
+- `idProducto`: Obligatorio en `/api/resenas` (en `/api/productos/{productoId}/resenas` se extrae de la URL).
+- `comentario`: Obligatorio, no vacío, máx. 1000 caracteres.
+- `puntuacion`: Opcional, entero entre 1 y 5 (si no se proporciona o es nulo, se asigna 5 por defecto).
 
 ### 14.3 Actualizar reseña por ID (S2-17)
 
@@ -497,21 +497,19 @@ Permite a un usuario autenticado modificar su propia reseña existente.
 - Requiere encabezado `Authorization: Bearer <token_supabase>`.
 - Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
 - Si la reseña con `idResena` no existe o está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Validación de producto:** En la ruta anidada `/api/productos/{productoId}/resenas/{idResena}`, se comprueba que la reseña pertenezca al `productoId` indicado en la URL; si no coincide, devuelve `404 Not Found`.
 - **Control de autoría:** Solo el autor original de la reseña (`idUsuario`) puede modificarla. Si otro usuario intenta editarla, el servidor devuelve `403 Forbidden` ("No tienes permiso para modificar esta reseña").
-- Validación de campos:
+- **Fecha de creación inmutable:** La actualización no modifica la fecha original de publicación (`fechaCreacion`).
+- **Validación de campos:**
   - `comentario`: Obligatorio, no vacío, máx. 1000 caracteres.
-  - `titulo`: Opcional, máx. 150 caracteres.
-  - `ventajas`: Opcional, máx. 1000 caracteres.
-  - `desventajas`: Opcional, máx. 1000 caracteres.
+  - `puntuacion`: Opcional, entero entre 1 y 5 (si se omite, se conserva la puntuación previa).
 
 **Cuerpo de la solicitud (JSON - ResenaUpdateRequest):**
 
 ```json
 {
   "comentario": "Comentario modificado con observaciones detalladas.",
-  "titulo": "Título actualizado",
-  "ventajas": "Batería dura 2 días completos",
-  "desventajas": "Ninguna tras semanas de uso"
+  "puntuacion": 5
 }
 ```
 
@@ -524,11 +522,9 @@ Permite a un usuario autenticado modificar su propia reseña existente.
   "nombreProducto": "Galaxy S25",
   "idUsuario": 5,
   "nombreUsuario": "Juan Pérez",
-  "titulo": "Título actualizado",
   "comentario": "Comentario modificado con observaciones detalladas.",
-  "ventajas": "Batería dura 2 días completos",
-  "desventajas": "Ninguna tras semanas de uso",
-  "fechaCreacion": "2026-11-01T17:00:00",
+  "puntuacion": 5,
+  "fechaCreacion": "2026-11-01T15:30:00",
   "estado": true
 }
 ```
@@ -544,6 +540,7 @@ Permite eliminar (desactivar de forma lógica) una reseña existente.
 - Requiere encabezado `Authorization: Bearer <token_supabase>`.
 - Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
 - Si la reseña con `idResena` no existe o ya está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Validación de producto:** En la ruta anidada `/api/productos/{productoId}/resenas/{idResena}`, se comprueba que la reseña pertenezca al `productoId` indicado en la URL; si no coincide, devuelve `404 Not Found`.
 - **Control de autoría y moderación:**
   - El autor original de la reseña (`idUsuario`) tiene autorización para eliminarla.
   - Los usuarios con rol `Administrador` pueden eliminar cualquier reseña con fines de moderación.
@@ -551,46 +548,13 @@ Permite eliminar (desactivar de forma lógica) una reseña existente.
 - **Eliminación lógica:** Se establece `estado = false` en `public.resena`, de modo que no aparezca en consultas públicas y se preserve la integridad referencial.
 - Responde `204 No Content` sin cuerpo en la respuesta.
 
+---
 
+# 15. Valoraciones
 
+> **Nota:** La puntuación de productos utiliza una escala de 1 a 5 y está integrada directamente en cada **Reseña**. Por tanto, la calificación y el comentario forman una sola entidad y no se gestionan mediante endpoints independientes de valoraciones.
 
-Los usuarios podrán valorar los productos.
-
-La escala exacta de valoración todavía debe definirse en el proyecto.
-
-Por ejemplo, podría utilizarse:
-
-1 a 5
-
-Si se adopta esta escala, una solicitud podría tener:
-
-POST /api/productos/{productoId}/valoraciones
-
-Ejemplo:
-
-{
-  "valor": 5
-}
-
-El backend deberá validar que el valor recibido pertenezca a la escala establecida.
-
-TecnoReview contempla el registro de aspectos positivos y negativos relacionados con un producto.
-
-La estructura definitiva todavía debe definirse en función de la implementación de reseñas.
-
-Una posibilidad sería:
-
-{
-  "positivos": [
-    "Buena batería",
-    "Pantalla de buena calidad"
-  ],
-  "negativos": [
-    "Cargador lento"
-  ]
-}
-
-La estructura final deberá mantenerse consistente con el modelo de datos y la interfaz definida para las reseñas.
+---
 
 La plataforma permitirá comparar productos.
 
@@ -993,8 +957,8 @@ Los siguientes elementos se consideran inicialmente planificados:
  [x] Endpoints de categorías.
  [x] Endpoints de marcas.
  [ ] Endpoints de usuarios.
- [ ] Endpoints de reseñas.
- [ ] Endpoints de valoraciones.
+ [x] Endpoints de reseñas (con puntuación integrada de 1 a 5, S2-17 y S2-18).
+ [x] Valoraciones (unificadas en reseñas mediante el campo puntuacion).
  [ ] Endpoint de comparación.
  [ ] Endpoints de establecimientos.
  [ ] Pruebas de API.

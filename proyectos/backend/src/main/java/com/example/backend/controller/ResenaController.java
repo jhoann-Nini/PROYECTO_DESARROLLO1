@@ -64,10 +64,7 @@ public class ResenaController {
         ResenaRequest requestEfectivo = new ResenaRequest(
                 idProducto,
                 request.comentario(),
-                request.puntuacion(),
-                request.titulo(),
-                request.ventajas(),
-                request.desventajas()
+                request.puntuacion()
         );
         return resenaService.crearOActualizar(requestEfectivo, jwt);
     }
@@ -92,7 +89,7 @@ public class ResenaController {
             @PathVariable Long idResena,
             @Valid @RequestBody ResenaUpdateRequest request,
             @AuthenticationPrincipal Jwt jwt) {
-        return resenaService.actualizar(idResena, request, jwt);
+        return resenaService.actualizar(idProducto, idResena, request, jwt);
     }
 
     /**
@@ -114,7 +111,7 @@ public class ResenaController {
             @PathVariable Long idProducto,
             @PathVariable Long idResena,
             @AuthenticationPrincipal Jwt jwt) {
-        resenaService.eliminar(idResena, jwt);
+        resenaService.eliminar(idProducto, idResena, jwt);
         return ResponseEntity.noContent().build();
     }
 }

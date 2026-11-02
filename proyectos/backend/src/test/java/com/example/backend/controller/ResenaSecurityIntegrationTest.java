@@ -256,22 +256,16 @@ class ResenaSecurityIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/resenas con título, ventajas y desventajas (S2-12) persiste y retorna todos los campos")
-    void postResenaConTituloVentajasDesventajasPersiste() throws Exception {
+    @DisplayName("POST /api/resenas con comentario superior a 1000 caracteres devuelve 400 Bad Request")
+    void postResenaComentarioExcesivoDevuelve400() throws Exception {
         String token = generarToken(TEST_SUB, "resenas_test@example.com");
+        String comentarioLargo = "A".repeat(1001);
 
         mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Excelente desempeño en juegos.\",\"titulo\":\"Gran rendimiento\",\"ventajas\":\"Pantalla fluida y buena batería\",\"desventajas\":\"Calienta un poco al jugar\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idResena").isNumber())
-                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
-                .andExpect(jsonPath("$.comentario").value("Excelente desempeño en juegos."))
-                .andExpect(jsonPath("$.titulo").value("Gran rendimiento"))
-                .andExpect(jsonPath("$.ventajas").value("Pantalla fluida y buena batería"))
-                .andExpect(jsonPath("$.desventajas").value("Calienta un poco al jugar"))
-                .andExpect(jsonPath("$.nombreUsuario").value("Usuario Resenas Test"));
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"" + comentarioLargo + "\",\"puntuacion\":5}"))
+                .andExpect(status().isBadRequest());
     }
 
     // =========================================================================
@@ -292,29 +286,92 @@ class ResenaSecurityIntegrationTest {
     void putResenaAutorActualizaCorrectamente() throws Exception {
         String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
 
-        // 1. Crear reseña inicial
+        // 1. Crear reseña inicial con puntuación 3
         String respuesta = mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"titulo\":\"Título inicial\"}"))
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"puntuacion\":3}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
         com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
         long idResena = json.get("idResena").asLong();
 
-        // 2. Actualizar reseña con nuevos datos
+        var fechaOriginal = resenaRepository.findById(idResena).orElseThrow().getFechaCreacion();
+
+        // 2. Actualizar reseña con nuevos datos y puntuación 5
         mockMvc.perform(put("/api/resenas/" + idResena)
                         .header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"comentario\":\"Comentario modificado con éxito\",\"titulo\":\"Título actualizado\",\"ventajas\":\"Ahora tiene mejor rendimiento\",\"desventajas\":\"Ninguna relevante\"}"))
+                        .content("{\"comentario\":\"Comentario modificado con éxito\",\"puntuacion\":5}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idResena").value(idResena))
                 .andExpect(jsonPath("$.comentario").value("Comentario modificado con éxito"))
-                .andExpect(jsonPath("$.titulo").value("Título actualizado"))
-                .andExpect(jsonPath("$.ventajas").value("Ahora tiene mejor rendimiento"))
-                .andExpect(jsonPath("$.desventajas").value("Ninguna relevante"));
+                .andExpect(jsonPath("$.puntuacion").value(5));
+
+        // 3. Verificar en BD que comentario y puntuación cambiaron, pero fechaCreacion se conserva
+        var resenaActualizada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("Comentario modificado con éxito", resenaActualizada.getComentario());
+        org.junit.jupiter.api.Assertions.assertEquals(5, resenaActualizada.getPuntuacion());
+        org.junit.jupiter.api.Assertions.assertEquals(fechaOriginal, resenaActualizada.getFechaCreacion());
     }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} sin puntuación conserva la puntuación anterior (S2-17)")
+    void putResenaSinPuntuacionConservaPuntuacionAnterior() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        // 1. Crear reseña inicial con puntuación 4
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"puntuacion\":4}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Actualizar solo comentario
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario actualizado sin puntuación\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(idResena))
+                .andExpect(jsonPath("$.comentario").value("Comentario actualizado sin puntuación"))
+                .andExpect(jsonPath("$.puntuacion").value(4));
+
+        var resenaActualizada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(4, resenaActualizada.getPuntuacion());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} sobre reseña inactiva devuelve 404 Not Found (S2-17)")
+    void putResenaInactivaDevuelve404() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña que quedará inactiva\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();
+
+        var resena = resenaRepository.findById(idResena).orElseThrow();
+        resena.setEstado(false);
+        resenaRepository.save(resena);
+
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de actualizar reseña inactiva\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+
 
     @Test
     @DisplayName("PUT /api/resenas/{id} por otro usuario distinto al autor devuelve 403 Forbidden (S2-17)")

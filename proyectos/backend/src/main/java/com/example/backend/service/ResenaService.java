@@ -75,9 +75,6 @@ public class ResenaService {
         if (request.puntuacion() != null) {
             resena.setPuntuacion(request.puntuacion());
         }
-        resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
-        resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
-        resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
         resena.setFechaCreacion(LocalDateTime.now());
 
         Resena guardada = resenaRepository.save(resena);
@@ -90,6 +87,15 @@ public class ResenaService {
      */
     @Transactional
     public ResenaResponse actualizar(Long idResena, ResenaUpdateRequest request, Jwt jwt) {
+        return actualizar(null, idResena, request, jwt);
+    }
+
+    /**
+     * Actualiza una reseña existente identificada por su ID y verificando el producto (S2-17).
+     * Valida que pertenezca al producto indicado y que el usuario autenticado sea el autor.
+     */
+    @Transactional
+    public ResenaResponse actualizar(Long idProducto, Long idResena, ResenaUpdateRequest request, Jwt jwt) {
         if (idResena == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El id de la reseña es obligatorio.");
         }
@@ -99,6 +105,10 @@ public class ResenaService {
         Resena resena = resenaRepository.findById(idResena)
                 .filter(r -> Boolean.TRUE.equals(r.getEstado()))
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        if (idProducto != null && !resena.getProducto().getIdProducto().equals(idProducto)) {
+            throw new ResourceNotFoundException("Reseña no encontrada con id " + idResena + " para el producto con id " + idProducto);
+        }
 
         // Verificar que el usuario autenticado sea el autor de la reseña
         if (!resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
@@ -110,10 +120,6 @@ public class ResenaService {
         if (request.puntuacion() != null) {
             resena.setPuntuacion(request.puntuacion());
         }
-        resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
-        resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
-        resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
-        resena.setFechaCreacion(LocalDateTime.now());
 
         Resena guardada = resenaRepository.save(resena);
         return toResponse(guardada);
@@ -125,6 +131,15 @@ public class ResenaService {
      */
     @Transactional
     public void eliminar(Long idResena, Jwt jwt) {
+        eliminar(null, idResena, jwt);
+    }
+
+    /**
+     * Elimina lógicamente una reseña existente verificando el producto (S2-18).
+     * Valida que pertenezca al producto indicado y que el usuario autenticado sea el autor o tenga rol 'Administrador'.
+     */
+    @Transactional
+    public void eliminar(Long idProducto, Long idResena, Jwt jwt) {
         if (idResena == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El id de la reseña es obligatorio.");
         }
@@ -134,6 +149,10 @@ public class ResenaService {
         Resena resena = resenaRepository.findById(idResena)
                 .filter(r -> Boolean.TRUE.equals(r.getEstado()))
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        if (idProducto != null && !resena.getProducto().getIdProducto().equals(idProducto)) {
+            throw new ResourceNotFoundException("Reseña no encontrada con id " + idResena + " para el producto con id " + idProducto);
+        }
 
         boolean esAutor = resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
         boolean esAdmin = usuario.getRol() != null && "Administrador".equalsIgnoreCase(usuario.getRol().getNombre());
@@ -155,9 +174,6 @@ public class ResenaService {
                 r.getUsuario().getNombre(),
                 r.getComentario(),
                 r.getPuntuacion(),
-                r.getTitulo(),
-                r.getVentajas(),
-                r.getDesventajas(),
                 r.getFechaCreacion(),
                 r.getEstado()
         );

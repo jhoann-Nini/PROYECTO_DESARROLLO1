@@ -23,6 +23,9 @@ public class Resena {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String comentario;
 
+    @Column(nullable = false)
+    private Integer puntuacion = 5;
+
     @Column(length = 150)
     private String titulo;
 
@@ -46,6 +49,8 @@ public class Resena {
     public void setProducto(Producto producto) { this.producto = producto; }
     public String getComentario() { return comentario; }
     public void setComentario(String comentario) { this.comentario = comentario; }
+    public Integer getPuntuacion() { return puntuacion; }
+    public void setPuntuacion(Integer puntuacion) { this.puntuacion = puntuacion; }
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public String getVentajas() { return ventajas; }

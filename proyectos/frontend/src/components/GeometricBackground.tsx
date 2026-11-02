@@ -61,46 +61,44 @@ export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgr
     >
       {/* ─────────────────────────────────────────────────────────────
           1. CAPA BASE DE COLOR
-          Claro: Lavanda/perla suave (#fcfaff)
-          Oscuro: Noche violeta-índigo profunda (#080711)
+          Claro: perla suave
+          Oscuro: noche azul profunda (#090714)
       ───────────────────────────────────────────────────────────── */}
       <div
         className={`absolute inset-0 transition-colors duration-500 ${
-          esOscuro ? "bg-[#080711]" : "bg-[#fcfaff]"
+          esOscuro ? "bg-[#090714]" : "bg-[#f8fafc]"
         }`}
       />
 
       {/* ─────────────────────────────────────────────────────────────
-          2. RESPLANDORES RADIALES SUAVES (Como la imagen de referencia)
-          Esquina superior derecha: Morado / Púrpura cálido
-          Esquina inferior izquierda: Azul eléctrico zafiro
-          Centro / Fondo: Nebulosa difuminada
+          2. RESPLANDORES RADIALES SUAVES
+          Azul zafiro, índigo y un acento rojo muy contenido
       ───────────────────────────────────────────────────────────── */}
-      {/* Resplandor superior derecho (Morado / Violeta vibrante) */}
+      {/* Resplandor superior derecho (azul) */}
       <div
-        className={`absolute -top-40 -right-40 h-[650px] w-[650px] rounded-full blur-[110px] transition-opacity duration-700 ${
-          esOscuro ? "bg-purple-600/30" : "bg-purple-300/40"
+        className={`absolute -right-40 -top-40 h-[650px] w-[650px] rounded-full blur-[110px] transition-opacity duration-700 ${
+          esOscuro ? "bg-blue-700/25" : "bg-blue-200/40"
         }`}
       />
 
-      {/* Resplandor inferior izquierdo (Azul zafiro profundo) */}
+      {/* Resplandor inferior izquierdo (azul zafiro profundo) */}
       <div
         className={`absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full blur-[110px] transition-opacity duration-700 ${
-          esOscuro ? "bg-blue-600/30" : "bg-blue-300/40"
+          esOscuro ? "bg-blue-600/25" : "bg-blue-300/35"
         }`}
       />
 
-      {/* Resplandor superior izquierdo sutil (Aura azul/morada secundaria) */}
+      {/* Resplandor superior izquierdo sutil (índigo) */}
       <div
-        className={`absolute -top-32 -left-20 h-[450px] w-[450px] rounded-full blur-[120px] transition-opacity duration-700 ${
-          esOscuro ? "bg-indigo-700/20" : "bg-indigo-200/35"
+        className={`absolute -left-20 -top-32 h-[450px] w-[450px] rounded-full blur-[120px] transition-opacity duration-700 ${
+          esOscuro ? "bg-indigo-700/20" : "bg-indigo-200/30"
         }`}
       />
 
-      {/* Resplandor inferior derecho cálido / morado suave */}
+      {/* Resplandor inferior derecho (acento rojo contenido) */}
       <div
         className={`absolute -bottom-32 -right-20 h-[420px] w-[420px] rounded-full blur-[120px] transition-opacity duration-700 ${
-          esOscuro ? "bg-purple-800/20" : "bg-purple-200/30"
+          esOscuro ? "bg-red-900/20" : "bg-red-200/20"
         }`}
       />
 
@@ -115,24 +113,24 @@ export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgr
         viewBox="0 0 1600 1000"
       >
         <defs>
-          {/* Gradiente lineal horizontal de trazo para Modo Oscuro (Morado a Azul) */}
+          {/* Gradiente lineal horizontal de trazo para Modo Oscuro (azul a rojo) */}
           <linearGradient id="topoStrokeOscuro" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.45" />
-            <stop offset="35%" stopColor="#8b5cf6" stopOpacity="0.35" />
-            <stop offset="70%" stopColor="#a855f7" stopOpacity="0.40" />
-            <stop offset="100%" stopColor="#c084fc" stopOpacity="0.50" />
+            <stop offset="45%" stopColor="#6366f1" stopOpacity="0.35" />
+            <stop offset="78%" stopColor="#2563eb" stopOpacity="0.40" />
+            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.30" />
           </linearGradient>
 
           {/* Gradiente lineal horizontal de trazo para Modo Claro */}
           <linearGradient id="topoStrokeClaro" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.35" />
-            <stop offset="45%" stopColor="#7c3aed" stopOpacity="0.30" />
-            <stop offset="100%" stopColor="#9333ea" stopOpacity="0.35" />
+            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.30" />
+            <stop offset="55%" stopColor="#6366f1" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.18" />
           </linearGradient>
 
           {/* Gradiente secundario invertido para dar profundidad tridimensional */}
           <linearGradient id="topoStrokeInvertido" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#c084fc" stopOpacity="0.40" />
+            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.22" />
             <stop offset="50%" stopColor="#6366f1" stopOpacity="0.25" />
             <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.35" />
           </linearGradient>

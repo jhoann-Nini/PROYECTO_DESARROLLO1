@@ -3,14 +3,13 @@ package com.example.backend.service;
 import com.example.backend.dto.ValoracionRequest;
 import com.example.backend.dto.ValoracionResponse;
 import com.example.backend.entity.Producto;
+import com.example.backend.entity.Resena;
 import com.example.backend.entity.Usuario;
-import com.example.backend.entity.Valoracion;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ProductoRepository;
-import com.example.backend.repository.ValoracionRepository;
+import com.example.backend.repository.ResenaRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -18,27 +17,27 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Servicio de negocio para la gestión de valoraciones de productos.
+ * Servicio de negocio para la gestión de valoraciones (ahora basadas en Resena).
+ * Mantiene el contrato público de ValoracionResponse pero persiste en la tabla `resena`.
  */
 @Service
 public class ValoracionService {
 
-    private final ValoracionRepository valoracionRepository;
+    private final ResenaRepository resenaRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioService usuarioService;
 
     public ValoracionService(
-            ValoracionRepository valoracionRepository,
+            ResenaRepository resenaRepository,
             ProductoRepository productoRepository,
             UsuarioService usuarioService) {
-        this.valoracionRepository = valoracionRepository;
+        this.resenaRepository = resenaRepository;
         this.productoRepository = productoRepository;
         this.usuarioService = usuarioService;
     }
 
     /**
-     * Registra o actualiza la valoración activa de un usuario para un producto específico.
-     * Si el usuario ya valoró el producto, actualiza su puntuación conservando la unicidad.
+     * Registra o actualiza la reseña (valoración) activa de un usuario para un producto.
      */
     @Transactional
     public ValoracionResponse crearOActualizar(ValoracionRequest request, Jwt jwt) {
@@ -57,67 +56,56 @@ public class ValoracionService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Producto no encontrado o inactivo con id " + request.idProducto()));
 
-        Optional<Valoracion> valoracionExistente = valoracionRepository
+        // Busca reseña activa del usuario para el producto, o crea una nueva.
+        Resena resena = resenaRepository
                 .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
                         usuario.getIdUsuario(),
-                        producto.getIdProducto());
+                        producto.getIdProducto())
+                .orElseGet(() -> {
+                    Resena nueva = new Resena();
+                    nueva.setUsuario(usuario);
+                    nueva.setProducto(producto);
+                    nueva.setEstado(true);
+                    return nueva;
+                });
 
-        Valoracion valoracion = valoracionExistente.orElseGet(() -> {
-            Valoracion nueva = new Valoracion();
-            nueva.setUsuario(usuario);
-            nueva.setProducto(producto);
-            nueva.setEstado(true);
-            return nueva;
-        });
+        resena.setComentario("");
+        resena.setPuntuacion(request.puntuacion());
+        resena.setFechaCreacion(LocalDateTime.now());
 
-        valoracion.setPuntuacion(request.puntuacion());
-        valoracion.setFechaCreacion(LocalDateTime.now());
-
-        try {
-            Valoracion guardada = valoracionRepository.saveAndFlush(valoracion);
-            return toResponse(guardada);
-        } catch (DataIntegrityViolationException ex) {
-            // Manejo de condición de carrera concurrente respetando el índice único parcial
-            Valoracion concurrente = valoracionRepository
-                    .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
-                            usuario.getIdUsuario(),
-                            producto.getIdProducto())
-                    .orElseThrow(() -> ex);
-
-            concurrente.setPuntuacion(request.puntuacion());
-            concurrente.setFechaCreacion(LocalDateTime.now());
-            Valoracion actualizada = valoracionRepository.saveAndFlush(concurrente);
-            return toResponse(actualizada);
-        }
+        Resena guardada = resenaRepository.save(resena);
+        return toValoracionResponse(guardada);
     }
 
     /**
-     * Consulta la valoración activa del usuario autenticado para un producto determinado.
+     * Obtiene la reseña (valoración) activa del usuario autenticado para un producto.
      */
     @Transactional(readOnly = true)
     public Optional<ValoracionResponse> obtenerMiValoracion(Long idProducto, Jwt jwt) {
         if (jwt == null) {
             return Optional.empty();
         }
-
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
-        return valoracionRepository
+        return resenaRepository
                 .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
                         usuario.getIdUsuario(),
                         idProducto)
-                .map(this::toResponse);
+                .map(this::toValoracionResponse);
     }
 
-    private ValoracionResponse toResponse(Valoracion v) {
+    /**
+     * Convierte una Resena en el DTO de respuesta utilizado por el endpoint de Valoración.
+     */
+    private ValoracionResponse toValoracionResponse(Resena r) {
         return new ValoracionResponse(
-                v.getIdValoracion(),
-                v.getProducto().getIdProducto(),
-                v.getProducto().getNombre(),
-                v.getUsuario().getIdUsuario(),
-                v.getUsuario().getNombre(),
-                v.getPuntuacion(),
-                v.getFechaCreacion(),
-                v.getEstado()
+                r.getIdResena(),
+                r.getProducto().getIdProducto(),
+                r.getProducto().getNombre(),
+                r.getUsuario().getIdUsuario(),
+                r.getUsuario().getNombre(),
+                r.getPuntuacion(),
+                r.getFechaCreacion(),
+                r.getEstado()
         );
     }
 }

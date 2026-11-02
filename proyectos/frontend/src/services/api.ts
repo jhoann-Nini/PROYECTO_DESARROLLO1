@@ -158,6 +158,34 @@ export async function obtenerProductos<T = unknown>(): Promise<T[]> {
 }
 
 /**
+ * Consulta únicamente los productos activos de una categoría real.
+ * El identificador debe provenir de `GET /api/categorias`; nunca se asume
+ * un ID fijo para celulares, tablets, portátiles o auriculares.
+ */
+export async function obtenerProductosPorCategoria<T = unknown>(
+  idCategoria: number,
+): Promise<T[]> {
+  if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+    throw new ApiError(
+      "El identificador de categoría debe ser un número entero positivo.",
+      400,
+    );
+  }
+
+  const datos = await apiFetch<unknown>(
+    `/api/productos?idCategoria=${idCategoria}`,
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de productos).",
+    );
+  }
+
+  return datos as T[];
+}
+
+/**
  * Respuesta del endpoint de perfil del backend Spring Boot (GET /api/usuarios/me).
  */
 export interface UsuarioMeResponse {
@@ -247,6 +275,7 @@ export interface ResenaResponse {
   idUsuario: number;
   nombreUsuario: string;
   comentario: string;
+  puntuacion?: number | null;
   fechaCreacion: string;
   estado: boolean;
 }
@@ -257,6 +286,7 @@ export interface ResenaResponse {
 export interface CrearResenaRequest {
   idProducto: number;
   comentario: string;
+  puntuacion?: number;
 }
 
 /**
@@ -293,6 +323,31 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
 }
 
 /**
+ * Actualiza el comentario de una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78); hasta entonces el backend puede
+ * responder 404/405 y la UI muestra un error controlado.
+ */
+export async function editarResena(
+  idResena: number,
+  comentario: string,
+): Promise<ResenaResponse> {
+  return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
+    method: "PUT",
+    body: JSON.stringify({ comentario }),
+  });
+}
+
+/**
+ * Elimina una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78).
+ */
+export async function eliminarResena(idResena: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {
+    method: "DELETE",
+  });
+}
+
+/**
  * Representación de una valoración devuelta por la API REST de TecReview.
  */
 export interface ValoracionResponse {
@@ -304,40 +359,6 @@ export interface ValoracionResponse {
   puntuacion: number;
   fechaCreacion: string;
   estado: boolean;
-}
-
-/**
- * Payload para registrar o actualizar la valoración de un producto en el backend.
- */
-export interface CrearValoracionRequest {
-  idProducto: number;
-  puntuacion: number;
-}
-
-/**
- * Registra o actualiza la valoración de 1 a 5 estrellas de un producto en Spring Boot.
- * Requiere autenticación Bearer con token JWT válido de Supabase.
- *
- * @param request Datos de la valoración (idProducto y puntuacion de 1 a 5).
- * @returns La valoración guardada en la base de datos.
- */
-export async function crearValoracion(
-  request: CrearValoracionRequest,
-): Promise<ValoracionResponse> {
-  if (
-    !Number.isInteger(request.puntuacion) ||
-    request.puntuacion < 1 ||
-    request.puntuacion > 5
-  ) {
-    throw new ApiError(
-      "La puntuación debe ser un número entero entre 1 y 5.",
-      400,
-    );
-  }
-  return apiFetchAutenticado<ValoracionResponse>("/api/valoraciones", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
 }
 
 /**

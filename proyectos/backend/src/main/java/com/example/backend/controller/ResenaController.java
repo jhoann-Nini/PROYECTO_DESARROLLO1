@@ -64,6 +64,7 @@ public class ResenaController {
         ResenaRequest requestEfectivo = new ResenaRequest(
                 idProducto,
                 request.comentario(),
+                request.puntuacion(),
                 request.titulo(),
                 request.ventajas(),
                 request.desventajas()

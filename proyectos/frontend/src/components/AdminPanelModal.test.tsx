@@ -672,7 +672,6 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       { idCategoria: 2, nombre: "Laptops", descripcion: "Portátiles y ultrabooks", estado: true },
       { idCategoria: 3, nombre: "Tablets", descripcion: "Tabletas táctiles", estado: true },
       { idCategoria: 4, nombre: "Auriculares", descripcion: "Auriculares y audio", estado: true },
-      { idCategoria: 5, nombre: "Monitores", descripcion: "Pantallas de escritorio", estado: true },
     ];
 
     it("permite registrar características técnicas pertinentes a la categoría al crear un producto", async () => {
@@ -894,9 +893,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       vi.mocked(api.obtenerCategorias).mockResolvedValue(categoriasCompletas);
       vi.mocked(api.crearProducto).mockResolvedValue({
         idProducto: 601,
-        nombre: "Monitor Gaming",
+        nombre: "Galaxy Tab S10",
         descripcion: null,
-        idCategoria: 5,
+        idCategoria: 3,
         idMarca: 10,
         imagen: null,
         precioReferencia: null,
@@ -922,9 +921,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         target: { value: "ANC avanzada" },
       });
 
-      // Cambiar a Monitores
+      // Cambiar a Tablets
       fireEvent.change(screen.getByLabelText(/Categoría/i), {
-        target: { value: "5" },
+        target: { value: "3" },
       });
 
       // Hacer clic en 'Conservar como personalizadas'
@@ -935,15 +934,15 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       expect(screen.getByTestId("input-spec-personalizada-clave-0")).toBeDefined();
       expect((screen.getByTestId("input-spec-personalizada-clave-0") as HTMLInputElement).value).toBe("cancelacion_ruido");
 
-      // Rellenar datos del monitor
+      // Rellenar datos de la tablet
       fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
-        target: { value: "Monitor Gaming 27" },
+        target: { value: "Galaxy Tab S10" },
       });
       fireEvent.change(screen.getByLabelText(/Marca/i), {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByTestId("input-spec-panel"), {
-        target: { value: "Fast IPS 2K" },
+      fireEvent.change(screen.getByTestId("input-spec-pantalla"), {
+        target: { value: "12.1'' LCD 3K 144Hz" },
       });
 
       fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
@@ -951,9 +950,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       await waitFor(() => {
         expect(api.crearProducto).toHaveBeenCalledWith(
           expect.objectContaining({
-            idCategoria: 5,
+            idCategoria: 3,
             caracteristicas: {
-              panel: "Fast IPS 2K",
+              pantalla: "12.1'' LCD 3K 144Hz",
               cancelacion_ruido: "ANC avanzada",
             },
           }),

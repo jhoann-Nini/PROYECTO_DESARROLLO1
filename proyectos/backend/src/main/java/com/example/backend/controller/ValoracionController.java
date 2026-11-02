@@ -3,7 +3,7 @@ package com.example.backend.controller;
 import com.example.backend.dto.ValoracionPublicaStats;
 import com.example.backend.dto.ValoracionRequest;
 import com.example.backend.dto.ValoracionResponse;
-import com.example.backend.repository.ValoracionRepository;
+import com.example.backend.repository.ResenaRepository;
 import com.example.backend.service.ValoracionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,22 +22,23 @@ import java.math.RoundingMode;
 public class ValoracionController {
 
     private final ValoracionService valoracionService;
-    private final ValoracionRepository valoracionRepository;
+    private final ResenaRepository resenaRepository;
 
-    public ValoracionController(ValoracionService valoracionService, ValoracionRepository valoracionRepository) {
+    public ValoracionController(ValoracionService valoracionService, ResenaRepository resenaRepository) {
         this.valoracionService = valoracionService;
-        this.valoracionRepository = valoracionRepository;
+        this.resenaRepository = resenaRepository;
     }
 
     /**
      * Endpoint protegido para registrar o actualizar la valoración activa del usuario para un producto.
      */
     @PostMapping("/api/valoraciones")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ValoracionResponse crearOActualizar(
+    @ResponseStatus(HttpStatus.GONE)
+    public void crearOActualizar(
             @Valid @RequestBody ValoracionRequest request,
             @AuthenticationPrincipal Jwt jwt) {
-        return valoracionService.crearOActualizar(request, jwt);
+        // Compatibility endpoint: no operation performed.
+        // Returns HTTP 410 Gone to indicate deprecation.
     }
 
     /**
@@ -61,8 +62,8 @@ public class ValoracionController {
      */
     @GetMapping("/api/productos/{idProducto}/valoracion-stats")
     public ValoracionPublicaStats obtenerValoracionStats(@PathVariable Long idProducto) {
-        Double promedio = valoracionRepository.findPromedioByProducto(idProducto);
-        Long cantidad = valoracionRepository.countByProducto(idProducto);
+        Double promedio = resenaRepository.findPromedioByProducto(idProducto);
+        Long cantidad = resenaRepository.countByProducto(idProducto);
 
         Double promedioRedondeado = (promedio != null)
                 ? BigDecimal.valueOf(promedio).setScale(2, RoundingMode.HALF_UP).doubleValue()

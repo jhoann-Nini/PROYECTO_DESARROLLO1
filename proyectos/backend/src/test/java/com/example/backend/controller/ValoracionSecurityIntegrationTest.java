@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,14 +12,18 @@ import com.example.backend.config.SecurityConfig;
 import com.example.backend.entity.Categoria;
 import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
+import com.example.backend.entity.Resena;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.Valoracion;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
+import com.example.backend.repository.ResenaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import com.example.backend.repository.ValoracionRepository;
+
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -92,6 +97,9 @@ class ValoracionSecurityIntegrationTest {
 
     @Autowired
     private ValoracionRepository valoracionRepository;
+
+    @Autowired
+    private ResenaRepository resenaRepository;
 
     private MockMvc mockMvc;
     private Long idProductoValido;
@@ -221,16 +229,17 @@ class ValoracionSecurityIntegrationTest {
             }
             """.formatted(idProductoValido);
 
+        long countBefore = valoracionRepository.count();
+        long countResBefore = resenaRepository.count();
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idValoracion").isNumber())
-                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
-                .andExpect(jsonPath("$.puntuacion").value(5))
-                .andExpect(jsonPath("$.nombreUsuario").value("Usuario Valoraciones Test"))
-                .andExpect(jsonPath("$.estado").value(true));
+                .andExpect(status().isGone());
+        long countAfter = valoracionRepository.count();
+        long countResAfter = resenaRepository.count();
+        assertEquals(countBefore, countAfter, "No debe crearse ninguna valoración");
+        assertEquals(countResBefore, countResAfter, "No debe crearse ninguna reseña");
     }
 
     @Test
@@ -288,7 +297,7 @@ class ValoracionSecurityIntegrationTest {
     }
 
     @Test
-    @DisplayName("Rechazar productos inexistentes")
+    @DisplayName("Rechazar productos inexistentes respondiendo 410 Gone sin persistir datos")
     void rechazarProductoInexistente() throws Exception {
         String token = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
 
@@ -299,15 +308,21 @@ class ValoracionSecurityIntegrationTest {
             }
             """;
 
+        long countValBefore = valoracionRepository.count();
+        long countResBefore = resenaRepository.count();
+
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isGone());
+
+        assertEquals(countValBefore, valoracionRepository.count(), "No debe crearse ninguna valoración");
+        assertEquals(countResBefore, resenaRepository.count(), "No debe crearse ninguna reseña");
     }
 
     @Test
-    @DisplayName("Rechazar productos inactivos")
+    @DisplayName("Rechazar productos inactivos respondiendo 410 Gone sin persistir datos")
     void rechazarProductoInactivo() throws Exception {
         String token = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
 
@@ -318,34 +333,40 @@ class ValoracionSecurityIntegrationTest {
             }
             """.formatted(idProductoInactivo);
 
+        long countValBefore = valoracionRepository.count();
+        long countResBefore = resenaRepository.count();
+
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isGone());
+
+        assertEquals(countValBefore, valoracionRepository.count(), "No debe crearse ninguna valoración");
+        assertEquals(countResBefore, resenaRepository.count(), "No debe crearse ninguna reseña");
     }
 
     @Test
-    @DisplayName("Actualizar valoración activa existente sin duplicar registros")
+    @DisplayName("Actualizar valoración activa existente responde 410 Gone sin modificar registros existentes")
     void actualizarValoracionActivaExistente() throws Exception {
         String token = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
 
-        String payload1 = """
-            {
-                "idProducto": %d,
-                "puntuacion": 3
-            }
-            """.formatted(idProductoValido);
+        // Preparar una valoración existente para el usuario y producto
+        Usuario u = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Producto p = productoRepository.findById(idProductoValido).orElseThrow();
 
-        mockMvc.perform(post("/api/valoraciones")
-                        .header("Authorization", "Bearer " + token)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload1))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.puntuacion").value(3));
+        Valoracion valExistente = new Valoracion();
+        valExistente.setUsuario(u);
+        valExistente.setProducto(p);
+        valExistente.setPuntuacion(3);
+        valExistente.setEstado(true);
+        valExistente.setFechaCreacion(LocalDateTime.now());
+        valoracionRepository.save(valExistente);
 
-        // Enviar segunda valoración para el mismo producto por el mismo usuario
-        String payload2 = """
+        long countValBefore = valoracionRepository.count();
+        long countResBefore = resenaRepository.count();
+
+        String payload = """
             {
                 "idProducto": %d,
                 "puntuacion": 5
@@ -355,15 +376,15 @@ class ValoracionSecurityIntegrationTest {
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload2))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.puntuacion").value(5));
+                        .content(payload))
+                .andExpect(status().isGone());
 
-        // Comprobar que en base de datos solo existe una valoración activa para este usuario y producto
-        Usuario u = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        // Comprobar que en base de datos la valoración no cambió y no se duplicó ni crearon nuevos registros
+        assertEquals(countValBefore, valoracionRepository.count(), "No debe duplicarse ni crearse ninguna valoración");
+        assertEquals(countResBefore, resenaRepository.count(), "No debe crearse ninguna reseña");
         var lista = valoracionRepository.findByProductoIdProductoAndEstadoTrue(idProductoValido);
-        assertEquals(1, lista.size(), "No debe duplicarse la valoración activa");
-        assertEquals(5, lista.get(0).getPuntuacion(), "La puntuación debe actualizarse a 5");
+        assertEquals(1, lista.size(), "Debe existir exactamente una valoración activa");
+        assertEquals(3, lista.get(0).getPuntuacion(), "La puntuación original no debe ser modificada por POST 410");
     }
 
     @Test
@@ -371,13 +392,13 @@ class ValoracionSecurityIntegrationTest {
     void obtenerMiValoracionPorProducto() throws Exception {
         String token = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
 
-        // Inicialmente no tiene valoración
+        // Inicialmente no tiene reseña/valoración
         mockMvc.perform(get("/api/valoraciones/mi-valoracion")
                         .param("idProducto", idProductoValido.toString())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
-        // Crea una valoración
+        // Intento de crear mediante endpoint antiguo responde 410 Gone y no persiste
         String payload = """
             {
                 "idProducto": %d,
@@ -389,35 +410,73 @@ class ValoracionSecurityIntegrationTest {
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(payload))
-                .andExpect(status().isCreated());
+                .andExpect(status().isGone());
 
-        // Ahora debe retornar la valoración
+        // Verifica que sigue sin existir valoración
+        mockMvc.perform(get("/api/valoraciones/mi-valoracion")
+                        .param("idProducto", idProductoValido.toString())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
+
+        // Preparar una Resena activa directamente en el repositorio (fuente de datos de ValoracionService)
+        Usuario u = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Producto p = productoRepository.findById(idProductoValido).orElseThrow();
+
+        Resena resena = new Resena();
+        resena.setUsuario(u);
+        resena.setProducto(p);
+        resena.setComentario("Reseña de prueba para mi valoración");
+        resena.setPuntuacion(4);
+        resena.setEstado(true);
+        resena.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(resena);
+
+        // Ahora GET /api/valoraciones/mi-valoracion retorna la valoración basada en la reseña
         mockMvc.perform(get("/api/valoraciones/mi-valoracion")
                         .param("idProducto", idProductoValido.toString())
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.puntuacion").value(4));
+                .andExpect(jsonPath("$.puntuacion").value(4))
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.nombreUsuario").value("Usuario Valoraciones Test"));
     }
 
     @Test
     @DisplayName("El ranking mejor valorados refleja media y recuento, y excluye valoraciones inactivas")
     void rankingReflejaMediaYExcluyeInactivas() throws Exception {
         String token1 = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
-        String token2 = generarToken(TEST_SUB_2, "val_test2@example.com", "Segundo Usuario Test");
 
-        // Usuario 1 califica con 4
+        // Verificar que el POST antiguo devuelve 410 y no crea datos
+        long countValBefore = valoracionRepository.count();
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 4}"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isGone());
+        assertEquals(countValBefore, valoracionRepository.count(), "POST 410 no debe crear valoraciones");
 
-        // Usuario 2 califica con 5
-        mockMvc.perform(post("/api/valoraciones")
-                        .header("Authorization", "Bearer " + token2)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 5}"))
-                .andExpect(status().isCreated());
+        // Preparar reseñas mediante ResenaRepository (fuente única de datos del ranking)
+        Usuario u1 = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Usuario u2 = usuarioRepository.findBySupabaseUid(TEST_SUB_2).orElseThrow();
+        Producto prod = productoRepository.findById(idProductoValido).orElseThrow();
+
+        Resena r1 = new Resena();
+        r1.setUsuario(u1);
+        r1.setProducto(prod);
+        r1.setComentario("Excelente producto para ranking");
+        r1.setPuntuacion(4);
+        r1.setEstado(true);
+        r1.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(r1);
+
+        Resena r2 = new Resena();
+        r2.setUsuario(u2);
+        r2.setProducto(prod);
+        r2.setComentario("Magnífico producto para ranking");
+        r2.setPuntuacion(5);
+        r2.setEstado(true);
+        r2.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(r2);
 
         // Verificar el ranking
         mockMvc.perform(get("/api/rankings/mejor-valorados"))
@@ -425,15 +484,15 @@ class ValoracionSecurityIntegrationTest {
                 .andExpect(jsonPath("$[?(@.idProducto == " + idProductoValido + ")].promedioPuntuacion").value(4.5))
                 .andExpect(jsonPath("$[?(@.idProducto == " + idProductoValido + ")].cantidadValoraciones").value(2));
 
-        // Marcar una valoración como inactiva (estado = false)
-        var valUsuario1 = valoracionRepository.findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
-                usuarioRepository.findBySupabaseUid(TEST_SUB).get().getIdUsuario(),
+        // Marcar una reseña como inactiva (estado = false)
+        var resenaUsuario1 = resenaRepository.findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
+                u1.getIdUsuario(),
                 idProductoValido
         ).orElseThrow();
-        valUsuario1.setEstado(false);
-        valoracionRepository.saveAndFlush(valUsuario1);
+        resenaUsuario1.setEstado(false);
+        resenaRepository.saveAndFlush(resenaUsuario1);
 
-        // Ahora el ranking debe reflejar solo la valoración activa (media = 5.0, cantidad = 1)
+        // Ahora el ranking debe reflejar solo la reseña activa (media = 5.0, cantidad = 1)
         mockMvc.perform(get("/api/rankings/mejor-valorados"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.idProducto == " + idProductoValido + ")].promedioPuntuacion").value(5.0))
@@ -449,27 +508,119 @@ class ValoracionSecurityIntegrationTest {
                 .andExpect(jsonPath("$.idProducto").value(idProductoValido))
                 .andExpect(jsonPath("$.cantidadValoraciones").value(0));
 
-        // 2. Crear dos usuarios y agregar valoraciones al producto
+        // 2. Verificar que POST /api/valoraciones responde 410 Gone y no persiste
         String token1 = generarToken(TEST_SUB, "user1@example.com", "Usuario Uno");
-        String token2 = generarToken(TEST_SUB_2, "user2@example.com", "Usuario Dos");
-
+        long countValBefore = valoracionRepository.count();
         mockMvc.perform(post("/api/valoraciones")
                         .header("Authorization", "Bearer " + token1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 4}"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isGone());
+        assertEquals(countValBefore, valoracionRepository.count(), "POST 410 no debe crear valoraciones");
 
-        mockMvc.perform(post("/api/valoraciones")
-                        .header("Authorization", "Bearer " + token2)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\": " + idProductoValido + ", \"puntuacion\": 5}"))
-                .andExpect(status().isCreated());
+        // 3. Preparar reseñas mediante ResenaRepository (fuente única de estadísticas)
+        Usuario u1 = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Usuario u2 = usuarioRepository.findBySupabaseUid(TEST_SUB_2).orElseThrow();
+        Producto prod = productoRepository.findById(idProductoValido).orElseThrow();
 
-        // 3. Consultar estadísticas públicas (sin autenticación)
+        Resena r1 = new Resena();
+        r1.setUsuario(u1);
+        r1.setProducto(prod);
+        r1.setComentario("Comentario estadística 1");
+        r1.setPuntuacion(4);
+        r1.setEstado(true);
+        r1.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(r1);
+
+        Resena r2 = new Resena();
+        r2.setUsuario(u2);
+        r2.setProducto(prod);
+        r2.setComentario("Comentario estadística 2");
+        r2.setPuntuacion(5);
+        r2.setEstado(true);
+        r2.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(r2);
+
+        // 4. Consultar estadísticas públicas (sin autenticación)
         mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idProducto").value(idProductoValido))
                 .andExpect(jsonPath("$.promedioPuntuacion").value(4.5))
                 .andExpect(jsonPath("$.cantidadValoraciones").value(2));
+
+        // Al ocultar una reseña, no debe influir en el promedio público.
+        var resenaOculta = resenaRepository
+                .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
+                        u1.getIdUsuario(),
+                        idProductoValido
+                )
+                .orElseThrow();
+        resenaOculta.setEstado(false);
+        resenaRepository.saveAndFlush(resenaOculta);
+
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.promedioPuntuacion").value(5.0))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(1));
+    }
+
+    @Test
+    @DisplayName("Un registro residual en Valoracion sin Resena equivalente no afecta las estadísticas públicas")
+    void registroResidualEnValoracionNoAfectaEstadisticasPublicas() throws Exception {
+        Usuario u = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Producto prod1 = productoRepository.findById(idProductoValido).orElseThrow();
+
+        // 1. Crear producto con una reseña activa de puntuación 5
+        Resena resena = new Resena();
+        resena.setUsuario(u);
+        resena.setProducto(prod1);
+        resena.setComentario("Excelente reseña para estadísticas");
+        resena.setPuntuacion(5);
+        resena.setEstado(true);
+        resena.setFechaCreacion(LocalDateTime.now());
+        resenaRepository.save(resena);
+
+        // 2. Insertar directamente una Valoracion activa de puntuación 1 para el mismo producto
+        Valoracion val1 = new Valoracion();
+        val1.setUsuario(u);
+        val1.setProducto(prod1);
+        val1.setPuntuacion(1);
+        val1.setEstado(true);
+        val1.setFechaCreacion(LocalDateTime.now());
+        valoracionRepository.save(val1);
+
+        // 3 y 4. Consultar estadísticas de prod1 y verificar que solo toma en cuenta la Resena
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", idProductoValido))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(idProductoValido))
+                .andExpect(jsonPath("$.promedioPuntuacion").value(5.0))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(1));
+
+        // 5. Crear un segundo producto que tenga una valoración antigua, pero ninguna reseña
+        Categoria cat = categoriaRepository.findAll().get(0);
+        Marca marca = marcaRepository.findAll().get(0);
+        Producto prod2 = new Producto();
+        prod2.setNombre("Producto Solo Con Valoracion Antigua " + System.nanoTime());
+        prod2.setCategoria(cat);
+        prod2.setMarca(marca);
+        prod2.setPrecioReferencia(new BigDecimal("990000"));
+        prod2.setEstado(true);
+        prod2 = productoRepository.save(prod2);
+
+        Valoracion val2 = new Valoracion();
+        val2.setUsuario(u);
+        val2.setProducto(prod2);
+        val2.setPuntuacion(4);
+        val2.setEstado(true);
+        val2.setFechaCreacion(LocalDateTime.now());
+        valoracionRepository.save(val2);
+
+        // 6 y 7. Consultar estadísticas de prod2 y verificar que devuelve null y 0
+        mockMvc.perform(get("/api/productos/{idProducto}/valoracion-stats", prod2.getIdProducto()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto").value(prod2.getIdProducto()))
+                .andExpect(jsonPath("$.promedioPuntuacion").value(nullValue()))
+                .andExpect(jsonPath("$.cantidadValoraciones").value(0));
     }
 }

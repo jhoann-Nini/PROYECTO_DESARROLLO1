@@ -72,6 +72,9 @@ public class ResenaService {
         });
 
         resena.setComentario(comentarioLimpio);
+        if (request.puntuacion() != null) {
+            resena.setPuntuacion(request.puntuacion());
+        }
         resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
         resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
         resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
@@ -104,6 +107,9 @@ public class ResenaService {
 
         String comentarioLimpio = request.comentario().trim();
         resena.setComentario(comentarioLimpio);
+        if (request.puntuacion() != null) {
+            resena.setPuntuacion(request.puntuacion());
+        }
         resena.setTitulo(request.titulo() != null && !request.titulo().isBlank() ? request.titulo().trim() : null);
         resena.setVentajas(request.ventajas() != null && !request.ventajas().isBlank() ? request.ventajas().trim() : null);
         resena.setDesventajas(request.desventajas() != null && !request.desventajas().isBlank() ? request.desventajas().trim() : null);
@@ -148,6 +154,7 @@ public class ResenaService {
                 r.getUsuario().getIdUsuario(),
                 r.getUsuario().getNombre(),
                 r.getComentario(),
+                r.getPuntuacion(),
                 r.getTitulo(),
                 r.getVentajas(),
                 r.getDesventajas(),

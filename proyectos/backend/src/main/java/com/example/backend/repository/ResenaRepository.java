@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.dto.ResenaStats;
+import com.example.backend.dto.ValoracionStats;
 import com.example.backend.entity.Resena;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -27,5 +28,18 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
            "GROUP BY r.producto.idProducto " +
            "ORDER BY COUNT(r.idResena) DESC, r.producto.idProducto ASC")
     List<ResenaStats> findMasComentadosStats(Pageable pageable);
+
+    @Query("SELECT new com.example.backend.dto.ValoracionStats(r.producto.idProducto, AVG(r.puntuacion), COUNT(r.idResena)) " +
+           "FROM Resena r " +
+           "WHERE r.producto.estado = true AND r.estado = true " +
+           "GROUP BY r.producto.idProducto " +
+           "ORDER BY AVG(r.puntuacion) DESC, COUNT(r.idResena) DESC, r.producto.idProducto ASC")
+    List<ValoracionStats> findMejorValoradosStats(Pageable pageable);
+
+    @Query("SELECT AVG(r.puntuacion) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true")
+    Double findPromedioByProducto(Long idProducto);
+
+    @Query("SELECT COUNT(r) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true")
+    Long countByProducto(Long idProducto);
 }
 

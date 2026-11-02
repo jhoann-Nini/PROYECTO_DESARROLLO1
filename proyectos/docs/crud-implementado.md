@@ -146,7 +146,7 @@ La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto comp
 
 ---
 
-## Resena (Actualizado S2-12 y S2-17)
+## Resena (Actualizado S2-12, S2-17 y S2-18)
 
 Permite consultar reseñas de forma pública y publicarlas/actualizarlas con autenticación Bearer (Supabase Auth). En S2-12 se incorporaron los campos `titulo`, `ventajas` y `desventajas` al servidor.
 
@@ -159,6 +159,8 @@ Permite consultar reseñas de forma pública y publicarlas/actualizarlas con aut
 | POST | `/api/productos/{id}/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
 | PUT | `/api/resenas/{id}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor) |
 | PUT | `/api/productos/{id}/resenas/{idResena}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor) |
+| DELETE | `/api/resenas/{id}` | — | `204` / `401` / `403` / `404` (eliminación lógica: autor o admin) |
+| DELETE | `/api/productos/{id}/resenas/{idResena}` | — | `204` / `401` / `403` / `404` (eliminación lógica: autor o admin) |
 
 **ResenaRequest**
 

@@ -7,6 +7,7 @@ import com.example.backend.service.ResenaService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -91,5 +92,28 @@ public class ResenaController {
             @Valid @RequestBody ResenaUpdateRequest request,
             @AuthenticationPrincipal Jwt jwt) {
         return resenaService.actualizar(idResena, request, jwt);
+    }
+
+    /**
+     * Eliminación protegida de reseña por ID (S2-18). Requiere autenticación Bearer y ser el autor o administrador.
+     */
+    @DeleteMapping("/api/resenas/{idResena}")
+    public ResponseEntity<Void> eliminar(
+            @PathVariable Long idResena,
+            @AuthenticationPrincipal Jwt jwt) {
+        resenaService.eliminar(idResena, jwt);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Eliminación protegida de reseña especificando producto y reseña en la ruta (S2-18).
+     */
+    @DeleteMapping("/api/productos/{idProducto}/resenas/{idResena}")
+    public ResponseEntity<Void> eliminarParaProducto(
+            @PathVariable Long idProducto,
+            @PathVariable Long idResena,
+            @AuthenticationPrincipal Jwt jwt) {
+        resenaService.eliminar(idResena, jwt);
+        return ResponseEntity.noContent().build();
     }
 }

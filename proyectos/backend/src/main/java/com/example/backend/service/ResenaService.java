@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Servicio de negocio para la consulta, registro y actualización de reseñas de productos.
+ * Servicio de negocio para la consulta, registro, actualización y eliminación de reseñas de productos.
  */
 @Service
 public class ResenaService {
@@ -111,6 +111,33 @@ public class ResenaService {
 
         Resena guardada = resenaRepository.save(resena);
         return toResponse(guardada);
+    }
+
+    /**
+     * Elimina lógicamente una reseña existente identificada por su ID (S2-18).
+     * Valida que el usuario autenticado sea el autor de la reseña o tenga rol 'Administrador'.
+     */
+    @Transactional
+    public void eliminar(Long idResena, Jwt jwt) {
+        if (idResena == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El id de la reseña es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+
+        Resena resena = resenaRepository.findById(idResena)
+                .filter(r -> Boolean.TRUE.equals(r.getEstado()))
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        boolean esAutor = resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
+        boolean esAdmin = usuario.getRol() != null && "Administrador".equalsIgnoreCase(usuario.getRol().getNombre());
+
+        if (!esAutor && !esAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar esta reseña.");
+        }
+
+        resena.setEstado(false);
+        resenaRepository.save(resena);
     }
 
     private ResenaResponse toResponse(Resena r) {

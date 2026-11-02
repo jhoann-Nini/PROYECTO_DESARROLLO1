@@ -2,8 +2,11 @@ package com.example.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -13,15 +16,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
 import com.example.backend.dto.ResenaUpdateRequest;
+import com.example.backend.exception.GlobalExceptionHandler;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.service.ResenaService;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,6 +66,7 @@ class ResenaControllerTest {
         };
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
+                .setControllerAdvice(new GlobalExceptionHandler())
                 .setCustomArgumentResolvers(jwtResolver)
                 .build();
     }
@@ -300,5 +308,43 @@ class ResenaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"comentario\":\"Comentario válido.\",\"titulo\":\"" + tituloLargo + "\"}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} devuelve 204 No Content cuando la eliminación es exitosa (S2-18)")
+    void eliminarResenaReturnsNoContent() throws Exception {
+        doNothing().when(resenaService).eliminar(eq(5L), any());
+
+        mockMvc.perform(delete("/api/resenas/5"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/productos/{idProducto}/resenas/{idResena} devuelve 204 No Content (S2-18)")
+    void eliminarParaProductoReturnsNoContent() throws Exception {
+        doNothing().when(resenaService).eliminar(eq(8L), any());
+
+        mockMvc.perform(delete("/api/productos/20/resenas/8"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} para reseña inexistente devuelve 404 Not Found (S2-18)")
+    void eliminarResenaInexistenteReturnsNotFound() throws Exception {
+        doThrow(new ResourceNotFoundException("Reseña no encontrada con id 99"))
+                .when(resenaService).eliminar(eq(99L), any());
+
+        mockMvc.perform(delete("/api/resenas/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} sin permiso devuelve 403 Forbidden (S2-18)")
+    void eliminarResenaSinPermisoReturnsForbidden() throws Exception {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar esta reseña."))
+                .when(resenaService).eliminar(eq(5L), any());
+
+        mockMvc.perform(delete("/api/resenas/5"))
+                .andExpect(status().isForbidden());
     }
 }

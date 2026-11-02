@@ -529,10 +529,26 @@ Permite a un usuario autenticado modificar su propia reseña existente.
 }
 ```
 
-14.4 Eliminar reseña
-DELETE /api/resenas/{id}
+### 14.4 Eliminar reseña (S2-18)
 
-La autorización deberá validarse en el backend.
+DELETE /api/resenas/{idResena}  
+DELETE /api/productos/{productoId}/resenas/{idResena}
+
+Permite eliminar (desactivar de forma lógica) una reseña existente.
+
+**Seguridad y Reglas de Negocio:**
+- Requiere encabezado `Authorization: Bearer <token_supabase>`.
+- Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
+- Si la reseña con `idResena` no existe o ya está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Control de autoría y moderación:**
+  - El autor original de la reseña (`idUsuario`) tiene autorización para eliminarla.
+  - Los usuarios con rol `Administrador` pueden eliminar cualquier reseña con fines de moderación.
+  - Si otro usuario sin permisos intenta eliminarla, el servidor devuelve `403 Forbidden` ("No tienes permiso para eliminar esta reseña").
+- **Eliminación lógica:** Se establece `estado = false` en `public.resena`, de modo que no aparezca en consultas públicas y se preserve la integridad referencial.
+- Responde `204 No Content` sin cuerpo en la respuesta.
+
+
+
 
 Los usuarios podrán valorar los productos.
 

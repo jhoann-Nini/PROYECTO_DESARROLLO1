@@ -175,6 +175,14 @@ export default function OpinionesHome({
                     <span className="font-semibold text-[var(--color-brand-blue)]">
                       @{resena.nombreUsuario || "Usuario"}
                     </span>
+                    {resena.puntuacion && (
+                      <span
+                        className="text-[11px] text-[var(--color-star)]"
+                        aria-label={`${resena.puntuacion} de 5 estrellas`}
+                      >
+                        {"★".repeat(resena.puntuacion)}
+                      </span>
+                    )}
                     {resena.nombreProducto && (
                       <span className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2 py-0.5 text-[10px] font-medium text-[var(--color-subtle)]">
                         {resena.nombreProducto}

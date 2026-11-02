@@ -23,7 +23,6 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerMarcas: vi.fn(),
     obtenerValoracionStats: vi.fn(),
     obtenerResenas: vi.fn(),
-    crearValoracion: vi.fn(),
     obtenerMiValoracion: vi.fn(),
     crearResena: vi.fn(),
   };
@@ -54,7 +53,6 @@ vi.mock("@/hooks/useSesionTecReview", () => ({
 import {
   ApiError,
   crearResena,
-  crearValoracion,
   obtenerCategorias,
   obtenerMarcas,
   obtenerMiValoracion,
@@ -71,7 +69,6 @@ const mockMarcas = vi.mocked(obtenerMarcas);
 const mockStats = vi.mocked(obtenerValoracionStats);
 const mockResenas = vi.mocked(obtenerResenas);
 const mockCrearResena = vi.mocked(crearResena);
-const mockCrearValoracion = vi.mocked(crearValoracion);
 const mockMiValoracion = vi.mocked(obtenerMiValoracion);
 
 const CATEGORIAS: CategoriaResponse[] = [
@@ -258,7 +255,7 @@ describe("DetalleProductoCliente", () => {
     ).toBeDefined();
   });
 
-  it("abre AuthModal al intentar valorar sin sesión", async () => {
+  it("abre AuthModal al intentar opinar sin sesión", async () => {
     render(<DetalleProductoCliente idProducto={204} />);
 
     await waitFor(() => {
@@ -267,7 +264,7 @@ describe("DetalleProductoCliente", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Opiniones (1)" }));
     fireEvent.click(
-      screen.getByRole("button", { name: "Inicia sesión para valorar" }),
+      screen.getByRole("button", { name: "Publicar opinión" }),
     );
 
     await waitFor(() => {
@@ -275,18 +272,19 @@ describe("DetalleProductoCliente", () => {
     });
     expect(
       screen.getByText(
-        "Debes iniciar sesión para valorar este dispositivo.",
+        "Debes iniciar sesión para publicar una opinión.",
       ),
     ).toBeDefined();
   });
 
-  it("publica una opinión autenticada y actualiza la lista", async () => {
+  it("publica una opinión autenticada con puntuación y actualiza la lista", async () => {
     mockSesion.usuario = USUARIO;
     mockCrearResena.mockResolvedValue({
       ...RESENA,
       idResena: 13,
       nombreUsuario: "laura",
       comentario: "El mejor equipo que he probado este año.",
+      puntuacion: 5,
     });
 
     render(<DetalleProductoCliente idProducto={204} />);
@@ -299,6 +297,7 @@ describe("DetalleProductoCliente", () => {
     fireEvent.change(screen.getByLabelText(/Escribe tu opinión sobre/i), {
       target: { value: "El mejor equipo que he probado este año." },
     });
+    fireEvent.click(screen.getByRole("button", { name: "Calificar con 5 estrellas" }));
     fireEvent.click(screen.getByRole("button", { name: "Publicar opinión" }));
 
     await waitFor(() => {
@@ -309,35 +308,14 @@ describe("DetalleProductoCliente", () => {
     expect(mockCrearResena).toHaveBeenCalledWith({
       idProducto: 204,
       comentario: "El mejor equipo que he probado este año.",
+      puntuacion: 5,
     });
     expect(
       screen.getByRole("tab", { name: "Opiniones (2)" }),
     ).toBeDefined();
   });
 
-  it("guarda una valoración autenticada y refresca las estadísticas", async () => {
-    mockSesion.usuario = USUARIO;
-    mockMiValoracion.mockResolvedValue({
-      idValoracion: 5,
-      idProducto: 204,
-      nombreProducto: PRODUCTO.nombre,
-      idUsuario: 8,
-      nombreUsuario: "laura",
-      puntuacion: 4,
-      fechaCreacion: "2026-10-01T10:00:00",
-      estado: true,
-    });
-    mockCrearValoracion.mockResolvedValue({
-      idValoracion: 5,
-      idProducto: 204,
-      nombreProducto: PRODUCTO.nombre,
-      idUsuario: 8,
-      nombreUsuario: "laura",
-      puntuacion: 5,
-      fechaCreacion: "2026-10-25T10:00:00",
-      estado: true,
-    });
-
+  it("muestra estadísticas públicas de valoración comunitaria sin formulario independiente", async () => {
     render(<DetalleProductoCliente idProducto={204} />);
 
     await waitFor(() => {
@@ -347,25 +325,12 @@ describe("DetalleProductoCliente", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Opiniones (1)" }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Tu valoración actual: 4 estrellas"),
-      ).toBeDefined();
+      expect(screen.getByText("Valoración de la comunidad")).toBeDefined();
+      expect(screen.getAllByText("4,5").length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/12 opiniones/).length).toBeGreaterThan(0);
     });
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Valorar con 5 estrellas" }),
-    );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Guardar valoración" }),
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Tu valoración de 5 estrellas fue guardada.")).toBeDefined();
-    });
-    expect(mockCrearValoracion).toHaveBeenCalledWith({
-      idProducto: 204,
-      puntuacion: 5,
-    });
+    expect(screen.queryByRole("button", { name: "Guardar valoración" })).toBeNull();
   });
 
   it("agrega el producto al comparador y permite quitarlo", async () => {

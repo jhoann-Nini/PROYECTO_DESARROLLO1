@@ -5,7 +5,6 @@ import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
 import { useState, useEffect, useMemo } from "react";
 import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
 import {
-  crearValoracion,
   obtenerMiValoracion,
   obtenerResenas,
   crearResena,
@@ -14,6 +13,7 @@ import {
   type ValoracionPublicaStats,
 } from "@/services/api";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface FichaTecnicaModalProps {
   producto: DispositivoKimovil | Producto | null;
@@ -57,9 +57,6 @@ export default function FichaTecnicaModal({
   const [puntuacionSeleccionada, setPuntuacionSeleccionada] = useState<number>(0);
   const [puntuacionActual, setPuntuacionActual] = useState<number | null>(null);
   const [hoverEstrella, setHoverEstrella] = useState<number>(0);
-  const [enviandoValoracion, setEnviandoValoracion] = useState(false);
-  const [mensajeExito, setMensajeExito] = useState("");
-  const [errorValoracion, setErrorValoracion] = useState("");
   const [errorImagenUrl, setErrorImagenUrl] = useState<string | null>(null);
 
   // Estados para las opiniones/reseñas comunitarias escritas de este producto
@@ -95,8 +92,6 @@ export default function FichaTecnicaModal({
     setPuntuacionSeleccionada(0);
     setPuntuacionActual(null);
     setHoverEstrella(0);
-    setMensajeExito("");
-    setErrorValoracion("");
     setErrorImagenUrl(null);
     setResenasProducto([]);
     setCargandoResenas(Boolean(idProducto));
@@ -116,7 +111,6 @@ export default function FichaTecnicaModal({
         .then((val) => {
           if (montado && val) {
             setPuntuacionActual(val.puntuacion);
-            setPuntuacionSeleccionada(val.puntuacion);
           }
         })
         .catch(() => {});
@@ -171,46 +165,6 @@ export default function FichaTecnicaModal({
     };
   }, [idProducto]);
 
-  const manejarGuardarValoracion = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!usuarioSesion) {
-      setErrorValoracion("Debes iniciar sesión para valorar este dispositivo.");
-      return;
-    }
-    if (!idProducto) {
-      setErrorValoracion("No se pudo identificar el código del dispositivo a valorar.");
-      return;
-    }
-    if (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5) {
-      setErrorValoracion("Por favor selecciona una puntuación entre 1 y 5 estrellas.");
-      return;
-    }
-
-    setEnviandoValoracion(true);
-    setErrorValoracion("");
-    setMensajeExito("");
-
-    try {
-      const res = await crearValoracion({
-        idProducto,
-        puntuacion: puntuacionSeleccionada,
-      });
-      setPuntuacionActual(res.puntuacion);
-      setMensajeExito(
-        `¡Tu valoración de ${res.puntuacion} ${res.puntuacion === 1 ? "estrella" : "estrellas"} ha sido guardada!`
-      );
-      onValoracionGuardada?.();
-    } catch (err) {
-      setErrorValoracion(
-        err instanceof Error
-          ? err.message
-          : "No fue posible registrar tu valoración. Inténtalo más tarde."
-      );
-    } finally {
-      setEnviandoValoracion(false);
-    }
-  };
-
   const manejarGuardarResena = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioSesion) {
@@ -219,6 +173,10 @@ export default function FichaTecnicaModal({
     }
     if (!idProducto) {
       setErrorResena("No se pudo identificar el código del dispositivo a reseñar.");
+      return;
+    }
+    if (puntuacionSeleccionada !== 0 && (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5)) {
+      setErrorResena("Por favor selecciona una puntuación entre 1 y 5 estrellas.");
       return;
     }
     if (!nuevaResenaTexto.trim()) {
@@ -245,11 +203,22 @@ export default function FichaTecnicaModal({
       const res = await crearResena({
         idProducto,
         comentario: nuevaResenaTexto.trim(),
+        ...(puntuacionSeleccionada > 0 ? { puntuacion: puntuacionSeleccionada } : {}),
       });
       setNuevaResenaTexto("");
+      if (puntuacionSeleccionada > 0) {
+        setPuntuacionActual(puntuacionSeleccionada);
+      }
+      setPuntuacionSeleccionada(0);
       setExitoResena("¡Tu opinión ha sido publicada con éxito!");
       setResenasProducto((prev) => [res, ...prev.filter((r) => r.idResena !== res.idResena)]);
+      if (idProducto) {
+        obtenerValoracionStats(idProducto)
+          .then((st) => setValoracionStats(st))
+          .catch(() => {});
+      }
       onResenaGuardada?.(res);
+      onValoracionGuardada?.();
     } catch (err) {
       setErrorResena(
         err instanceof Error
@@ -486,7 +455,7 @@ export default function FichaTecnicaModal({
                 </button>
               </div>
 
-              {/* SECCIÓN DE VALORACIÓN POR ESTRELLAS (1 a 5) */}
+              {/* SECCIÓN INFORMATIVA DE VALORACIONES Y OPINIONES UNIFICADAS */}
               <div className="mt-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
                 <div className="mb-3 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
                   <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
@@ -499,86 +468,17 @@ export default function FichaTecnicaModal({
                   )}
                 </div>
 
-                {!usuarioSesion ? (
-                  <div className="text-center py-2">
-                    <p className="mb-3 text-xs text-[var(--color-subtle)]">
-                      Inicia sesión para calificar este dispositivo con estrellas.
-                    </p>
-                    {onPedirLogin && (
-                      <button
-                        type="button"
-                        onClick={onPedirLogin}
-                        className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-                      >
-                        Identificarse para valorar
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <form onSubmit={manejarGuardarValoracion} className="flex flex-col gap-3">
-                    <div
-                      className="flex items-center justify-center gap-1.5"
-                      role="group"
-                      aria-label="Calificación de 1 a 5 estrellas"
-                    >
-                      {[1, 2, 3, 4, 5].map((estrella) => {
-                        const activa = (hoverEstrella || puntuacionSeleccionada) >= estrella;
-                        return (
-                          <button
-                            key={estrella}
-                            type="button"
-                            disabled={enviandoValoracion}
-                            onClick={() => {
-                              setPuntuacionSeleccionada(estrella);
-                              setErrorValoracion("");
-                              setMensajeExito("");
-                            }}
-                            onMouseEnter={() => setHoverEstrella(estrella)}
-                            onMouseLeave={() => setHoverEstrella(0)}
-                            aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
-                            className={`p-1 text-2xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)] rounded cursor-pointer disabled:opacity-50 ${
-                              activa ? "text-[var(--color-star)]" : "text-[var(--color-subtle)]/40"
-                            }`}
-                          >
-                            ★
-                          </button>
-                        );
-                      })}
-                    </div>
+                <p className="text-xs leading-relaxed text-[var(--color-subtle)] mb-3">
+                  Las valoraciones se integran con las opiniones de la comunidad. Publica tu puntuación de 1 a 5 estrellas junto con tu comentario.
+                </p>
 
-                    <div className="text-center">
-                      <span className="text-xs font-medium text-[var(--color-subtle)]">
-                        {puntuacionSeleccionada > 0
-                          ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
-                          : "Selecciona de 1 a 5 estrellas"}
-                      </span>
-                    </div>
-
-                    {errorValoracion && (
-                      <p className="text-center text-xs font-medium text-red-700" role="alert">
-                        ⚠️ {errorValoracion}
-                      </p>
-                    )}
-
-                    {mensajeExito && (
-                      <p className="text-center text-xs font-medium text-emerald-300" role="status">
-                        {mensajeExito}
-                      </p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={enviandoValoracion || puntuacionSeleccionada === 0}
-                      className="w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {enviandoValoracion
-                        ? "Guardando..."
-                        : puntuacionActual !== null
-                          ? "Actualizar valoración"
-                          : "Guardar valoración"}
-                    </button>
-                  </form>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
+                  className={`w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                >
+                  {usuarioSesion ? "Calificar y escribir opinión" : "Ver opiniones de la comunidad"}
+                </button>
               </div>
             </div>
 
@@ -698,6 +598,11 @@ export default function FichaTecnicaModal({
                               <span className="font-semibold text-[var(--color-brand-blue)]">
                                 @{r.nombreUsuario || "Usuario de TecReview"}
                               </span>
+                              {r.puntuacion && (
+                                <span className="font-semibold text-[var(--color-star)]">
+                                  ★ {r.puntuacion}/5
+                                </span>
+                              )}
                               <span
                                 className="rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] px-1.5 py-0.5 text-[10px] text-[var(--color-subtle)]"
                                 title={`Reseña del producto #${r.idProducto}`}
@@ -723,7 +628,7 @@ export default function FichaTecnicaModal({
                     </div>
                   )}
 
-                  {/* Formulario para publicar una opinión para este producto */}
+                  {/* Formulario unificado para publicar una opinión con calificación */}
                   <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
                     <span className="mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                       Publicar una opinión sobre este dispositivo
@@ -737,14 +642,61 @@ export default function FichaTecnicaModal({
                           <button
                             type="button"
                             onClick={onPedirLogin}
-                            className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                            className={`shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
                           >
-                            Identificarse
+                            Identificarse para valorar
                           </button>
                         )}
                       </div>
                     ) : (
-                      <form onSubmit={manejarGuardarResena} className="flex flex-col gap-2.5">
+                      <form onSubmit={manejarGuardarResena} className="flex flex-col gap-3">
+                        {/* Selector de calificación de 1 a 5 estrellas */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                            Calificación:
+                          </span>
+                          <div
+                            role="group"
+                            aria-label="Calificación de 1 a 5 estrellas"
+                            className="flex items-center gap-1"
+                          >
+                            {[1, 2, 3, 4, 5].map((estrella) => {
+                              const activa = (hoverEstrella || puntuacionSeleccionada) >= estrella;
+                              return (
+                                <button
+                                  key={estrella}
+                                  type="button"
+                                  disabled={enviandoResena}
+                                  onClick={() => {
+                                    setPuntuacionSeleccionada(estrella);
+                                    setErrorResena("");
+                                  }}
+                                  onMouseEnter={() => setHoverEstrella(estrella)}
+                                  onMouseLeave={() => setHoverEstrella(0)}
+                                  aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
+                                  className={`cursor-pointer rounded p-1 text-xl leading-none transition-transform hover:scale-110 focus:outline-none disabled:opacity-50 ${CLASE_FOCO}`}
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={
+                                      activa
+                                        ? "text-[var(--color-star)]"
+                                        : "text-neutral-400 dark:text-neutral-500"
+                                    }
+                                  >
+                                    {activa ? "★" : "☆"}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                            {puntuacionSeleccionada > 0
+                              ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
+                              : "Selecciona de 1 a 5 estrellas"}
+                          </span>
+                        </div>
+
                         <textarea
                           rows={2}
                           value={nuevaResenaTexto}
@@ -765,9 +717,8 @@ export default function FichaTecnicaModal({
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            onClick={manejarGuardarResena}
-                            disabled={enviandoResena}
-                            className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                            disabled={enviandoResena || !nuevaResenaTexto.trim()}
+                            className={`rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${CLASE_FOCO}`}
                           >
                             {enviandoResena ? "Publicando..." : "Publicar opinión"}
                           </button>

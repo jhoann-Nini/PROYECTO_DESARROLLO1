@@ -9,6 +9,8 @@ public record ResenaResponse(
         Long idUsuario,
         String nombreUsuario,
         String comentario,
+        Integer puntuacion,
+
         LocalDateTime fechaCreacion,
         Boolean estado
 ) {

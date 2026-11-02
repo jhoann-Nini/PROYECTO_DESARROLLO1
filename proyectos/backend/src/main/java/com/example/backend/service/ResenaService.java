@@ -69,6 +69,7 @@ public class ResenaService {
         });
 
         resena.setComentario(comentarioLimpio);
+        resena.setPuntuacion(request.puntuacion());
         resena.setFechaCreacion(LocalDateTime.now());
 
         Resena guardada = resenaRepository.save(resena);
@@ -83,6 +84,7 @@ public class ResenaService {
                 r.getUsuario().getIdUsuario(),
                 r.getUsuario().getNombre(),
                 r.getComentario(),
+                r.getPuntuacion(),
                 r.getFechaCreacion(),
                 r.getEstado()
         );

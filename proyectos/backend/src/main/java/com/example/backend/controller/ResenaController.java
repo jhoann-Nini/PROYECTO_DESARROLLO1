@@ -59,7 +59,7 @@ public class ResenaController {
             @PathVariable Long idProducto,
             @Valid @RequestBody ResenaRequest request,
             @AuthenticationPrincipal Jwt jwt) {
-        ResenaRequest requestEfectivo = new ResenaRequest(idProducto, request.comentario());
+        ResenaRequest requestEfectivo = new ResenaRequest(idProducto, request.comentario(), request.puntuacion());
         return resenaService.crearOActualizar(requestEfectivo, jwt);
     }
 }

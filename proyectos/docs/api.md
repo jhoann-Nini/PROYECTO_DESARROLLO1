@@ -294,6 +294,10 @@ GET /api/productos?idCategoria=1
 
 La implementación exacta de los parámetros podrá ajustarse durante el desarrollo.
 
+> **Uso actual en el frontend:** el filtro `idCategoria` ya se utiliza en las
+> páginas `/categorias/[slug]`. El frontend obtiene primero los IDs reales desde
+> `GET /api/categorias`, por lo que nunca envía un ID fijo ni inventado.
+
 ---
 
 # 9. Categorías

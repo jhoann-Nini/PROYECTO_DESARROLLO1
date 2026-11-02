@@ -221,11 +221,12 @@ class ResenaSecurityIntegrationTest {
         mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Excelente producto verificado\"}"))
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Excelente producto verificado\",\"puntuacion\":5}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idResena").isNumber())
                 .andExpect(jsonPath("$.idProducto").value(idProductoValido))
                 .andExpect(jsonPath("$.comentario").value("Excelente producto verificado"))
+                .andExpect(jsonPath("$.puntuacion").value(5))
                 .andExpect(jsonPath("$.nombreUsuario").value("Usuario Resenas Test"));
     }
 
@@ -237,7 +238,7 @@ class ResenaSecurityIntegrationTest {
         mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\":999999,\"comentario\":\"Intento de reseña para producto falso\"}"))
+                        .content("{\"idProducto\":999999,\"comentario\":\"Intento de reseña para producto falso\",\"puntuacion\":5}"))
                 .andExpect(status().isNotFound());
     }
 

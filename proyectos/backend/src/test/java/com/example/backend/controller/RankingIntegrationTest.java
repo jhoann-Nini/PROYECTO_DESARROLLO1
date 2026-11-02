@@ -130,13 +130,15 @@ class RankingIntegrationTest {
         return productoRepository.save(p);
     }
 
-    private Valoracion crearValoracion(Producto p, Usuario u, Integer puntuacion) {
-        Valoracion v = new Valoracion();
-        v.setProducto(p);
-        v.setUsuario(u);
-        v.setPuntuacion(puntuacion);
-        v.setFechaCreacion(LocalDateTime.now());
-        return valoracionRepository.save(v);
+    private Resena crearValoracion(Producto p, Usuario u, Integer puntuacion) {
+        Resena r = new Resena();
+        r.setProducto(p);
+        r.setUsuario(u);
+        r.setPuntuacion(puntuacion);
+        r.setComentario("Reseña de prueba con puntuación " + puntuacion);
+        r.setFechaCreacion(LocalDateTime.now());
+        r.setEstado(true);
+        return resenaRepository.save(r);
     }
 
     private ProductoEstablecimiento crearOferta(Producto p, Establecimiento e, BigDecimal precio, Boolean disponible) {
@@ -153,6 +155,7 @@ class RankingIntegrationTest {
         r.setProducto(p);
         r.setUsuario(u);
         r.setComentario(comentario);
+        r.setPuntuacion(5); // valid puntuacion for test fixtures
         r.setFechaCreacion(LocalDateTime.now());
         r.setEstado(estado);
         return resenaRepository.save(r);
@@ -262,6 +265,54 @@ class RankingIntegrationTest {
         mockMvc.perform(get("/api/productos/rankings/mejor-valorados"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    @DisplayName("Excluye reseñas inactivas (borrado lógico) del ranking de mejor valorados")
+    void excluyeResenasInactivasDelRanking() throws Exception {
+        Producto p = crearProducto("Phone Reseña Inactiva", new BigDecimal("900.00"), true);
+        Resena r = new Resena();
+        r.setProducto(p);
+        r.setUsuario(usuario1);
+        r.setComentario("Reseña inactiva");
+        r.setPuntuacion(5);
+        r.setFechaCreacion(LocalDateTime.now());
+        r.setEstado(false);
+        resenaRepository.save(r);
+
+        mockMvc.perform(get("/api/productos/rankings/mejor-valorados"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    @DisplayName("Un registro residual en Valoracion sin Resena equivalente no afecta el ranking de mejor valorados")
+    void registroResidualEnValoracionNoAfectaRankingMejorValorados() throws Exception {
+        // 1. Crear Producto A con una reseña activa de puntuación 5
+        Producto prodA = crearProducto("Phone Producto A", new BigDecimal("800.00"), true);
+        crearResena(prodA, usuario1, "Excelente reseña Producto A", true);
+
+        // 2. Crear Producto B sin reseñas
+        Producto prodB = crearProducto("Phone Producto B", new BigDecimal("600.00"), true);
+
+        // 3. Insertar para Producto B una valoración antigua activa con puntuación 5
+        Valoracion valAntigua = new Valoracion();
+        valAntigua.setProducto(prodB);
+        valAntigua.setUsuario(usuario1);
+        valAntigua.setPuntuacion(5);
+        valAntigua.setFechaCreacion(LocalDateTime.now());
+        valAntigua.setEstado(true);
+        valoracionRepository.save(valAntigua);
+
+        // 4. Consultar GET /api/productos/rankings/mejor-valorados
+        mockMvc.perform(get("/api/productos/rankings/mejor-valorados"))
+                .andExpect(status().isOk())
+                // 5. Verificar que solo aparece Producto A y Producto B no aparece
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idProducto").value(prodA.getIdProducto()))
+                .andExpect(jsonPath("$[0].promedioPuntuacion").value(5.0))
+                .andExpect(jsonPath("$[0].cantidadValoraciones").value(1))
+                .andExpect(jsonPath("$[?(@.idProducto == %d)]".formatted(prodB.getIdProducto())).doesNotExist());
     }
 
     // =========================================================================

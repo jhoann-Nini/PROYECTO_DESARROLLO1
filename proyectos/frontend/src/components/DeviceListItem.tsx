@@ -27,12 +27,12 @@ export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: Dev
     >
       {/* Columna Izquierda: Ranking y Tendencia */}
       <div className="flex flex-col items-center justify-center min-w-[38px] border-r border-slate-200 dark:border-slate-800/80 pr-2.5 sm:pr-3 shrink-0">
-        <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-doto tracking-wider">
+        <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-wider">
           #{item.ranking}
         </span>
         <div className="mt-0.5 flex items-center text-[10px] font-bold">
           {item.ranking === 1 && esTopDeseado ? (
-            <span className="text-emerald-500 dark:text-emerald-400 font-doto flex items-center gap-0.5" title="Top Rendimiento">
+            <span className="text-emerald-500 dark:text-emerald-400 flex items-center gap-0.5" title="Top Rendimiento">
               ★ TOP
             </span>
           ) : item.tendencia === "sube" ? (

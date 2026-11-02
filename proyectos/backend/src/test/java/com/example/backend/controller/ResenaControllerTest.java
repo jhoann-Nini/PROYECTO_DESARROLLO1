@@ -70,6 +70,7 @@ class ResenaControllerTest {
                 5L,
                 "Usuario Tester",
                 "Excelente dispositivo calidad-precio.",
+                5,
                 LocalDateTime.now(),
                 true
         );
@@ -95,6 +96,7 @@ class ResenaControllerTest {
                 8L,
                 "TechFan",
                 "Muy buena pantalla.",
+                4,
                 LocalDateTime.now(),
                 true
         );
@@ -117,6 +119,7 @@ class ResenaControllerTest {
                 5L,
                 "Usuario Tester",
                 "Comentario de prueba.",
+                5,
                 LocalDateTime.now(),
                 true
         );
@@ -125,7 +128,7 @@ class ResenaControllerTest {
 
         mockMvc.perform(post("/api/resenas")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idProducto\":10,\"comentario\":\"Comentario de prueba.\"}"))
+                        .content("{\"idProducto\":10,\"comentario\":\"Comentario de prueba.\",\"puntuacion\":5}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.idResena").value(1))
                 .andExpect(jsonPath("$.comentario").value("Comentario de prueba."));

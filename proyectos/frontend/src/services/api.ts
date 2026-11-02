@@ -275,6 +275,7 @@ export interface ResenaResponse {
   idUsuario: number;
   nombreUsuario: string;
   comentario: string;
+  puntuacion?: number | null;
   fechaCreacion: string;
   estado: boolean;
 }
@@ -285,6 +286,7 @@ export interface ResenaResponse {
 export interface CrearResenaRequest {
   idProducto: number;
   comentario: string;
+  puntuacion?: number;
 }
 
 /**
@@ -357,40 +359,6 @@ export interface ValoracionResponse {
   puntuacion: number;
   fechaCreacion: string;
   estado: boolean;
-}
-
-/**
- * Payload para registrar o actualizar la valoración de un producto en el backend.
- */
-export interface CrearValoracionRequest {
-  idProducto: number;
-  puntuacion: number;
-}
-
-/**
- * Registra o actualiza la valoración de 1 a 5 estrellas de un producto en Spring Boot.
- * Requiere autenticación Bearer con token JWT válido de Supabase.
- *
- * @param request Datos de la valoración (idProducto y puntuacion de 1 a 5).
- * @returns La valoración guardada en la base de datos.
- */
-export async function crearValoracion(
-  request: CrearValoracionRequest,
-): Promise<ValoracionResponse> {
-  if (
-    !Number.isInteger(request.puntuacion) ||
-    request.puntuacion < 1 ||
-    request.puntuacion > 5
-  ) {
-    throw new ApiError(
-      "La puntuación debe ser un número entero entre 1 y 5.",
-      400,
-    );
-  }
-  return apiFetchAutenticado<ValoracionResponse>("/api/valoraciones", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
 }
 
 /**

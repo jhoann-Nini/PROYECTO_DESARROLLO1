@@ -6,7 +6,6 @@ import com.example.backend.entity.ProductoEstablecimiento;
 import com.example.backend.repository.ProductoEstablecimientoRepository;
 import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
-import com.example.backend.repository.ValoracionRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,17 +30,14 @@ import java.util.stream.Collectors;
 public class RankingService {
 
     private final ProductoRepository productoRepository;
-    private final ValoracionRepository valoracionRepository;
     private final ProductoEstablecimientoRepository productoEstablecimientoRepository;
     private final ResenaRepository resenaRepository;
 
     public RankingService(
             ProductoRepository productoRepository,
-            ValoracionRepository valoracionRepository,
             ProductoEstablecimientoRepository productoEstablecimientoRepository,
             ResenaRepository resenaRepository) {
         this.productoRepository = productoRepository;
-        this.valoracionRepository = valoracionRepository;
         this.productoEstablecimientoRepository = productoEstablecimientoRepository;
         this.resenaRepository = resenaRepository;
     }
@@ -58,7 +54,7 @@ public class RankingService {
         int cap = validarLimit(limit);
         Pageable pageable = PageRequest.of(0, cap);
 
-        List<ValoracionStats> statsList = valoracionRepository.findMejorValoradosStats(pageable);
+        List<ValoracionStats> statsList = resenaRepository.findMejorValoradosStats(pageable);
         if (statsList.isEmpty()) {
             return Collections.emptyList();
         }

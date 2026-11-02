@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { UsuarioSesion } from "@/types/producto";
 import { crearResena, type ResenaResponse } from "@/services/api";
 import { contieneLenguajeNoPermitido } from "@/data/resenas";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface OpinionesProductoProps {
   idProducto: number;
@@ -38,6 +39,8 @@ export default function OpinionesProducto({
   onPedirLogin,
 }: OpinionesProductoProps) {
   const [texto, setTexto] = useState("");
+  const [puntuacion, setPuntuacion] = useState<number | null>(null);
+  const [hoverPuntuacion, setHoverPuntuacion] = useState<number>(0);
   const [filtro, setFiltro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
@@ -83,8 +86,11 @@ export default function OpinionesProducto({
       const nueva = await crearResena({
         idProducto,
         comentario: texto.trim(),
+        ...(puntuacion !== null ? { puntuacion } : {}),
       });
       setTexto("");
+      setPuntuacion(null);
+      setHoverPuntuacion(0);
       setExito("Tu opinión fue publicada.");
       onResenaCreada(nueva);
     } catch (err) {
@@ -136,6 +142,42 @@ export default function OpinionesProducto({
           placeholder="Cuenta tu experiencia con el producto…"
           className="mt-2 w-full resize-y rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
         />
+
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-xs font-medium text-[var(--color-subtle)]">Calificación:</span>
+          <div role="group" aria-label="Calificación con estrellas" className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((estrella) => {
+              const activa = (hoverPuntuacion || puntuacion || 0) >= estrella;
+              return (
+                <button
+                  key={estrella}
+                  type="button"
+                  onClick={() => setPuntuacion(estrella)}
+                  onMouseEnter={() => setHoverPuntuacion(estrella)}
+                  onMouseLeave={() => setHoverPuntuacion(0)}
+                  aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
+                  aria-pressed={puntuacion === estrella}
+                  className={`cursor-pointer rounded p-0.5 text-base leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={
+                      activa
+                        ? "text-[var(--color-star)]"
+                        : "text-neutral-400 dark:text-neutral-500"
+                    }
+                  >
+                    {activa ? "★" : "☆"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {puntuacion && (
+            <span className="text-xs font-semibold text-[var(--color-ink)]">{puntuacion} / 5</span>
+          )}
+        </div>
+
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <span className="text-xs text-[var(--color-subtle)]">
             {usuario
@@ -218,9 +260,19 @@ export default function OpinionesProducto({
               className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)]"
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
-                  @{resena.nombreUsuario}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    @{resena.nombreUsuario}
+                  </p>
+                  {resena.puntuacion && (
+                    <span
+                      className="flex items-center text-xs text-[var(--color-star)]"
+                      aria-label={`${resena.puntuacion} de 5 estrellas`}
+                    >
+                      {"★".repeat(resena.puntuacion)}
+                    </span>
+                  )}
+                </div>
                 <time
                   dateTime={resena.fechaCreacion}
                   className="text-xs text-[var(--color-subtle)]"

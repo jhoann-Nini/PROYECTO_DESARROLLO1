@@ -65,6 +65,8 @@ export default function ResenasCliente() {
 
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [comentario, setComentario] = useState("");
+  const [puntuacion, setPuntuacion] = useState<number | null>(null);
+  const [hoverPuntuacion, setHoverPuntuacion] = useState<number>(0);
   const [idProductoComentario, setIdProductoComentario] = useState<number | "">(
     "",
   );
@@ -204,6 +206,7 @@ export default function ResenasCliente() {
       const nueva = await crearResena({
         idProducto: Number(idProductoComentario),
         comentario: comentario.trim(),
+        ...(puntuacion !== null ? { puntuacion } : {}),
       });
 
       setResenas((previas) => [
@@ -211,6 +214,8 @@ export default function ResenasCliente() {
         ...previas.filter((resena) => resena.idResena !== nueva.idResena),
       ]);
       setComentario("");
+      setPuntuacion(null);
+      setHoverPuntuacion(0);
       setExito("Tu reseña fue publicada.");
       setFiltroProducto("todas");
       setOrden("recientes");
@@ -309,6 +314,43 @@ export default function ResenasCliente() {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                  Puntuación
+                </label>
+                <div role="group" aria-label="Calificación de 1 a 5 estrellas" className="mt-1 flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((estrella) => {
+                    const activa = (hoverPuntuacion || puntuacion || 0) >= estrella;
+                    return (
+                      <button
+                        key={estrella}
+                        type="button"
+                        onClick={() => setPuntuacion(estrella)}
+                        onMouseEnter={() => setHoverPuntuacion(estrella)}
+                        onMouseLeave={() => setHoverPuntuacion(0)}
+                        aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
+                        aria-pressed={puntuacion === estrella}
+                        className={`cursor-pointer rounded-md p-1 text-xl leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={
+                            activa
+                              ? "text-[var(--color-star)]"
+                              : "text-neutral-400 dark:text-neutral-500"
+                          }
+                        >
+                          {activa ? "★" : "☆"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                  {puntuacion && (
+                    <span className="ml-2 text-xs font-semibold text-[var(--color-ink)]">{puntuacion} / 5</span>
+                  )}
+                </div>
               </div>
 
               <div>
@@ -536,9 +578,19 @@ export default function ResenasCliente() {
                           {inicialDe(resena.nombreUsuario ?? "")}
                         </span>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
-                            {resena.nombreUsuario || "Usuario"}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
+                              {resena.nombreUsuario || "Usuario"}
+                            </p>
+                            {resena.puntuacion && (
+                              <span
+                                className="flex items-center text-xs text-[var(--color-star)]"
+                                aria-label={`${resena.puntuacion} de 5 estrellas`}
+                              >
+                                {"★".repeat(resena.puntuacion)}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-[var(--color-subtle)]">
                             {formatearFecha(resena.fechaCreacion)}
                           </p>

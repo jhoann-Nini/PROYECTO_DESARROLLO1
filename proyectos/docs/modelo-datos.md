@@ -168,17 +168,18 @@ PRODUCTO
 
 # 8. Entidad: RESEÑA
 
-Representa la opinión escrita por un usuario acerca de un producto.
+Representa la opinión escrita y calificación asignada por un usuario acerca de un producto.
 
 ## Atributos
 
 Campo        | Tipo conceptual | Descripción
-id_reseña    | PK              | Identificador de la reseña
+id_resena    | PK              | Identificador de la reseña
 id_usuario    | FK              | Usuario que realiza la reseña
-id_producto    | FK              | Producto reseñado
-comentario    | TEXT          | Contenido de la reseña
-fecha_creacion | TIMESTAMP      | Fecha de publicación
-estado        | BOOLEAN      | Estado de la reseña
+id_producto   | FK              | Producto reseñado
+comentario    | TEXT           | Contenido o detalle de la reseña
+puntuacion    | INTEGER        | Calificación del producto (escala de 1 a 5, por defecto 5)
+fecha_creacion| TIMESTAMP      | Fecha de publicación
+estado        | BOOLEAN        | Estado de la reseña (activa/inactiva para borrado lógico)
 
 ## Relaciones
 
@@ -205,38 +206,9 @@ RESEÑA
 PRODUCTO
 ---
 
-# 9. Entidad: VALORACION
+# 9. Nota: valoración integrada en RESEÑA
 
-Representa la puntuación que un usuario asigna a un producto.
-
-## Atributos
-
-Campo       | Tipo conceptual | Descripción
-id_valoracion | PK             | Identificador de la valoración
-id_usuario    | FK             | Usuario que realiza la valoración
-id_producto   | FK             | Producto valorado
-puntuacion    | INTEGER         | Puntuación asignada
-fecha_creacion| TIMESTAMP     | Fecha de la valoración
-
-## Relaciones
-
-Un usuario puede realizar valoraciones sobre productos.
-
-USUARIO 1 ───────── N VALORACION
-
-Un producto puede recibir múltiples valoraciones.
-
-PRODUCTO 1 ───────── N VALORACION
-Regla propuesta
-
-La escala exacta de valoración deberá definirse antes de implementar la base de datos.
-
-Por ejemplo, si se utiliza una escala de 1 a 5:
-
-1 = valoración mínima
-5 = valoración máxima
-
-Esta escala queda pendiente de confirmación definitiva por parte del equipo.
+> **Nota:** La puntuación utiliza una escala de 1 a 5 y está integrada directamente en la entidad **RESEÑA** mediante el campo `puntuacion`. No se gestiona como una entidad o funcionalidad independiente de valoraciones.
 
 ---
 

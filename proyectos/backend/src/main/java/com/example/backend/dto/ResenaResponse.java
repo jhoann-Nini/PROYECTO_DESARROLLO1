@@ -10,7 +10,6 @@ public record ResenaResponse(
         String nombreUsuario,
         String comentario,
         Integer puntuacion,
-
         LocalDateTime fechaCreacion,
         Boolean estado
 ) {

@@ -2,16 +2,18 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
+import com.example.backend.dto.ResenaUpdateRequest;
 import com.example.backend.service.ResenaService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Controlador REST para consultar y publicar reseñas de productos.
+ * Controlador REST para consultar, publicar y actualizar reseñas de productos.
  */
 @RestController
 public class ResenaController {
@@ -59,7 +61,57 @@ public class ResenaController {
             @PathVariable Long idProducto,
             @Valid @RequestBody ResenaRequest request,
             @AuthenticationPrincipal Jwt jwt) {
-        ResenaRequest requestEfectivo = new ResenaRequest(idProducto, request.comentario(), request.puntuacion());
+        ResenaRequest requestEfectivo = new ResenaRequest(
+                idProducto,
+                request.comentario(),
+                request.puntuacion()
+        );
         return resenaService.crearOActualizar(requestEfectivo, jwt);
+    }
+
+    /**
+     * Actualización protegida de reseña por ID (S2-17). Requiere autenticación Bearer y ser el autor.
+     */
+    @PutMapping("/api/resenas/{idResena}")
+    public ResenaResponse actualizar(
+            @PathVariable Long idResena,
+            @Valid @RequestBody ResenaUpdateRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return resenaService.actualizar(idResena, request, jwt);
+    }
+
+    /**
+     * Actualización protegida de reseña especificando producto y reseña en la ruta (S2-17).
+     */
+    @PutMapping("/api/productos/{idProducto}/resenas/{idResena}")
+    public ResenaResponse actualizarParaProducto(
+            @PathVariable Long idProducto,
+            @PathVariable Long idResena,
+            @Valid @RequestBody ResenaUpdateRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return resenaService.actualizar(idProducto, idResena, request, jwt);
+    }
+
+    /**
+     * Eliminación protegida de reseña por ID (S2-18). Requiere autenticación Bearer y ser el autor o administrador.
+     */
+    @DeleteMapping("/api/resenas/{idResena}")
+    public ResponseEntity<Void> eliminar(
+            @PathVariable Long idResena,
+            @AuthenticationPrincipal Jwt jwt) {
+        resenaService.eliminar(idResena, jwt);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Eliminación protegida de reseña especificando producto y reseña en la ruta (S2-18).
+     */
+    @DeleteMapping("/api/productos/{idProducto}/resenas/{idResena}")
+    public ResponseEntity<Void> eliminarParaProducto(
+            @PathVariable Long idProducto,
+            @PathVariable Long idResena,
+            @AuthenticationPrincipal Jwt jwt) {
+        resenaService.eliminar(idProducto, idResena, jwt);
+        return ResponseEntity.noContent().build();
     }
 }

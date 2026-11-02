@@ -24,9 +24,7 @@ public class Resena {
     private String comentario;
 
     @Column(nullable = false)
-    private Integer puntuacion;
-
-
+    private Integer puntuacion = 5;
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion = LocalDateTime.now();

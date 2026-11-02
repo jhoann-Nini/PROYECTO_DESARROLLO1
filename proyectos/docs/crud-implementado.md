@@ -146,6 +146,63 @@ La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto comp
 
 ---
 
+## Resena (Actualizado S2-17 y S2-18)
+
+Permite consultar reseñas de forma pública y publicarlas/actualizarlas/eliminarlas con autenticación Bearer (Supabase Auth). La puntuación (escala de 1 a 5, por defecto 5) está integrada directamente en la reseña.
+
+| Método | Endpoint | Body | Respuesta |
+| --- | --- | --- | --- |
+| GET | `/api/resenas` | — | `200` — listado de `ResenaResponse` |
+| GET | `/api/resenas?idProducto={id}` | — | `200` — filtradas por producto |
+| GET | `/api/productos/{id}/resenas` | — | `200` — filtradas por producto |
+| POST | `/api/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
+| POST | `/api/productos/{id}/resenas` | `ResenaRequest` | `201` — `ResenaResponse` (autenticado) |
+| PUT | `/api/resenas/{id}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor) |
+| PUT | `/api/productos/{id}/resenas/{idResena}` | `ResenaUpdateRequest` | `200` / `401` / `403` / `404` (solo autor, valida pertenencia al producto) |
+| DELETE | `/api/resenas/{id}` | — | `204` / `401` / `403` / `404` (eliminación lógica: autor o admin) |
+| DELETE | `/api/productos/{id}/resenas/{idResena}` | — | `204` / `401` / `403` / `404` (eliminación lógica: autor o admin, valida pertenencia al producto) |
+
+**ResenaRequest**
+
+```json
+{
+  "idProducto": 1,
+  "comentario": "Gran rendimiento en el día a día.",
+  "puntuacion": 5
+}
+```
+
+`idProducto`: obligatorio en `/api/resenas` (se toma de la ruta en `/api/productos/{id}/resenas`). `comentario`: obligatorio, máx. 1000 caracteres. `puntuacion`: opcional (asigna 5 si es nulo), entero entre 1 y 5.
+
+**ResenaUpdateRequest (S2-17)**
+
+```json
+{
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "puntuacion": 5
+}
+```
+
+`comentario`: obligatorio, máx. 1000 caracteres. `puntuacion`: opcional, entero entre 1 y 5 (si no se proporciona, conserva el valor anterior). No requiere `idProducto`. Requiere que el usuario autenticado sea el autor original de la reseña (`403 Forbidden` en caso contrario). No modifica la fecha original de creación. En la ruta anidada valida que la reseña pertenezca al producto indicado (`404 Not Found` si no coincide).
+
+**ResenaResponse**
+
+```json
+{
+  "idResena": 1,
+  "idProducto": 1,
+  "nombreProducto": "Galaxy S25",
+  "idUsuario": 3,
+  "nombreUsuario": "Carlos Gómez",
+  "comentario": "Gran rendimiento en el día a día.",
+  "puntuacion": 5,
+  "fechaCreacion": "2026-11-01T15:30:00",
+  "estado": true
+}
+```
+
+---
+
 ## Probar rápido con curl
 
 ```bash
@@ -176,8 +233,7 @@ Entidades documentadas en `modelo-datos.md` que **todavía no tienen CRUD**, por
 
 - **Establecimiento** — sin dependencias de reglas pendientes, se puede construir en cualquier momento.
 - **Usuario / Rol** — requieren definir autenticación (¿JWT? ¿sesión?) antes de exponer registro/login.
-- **Resena** — requiere confirmar si un usuario puede editar/borrar su propia reseña, y si se modera contenido.
-- **Valoracion** — requiere confirmar la escala de puntuación (¿1–5? ¿1–10?).
+- **Valoración** — integrada en la entidad `Resena` con puntuación fija de 1 a 5.
 - **ProductoEstablecimiento** — requiere confirmar la cardinalidad usuario–establecimiento (relación N:N con precio/disponibilidad por par).
 
 ## Seguridad y Autorización Implementada

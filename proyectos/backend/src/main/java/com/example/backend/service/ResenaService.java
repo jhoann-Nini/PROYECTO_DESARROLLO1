@@ -8,14 +8,14 @@ import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Servicio de negocio para la consulta y registro de reseñas de productos.
+ * Orquestador de reseñas. No abre transacciones propias; delega en componentes
+ * transaccionales independientes (ResenaCreateTransaction y ResenaUpdateHelper).
  */
 @Service
 public class ResenaService {
@@ -23,13 +23,19 @@ public class ResenaService {
     private final ResenaRepository resenaRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioService usuarioService;
+    private final ResenaUpdateHelper resenaUpdateHelper;
+    private final ResenaCreateTransaction resenaCreateTransaction;
 
     public ResenaService(ResenaRepository resenaRepository,
                          ProductoRepository productoRepository,
-                         UsuarioService usuarioService) {
+                         UsuarioService usuarioService,
+                         ResenaUpdateHelper resenaUpdateHelper,
+                         ResenaCreateTransaction resenaCreateTransaction) {
         this.resenaRepository = resenaRepository;
         this.productoRepository = productoRepository;
         this.usuarioService = usuarioService;
+        this.resenaUpdateHelper = resenaUpdateHelper;
+        this.resenaCreateTransaction = resenaCreateTransaction;
     }
 
     @Transactional(readOnly = true)
@@ -46,34 +52,32 @@ public class ResenaService {
         return resenas.stream().map(this::toResponse).toList();
     }
 
-    @Transactional
+    /**
+     * Orquestador que delega la lógica de creación/actualización a componentes transaccionales separados.
+     */
     public ResenaResponse crearOActualizar(ResenaRequest request, Jwt jwt) {
-        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
-
-        Producto producto = productoRepository.findById(request.idProducto())
-                .filter(p -> Boolean.TRUE.equals(p.getEstado()))
-                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id " + request.idProducto()));
-
-        String comentarioLimpio = request.comentario().trim();
-
-        // Si el usuario ya tiene una reseña activa para este producto, se actualiza el comentario y la fecha
-        Resena resena = resenaRepository.findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
-                usuario.getIdUsuario(),
-                producto.getIdProducto()
-        ).orElseGet(() -> {
-            Resena nueva = new Resena();
-            nueva.setUsuario(usuario);
-            nueva.setProducto(producto);
-            nueva.setEstado(true);
-            return nueva;
-        });
-
-        resena.setComentario(comentarioLimpio);
-        resena.setPuntuacion(request.puntuacion());
-        resena.setFechaCreacion(LocalDateTime.now());
-
-        Resena guardada = resenaRepository.save(resena);
-        return toResponse(guardada);
+        try {
+            return resenaCreateTransaction.crearOActualizar(request, jwt);
+        } catch (org.springframework.dao.DataIntegrityViolationException ex) {
+            // Identificar la violación concreta del índice único parcial
+            String constraintName = null;
+            Throwable cause = ex.getCause();
+            if (cause instanceof org.hibernate.exception.ConstraintViolationException cve) {
+                constraintName = cve.getConstraintName();
+            }
+            if ("uk_resena_usuario_producto_activa".equals(constraintName)) {
+                // Recuperar y actualizar en nueva transacción
+                Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+                Producto producto = productoRepository.findById(request.idProducto())
+                        .filter(p -> Boolean.TRUE.equals(p.getEstado()))
+                        .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id " + request.idProducto()));
+                String comentarioLimpio = request.comentario().trim();
+                Resena actualizada = resenaUpdateHelper.actualizarResenaExistente(request, usuario, producto, comentarioLimpio);
+                return toResponse(actualizada);
+            }
+            // Propagar cualquier otro error de integridad
+            throw ex;
+        }
     }
 
     private ResenaResponse toResponse(Resena r) {

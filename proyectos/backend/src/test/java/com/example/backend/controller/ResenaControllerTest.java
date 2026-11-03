@@ -18,6 +18,7 @@ import com.example.backend.dto.ResenaResponse;
 import com.example.backend.dto.ResenaUpdateRequest;
 import com.example.backend.exception.GlobalExceptionHandler;
 import com.example.backend.exception.ResourceNotFoundException;
+import com.example.backend.exception.TooManyRequestsException;
 import com.example.backend.service.ResenaService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -201,6 +202,21 @@ class ResenaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\":10,\"comentario\":\"" + comentarioLargo + "\",\"puntuacion\":5}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /api/resenas cuando se supera el límite de 5 reseñas por hora devuelve 429 Too Many Requests (S2-32)")
+    void crearResenaSuperaLimiteReturnsTooManyRequests() throws Exception {
+        when(resenaService.crearOActualizar(any(ResenaRequest.class), any()))
+                .thenThrow(new TooManyRequestsException(ResenaService.MENSAJE_LIMITE_RESENAS));
+
+        mockMvc.perform(post("/api/resenas")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":10,\"comentario\":\"Intento que supera límite.\",\"puntuacion\":5}"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.status").value(429))
+                .andExpect(jsonPath("$.error").value("Too Many Requests"))
+                .andExpect(jsonPath("$.message").value("Has alcanzado el límite de 5 reseñas por hora. Intenta de nuevo más tarde."));
     }
 
     // =========================================================================

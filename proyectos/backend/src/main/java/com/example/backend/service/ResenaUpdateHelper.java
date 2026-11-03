@@ -31,7 +31,6 @@ public class ResenaUpdateHelper {
                 .orElseThrow(() -> new IllegalStateException("Reseña activa no encontrada tras violación de unicidad"));
         existente.setComentario(comentarioLimpio);
         existente.setPuntuacion(request.puntuacion());
-        existente.setFechaCreacion(java.time.LocalDateTime.now());
         return resenaRepository.save(existente);
     }
 }

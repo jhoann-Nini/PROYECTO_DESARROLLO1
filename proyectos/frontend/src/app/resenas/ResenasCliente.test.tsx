@@ -14,6 +14,7 @@ import type {
   UsuarioSesion,
 } from "@/types/producto";
 import type { ResenaResponse } from "@/services/api";
+import { REGLAS_RESENAS } from "@/data/resenas";
 
 const usuarioMock: UsuarioSesion = {
   id: "auth-1",
@@ -267,6 +268,66 @@ describe("ResenasCliente", () => {
     });
     expect(screen.getByText("Tu reseña fue publicada.")).toBeDefined();
     expect(screen.getByText("Mi nueva reseña.")).toBeDefined();
+  });
+
+  it("muestra el mensaje oficial cuando la reseña ya existe (409)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.duplicada, 409),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Ya has valorado este producto. Puedes editar tu reseña existente.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
+  });
+
+  it("muestra el mensaje oficial al superar el límite por hora (429)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.limite, 429),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Has alcanzado el límite de 5 reseñas por hora. Intenta de nuevo más tarde.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
   });
 
   it("muestra el error de carga y permite reintentar", async () => {

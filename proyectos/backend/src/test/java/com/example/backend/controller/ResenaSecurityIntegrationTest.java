@@ -1,8 +1,10 @@
 package com.example.backend.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -251,5 +253,298 @@ class ResenaSecurityIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"   \"}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /api/resenas con comentario superior a 1000 caracteres devuelve 400 Bad Request")
+    void postResenaComentarioExcesivoDevuelve400() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+        String comentarioLargo = "A".repeat(1001);
+
+        mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"" + comentarioLargo + "\",\"puntuacion\":5}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    // =========================================================================
+    // Pruebas de integración S2-17: Actualización de reseñas (PUT)
+    // =========================================================================
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} anónimo devuelve 401 Unauthorized (S2-17)")
+    void putResenaAnonimoDevuelve401() throws Exception {
+        mockMvc.perform(put("/api/resenas/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento anónimo de edición\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} por el autor auténtico actualiza en BD y devuelve 200 OK (S2-17)")
+    void putResenaAutorActualizaCorrectamente() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        // 1. Crear reseña inicial con puntuación 3
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"puntuacion\":3}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        var fechaOriginal = resenaRepository.findById(idResena).orElseThrow().getFechaCreacion();
+
+        // 2. Actualizar reseña con nuevos datos y puntuación 5
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario modificado con éxito\",\"puntuacion\":5}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(idResena))
+                .andExpect(jsonPath("$.comentario").value("Comentario modificado con éxito"))
+                .andExpect(jsonPath("$.puntuacion").value(5));
+
+        // 3. Verificar en BD que comentario y puntuación cambiaron, pero fechaCreacion se conserva
+        var resenaActualizada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals("Comentario modificado con éxito", resenaActualizada.getComentario());
+        org.junit.jupiter.api.Assertions.assertEquals(5, resenaActualizada.getPuntuacion());
+        org.junit.jupiter.api.Assertions.assertEquals(fechaOriginal, resenaActualizada.getFechaCreacion());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} sin puntuación conserva la puntuación anterior (S2-17)")
+    void putResenaSinPuntuacionConservaPuntuacionAnterior() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        // 1. Crear reseña inicial con puntuación 4
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Comentario inicial\",\"puntuacion\":4}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Actualizar solo comentario
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Comentario actualizado sin puntuación\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idResena").value(idResena))
+                .andExpect(jsonPath("$.comentario").value("Comentario actualizado sin puntuación"))
+                .andExpect(jsonPath("$.puntuacion").value(4));
+
+        var resenaActualizada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(4, resenaActualizada.getPuntuacion());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} sobre reseña inactiva devuelve 404 Not Found (S2-17)")
+    void putResenaInactivaDevuelve404() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña que quedará inactiva\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();
+
+        var resena = resenaRepository.findById(idResena).orElseThrow();
+        resena.setEstado(false);
+        resenaRepository.save(resena);
+
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de actualizar reseña inactiva\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} por otro usuario distinto al autor devuelve 403 Forbidden (S2-17)")
+    void putResenaOtroUsuarioDevuelve403() throws Exception {
+        String subImpostor = "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f";
+        Rol rolUsuario = rolRepository.findByNombre("Usuario registrado").orElse(null);
+        Usuario impostor = new Usuario();
+        impostor.setNombre("Usuario Impostor");
+        impostor.setCorreo("impostor@example.com");
+        impostor.setSupabaseUid(subImpostor);
+        impostor.setRol(rolUsuario);
+        impostor.setEstado(true);
+        impostor.setFechaRegistro(LocalDateTime.now());
+        usuarioRepository.save(impostor);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenImpostor = generarToken(subImpostor, "impostor@example.com");
+
+        // 1. Crear reseña con el autor
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Opinión original del autor\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Intentar modificar con otro usuario
+        mockMvc.perform(put("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenImpostor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de modificación maliciosa\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("PUT /api/resenas/{id} para reseña inexistente devuelve 404 Not Found (S2-17)")
+    void putResenaInexistenteDevuelve404() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        mockMvc.perform(put("/api/resenas/999999")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Actualización de reseña fantasma\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} anónimo devuelve 401 Unauthorized (S2-18)")
+    void deleteResenaAnonimoDevuelve401() throws Exception {
+        mockMvc.perform(delete("/api/resenas/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} por el autor desactiva lógicamente en BD y devuelve 204 No Content (S2-18)")
+    void deleteResenaAutorDesactivaEnBDYDevuelve204() throws Exception {
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        // 1. Crear reseña
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña que será eliminada por su autor\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Eliminar reseña por el autor
+        mockMvc.perform(delete("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAutor))
+                .andExpect(status().isNoContent());
+
+        // 3. Verificar en BD que estado es false (eliminación lógica)
+        var resenaOpt = resenaRepository.findById(idResena);
+        org.junit.jupiter.api.Assertions.assertTrue(resenaOpt.isPresent());
+        org.junit.jupiter.api.Assertions.assertFalse(resenaOpt.get().getEstado());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} por otro usuario sin permisos devuelve 403 Forbidden (S2-18)")
+    void deleteResenaOtroUsuarioDevuelve403() throws Exception {
+        String subImpostor = "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f90";
+        Rol rolUsuario = rolRepository.findByNombre("Usuario registrado").orElse(null);
+        Usuario impostor = new Usuario();
+        impostor.setNombre("Usuario Impostor Delete");
+        impostor.setCorreo("impostor_delete@example.com");
+        impostor.setSupabaseUid(subImpostor);
+        impostor.setRol(rolUsuario);
+        impostor.setEstado(true);
+        impostor.setFechaRegistro(LocalDateTime.now());
+        usuarioRepository.save(impostor);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenImpostor = generarToken(subImpostor, "impostor_delete@example.com");
+
+        // 1. Crear reseña con el autor
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña protegida contra eliminación ajena\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Intentar eliminar con otro usuario normal
+        mockMvc.perform(delete("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenImpostor))
+                .andExpect(status().isForbidden());
+
+        // 3. Verificar que sigue activa en BD
+        var resenaOpt = resenaRepository.findById(idResena);
+        org.junit.jupiter.api.Assertions.assertTrue(resenaOpt.isPresent());
+        org.junit.jupiter.api.Assertions.assertTrue(resenaOpt.get().getEstado());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} por un Administrador desactiva la reseña y devuelve 204 No Content (S2-18)")
+    void deleteResenaAdminDesactivaEnBDYDevuelve204() throws Exception {
+        String subAdmin = "e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f90a1";
+        Rol rolAdmin = rolRepository.findByNombre("Administrador").orElseGet(() -> {
+            Rol r = new Rol();
+            r.setNombre("Administrador");
+            r.setDescripcion("Rol de administración");
+            return rolRepository.save(r);
+        });
+        Usuario admin = new Usuario();
+        admin.setNombre("Usuario Admin Moderador");
+        admin.setCorreo("admin_moderador@example.com");
+        admin.setSupabaseUid(subAdmin);
+        admin.setRol(rolAdmin);
+        admin.setEstado(true);
+        admin.setFechaRegistro(LocalDateTime.now());
+        usuarioRepository.save(admin);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenAdmin = generarToken(subAdmin, "admin_moderador@example.com");
+
+        // 1. Crear reseña con el usuario autor
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña que será moderada por admin\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        com.fasterxml.jackson.databind.JsonNode json = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta);
+        long idResena = json.get("idResena").asLong();
+
+        // 2. Administrador elimina la reseña por moderación
+        mockMvc.perform(delete("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAdmin))
+                .andExpect(status().isNoContent());
+
+        // 3. Verificar que quedó desactivada en BD
+        var resenaOpt = resenaRepository.findById(idResena);
+        org.junit.jupiter.api.Assertions.assertTrue(resenaOpt.isPresent());
+        org.junit.jupiter.api.Assertions.assertFalse(resenaOpt.get().getEstado());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} para reseña inexistente devuelve 404 Not Found (S2-18)")
+    void deleteResenaInexistenteDevuelve404() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        mockMvc.perform(delete("/api/resenas/999999")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
     }
 }

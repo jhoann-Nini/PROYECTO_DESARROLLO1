@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.repository.query.Param;
 
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
     List<Resena> findByProductoIdProducto(Long idProducto);
@@ -41,5 +43,8 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     @Query("SELECT COUNT(r) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true")
     Long countByProducto(Long idProducto);
+
+    @Query("SELECT COUNT(r) FROM Resena r WHERE r.usuario.idUsuario = :idUsuario AND r.fechaCreacion >= :fechaInicio")
+    long countNuevasResenasEnVentana(@Param("idUsuario") Long idUsuario, @Param("fechaInicio") LocalDateTime fechaInicio);
 }
 

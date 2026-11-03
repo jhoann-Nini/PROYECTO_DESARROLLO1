@@ -24,6 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class ResenaService {
 
+    public static final int MAX_RESENAS_POR_HORA = 5;
+    public static final String MENSAJE_LIMITE_RESENAS = "Has alcanzado el límite de 5 reseñas por hora. Intenta de nuevo más tarde.";
+
     private final ResenaRepository resenaRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioService usuarioService;

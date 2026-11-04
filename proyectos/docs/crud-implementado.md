@@ -146,9 +146,9 @@ La respuesta expone el `id` y el `nombre` de categoría/marca (no el objeto comp
 
 ---
 
-## Resena (Actualizado S2-17 y S2-18)
+## Resena (Actualizado S2-17, S2-18 y S2-19)
 
-Permite consultar reseñas de forma pública y publicarlas/actualizarlas/eliminarlas con autenticación Bearer (Supabase Auth). La puntuación (escala de 1 a 5, por defecto 5) está integrada directamente en la reseña.
+Permite consultar reseñas de forma pública y publicarlas/actualizarlas/eliminarlas con autenticación Bearer (Supabase Auth). La puntuación (escala de 1 a 5, por defecto 5) está integrada directamente en la reseña. Con **S2-19**, el backend valida de forma estricta la propiedad de cada reseña (solo el autor puede editar; solo el autor o admin pueden eliminar; cuentas inactivas son rechazadas con 403 Forbidden).
 
 | Método | Endpoint | Body | Respuesta |
 | --- | --- | --- | --- |

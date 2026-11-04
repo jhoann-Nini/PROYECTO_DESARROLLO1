@@ -550,6 +550,19 @@ Permite eliminar (desactivar de forma lógica) una reseña existente.
 
 ---
 
+### 14.5 Validación de la propiedad de las reseñas en el backend (S2-19)
+
+El backend aplica el principio de **Zero-Trust** y autorización rigurosa del lado del servidor para garantizar que las operaciones sobre reseñas respeten la autoría legítima:
+
+- **Asociación irrefutable en creación (`POST`):** La identidad del autor (`idUsuario`) se obtiene exclusivamente a partir del token JWT validado de Supabase. El cliente no puede inyectar un autor arbitrario en el cuerpo de la petición.
+- **Modificación exclusiva por el autor (`PUT`):** Solo el usuario propietario que creó originalmente la reseña tiene permiso para editarla. Cualquier intento por otro usuario autenticado es rechazado con código `403 Forbidden` (`"No tienes permiso para modificar esta reseña."`).
+- **Eliminación por el autor o Administrador (`DELETE`):** La eliminación (lógica con `estado = false`) solo puede ser ejecutada por el autor legítimo de la reseña o por un usuario con rol `Administrador` (para fines de moderación de contenido). Cualquier otro usuario recibe `403 Forbidden` (`"No tienes permiso para eliminar esta reseña."`).
+- **Control de estado del usuario:** Cuentas de usuario suspendidas o inactivas (`estado = false`) tienen prohibido registrar, modificar o eliminar reseñas, respondiendo con `403 Forbidden` (`"Usuario inactivo o suspendido."`).
+- **Denegación anónima:** Solicitudes sin token Bearer válido reciben de inmediato `401 Unauthorized`.
+- **Correspondencia de producto:** En las rutas anidadas `/api/productos/{productoId}/resenas/{idResena}`, el servidor verifica que la reseña pertenezca efectivamente al producto indicado en la URL, respondiendo `404 Not Found` en caso de discrepancia.
+
+---
+
 # 15. Valoraciones
 
 > **Nota:** La puntuación de productos utiliza una escala de 1 a 5 y está integrada directamente en cada **Reseña**. Por tanto, la calificación y el comentario forman una sola entidad y no se gestionan mediante endpoints independientes de valoraciones.
@@ -957,7 +970,7 @@ Los siguientes elementos se consideran inicialmente planificados:
  [x] Endpoints de categorías.
  [x] Endpoints de marcas.
  [ ] Endpoints de usuarios.
- [x] Endpoints de reseñas (con puntuación integrada de 1 a 5, S2-17 y S2-18).
+ [x] Endpoints de reseñas (con puntuación integrada de 1 a 5, S2-17, S2-18 y validación de propiedad S2-19).
  [x] Valoraciones (unificadas en reseñas mediante el campo puntuacion).
  [ ] Endpoint de comparación.
  [ ] Endpoints de establecimientos.

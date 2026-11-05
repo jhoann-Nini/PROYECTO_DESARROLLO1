@@ -268,7 +268,7 @@ class ResenaPropiedadIntegrationTest {
     // =========================================================================
 
     @Test
-    @DisplayName("[S2-19] PUT /api/resenas/{id} por otro usuario devuelve 403 Forbidden")
+    @DisplayName("[S2-19/S2-20] PUT /api/resenas/{id} por otro usuario devuelve 403 Forbidden")
     void putResena_usuarioNoAutor_devuelve403Forbidden_S2_19() throws Exception {
         String tokenImpostor = generarToken(SUB_IMPOSTOR, "impostor@example.com");
 
@@ -297,7 +297,7 @@ class ResenaPropiedadIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-19] PUT /api/resenas/{id} por el autor legítimo actualiza exitosamente y devuelve 200 OK")
+    @DisplayName("[S2-19/S2-20] PUT /api/resenas/{id} por el autor legítimo actualiza exitosamente y devuelve 200 OK")
     void putResena_autorLegitimo_actualizaExitosamente_S2_19() throws Exception {
         String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
 
@@ -343,7 +343,7 @@ class ResenaPropiedadIntegrationTest {
     // =========================================================================
 
     @Test
-    @DisplayName("[S2-19] DELETE /api/resenas/{id} por otro usuario devuelve 403 Forbidden")
+    @DisplayName("[S2-19/S2-20] DELETE /api/resenas/{id} por otro usuario devuelve 403 Forbidden")
     void deleteResena_usuarioNoAutor_devuelve403Forbidden_S2_19() throws Exception {
         String tokenImpostor = generarToken(SUB_IMPOSTOR, "impostor@example.com");
 
@@ -367,7 +367,7 @@ class ResenaPropiedadIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-19] DELETE /api/resenas/{id} por el autor legítimo desactiva la reseña y devuelve 204 No Content")
+    @DisplayName("[S2-19/S2-20] DELETE /api/resenas/{id} por el autor legítimo desactiva la reseña y devuelve 204 No Content")
     void deleteResena_autorLegitimo_eliminaExitosamente_S2_19() throws Exception {
         String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
 
@@ -476,6 +476,75 @@ class ResenaPropiedadIntegrationTest {
         Resena resenaGuardada = resenaRepository.findById(idNuevaResena).orElseThrow();
         Assertions.assertEquals(idUsuarioAutor, resenaGuardada.getUsuario().getIdUsuario(),
                 "La propiedad debe pertenecer exclusivamente al usuario autenticado por JWT");
+    }
+
+    // =========================================================================
+    // S2-20: Pruebas específicas de permisos de edición y eliminación
+    // =========================================================================
+
+    @Test
+    @DisplayName("[S2-20] PUT /api/resenas/{id} por Administrador no autor devuelve 403 Forbidden")
+    void putResena_administradorNoAutor_devuelve403Forbidden_S2_20() throws Exception {
+        String tokenAdmin = generarToken(SUB_ADMIN, "admin@example.com");
+
+        mockMvc.perform(put("/api/resenas/" + idResenaAutor)
+                        .header("Authorization", "Bearer " + tokenAdmin)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de administrador de alterar reseña ajena\"}"))
+                .andExpect(status().isForbidden());
+
+        Resena resenaBd = resenaRepository.findById(idResenaAutor).orElseThrow();
+        Assertions.assertEquals("Reseña legítima creada por el autor.", resenaBd.getComentario());
+    }
+
+    @Test
+    @DisplayName("[S2-20] PUT /api/resenas/{id} sobre reseña eliminada (estado=false) devuelve 404 Not Found")
+    void putResena_resenaEliminada_devuelve404NotFound_S2_20() throws Exception {
+        Resena resena = resenaRepository.findById(idResenaAutor).orElseThrow();
+        resena.setEstado(false);
+        resenaRepository.save(resena);
+
+        String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
+
+        mockMvc.perform(put("/api/resenas/" + idResenaAutor)
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento de revivir o editar reseña eliminada\"}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("[S2-20] DELETE /api/resenas/{id} sobre reseña ya eliminada devuelve 404 Not Found")
+    void deleteResena_resenaYaEliminada_devuelve404NotFound_S2_20() throws Exception {
+        Resena resena = resenaRepository.findById(idResenaAutor).orElseThrow();
+        resena.setEstado(false);
+        resenaRepository.save(resena);
+
+        String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
+
+        mockMvc.perform(delete("/api/resenas/" + idResenaAutor)
+                        .header("Authorization", "Bearer " + tokenAutor))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("[S2-20] PUT /api/resenas/{id} con token Bearer inválido o malformado devuelve 401 Unauthorized")
+    void putResena_tokenInvalido_devuelve401Unauthorized_S2_20() throws Exception {
+        mockMvc.perform(put("/api/resenas/" + idResenaAutor)
+                        .header("Authorization", "Bearer token_completamente_invalido_12345")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comentario\":\"Intento con token corrupto\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().exists("WWW-Authenticate"));
+    }
+
+    @Test
+    @DisplayName("[S2-20] DELETE /api/resenas/{id} con token Bearer inválido devuelve 401 Unauthorized")
+    void deleteResena_tokenInvalido_devuelve401Unauthorized_S2_20() throws Exception {
+        mockMvc.perform(delete("/api/resenas/" + idResenaAutor)
+                        .header("Authorization", "Bearer token_falso_invalido"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().exists("WWW-Authenticate"));
     }
 
     @Test

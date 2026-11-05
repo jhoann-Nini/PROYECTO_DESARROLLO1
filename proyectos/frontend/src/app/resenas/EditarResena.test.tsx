@@ -160,6 +160,36 @@ describe("EditarResena — reacciona fiel al error del backend", () => {
         .hasAttribute("disabled")
     ).toBe(false);
   });
+
+
+  it("muestra un mensaje controlado cuando editar falla por falta de permisos o error del servidor (S2-20)", async () => {
+    mockEditar.mockRejectedValueOnce(
+      new Error("No tienes permisos para modificar esta resena.")
+    );
+
+    renderAcciones();
+
+    fireEvent.click(screen.getByRole("button", { name: /Editar/i }));
+    const dialogo = screen.getByRole("dialog");
+    const area = within(dialogo).getByRole("textbox") as HTMLTextAreaElement;
+
+    fireEvent.change(area, {
+      target: { value: "Comentario editado con rechazo de permisos." },
+    });
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: /Guardar/i }),
+    );
+
+    expect(
+      await screen.findByText(/No fue posible completar la/i)
+    ).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(
+      within(screen.getByRole("dialog"))
+        .getByRole("button", { name: /Guardar/i })
+        .hasAttribute("disabled")
+    ).toBe(false);
+  });
 });
 
 describe("EditarResena — accesibilidad del diálogo de edición", () => {

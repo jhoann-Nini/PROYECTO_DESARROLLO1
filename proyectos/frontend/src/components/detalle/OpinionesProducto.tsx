@@ -78,6 +78,12 @@ export default function OpinionesProducto({
   onActualizarStats,
 }: OpinionesProductoProps) {
   const [resenasLocales, setResenasLocales] = useState<ResenaResponse[]>(resenas);
+  const [resenasPrevias, setResenasPrevias] = useState<ResenaResponse[]>(resenas);
+
+  if (resenas !== resenasPrevias) {
+    setResenasPrevias(resenas);
+    setResenasLocales(resenas);
+  }
   const [texto, setTexto] = useState("");
   const [puntuacion, setPuntuacion] = useState<number | null>(null);
   const [hoverPuntuacion, setHoverPuntuacion] = useState<number>(0);
@@ -98,10 +104,6 @@ export default function OpinionesProducto({
   const [idResenaAEliminar, setIdResenaAEliminar] = useState<number | null>(null);
   const [eliminando, setEliminando] = useState(false);
   const [errorEliminacion, setErrorEliminacion] = useState("");
-
-  useEffect(() => {
-    setResenasLocales(resenas);
-  }, [resenas]);
 
   // Manejo de tecla Escape para cerrar el diálogo de confirmación de eliminación
   useEffect(() => {

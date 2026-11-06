@@ -523,6 +523,19 @@ export default function DetalleProductoCliente({
                 ),
               ])
             }
+            onResenaEditada={(editada) =>
+              setResenas((previas) =>
+                previas.map((r) =>
+                  r.idResena === editada.idResena ? editada : r,
+                ),
+              )
+            }
+            onResenaEliminada={(idEliminada) =>
+              setResenas((previas) =>
+                previas.filter((r) => r.idResena !== idEliminada),
+              )
+            }
+            onActualizarStats={refrescarStats}
             onPedirLogin={abrirAuth}
           />
         </div>

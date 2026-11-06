@@ -152,3 +152,41 @@ Las pruebas cubren salud, solicitudes al controlador y persistencia local en H2.
 | **8. Diferencias de resiliencia entre `/` y `/productos`** | Arquitectura / Interfaz | Validado mediante suites automatizadas independientes (`page.test.tsx` confirma resiliencia y fallback en Home; `productos/page.test.tsx` confirma diagnóstico explícito sin mock). | Vitest aprobado en ambas suites de componentes. | **APROBADO** |
 
 **Estado general de CP-S1-10:** **COMPLETADO — PRUEBAS AUTOMATIZADAS**. Se validaron satisfactoriamente los 23 casos de prueba automatizados distribuidos en 3 suites (9 en `api.test.ts`, 7 en `productos/page.test.tsx` y 7 en `page.test.tsx`) simulando respuestas mediante mocks sin dependencias externas de red ni Supabase. No se reclama una cobertura total del código, sino la aprobación y verificación estricta de los 23 escenarios reportados.
+
+
+---
+
+## S2-20: Pruebas de permisos de edición y eliminación de reseñas
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral el control de acceso, propiedad y roles para las operaciones de modificación (PUT /api/resenas/{id}) y eliminación (DELETE /api/resenas/{id}):
+- **Autor legítimo:** Puede modificar el comentario de su reseña (200 OK) y desactivarla mediante borrado lógico (204 No Content).
+- **Usuario no autor (impostor):** Es rechazado con HTTP 403 Forbidden tanto al intentar modificar como al intentar eliminar la reseña de otro usuario.
+- **Administrador:** Cuenta con permisos de moderación para eliminar reseñas ajenas (204 No Content), pero tiene estrictamente restringida la edición del contenido de una reseña ajena (403 Forbidden) para preservar la autenticidad e integridad del texto emitido por el autor original.
+- **Usuario inactivo / suspendido:** Sus peticiones son rechazadas con HTTP 403 Forbidden.
+- **Peticiones anónimas o sin credenciales válidas:** Rechazadas con HTTP 401 Unauthorized y cabecera WWW-Authenticate.
+- **Reseñas eliminadas:** Intentar editar o volver a eliminar una reseña previamente desactivada (estado = false) resulta en HTTP 404 Not Found.
+- **Frontend resiliente:** Los componentes de interfaz (EditarResena.tsx) capturan fallos del backend (403, errores de red o servidor) mostrando mensajes de error controlados al usuario sin provocar caídas de la aplicación ni estados inconsistentes.
+
+### 2. Matriz de pruebas y resultados (Backend & Frontend)
+
+| ID | Operación / Endpoint | Rol / Sujeto | Condición previa | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-20-01** | PUT /api/resenas/{id} | Autor legítimo | Reseña activa (estado = true) | HTTP 200 OK, comentario actualizado | HTTP 200 OK, campo modificado | **APROBADO** |
+| **S2-20-02** | DELETE /api/resenas/{id} | Autor legítimo | Reseña activa | HTTP 204 No Content, estado = false | HTTP 204 No Content | **APROBADO** |
+| **S2-20-03** | PUT /api/resenas/{id} | Usuario no autor (impostor) | Reseña pertenece a otro usuario | HTTP 403 Forbidden, contenido intacto | HTTP 403 Forbidden | **APROBADO** |
+| **S2-20-04** | DELETE /api/resenas/{id} | Usuario no autor (impostor) | Reseña pertenece a otro usuario | HTTP 403 Forbidden, reseña no eliminada | HTTP 403 Forbidden | **APROBADO** |
+| **S2-20-05** | DELETE /api/resenas/{id} | Administrador | Reseña activa de usuario estándar | HTTP 204 No Content (moderación permitida) | HTTP 204 No Content | **APROBADO** |
+| **S2-20-06** | PUT /api/resenas/{id} | Administrador | Reseña pertenece a usuario estándar | HTTP 403 Forbidden (edición denegada a admin) | HTTP 403 Forbidden | **APROBADO** |
+| **S2-20-07** | PUT /api/resenas/{id} | Autor legítimo | Reseña previamente eliminada (estado = false) | HTTP 404 Not Found | HTTP 404 Not Found | **APROBADO** |
+| **S2-20-08** | DELETE /api/resenas/{id} | Autor legítimo | Reseña previamente eliminada (estado = false) | HTTP 404 Not Found | HTTP 404 Not Found | **APROBADO** |
+| **S2-20-09** | PUT /api/resenas/{id} | Sin token / Anónimo | Token ausente | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **APROBADO** |
+| **S2-20-10** | DELETE /api/resenas/{id} | Sin token / Anónimo | Token ausente | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **APROBADO** |
+| **S2-20-11** | PUT /api/resenas/{id} | Token inválido / malformado | Token corrupto | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **APROBADO** |
+| **S2-20-12** | DELETE /api/resenas/{id} | Token inválido / malformado | Token corrupto | HTTP 401 Unauthorized | HTTP 401 Unauthorized | **APROBADO** |
+| **S2-20-13** | UI Modal Editar | Frontend (EditarResena.tsx) | Backend rechaza con 403 o error | Mensaje de error controlado en diálogo, interfaz funcional | Alerta visible, botón reactivado | **APROBADO** |
+| **S2-20-14** | UI Modal Eliminar | Frontend (EditarResena.tsx) | Backend rechaza con 403 o error | Mensaje de error controlado en diálogo, interfaz funcional | Alerta visible, botón reactivado | **APROBADO** |
+
+### 3. Cobertura en suites de prueba
+- **Backend:** com.example.backend.controller.ResenaPropiedadIntegrationTest (20 pruebas aprobadas con MockMvc y H2 en memoria).
+- **Frontend:** proyectos/frontend/src/app/resenas/EditarResena.test.tsx (cobertura de respuestas y captura de errores controlados).

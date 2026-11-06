@@ -52,9 +52,9 @@ public class ResenaService {
             if (!productoRepository.existsById(idProducto)) {
                 throw new ResourceNotFoundException("Producto no encontrado con id " + idProducto);
             }
-            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(idProducto);
+            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(idProducto);
         } else {
-            resenas = resenaRepository.findByEstadoTrueOrderByFechaCreacionDesc();
+            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
         }
         return resenas.stream().map(this::toResponse).toList();
     }

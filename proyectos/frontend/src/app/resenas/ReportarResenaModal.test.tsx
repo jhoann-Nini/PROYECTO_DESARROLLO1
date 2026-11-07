@@ -30,7 +30,7 @@ function renderModal(
 afterEach(() => {
   cleanup();
   mockReportar.mockReset();
-  mockReportar.mockResolvedValue();
+  mockReportar.mockResolvedValue(undefined);
 });
 
 describe("ReportarResenaModal", () => {

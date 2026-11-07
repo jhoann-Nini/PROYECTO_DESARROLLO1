@@ -1,7 +1,9 @@
 "use client";
 
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { ResenaResponse } from "@/services/api";
+import EditarResena from "@/app/resenas/EditarResena";
+import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
 import type { Producto, UsuarioSesion } from "@/types/producto";
 
 export interface OpinionesHomeProps {
@@ -21,6 +23,8 @@ export interface OpinionesHomeProps {
   error: string | null;
   onPublicar: (evento: FormEvent<HTMLFormElement>) => void;
   onPedirLogin: () => void;
+  onResenaEditada: (resena: ResenaResponse) => void;
+  onResenaEliminada: (idResena: number) => void;
 }
 
 export default function OpinionesHome({
@@ -40,7 +44,14 @@ export default function OpinionesHome({
   error,
   onPublicar,
   onPedirLogin,
+  onResenaEditada,
+  onResenaEliminada,
 }: OpinionesHomeProps) {
+  const [resenaAReportar, setResenaAReportar] = useState<number | null>(null);
+  const [resenasReportadas, setResenasReportadas] = useState<Set<number>>(
+    () => new Set(),
+  );
+
   return (
     <section
       aria-labelledby="seccion-opiniones"
@@ -196,6 +207,28 @@ export default function OpinionesHome({
                 <p className="text-sm leading-relaxed text-[var(--color-ink)]">
                   {resena.comentario}
                 </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-hairline)] pt-2">
+                  {usuario && resena.idUsuario === usuario.idUsuario ? (
+                    <EditarResena
+                      resena={resena}
+                      onEditada={onResenaEditada}
+                      onEliminada={onResenaEliminada}
+                    />
+                  ) : usuario && !resenasReportadas.has(resena.idResena) ? (
+                    <button
+                      type="button"
+                      onClick={() => setResenaAReportar(resena.idResena)}
+                      aria-label="Reportar reseña"
+                      className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-500"
+                    >
+                      Reportar
+                    </button>
+                  ) : resenasReportadas.has(resena.idResena) ? (
+                    <span className="text-[11px] text-[var(--color-subtle)]">
+                      Reporte enviado
+                    </span>
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>
@@ -207,6 +240,20 @@ export default function OpinionesHome({
           </div>
         )}
       </div>
+      {resenaAReportar !== null && (
+        <ReportarResenaModal
+          resenaId={resenaAReportar}
+          abierto
+          onCerrar={() => setResenaAReportar(null)}
+          onReportado={async (idResena) => {
+            setResenasReportadas((previas) => {
+              const siguientes = new Set(previas);
+              siguientes.add(idResena);
+              return siguientes;
+            });
+          }}
+        />
+      )}
     </section>
   );
 }

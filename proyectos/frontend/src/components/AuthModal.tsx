@@ -211,7 +211,10 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       if (!data.session?.access_token) {
         registroExitoso = true;
         setExito("¡Registro exitoso! Hemos enviado un enlace de confirmación a tu correo. Por favor revisa tu bandeja de entrada antes de iniciar sesión.");
+        // El registro terminó: salir del formulario de creación para que nunca
+        // permanezca visible el estado «Creando cuenta...».
         setCargando(false);
+        setModo("login");
         return;
       }
 

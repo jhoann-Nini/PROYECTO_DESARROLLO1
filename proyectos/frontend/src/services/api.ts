@@ -323,17 +323,27 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
 }
 
 /**
- * Actualiza el comentario de una reseña existente. Requiere autenticación.
- * Contrato pendiente de MG (TEC-76/77/78); hasta entonces el backend puede
- * responder 404/405 y la UI muestra un error controlado.
+ * Actualiza una reseña existente. Requiere autenticación Bearer y ser el autor.
+ *
+ * @param idResena Identificador de la reseña a modificar.
+ * @param comentario Contenido actualizado de la opinión (obligatorio, máx 1000 caracteres).
+ * @param puntuacion Calificación opcional de 1 a 5 estrellas.
+ * @returns La reseña actualizada en el backend.
  */
 export async function editarResena(
   idResena: number,
   comentario: string,
+  puntuacion?: number | null,
 ): Promise<ResenaResponse> {
+  const payload: { comentario: string; puntuacion?: number } = {
+    comentario: comentario.trim(),
+  };
+  if (puntuacion !== undefined && puntuacion !== null) {
+    payload.puntuacion = puntuacion;
+  }
   return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
     method: "PUT",
-    body: JSON.stringify({ comentario }),
+    body: JSON.stringify(payload),
   });
 }
 

@@ -47,12 +47,14 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerProductos: vi.fn(),
     obtenerMejorValorados: vi.fn(),
     crearResena: vi.fn(),
+    crearReporteResena: vi.fn(),
   };
 });
 
 import {
   ApiError,
   crearResena,
+  crearReporteResena,
   obtenerMejorValorados,
   obtenerProductos,
   obtenerResenas,
@@ -63,6 +65,7 @@ const mockResenas = vi.mocked(obtenerResenas);
 const mockProductos = vi.mocked(obtenerProductos);
 const mockRanking = vi.mocked(obtenerMejorValorados);
 const mockCrear = vi.mocked(crearResena);
+const mockCrearReporte = vi.mocked(crearReporteResena);
 
 const PRODUCTOS: Producto[] = [
   {
@@ -394,7 +397,10 @@ describe("ResenasCliente", () => {
       screen.queryByRole("button", { name: "Eliminar reseña" })
     ).toBeNull();
     expect(
-      screen.getAllByRole("button", { name: "Reportar reseña" })
+      screen.queryByRole("button", { name: "Reportar reseña" })
+    ).toBeNull();
+    expect(
+      screen.getAllByRole("button", { name: "Iniciar sesión para reportar reseña" })
     ).toHaveLength(2);
   });
 
@@ -428,8 +434,9 @@ describe("ResenasCliente", () => {
     ).toBeDefined();
   });
 
-  it("marca la reseña como reportada tras enviar el reporte", async () => {
+  it("marca la reseña como reportada solo después de persistir el reporte", async () => {
     sesionMock.usuario = usuarioMock;
+    mockCrearReporte.mockResolvedValue(undefined);
 
     render(<ResenasCliente />);
 
@@ -447,8 +454,11 @@ describe("ResenasCliente", () => {
       within(dialogo).getByRole("button", { name: "Enviar reporte" })
     );
 
-    expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.getByText("Reporte enviado")).toBeDefined();
+    await waitFor(() => {
+      expect(mockCrearReporte).toHaveBeenCalledWith(2, { motivo: "spam" });
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(screen.getByText("Reporte enviado")).toBeDefined();
+    });
     expect(
       screen.queryByRole("button", { name: "Reportar reseña" })
     ).toBeNull();

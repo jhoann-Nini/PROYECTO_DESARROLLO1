@@ -1,7 +1,14 @@
 // @vitest-environment happy-dom
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { crearReporteResena } from "@/services/api";
 import ReportarResenaModal from "./ReportarResenaModal";
+
+vi.mock("@/services/api", () => ({
+  crearReporteResena: vi.fn(),
+}));
+
+const mockCrearReporte = vi.mocked(crearReporteResena);
 
 function renderModal(
   overrides: {
@@ -19,6 +26,11 @@ function renderModal(
     />
   );
 }
+
+beforeEach(() => {
+  mockCrearReporte.mockReset();
+  mockCrearReporte.mockResolvedValue(undefined);
+});
 
 afterEach(() => {
   cleanup();
@@ -71,7 +83,7 @@ describe("ReportarResenaModal", () => {
       .toBeDefined();
   });
 
-  it("reporta y cierra al enviar un motivo válido", () => {
+  it("persiste el reporte y cierra solo después de una respuesta exitosa", async () => {
     const onReportado = vi.fn();
     const onCerrar = vi.fn();
     renderModal({ onReportado, onCerrar });
@@ -82,8 +94,38 @@ describe("ReportarResenaModal", () => {
       within(dialogo).getByRole("button", { name: "Enviar reporte" })
     );
 
-    expect(onReportado).toHaveBeenCalledWith(7);
-    expect(onCerrar).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockCrearReporte).toHaveBeenCalledWith(7, { motivo: "spam" });
+      expect(onReportado).toHaveBeenCalledWith(7);
+      expect(onCerrar).toHaveBeenCalled();
+    });
+  });
+
+  it("exige descripción cuando el motivo es Otro", async () => {
+    renderModal();
+    const dialogo = screen.getByRole("dialog");
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Otro" }));
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: "Enviar reporte" })
+    );
+
+    expect(
+      screen.getByText("La descripción es obligatoria cuando el motivo es 'otro'.")
+    ).toBeDefined();
+    expect(mockCrearReporte).not.toHaveBeenCalled();
+  });
+
+  it("mantiene el modal abierto y muestra error si falla el backend", async () => {
+    mockCrearReporte.mockRejectedValueOnce(new Error("No autorizado"));
+    renderModal();
+    const dialogo = screen.getByRole("dialog");
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Spam" }));
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: "Enviar reporte" })
+    );
+
+    expect(await screen.findByRole("alert")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeDefined();
   });
 
   it("cierra con Cancelar, Escape y el fondo", () => {

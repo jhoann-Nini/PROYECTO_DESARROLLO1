@@ -633,7 +633,7 @@ export default function ResenasCliente() {
                       />
                     )}
 
-                    {(!usuario || resena.idUsuario !== usuario.idUsuario) &&
+                    {usuario && resena.idUsuario !== usuario.idUsuario &&
                       (resenasReportadas.has(resena.idResena) ? (
                         <p className="mt-3 text-xs font-medium text-[var(--color-positive)]">
                           Reporte enviado
@@ -662,6 +662,17 @@ export default function ResenasCliente() {
                           Reportar
                         </button>
                       ))}
+
+                    {!usuario && !cargandoSesion && (
+                      <button
+                        type="button"
+                        onClick={() => setModalAuthAbierto(true)}
+                        aria-label="Iniciar sesión para reportar reseña"
+                        className={`mt-3 inline-flex cursor-pointer items-center rounded-md px-2 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+                      >
+                        Iniciar sesión para reportar
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>

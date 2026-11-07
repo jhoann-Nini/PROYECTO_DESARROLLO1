@@ -358,6 +358,25 @@ export async function eliminarResena(idResena: number): Promise<void> {
 }
 
 /**
+ * Crea un reporte persistente sobre una reseña. Requiere una sesión autenticada.
+ * La identidad del reportante se obtiene exclusivamente del JWT en el backend.
+ */
+export interface CrearReporteResenaRequest {
+  motivo: "spam" | "lenguaje-ofensivo" | "falso" | "otro";
+  descripcion?: string;
+}
+
+export async function crearReporteResena(
+  idResena: number,
+  request: CrearReporteResenaRequest,
+): Promise<void> {
+  await apiFetchAutenticado<unknown>(`/api/resenas/${idResena}/reportes`, {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
  * Representación de una valoración devuelta por la API REST de TecReview.
  */
 export interface ValoracionResponse {

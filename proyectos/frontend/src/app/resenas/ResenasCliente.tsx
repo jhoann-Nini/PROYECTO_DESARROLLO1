@@ -747,13 +747,13 @@ export default function ResenasCliente() {
           resenaId={resenaAReportar}
           abierto
           onCerrar={() => setResenaAReportar(null)}
-          onReportado={(idResena) =>
+          onReportado={async (idResena) => {
             setResenasReportadas((previas) => {
               const siguientes = new Set(previas);
               siguientes.add(idResena);
               return siguientes;
-            })
-          }
+            });
+          }}
         />
       )}
     </main>

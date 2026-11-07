@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import { reportarResena } from "@/services/api";
 
 const SELECTOR_ENFOCABLES = [
   "a[href]",
@@ -30,14 +31,12 @@ interface ReportarResenaModalProps {
   resenaId: number;
   abierto: boolean;
   onCerrar: () => void;
-  onReportado: (resenaId: number) => void;
+  onReportado: (resenaId: number, motivo: MotivoReporte, descripcion: string) => Promise<void>;
 }
 
 /**
- * Modal accesible para reportar una reseña ajena (TEC-103).
- * La persistencia del reporte queda pendiente de un endpoint de backend; por
- * ahora el envío se resuelve en estado local y el padre marca la reseña como
- * reportada para evitar duplicados.
+ * Modal accesible para reportar una reseña ajena.
+ * El reporte se persiste en Spring Boot y PostgreSQL mediante el endpoint protegido.
  */
 export default function ReportarResenaModal({
   resenaId,
@@ -48,6 +47,7 @@ export default function ReportarResenaModal({
   const [motivo, setMotivo] = useState<MotivoReporte | "">("");
   const [detalle, setDetalle] = useState("");
   const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const dialogoRef = useRef<HTMLDivElement>(null);
   const primerRadioRef = useRef<HTMLInputElement>(null);
 
@@ -59,7 +59,7 @@ export default function ReportarResenaModal({
     primerRadioRef.current?.focus();
 
     function manejarEscape(evento: KeyboardEvent) {
-      if (evento.key === "Escape") {
+      if (evento.key === "Escape" && !enviando) {
         evento.preventDefault();
         onCerrar();
       }
@@ -70,7 +70,7 @@ export default function ReportarResenaModal({
       window.removeEventListener("keydown", manejarEscape);
       document.body.style.overflow = overflowPrevio;
     };
-  }, [abierto, onCerrar]);
+  }, [abierto, onCerrar, enviando]);
 
   if (!abierto) return null;
 
@@ -112,7 +112,7 @@ export default function ReportarResenaModal({
     }
   }
 
-  function enviarReporte(evento: React.FormEvent<HTMLFormElement>) {
+  async function enviarReporte(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setError("");
 
@@ -121,8 +121,29 @@ export default function ReportarResenaModal({
       return;
     }
 
-    onReportado(resenaId);
-    onCerrar();
+    const descripcion = detalle.trim();
+    if (motivo === "otro" && !descripcion) {
+      setError("Cuéntanos qué ocurre para poder enviar el reporte.");
+      return;
+    }
+
+    setEnviando(true);
+    try {
+      await reportarResena(resenaId, {
+        motivo,
+        ...(descripcion ? { descripcion } : {}),
+      });
+      await onReportado(resenaId, motivo, descripcion);
+      onCerrar();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No fue posible enviar el reporte. Inténtalo de nuevo."
+      );
+    } finally {
+      setEnviando(false);
+    }
   }
 
   return (
@@ -130,7 +151,9 @@ export default function ReportarResenaModal({
       <div
         data-testid="backdrop-reporte"
         aria-hidden="true"
-        onClick={onCerrar}
+        onClick={() => {
+          if (!enviando) onCerrar();
+        }}
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
       />
       <div
@@ -204,15 +227,17 @@ export default function ReportarResenaModal({
             <button
               type="button"
               onClick={onCerrar}
+              disabled={enviando}
               className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+              disabled={enviando}
+              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] disabled:cursor-not-allowed disabled:opacity-60 px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
-              Enviar reporte
+              {enviando ? "Enviando…" : "Enviar reporte"}
             </button>
           </div>
         </form>

@@ -858,6 +858,18 @@ export default function Home() {
           error={errorComentario || null}
           onPublicar={manejarEnvioComentario}
           onPedirLogin={() => setModalAuthAbierto(true)}
+          onResenaEditada={(actualizada) =>
+            setResenas((previas) =>
+              previas.map((previa) =>
+                previa.idResena === actualizada.idResena ? actualizada : previa,
+              ),
+            )
+          }
+          onResenaEliminada={(idResena) =>
+            setResenas((previas) =>
+              previas.filter((previa) => previa.idResena !== idResena),
+            )
+          }
         />
 
         <CtaComparador />

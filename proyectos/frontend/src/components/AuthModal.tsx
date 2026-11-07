@@ -39,7 +39,7 @@ async function esperarRespuestaAuth<T>(
 }
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
-  const [modo, setModo] = useState<"login" | "registro">("login");
+  const [modo, setModo] = useState<"login" | "registro" | "recuperar">("login");
 
   // Formulario Login
   const [loginEmail, setLoginEmail] = useState("");

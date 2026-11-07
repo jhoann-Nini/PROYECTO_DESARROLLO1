@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import { crearReporteResena } from "@/services/api";
 
 const SELECTOR_ENFOCABLES = [
   "a[href]",
@@ -35,9 +36,8 @@ interface ReportarResenaModalProps {
 
 /**
  * Modal accesible para reportar una reseña ajena (TEC-103).
- * La persistencia del reporte queda pendiente de un endpoint de backend; por
- * ahora el envío se resuelve en estado local y el padre marca la reseña como
- * reportada para evitar duplicados.
+ * El reporte se persiste en el backend y solo se confirma en la interfaz
+ * cuando el servidor responde correctamente.
  */
 export default function ReportarResenaModal({
   resenaId,
@@ -48,6 +48,7 @@ export default function ReportarResenaModal({
   const [motivo, setMotivo] = useState<MotivoReporte | "">("");
   const [detalle, setDetalle] = useState("");
   const [error, setError] = useState("");
+  const [enviando, setEnviando] = useState(false);
   const dialogoRef = useRef<HTMLDivElement>(null);
   const primerRadioRef = useRef<HTMLInputElement>(null);
 
@@ -112,7 +113,7 @@ export default function ReportarResenaModal({
     }
   }
 
-  function enviarReporte(evento: React.FormEvent<HTMLFormElement>) {
+  async function enviarReporte(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setError("");
 
@@ -121,8 +122,33 @@ export default function ReportarResenaModal({
       return;
     }
 
-    onReportado(resenaId);
-    onCerrar();
+    if (motivo === "otro" && !detalle.trim()) {
+      setError("La descripción es obligatoria cuando el motivo es 'otro'.");
+      return;
+    }
+
+    if (detalle.trim().length > 2000) {
+      setError("La descripción no puede superar los 2000 caracteres.");
+      return;
+    }
+
+    setEnviando(true);
+    try {
+      await crearReporteResena(resenaId, {
+        motivo,
+        ...(detalle.trim() ? { descripcion: detalle.trim() } : {}),
+      });
+      onReportado(resenaId);
+      onCerrar();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No fue posible enviar el reporte. Inténtalo de nuevo.",
+      );
+    } finally {
+      setEnviando(false);
+    }
   }
 
   return (
@@ -130,7 +156,9 @@ export default function ReportarResenaModal({
       <div
         data-testid="backdrop-reporte"
         aria-hidden="true"
-        onClick={onCerrar}
+        onClick={() => {
+          if (!enviando) onCerrar();
+        }}
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
       />
       <div
@@ -204,15 +232,17 @@ export default function ReportarResenaModal({
             <button
               type="button"
               onClick={onCerrar}
+              disabled={enviando}
               className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
             >
               Cancelar
             </button>
             <button
               type="submit"
+              disabled={enviando}
               className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
-              Enviar reporte
+              {enviando ? "Enviando…" : "Enviar reporte"}
             </button>
           </div>
         </form>

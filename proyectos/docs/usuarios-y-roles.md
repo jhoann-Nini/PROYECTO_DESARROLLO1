@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.0 (Fase 1)  
+**Versión:** 2.1 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -247,7 +247,18 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía crea
 - La revocación de rol o asignación debe aplicarse en solicitudes posteriores; no se debe confiar indefinidamente en datos de rol antiguos almacenados en el cliente.
 - No se permitirá que una cuenta se otorgue permisos a sí misma.
 
-**Decisión de modelo actual:** se asume un único rol principal por cuenta, coherente con el modelo actual de usuario-rol. Si se necesita que una misma persona actúe simultáneamente como usuario y representante, deberá definirse si se conserva un rol principal con capacidades adicionales o si se evoluciona a múltiples roles. No se implementará esa ampliación sin aprobación.
+**Decisión aprobada para TecReview: opción B — múltiples roles por cuenta.**
+
+- Una cuenta puede tener simultáneamente uno o varios roles funcionales.
+- Toda cuenta nueva recibe inicialmente el rol `USUARIO_REGISTRADO`; los demás roles se agregan mediante asignación autorizada.
+- Una misma cuenta puede, por ejemplo, ser usuario y representante de uno o varios establecimientos, o combinar otros roles cuando exista una necesidad aprobada.
+- Los permisos efectivos corresponden a la unión de las capacidades concedidas por los roles vigentes de la cuenta, siempre sujetos a las restricciones de propiedad, asignación, estado de cuenta y conflicto de interés descritas en esta especificación.
+- La unión de permisos no elimina restricciones: tener un rol no permite realizar operaciones expresamente prohibidas para el actor en un contexto concreto. Por ejemplo, un moderador debe abstenerse de resolver reportes sobre contenido propio o con conflicto de interés.
+- Para cada operación, el backend debe comprobar la capacidad requerida, la identidad autenticada, el estado de la cuenta y la relación con el recurso. No debe depender de un “rol principal”, del orden de los roles ni de roles enviados por el cliente.
+- Solo un administrador autorizado puede asignar o revocar roles adicionales. Toda modificación debe quedar auditada y aplicarse en las solicitudes posteriores.
+- La asignación de roles no puede permitir autoelevación de privilegios. El rol Administrador seguirá sujeto al procedimiento controlado definido anteriormente.
+
+Esta decisión define el comportamiento esperado, pero no autoriza todavía modificar el esquema de usuarios/roles ni implementar la autorización; eso pertenece a fases posteriores.
 
 ## 10. Requisitos de seguridad verificables
 
@@ -292,7 +303,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se aprueba la matriz de permisos.
 - [ ] Se aprueba la política de moderación y sus estados.
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
-- [ ] Se confirma si una cuenta tendrá un solo rol principal o múltiples roles.
+- [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 

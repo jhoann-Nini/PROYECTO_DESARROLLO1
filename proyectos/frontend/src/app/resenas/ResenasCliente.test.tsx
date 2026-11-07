@@ -402,6 +402,22 @@ describe("ResenasCliente", () => {
     ).toHaveLength(2);
   });
 
+  it("solicita iniciar sesión al intentar reportar sin estar autenticado", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: "Reportar reseña" })[0]
+    );
+
+    expect(
+      screen.getByRole("dialog", { name: /iniciar sesión|crear cuenta|bienvenido/i })
+    ).toBeDefined();
+  });
+
   it("muestra Reportar en reseñas ajenas y no en las propias", async () => {
     sesionMock.usuario = usuarioMock;
 

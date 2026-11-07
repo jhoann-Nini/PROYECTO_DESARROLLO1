@@ -176,15 +176,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
       const { data, error: authError } = await esperarRespuestaAuth(
         supabase.auth.signUp({
-        email: regEmail.trim(),
-        password: regPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            name: regNombre.trim(),
-            full_name: regNombre.trim(),
-            user_name: regUsuario.trim(),
-            usuario: regUsuario.trim(),
+          email: regEmail.trim(),
+          password: regPassword,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              name: regNombre.trim(),
+              full_name: regNombre.trim(),
+              user_name: regUsuario.trim(),
+              usuario: regUsuario.trim(),
+            },
           },
         }),
         "El registro está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",

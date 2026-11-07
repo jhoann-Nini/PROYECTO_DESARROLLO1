@@ -11,6 +11,33 @@ interface AuthModalProps {
   onLoginSuccess: (user: UsuarioSesion) => void;
 }
 
+const AUTH_REQUEST_TIMEOUT_MS = 20_000;
+
+/**
+ * Evita que la interfaz quede bloqueada si Supabase o el backend no responden.
+ * La petición original puede continuar en red, pero la UI recupera el control.
+ */
+async function esperarRespuestaAuth<T>(
+  peticion: Promise<T>,
+  mensaje: string,
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      peticion,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error(mensaje)),
+          AUTH_REQUEST_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
   const [modo, setModo] = useState<"login" | "registro">("login");
 
@@ -57,10 +84,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setCargando(true);
     try {
       const supabase = createClient();
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signInWithPassword({
         email: loginEmail.trim(),
         password: loginPassword,
-      });
+      }),
+      "El inicio de sesión está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("Invalid login credentials")) {
@@ -79,15 +109,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       }
 
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La autenticación respondió, pero el servidor de TecReview no confirmó tu perfil. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         loginExitoso = true;
         setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 600);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error
@@ -143,19 +174,22 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           ? `${window.location.origin}/auth/callback`
           : undefined;
 
-      const { data, error: authError } = await supabase.auth.signUp({
-        email: regEmail.trim(),
-        password: regPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            name: regNombre.trim(),
-            full_name: regNombre.trim(),
-            user_name: regUsuario.trim(),
-            usuario: regUsuario.trim(),
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signUp({
+          email: regEmail.trim(),
+          password: regPassword,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              name: regNombre.trim(),
+              full_name: regNombre.trim(),
+              user_name: regUsuario.trim(),
+              usuario: regUsuario.trim(),
+            },
           },
-        },
-      });
+        }),
+        "El registro está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("User already registered")) {
@@ -177,23 +211,22 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       if (!data.session?.access_token) {
         registroExitoso = true;
         setExito("¡Registro exitoso! Hemos enviado un enlace de confirmación a tu correo. Por favor revisa tu bandeja de entrada antes de iniciar sesión.");
-        setTimeout(() => {
-          onClose();
-        }, 3500);
+        setCargando(false);
         return;
       }
 
       // Si Supabase devuelve la sesión activa de inmediato
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La cuenta se creó, pero TecReview no confirmó tu perfil a tiempo. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         registroExitoso = true;
         setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 800);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error

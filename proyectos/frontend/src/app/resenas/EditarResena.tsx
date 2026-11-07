@@ -34,10 +34,8 @@ interface EditarResenaProps {
 type DialogoAbierto = "editar" | "eliminar" | null;
 
 /**
- * Acciones de edición y eliminación para reseñas propias (TEC-75).
- * Los endpoints `PUT`/`DELETE /api/resenas/{id}` quedan a la espera de los
- * contratos de MG (TEC-76/77/78); si aún no existen, el error del backend se
- * muestra de forma controlada sin bloquear la interfaz.
+ * Acciones de edición y eliminación para reseñas propias.
+ * El backend valida la autoría y realiza la eliminación lógica de la reseña.
  */
 export default function EditarResena({
   resena,

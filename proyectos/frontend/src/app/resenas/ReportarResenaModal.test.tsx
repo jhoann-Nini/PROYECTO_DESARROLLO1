@@ -1,7 +1,14 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { reportarResena } from "@/services/api";
 import ReportarResenaModal from "./ReportarResenaModal";
+
+vi.mock("@/services/api", () => ({
+  reportarResena: vi.fn(),
+}));
+
+const mockReportar = vi.mocked(reportarResena);
 
 function renderModal(
   overrides: {
@@ -22,6 +29,8 @@ function renderModal(
 
 afterEach(() => {
   cleanup();
+  mockReportar.mockReset();
+  mockReportar.mockResolvedValue();
 });
 
 describe("ReportarResenaModal", () => {
@@ -71,7 +80,7 @@ describe("ReportarResenaModal", () => {
       .toBeDefined();
   });
 
-  it("reporta y cierra al enviar un motivo válido", () => {
+  it("persiste el reporte y cierra solo cuando el backend confirma", async () => {
     const onReportado = vi.fn();
     const onCerrar = vi.fn();
     renderModal({ onReportado, onCerrar });
@@ -82,8 +91,32 @@ describe("ReportarResenaModal", () => {
       within(dialogo).getByRole("button", { name: "Enviar reporte" })
     );
 
-    expect(onReportado).toHaveBeenCalledWith(7);
-    expect(onCerrar).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockReportar).toHaveBeenCalledWith(7, { motivo: "spam" });
+      expect(onReportado).toHaveBeenCalledWith(7, "spam", "");
+      expect(onCerrar).toHaveBeenCalled();
+    });
+  });
+
+  it("exige una descripción para el motivo Otro", () => {
+    renderModal();
+    const dialogo = screen.getByRole("dialog");
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Otro" }));
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Enviar reporte" }));
+
+    expect(mockReportar).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert").textContent).toContain("Cuéntanos qué ocurre");
+  });
+
+  it("mantiene el modal abierto si el backend rechaza el reporte", async () => {
+    mockReportar.mockRejectedValueOnce(new Error("Ya has reportado esta reseña previamente."));
+    renderModal();
+    const dialogo = screen.getByRole("dialog");
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Spam" }));
+    fireEvent.click(within(dialogo).getByRole("button", { name: "Enviar reporte" }));
+
+    expect(await screen.findByRole("alert")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeDefined();
   });
 
   it("cierra con Cancelar, Escape y el fondo", () => {

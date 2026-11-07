@@ -47,12 +47,14 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerProductos: vi.fn(),
     obtenerMejorValorados: vi.fn(),
     crearResena: vi.fn(),
+    reportarResena: vi.fn(),
   };
 });
 
 import {
   ApiError,
   crearResena,
+  reportarResena,
   obtenerMejorValorados,
   obtenerProductos,
   obtenerResenas,
@@ -63,6 +65,7 @@ const mockResenas = vi.mocked(obtenerResenas);
 const mockProductos = vi.mocked(obtenerProductos);
 const mockRanking = vi.mocked(obtenerMejorValorados);
 const mockCrear = vi.mocked(crearResena);
+const mockReportar = vi.mocked(reportarResena);
 
 const PRODUCTOS: Producto[] = [
   {
@@ -137,6 +140,7 @@ describe("ResenasCliente", () => {
     sesionMock.usuario = null;
     sesionMock.establecerUsuario.mockClear();
     configurarExito();
+    mockReportar.mockResolvedValue(undefined);
   });
 
   afterEach(() => {
@@ -447,8 +451,11 @@ describe("ResenasCliente", () => {
       within(dialogo).getByRole("button", { name: "Enviar reporte" })
     );
 
-    expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.getByText("Reporte enviado")).toBeDefined();
+    await waitFor(() => {
+      expect(mockReportar).toHaveBeenCalledWith(2, { motivo: "spam" });
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(screen.getByText("Reporte enviado")).toBeDefined();
+    });
     expect(
       screen.queryByRole("button", { name: "Reportar reseña" })
     ).toBeNull();

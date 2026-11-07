@@ -214,20 +214,26 @@ export default function OpinionesHome({
                       onEditada={onResenaEditada}
                       onEliminada={onResenaEliminada}
                     />
-                  ) : usuario && !resenasReportadas.has(resena.idResena) ? (
+                  ) : resenasReportadas.has(resena.idResena) ? (
+                    <span className="text-[11px] text-[var(--color-subtle)]">
+                      Reporte enviado
+                    </span>
+                  ) : (
                     <button
                       type="button"
-                      onClick={() => setResenaAReportar(resena.idResena)}
+                      onClick={() => {
+                        if (!usuario) {
+                          onPedirLogin();
+                          return;
+                        }
+                        setResenaAReportar(resena.idResena);
+                      }}
                       aria-label="Reportar reseña"
                       className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-500"
                     >
                       Reportar
                     </button>
-                  ) : resenasReportadas.has(resena.idResena) ? (
-                    <span className="text-[11px] text-[var(--color-subtle)]">
-                      Reporte enviado
-                    </span>
-                  ) : null}
+                  )}
                 </div>
               </div>
             ))}

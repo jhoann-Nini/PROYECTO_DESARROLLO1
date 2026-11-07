@@ -14,7 +14,11 @@ function renderModal(
   overrides: {
     abierto?: boolean;
     onCerrar?: () => void;
-    onReportado?: (resenaId: number) => void;
+    onReportado?: (
+      resenaId: number,
+      motivo: "spam" | "lenguaje-ofensivo" | "falso" | "otro",
+      descripcion: string
+    ) => Promise<void>;
   } = {}
 ) {
   return render(

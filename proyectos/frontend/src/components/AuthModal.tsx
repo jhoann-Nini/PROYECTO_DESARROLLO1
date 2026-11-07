@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UsuarioSesion } from "@/types/producto";
 import { createClient } from "@/lib/supabase/client";
 import { obtenerMiPerfil, mapearPerfilABusinessSession } from "@/services/api";
@@ -58,7 +58,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  const manejarCierre = () => {
+  const manejarCierre = useCallback(() => {
     setModo("login");
     setLoginEmail("");
     setLoginPassword("");
@@ -72,7 +72,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setExito("");
     setCargando(false);
     onClose();
-  };
+  }, [onClose]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

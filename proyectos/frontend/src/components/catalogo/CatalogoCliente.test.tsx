@@ -87,6 +87,34 @@ describe("CatalogoCliente", () => {
     expect(screen.getByText(/Cargando catálogo/i)).toBeDefined();
   });
 
+  it("muestra los productos sin esperar a que terminen de cargar categorías y marcas", async () => {
+    mockProductos.mockResolvedValue([crearProducto(1)]);
+    let resolverCategorias!: (datos: CategoriaResponse[]) => void;
+    let resolverMarcas!: (datos: MarcaResponse[]) => void;
+    mockCategorias.mockReturnValue(
+      new Promise((resolve) => {
+        resolverCategorias = resolve;
+      })
+    );
+    mockMarcas.mockReturnValue(
+      new Promise((resolve) => {
+        resolverMarcas = resolve;
+      })
+    );
+
+    render(<CatalogoCliente />);
+
+    expect(await screen.findByText("Producto 1")).toBeDefined();
+    expect(screen.queryByText(/Cargando catálogo/i)).toBeNull();
+
+    resolverCategorias(categorias);
+    resolverMarcas(marcas);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Samsung").length).toBeGreaterThan(0);
+    });
+  });
+
   it("muestra un error accesible si la API falla", async () => {
     mockProductos.mockRejectedValue(
       new ApiError("No fue posible conectarse con el servidor.", 0)

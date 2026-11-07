@@ -402,7 +402,7 @@ export async function obtenerMiValoracion(
     if (!token) return null;
     const res = await apiFetchAutenticado<ValoracionResponse>(
       `/api/valoraciones/mi-valoracion?idProducto=${idProducto}`,
-      { method: "GET" },
+      { method: "GET", accessToken: token },
     );
     return res || null;
   } catch (err) {

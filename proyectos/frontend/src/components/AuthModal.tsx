@@ -58,9 +58,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  // Al cerrar el modal, limpiar los formularios para no conservar datos entre aperturas.
-  useEffect(() => {
-    if (isOpen) return;
+  const manejarCierre = () => {
     setModo("login");
     setLoginEmail("");
     setLoginPassword("");
@@ -73,17 +71,18 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setError("");
     setExito("");
     setCargando(false);
-  }, [isOpen]);
+    onClose();
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !cargando) onClose();
+      if (e.key === "Escape" && !cargando) manejarCierre();
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, cargando]);
+  }, [isOpen, manejarCierre, cargando]);
 
   if (!isOpen) return null;
 
@@ -308,7 +307,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   return (
     <div
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) manejarCierre();
       }}
       className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
       role="dialog"
@@ -326,7 +325,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={manejarCierre}
             className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
             aria-label="Cerrar modal de autenticación"
           >

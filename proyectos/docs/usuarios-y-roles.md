@@ -194,6 +194,8 @@ No puede:
 - Conocer o adivinar un identificador no constituye autorización.
 - Los permisos de lectura y escritura deben comprobarse por separado.
 
+**Decisión de validación:** la matriz de permisos de la sección 6 queda aprobada por el equipo para la Fase 1, sin cambios en las operaciones y permisos descritos.
+
 ## 7. Reglas del flujo de moderación
 
 Estados conceptuales del reporte:
@@ -300,7 +302,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 
 - [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
-- [ ] Se aprueba la matriz de permisos.
+- [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
 - [ ] Se aprueba la política de moderación y sus estados.
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend.

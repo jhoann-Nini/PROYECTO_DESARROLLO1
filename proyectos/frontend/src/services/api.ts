@@ -348,8 +348,8 @@ export async function editarResena(
 }
 
 /**
- * Elimina una reseña existente. Requiere autenticación.
- * Contrato pendiente de MG (TEC-76/77/78).
+ * Elimina lógicamente una reseña existente. Requiere autenticación
+ * y que el usuario sea su autor o tenga permisos de administrador.
  */
 export async function eliminarResena(idResena: number): Promise<void> {
   return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {

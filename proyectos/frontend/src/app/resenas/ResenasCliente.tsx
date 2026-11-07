@@ -641,9 +641,13 @@ export default function ResenasCliente() {
                       ) : (
                         <button
                           type="button"
-                          onClick={() =>
-                            setResenaAReportar(resena.idResena)
-                          }
+                          onClick={() => {
+                            if (!usuario) {
+                              setModalAuthAbierto(true);
+                              return;
+                            }
+                            setResenaAReportar(resena.idResena);
+                          }}
                           aria-label="Reportar reseña"
                           className={`mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
                         >

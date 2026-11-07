@@ -1,352 +1,321 @@
-# Usuarios y roles
+# Roles, perfiles y permisos de TecReview
 
-## 1. Información general
-
-**Nombre del proyecto:**
- TecReview
-
-TecReview manejará diferentes tipos de usuarios con permisos y responsabilidades específicas.
-
-La definición de roles permite controlar el acceso a las funcionalidades de la plataforma y establecer qué operaciones puede realizar cada usuario.
-
-Los roles contemplados inicialmente son:
-
-- Visitante
-- Usuario registrado
-- Administrador
-- Representante de establecimiento
+**Documento:** Especificación funcional y de autorización  
+**Versión:** 2.0 (Fase 1)  
+**Estado:** Propuesta para validación  
+**Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
+**Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
 
 ---
 
-# 2. Roles del sistema
+## 1. Objetivo
 
-## 2.1 Visitante
+Definir una única fuente de verdad para los perfiles de TecReview y las operaciones que puede realizar cada uno. Esta definición servirá como contrato para las siguientes fases de desarrollo y pruebas.
 
-Es una persona que accede a TecnoReview sin haber iniciado sesión.
+Los cuatro perfiles funcionales son:
 
-### Funciones permitidas
+1. Administrador.
+2. Moderador.
+3. Usuario.
+4. Tienda (representante de establecimiento).
 
-El visitante podrá:
+**Visitante no es un quinto rol:** es un estado de acceso público para una persona que no ha iniciado sesión. No debe asignarse como rol persistido a una cuenta.
 
-- Acceder a la página principal.
+## 2. Glosario y nombres canónicos
+
+| Nombre funcional | Nombre canónico del rol | Identificador recomendado | Descripción |
+|---|---|---|---|
+| Administrador | Administrador | `ADMINISTRADOR` | Administra y supervisa la plataforma. |
+| Moderador | Moderador | `MODERADOR` | Revisa contenido reportado y aplica decisiones de moderación. |
+| Usuario | Usuario registrado | `USUARIO_REGISTRADO` | Participa en la comunidad y gestiona su propia cuenta y contenido. |
+| Tienda | Representante de establecimiento | `REPRESENTANTE_ESTABLECIMIENTO` | Gestiona únicamente los establecimientos y datos comerciales que tenga asignados. |
+
+Los identificadores son nombres conceptuales recomendados; no implican que ya existan como valores en la base de datos.
+
+### 2.1 Reglas de nomenclatura
+
+- En la interfaz se puede mostrar **Tienda** como nombre sencillo del perfil.
+- En el modelo y en la documentación técnica se conservará **Representante de establecimiento** como nombre descriptivo del rol.
+- No se deben crear dos roles distintos para “Tienda” y “Representante de establecimiento”.
+- “Usuario” en esta matriz significa usuario registrado y autenticado.
+- “Visitante” significa persona no autenticada y se controla como acceso público, no como rol asignado.
+
+## 3. Principios de autorización
+
+1. **Denegar por defecto:** toda operación no permitida explícitamente queda prohibida.
+2. **Backend como autoridad:** ocultar botones o rutas en el frontend no concede ni protege permisos por sí solo.
+3. **Mínimo privilegio:** cada perfil recibe solo los permisos necesarios para su función.
+4. **Identidad confiable:** el backend obtiene la identidad del usuario desde el JWT validado; no confía en un `idUsuario`, correo o rol enviado libremente por el cliente.
+5. **Propiedad de recursos:** usuario y tienda solo pueden modificar recursos propios o expresamente asignados.
+6. **Separación de funciones:** moderar contenido no concede permisos para administrar el catálogo ni los roles.
+7. **Trazabilidad:** las decisiones administrativas y de moderación deben poder asociarse al actor, fecha, recurso y resultado.
+8. **Validación en cada solicitud:** el backend vuelve a comprobar que la cuenta esté activa y que el permiso siga vigente.
+9. **Respuestas seguras:** las operaciones no autorizadas no deben revelar datos privados del recurso.
+10. **Sin autoasignación:** ningún usuario puede elevar su propio rol desde el frontend o mediante una petición manipulada.
+
+## 4. Definición de perfiles
+
+### 4.1 Administrador
+
+**Responsabilidad:** administración global y supervisión de TecReview.
+
+Puede:
+- Consultar el catálogo y sus datos de referencia.
+- Crear, consultar, actualizar y desactivar productos globales.
+- Crear, consultar, actualizar y desactivar categorías y marcas.
+- Consultar y administrar cuentas de usuario según las operaciones administrativas definidas.
+- Activar o suspender cuentas, con motivo y trazabilidad.
+- Asignar y retirar los roles de moderador y representante de establecimiento.
+- Consultar, supervisar y resolver reportes de contenido.
+- Consultar establecimientos y gestionar sus asignaciones de representantes.
+- Consultar indicadores globales y registros de auditoría.
+
+No debe:
+- Modificar contraseñas directamente ni almacenar credenciales de Supabase.
+- Ejecutar acciones sensibles sin dejar registro de auditoría.
+- Usar la identidad de otro usuario para operar en su nombre.
+
+### 4.2 Moderador
+
+**Responsabilidad:** mantener la calidad y las normas del contenido generado por la comunidad.
+
+Puede:
+- Consultar la cola de reportes pendientes.
+- Consultar el contenido reportado y el contexto necesario para evaluarlo.
+- Marcar un reporte como en revisión.
+- Resolver un reporte como procedente o no procedente.
+- Ocultar o restaurar reseñas cuando la política de moderación lo permita.
+- Registrar el motivo de la decisión.
+- Consultar el historial de reportes y decisiones de moderación.
+- Consultar el catálogo y las reseñas públicas.
+
+No puede:
+- Crear, editar o eliminar productos globales.
+- Administrar categorías o marcas.
+- Crear, suspender o cambiar roles de usuarios.
+- Asignar representantes a establecimientos.
+- Modificar precios o disponibilidad de tiendas.
+- Resolver un reporte sobre contenido propio o en el que tenga conflicto de interés; debe abstenerse y escalarlo al administrador.
+
+### 4.3 Usuario registrado
+
+**Responsabilidad:** participar en TecReview y gestionar su propia actividad.
+
+Puede:
+- Consultar y buscar productos, categorías, marcas y establecimientos públicos.
+- Comparar productos y consultar reseñas y valoraciones.
+- Crear reseñas y valoraciones conforme a las reglas de la plataforma.
+- Editar o retirar sus propias reseñas, mientras la política y el estado del contenido lo permitan.
+- Reportar reseñas de otros usuarios.
+- Consultar el estado de los reportes que él mismo presentó.
+- Gestionar los datos de su propio perfil y preferencias.
+- Gestionar sus propios favoritos, si la funcionalidad está habilitada.
+
+No puede:
+- Modificar reseñas de otras personas.
+- Resolver reportes ni ocultar contenido de terceros.
+- Administrar productos, categorías, marcas o establecimientos.
+- Consultar datos privados de otras cuentas.
+- Cambiar su propio rol o estado de cuenta.
+
+### 4.4 Tienda (representante de establecimiento)
+
+**Responsabilidad:** mantener actualizada la información comercial de los establecimientos que le hayan sido asignados.
+
+Puede:
 - Consultar el catálogo público.
-- Buscar productos.
-- Consultar categorías.
-- Consultar marcas.
-- Consultar el detalle público de los productos.
-- Consultar reseñas y valoraciones disponibles.
-- Consultar establecimientos.
-- Consultar la ubicación de establecimientos mediante el mapa.
-- Acceder al formulario de registro.
-- Acceder al formulario de inicio de sesión.
+- Consultar la información de los establecimientos que representa.
+- Actualizar los campos comerciales autorizados de esos establecimientos.
+- Consultar los productos asociados a sus establecimientos.
+- Gestionar los precios y la disponibilidad de los productos asociados, si la plataforma habilita esa operación.
+- Consultar estadísticas limitadas a sus propios establecimientos.
 
-### Restricciones
+No puede:
+- Consultar o modificar información privada de otros establecimientos.
+- Crear ni administrar categorías o marcas globales.
+- Crear o editar productos del catálogo global, salvo que una futura decisión funcional lo autorice expresamente.
+- Modificar precios, disponibilidad o datos de establecimientos no asignados.
+- Administrar usuarios, roles o reportes de moderación.
+- Resolver reportes o moderar reseñas.
 
-El visitante no podrá:
+La asignación de una tienda a una cuenta debe realizarse por un administrador y verificarse en el backend en cada operación de escritura.
 
-- Registrar reseñas.
-- Registrar valoraciones.
-- Administrar productos.
-- Administrar categorías.
-- Administrar marcas.
-- Administrar establecimientos.
-- Acceder a información privada de otros usuarios.
+## 5. Visitante: acceso público sin rol persistido
 
----
+Una persona visitante puede:
+- Ver la página principal.
+- Consultar y buscar productos, categorías y marcas públicas.
+- Ver detalles, comparaciones y reseñas públicas.
+- Consultar establecimientos y ubicaciones públicas.
+- Acceder a registro e inicio de sesión.
 
-## 2.2 Usuario registrado
+No puede:
+- Crear, editar o eliminar reseñas.
+- Crear reportes.
+- Gestionar favoritos vinculados a una cuenta.
+- Acceder a información privada o ejecutar operaciones de escritura protegidas.
 
-Es una persona que posee una cuenta en TecnoReview y ha iniciado sesión.
+## 6. Matriz de permisos
 
-### Funciones permitidas
+**Leyenda:** P = permitido; O = permitido solo sobre recursos propios/asignados; — = no permitido. Las operaciones no enumeradas se deniegan por defecto.
 
-El usuario registrado podrá:
+| Operación | Visitante | Usuario | Moderador | Administrador | Tienda |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Consultar catálogo público | P | P | P | P | P |
+| Buscar y comparar productos | P | P | P | P | P |
+| Consultar reseñas públicas | P | P | P | P | P |
+| Crear reseña | — | P | P | P | — |
+| Editar/eliminar reseña propia | — | O | O | P | — |
+| Reportar reseña ajena | — | P | P* | P | — |
+| Consultar todos los reportes | — | — | P | P | — |
+| Consultar reportes propios | — | O | O | P | — |
+| Cambiar estado/resolver reportes | — | — | P | P | — |
+| Ocultar/restaurar reseña por moderación | — | — | P | P | — |
+| Gestionar productos globales | — | — | — | P | — |
+| Gestionar categorías | — | — | — | P | — |
+| Gestionar marcas | — | — | — | P | — |
+| Consultar establecimientos públicos | P | P | P | P | P |
+| Consultar establecimiento asignado | — | — | — | P | O |
+| Editar datos de establecimiento | — | — | — | P | O |
+| Gestionar precio/disponibilidad | — | — | — | P | O |
+| Gestionar asignaciones de tiendas | — | — | — | P | — |
+| Consultar/gestionar cuentas | — | O (propia) | — | P | O (propia) |
+| Asignar o cambiar roles | — | — | — | P | — |
+| Consultar auditoría global | — | — | — | P | — |
+| Consultar estadísticas globales | — | — | Limitadas | P | — |
+| Consultar estadísticas de tienda | — | — | — | P | O |
 
-- Consultar productos.
-- Buscar productos.
-- Consultar categorías.
-- Consultar marcas.
-- Consultar detalles de productos.
-- Comparar productos.
-- Consultar reseñas.
-- Registrar reseñas.
-- Registrar valoraciones.
-- Registrar aspectos positivos y negativos sobre productos.
-- Consultar establecimientos.
-- Consultar ubicaciones.
-- Gestionar la información básica de su propia cuenta.
+* Un moderador puede reportar contenido como cualquier participante, pero no puede intervenir en la resolución de un reporte en el que exista conflicto de interés.
 
-### Restricciones
+### 6.1 Alcance de “propio” y “asignado”
 
-El usuario registrado no podrá:
+- **Propio:** el recurso pertenece al usuario autenticado, verificado en backend.
+- **Asignado:** existe una relación vigente entre la cuenta autenticada y el establecimiento.
+- Conocer o adivinar un identificador no constituye autorización.
+- Los permisos de lectura y escritura deben comprobarse por separado.
 
-- Administrar globalmente el catálogo.
-- Crear o eliminar categorías sin autorización.
-- Administrar las cuentas de otros usuarios.
-- Modificar información restringida de establecimientos.
-- Acceder a funciones exclusivas del administrador.
+## 7. Reglas del flujo de moderación
 
----
+Estados conceptuales del reporte:
 
-# 3. Administrador
+| Estado | Significado | Quién puede establecerlo |
+|---|---|---|
+| PENDIENTE | Reporte recibido y aún no revisado | Sistema |
+| EN_REVISION | Un moderador inició la evaluación | Moderador / Administrador |
+| PROCEDENTE | Se confirma el incumplimiento | Moderador / Administrador |
+| NO_PROCEDENTE | No se confirma el incumplimiento | Moderador / Administrador |
+| ESCALADO | Requiere decisión administrativa o existe conflicto | Moderador |
+| CERRADO | La decisión quedó registrada y finalizada | Moderador / Administrador |
 
-El administrador es el usuario encargado de administrar y supervisar la información principal de la plataforma.
+Reglas:
+- Toda resolución debe registrar actor, fecha, motivo, reporte y acción aplicada.
+- Un reporte no debe desaparecer al resolverse; debe conservar su historial.
+- La cantidad de reportes puede activar una revisión o una medida automática provisional, pero no debe sustituir la decisión trazable de moderación.
+- El autor de una reseña debe poder conocer el estado público de su contenido sin acceder a datos privados de quien reportó.
+- Los reportes duplicados deben controlarse según una regla de unicidad definida en la fase de implementación.
 
-### Funciones permitidas
+## 8. Reglas de relación entre cuentas y establecimientos
 
-El administrador podrá:
+La autorización de tienda requiere una relación explícita entre la cuenta y el establecimiento. No basta con recibir `idEstablecimiento` desde el frontend.
 
-- Gestionar productos.
-- Crear productos.
-- Consultar productos.
-- Actualizar productos.
-- Eliminar productos.
-- Gestionar categorías.
-- Crear categorías.
-- Consultar categorías.
-- Actualizar categorías.
-- Eliminar categorías cuando corresponda.
-- Gestionar marcas.
-- Crear marcas.
-- Consultar marcas.
-- Actualizar marcas.
-- Eliminar marcas cuando corresponda.
-- Gestionar establecimientos.
-- Consultar información de usuarios según los permisos establecidos.
-- Supervisar el contenido de la plataforma.
-- Realizar operaciones administrativas necesarias para mantener el sistema.
+Reglas obligatorias:
+- La asignación la realiza un administrador.
+- Toda modificación verifica en backend que el establecimiento está asignado a la cuenta.
+- La revocación de una asignación debe retirar inmediatamente la capacidad de escritura.
+- Una cuenta no puede asignarse a sí misma un establecimiento.
+- Debe quedar historial de quién asignó o revocó la representación.
 
-### Restricciones
+**Decisión pendiente antes de implementar la fase de tienda:** definir la cardinalidad:
+- Opción A: una cuenta representa un único establecimiento.
+- Opción B: una cuenta puede representar varios establecimientos.
+- Opción C: varios representantes pueden gestionar un mismo establecimiento.
 
-Las funciones administrativas deberán estar protegidas mediante autenticación y autorización.
+No se debe diseñar ni migrar la relación de base de datos hasta aprobar esta decisión. Se recomienda soportar varios representantes por establecimiento si el negocio lo necesita, pero no se toma como decisión definitiva en esta fase.
 
-Un usuario que no tenga el rol de administrador no debe poder ejecutar operaciones exclusivas del administrador.
+## 9. Ciclo de vida de los roles
 
----
+- Toda cuenta nueva obtiene el rol Usuario registrado por defecto.
+- Los roles Moderador y Representante de establecimiento solo pueden asignarse por un administrador autorizado.
+- El rol Administrador debe asignarse mediante un procedimiento controlado, nunca desde el registro público.
+- Los cambios de rol deben quedar auditados.
+- Al suspender una cuenta, se bloquean las operaciones protegidas independientemente del rol.
+- La revocación de rol o asignación debe aplicarse en solicitudes posteriores; no se debe confiar indefinidamente en datos de rol antiguos almacenados en el cliente.
+- No se permitirá que una cuenta se otorgue permisos a sí misma.
 
-# 4. Representante de establecimiento
+**Decisión de modelo actual:** se asume un único rol principal por cuenta, coherente con el modelo actual de usuario-rol. Si se necesita que una misma persona actúe simultáneamente como usuario y representante, deberá definirse si se conserva un rol principal con capacidades adicionales o si se evoluciona a múltiples roles. No se implementará esa ampliación sin aprobación.
 
-Es el usuario autorizado para administrar información correspondiente a un establecimiento tecnológico.
+## 10. Requisitos de seguridad verificables
 
-### Funciones contempladas
+| ID | Requisito | Criterio de aceptación |
+|---|---|---|
+| AUTH-01 | El backend valida firma, emisor y vigencia del JWT | Token inválido/expirado recibe 401 |
+| AUTH-02 | Toda operación protegida deniega por defecto | Sin permiso recibe 403 |
+| AUTH-03 | El rol no se acepta desde el body ni query del cliente | Manipular rol enviado no eleva privilegios |
+| AUTH-04 | Usuario solo modifica recursos propios | Intento sobre recurso ajeno es rechazado |
+| AUTH-05 | Tienda solo modifica establecimientos asignados | ID de otra tienda es rechazado |
+| AUTH-06 | Moderador no administra catálogo ni usuarios | Intentos directos a API son rechazados |
+| AUTH-07 | Usuario no resuelve reportes | Intento directo a API es rechazado |
+| AUTH-08 | Cuenta suspendida no ejecuta operaciones protegidas | Respuesta de acceso denegado |
+| AUTH-09 | Cambios de rol/asignación son trazables | Actor, fecha, recurso y cambio quedan registrados |
+| AUTH-10 | La UI refleja permisos pero no los sustituye | Pruebas de API confirman la protección independiente del frontend |
 
-El representante podrá:
+## 11. Decisiones de alcance de la Fase 1
 
-- Consultar la información de su establecimiento.
-- Registrar información del establecimiento cuando tenga autorización.
-- Actualizar información permitida.
-- Consultar productos asociados al establecimiento.
-- Mantener actualizada la información de ubicación.
-- Consultar la información pública de otros establecimientos.
+Incluye:
+- Definir nombres canónicos y significado de los perfiles.
+- Diferenciar visitante de usuario autenticado.
+- Definir permisos y límites de cada perfil.
+- Establecer reglas de propiedad y asignación.
+- Definir el flujo conceptual de reportes y moderación.
+- Establecer criterios verificables para las siguientes fases.
 
-### Restricciones
+No incluye:
+- Crear o modificar roles en la base de datos.
+- Crear migraciones SQL.
+- Cambiar entidades, controladores, servicios o endpoints.
+- Crear paneles o pantallas.
+- Cambiar autenticación o configuración de Supabase.
+- Implementar autorización nueva.
+- Cambiar datos de usuarios existentes.
 
-El representante no podrá:
+## 12. Criterios de cierre de la Fase 1
 
-- Administrar establecimientos que no tenga autorizados.
-- Administrar usuarios.
-- Modificar categorías globales sin autorización.
-- Modificar marcas globales sin autorización.
-- Realizar operaciones exclusivas del administrador.
+La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 
-> Los mecanismos exactos para determinar qué establecimiento pertenece a cada representante se definirán durante el desarrollo del backend y el modelo de datos.
+- [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
+- [ ] Se confirma que Visitante es acceso público y no un rol persistido.
+- [ ] Se aprueba la matriz de permisos.
+- [ ] Se aprueba la política de moderación y sus estados.
+- [ ] Se decide la cardinalidad cuenta-establecimiento.
+- [ ] Se confirma si una cuenta tendrá un solo rol principal o múltiples roles.
+- [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
+- [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
----
+**La Fase 2 no debe comenzar mientras exista algún criterio de cierre sin aprobar.** Las pruebas de autorización automatizadas se implementarán en la fase correspondiente; en esta fase se validan la coherencia, cobertura y aprobación de la especificación, no el comportamiento del backend.
 
-# 5. Matriz de permisos
+## 13. Relación con el código existente
 
-| Funcionalidad | Visitante | Usuario registrado | Administrador | Representante |
-|---|:---:|:---:|:---:|:---:|
-| Ver página principal | ✅ | ✅ | ✅ | ✅ |
-| Consultar productos | ✅ | ✅ | ✅ | ✅ |
-| Buscar productos | ✅ | ✅ | ✅ | ✅ |
-| Consultar categorías | ✅ | ✅ | ✅ | ✅ |
-| Consultar marcas | ✅ | ✅ | ✅ | ✅ |
-| Ver detalle de producto | ✅ | ✅ | ✅ | ✅ |
-| Comparar productos | ✅ | ✅ | ✅ | ✅ |
-| Ver reseñas | ✅ | ✅ | ✅ | ✅ |
-| Crear reseña | ❌ | ✅ | ✅ | ✅ |
-| Crear valoración | ❌ | ✅ | ✅ | ✅ |
-| Registrar aspectos positivos/negativos | ❌ | ✅ | ✅ | ✅ |
-| Consultar establecimientos | ✅ | ✅ | ✅ | ✅ |
-| Consultar ubicación | ✅ | ✅ | ✅ | ✅ |
-| Crear producto | ❌ | ❌ | ✅ | ❌ |
-| Actualizar producto | ❌ | ❌ | ✅ | Según autorización |
-| Eliminar producto | ❌ | ❌ | ✅ | ❌ |
-| Crear categoría | ❌ | ❌ | ✅ | ❌ |
-| Actualizar categoría | ❌ | ❌ | ✅ | ❌ |
-| Eliminar categoría | ❌ | ❌ | ✅ | ❌ |
-| Crear marca | ❌ | ❌ | ✅ | ❌ |
-| Actualizar marca | ❌ | ❌ | ✅ | ❌ |
-| Eliminar marca | ❌ | ❌ | ✅ | ❌ |
-| Administrar establecimiento | ❌ | ❌ | ✅ | Según autorización |
-| Administrar usuarios | ❌ | ❌ | ✅ | ❌ |
+Esta especificación es el objetivo funcional. No afirma que todas las capacidades estén implementadas actualmente.
 
----
+Elementos existentes que deberán alinearse en fases posteriores:
+- Rol `Administrador`.
+- Rol `Usuario registrado`.
+- Rol `Representante de establecimiento`.
+- Funciones de frontend `esAdministrador`, `esUsuarioRegistrado` y `esRepresentante`.
+- Autorización administrativa existente para operaciones de catálogo.
+- Reportes y ocultamiento de reseñas existentes.
+- Entidades `Establecimiento` y `ProductoEstablecimiento`.
 
-# 6. Autenticación
+El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos como objetivo, no como funcionalidad ya disponible.
 
-Las funciones que requieran una cuenta deberán estar protegidas mediante autenticación.
+## 14. Referencias de diseño
 
-El proceso general será:
-
-```text
-Usuario
-   ↓
-Ingresa credenciales
-   ↓
-Frontend
-   ↓
-Backend / API REST
-   ↓
-Validación de credenciales
-   ↓
-Identificación del usuario
-   ↓
-Identificación del rol
-   ↓
-Acceso a funcionalidades permitidas
-```
----
-
-El backend será responsable de validar que el usuario tenga los permisos necesarios para ejecutar operaciones protegidas.
-
-# 7. Autorización
-
-La autorización determina qué operaciones puede ejecutar un usuario después de autenticarse.
-
-Por ejemplo:
-
-```
-Usuario registrado
-        ↓
-¿Puede crear producto?
-        ↓
-       NO
-
-Mientras que:
-
-Administrador
-        ↓
-¿Puede crear producto?
-        ↓
-       SÍ
-```
-
-La autorización deberá implementarse principalmente en el backend para evitar que un usuario pueda acceder directamente a operaciones restringidas mediante solicitudes a la API.
-
-# 8. Relación con las funcionalidades
-
-Los roles se relacionan con las principales funcionalidades de TecnoReview de la siguiente manera:
-
-Visitante
-Principalmente consulta información pública.
-
-- Productos
-- Categorías
-- Marcas
-- Reseñas
-- Establecimientos
-- Ubicaciones
-- Usuario registrado
-
-Además de consultar información, puede participar en la plataforma.
-
-- Productos
-- Búsqueda
-- Comparación
-- Reseñas
-- Valoraciones
-- Opiniones
-- Administrador
-
-Administra la información general del sistema.
-
-- Productos
-- Categorías
-- Marcas
-- Establecimientos
-- Usuarios
-- Contenido
-- Representante de establecimiento
-
-Administra información relacionada con su establecimiento según los permisos asignados.
-
-- Establecimiento
-- Información
-- Ubicación
-- Productos asociados
+- TecReview: autorización en backend, JWT validado y propiedad de recursos.
+- PARCI: separación de administración y moderación, políticas de acceso a datos, estados de contenido y trazabilidad de reportes.
+- OWASP ASVS / Authorization: mínimo privilegio, denegación por defecto y validación de permisos en cada solicitud.
 
 ---
 
-# 9. Reglas generales de seguridad
-
-Se deberán considerar las siguientes reglas:
-
-1. Las contraseñas no deben almacenarse directamente en texto plano.
-2. Las credenciales y secretos no deben almacenarse en GitHub.
-3. Las variables sensibles deben manejarse mediante variables de entorno.
-4. Las operaciones administrativas deben estar protegidas.
-5. El backend debe validar el rol antes de ejecutar operaciones restringidas.
-6. Un usuario no debe poder modificar información que no le pertenece.
-7. Los datos recibidos desde el frontend deben validarse en el backend.
-8. Las operaciones de eliminación deben estar restringidas a usuarios autorizados.
-9. Los endpoints protegidos no deben depender únicamente de las restricciones visuales del frontend.
-10. Se deben realizar pruebas para verificar que usuarios sin permisos no puedan acceder a operaciones restringidas.
-
----
-
-# 10. Relación con la base de datos
-
-Los usuarios y roles deberán estar representados en el modelo de datos.
-
-De manera inicial se contempla una estructura similar a:
-
-```
-USUARIO
-   |
-   | pertenece a
-   ↓
-ROL
-```
-
-Un usuario tendrá asociado un rol que permitirá determinar sus permisos dentro de la aplicación.
-
-La estructura definitiva de las tablas, claves y relaciones será especificada en:
-
-docs/modelo-datos.md
-
-# 11. Relación con la API
-
-Los endpoints de la API deberán clasificarse según el nivel de acceso requerido.
-
-Ejemplo conceptual:
-
-```
-GET /api/productos
-        ↓
-Acceso público
-POST /api/resenas
-        ↓
-Requiere usuario autenticado
-POST /api/productos
-        ↓
-Requiere rol administrador
-PUT /api/establecimientos/{id}
-        ↓
-Requiere administrador
-o representante autorizado
-```
-
-Los endpoints definitivos serán documentados posteriormente en:
-
-docs/api.md
-
-# 12. Estado del documento
-
-Versión: 1.0
-Estado: Borrador inicial
-Documento: Usuarios y roles
-Última actualización: Pendiente de registrar
-
-
+**Historial**
+- v1.0: borrador inicial con visitante, usuario, administrador y representante.
+- v2.0: especificación de los cuatro perfiles solicitados, matriz de permisos, reglas de propiedad, moderación y criterios de cierre de Fase 1.

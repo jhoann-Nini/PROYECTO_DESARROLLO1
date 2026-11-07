@@ -225,12 +225,17 @@ Reglas obligatorias:
 - Una cuenta no puede asignarse a sí misma un establecimiento.
 - Debe quedar historial de quién asignó o revocó la representación.
 
-**Decisión pendiente antes de implementar la fase de tienda:** definir la cardinalidad:
-- Opción A: una cuenta representa un único establecimiento.
-- Opción B: una cuenta puede representar varios establecimientos.
-- Opción C: varios representantes pueden gestionar un mismo establecimiento.
+**Decisión aprobada para TecReview: opción B.**
 
-No se debe diseñar ni migrar la relación de base de datos hasta aprobar esta decisión. Se recomienda soportar varios representantes por establecimiento si el negocio lo necesita, pero no se toma como decisión definitiva en esta fase.
+- Una cuenta puede representar varios establecimientos.
+- Un establecimiento puede tener varios representantes.
+- La relación es de muchos a muchos (N:M).
+- La asignación y revocación de cada vínculo corresponde al administrador.
+- Cada vínculo debe poder activarse/desactivarse y conservar trazabilidad de quién lo creó o revocó y cuándo.
+- En cada operación, el backend debe comprobar que la cuenta autenticada tenga una asignación vigente al establecimiento indicado.
+- Revocar un vínculo debe retirar la capacidad de escritura sobre ese establecimiento sin afectar los vínculos de otros representantes.
+
+Esta decisión define el comportamiento esperado, pero no autoriza todavía crear tablas, migraciones ni modificar entidades; eso pertenece a una fase posterior.
 
 ## 9. Ciclo de vida de los roles
 
@@ -286,7 +291,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
 - [ ] Se aprueba la matriz de permisos.
 - [ ] Se aprueba la política de moderación y sus estados.
-- [ ] Se decide la cardinalidad cuenta-establecimiento.
+- [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
 - [ ] Se confirma si una cuenta tendrá un solo rol principal o múltiples roles.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.

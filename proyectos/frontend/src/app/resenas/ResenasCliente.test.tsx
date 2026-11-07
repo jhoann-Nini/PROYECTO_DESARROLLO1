@@ -414,7 +414,7 @@ describe("ResenasCliente", () => {
     );
 
     expect(
-      screen.getByRole("dialog", { name: /iniciar sesión|crear cuenta|bienvenido/i })
+      screen.getByRole("dialog", { name: /Acceso a TecReview/i })
     ).toBeDefined();
   });
 

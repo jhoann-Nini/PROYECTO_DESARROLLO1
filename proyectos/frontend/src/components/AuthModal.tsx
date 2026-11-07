@@ -58,6 +58,23 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  // Al cerrar el modal, limpiar los formularios para no conservar datos entre aperturas.
+  useEffect(() => {
+    if (isOpen) return;
+    setModo("login");
+    setLoginEmail("");
+    setLoginPassword("");
+    setRegNombre("");
+    setRegEmail("");
+    setRegUsuario("");
+    setRegPassword("");
+    setRegConfirmPassword("");
+    setRegTerminos(false);
+    setError("");
+    setExito("");
+    setCargando(false);
+  }, [isOpen]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !cargando) onClose();
@@ -251,6 +268,40 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     }
   };
 
+  const manejarRecuperacion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setExito("");
+
+    const correo = loginEmail.trim();
+    if (!correo) {
+      setError("Escribe el correo electrónico asociado a tu cuenta.");
+      return;
+    }
+
+    setCargando(true);
+    try {
+      const supabase = createClient();
+      const { error: recoveryError } = await esperarRespuestaAuth(
+        supabase.auth.resetPasswordForEmail(correo, {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }),
+        "La solicitud está tardando demasiado. Inténtalo nuevamente.",
+      );
+
+      if (recoveryError) {
+        setError("No fue posible solicitar la recuperación. Verifica el correo e inténtalo nuevamente.");
+        return;
+      }
+
+      setExito("Si existe una cuenta asociada a ese correo, recibirás instrucciones para restablecer tu contraseña.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No fue posible solicitar la recuperación.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
   const claseInput =
     "w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]";
 
@@ -289,6 +340,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             type="button"
             onClick={() => {
               setModo("login");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
@@ -304,6 +363,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             type="button"
             onClick={() => {
               setModo("registro");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
@@ -373,9 +440,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
                 />
                 <span>Recordar sesión</span>
               </label>
-              <a href="#" className="transition-colors hover:text-[var(--color-brand-blue)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setModo("recuperar");
+                  setError("");
+                  setExito("");
+                }}
+                className="transition-colors hover:text-[var(--color-brand-blue)]"
+              >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </button>
             </div>
 
             <button
@@ -386,6 +461,50 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               }`}
             >
               {cargando ? "Iniciando sesión..." : "Entrar a TecReview"}
+            </button>
+          </form>
+        )}
+
+
+        {/* FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA */}
+        {modo === "recuperar" && (
+          <form onSubmit={manejarRecuperacion} className="space-y-4 text-xs">
+            <p className="text-sm text-[var(--color-subtle)]">
+              Escribe tu correo y te enviaremos un enlace para crear una nueva contraseña.
+            </p>
+            <div>
+              <label htmlFor="recovery-email" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Correo electrónico
+              </label>
+              <input
+                id="recovery-email"
+                type="email"
+                autoComplete="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="ejemplo@tecreview.com"
+                className={claseInput}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={cargando}
+              className="w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {cargando ? "Enviando..." : "Enviar enlace de recuperación"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setModo("login");
+                setLoginEmail("");
+                setError("");
+                setExito("");
+              }}
+              className="w-full text-center text-xs font-semibold text-[var(--color-brand-blue)] hover:underline"
+            >
+              Volver a iniciar sesión
             </button>
           </form>
         )}

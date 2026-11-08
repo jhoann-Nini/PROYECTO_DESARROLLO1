@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.2 (Fase 1)  
+**Versión:** 3.3 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -329,6 +329,16 @@ Para la prueba 11 sobre suspensión de un establecimiento se aprueba la **opció
 - La interfaz puede informar el estado de suspensión, pero la restricción debe imponerse en backend y no depender de ocultar botones.
 
 Esta decisión define el comportamiento esperado y sus criterios de aceptación; no significa que el bloqueo ya esté implementado o probado funcionalmente.
+Para la prueba 12 sobre reactivación de un establecimiento se aprueba la **opción A — conservar únicamente los vínculos vigentes**:
+
+- La reactivación devuelve al establecimiento el estado operativo, sujeto a las demás reglas y permisos vigentes.
+- Solo los representantes que mantengan un vínculo vigente con el establecimiento recuperan la capacidad de gestión que les corresponda.
+- Los vínculos revocados antes o durante la suspensión permanecen revocados. La reactivación no los restaura ni crea nuevas asignaciones.
+- La autorización debe comprobar en backend tanto el estado activo del establecimiento como la vigencia del vínculo específico del representante en cada operación.
+- La reactivación debe ser ejecutada por un actor autorizado y quedar registrada en auditoría, con actor, establecimiento, fecha y motivo cuando corresponda.
+- La reactivación del establecimiento no reactiva cuentas personales desactivadas ni restaura roles o permisos revocados de forma independiente.
+
+Esta decisión establece el comportamiento esperado para la reactivación; no significa que el flujo esté implementado o probado funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -376,6 +386,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-09 | Cambios de rol/asignación son trazables | Actor, fecha, recurso y cambio quedan registrados |
 | AUTH-10 | La UI refleja permisos pero no los sustituye | Pruebas de API confirman la protección independiente del frontend |
 | AUTH-11 | Establecimiento suspendido no permite operaciones comerciales | Representantes vinculados reciben denegación en backend; vínculos y cuentas personales permanecen vigentes |
+| AUTH-12 | Reactivación no restaura vínculos revocados | Solo representantes con vínculo vigente recuperan acceso; estado y vínculo se validan en backend |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -409,6 +420,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend, incluida la revocación independiente de un rol sin retirar los demás.
 - [x] Se aprueba que la desactivación de una cuenta bloquee todos sus roles y accesos hasta una reactivación autorizada.
 - [x] Se aprueba que la suspensión de un establecimiento bloquee sus operaciones comerciales en backend, conserve los vínculos con representantes y permita reactivación autorizada y auditada.
+- [x] Se aprueba que la reactivación de un establecimiento conserve únicamente los vínculos vigentes y no restaure representantes, roles ni cuentas revocadas o desactivadas por separado.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -451,3 +463,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.0: aprobación de la revocación independiente de un representante en un establecimiento, sin afectar a los demás representantes.
 - v3.1: aprobación de la autorización contextual por establecimiento, con rechazo HTTP `403` y auditoría cuando una cuenta intenta operar sobre una tienda no asignada.
 - v3.2: aprobación del bloqueo de operaciones comerciales durante la suspensión de un establecimiento, conservando los vínculos de representantes y exigiendo reactivación autorizada y auditada.
+- v3.3: aprobación de la reactivación del establecimiento sin restaurar vínculos de representantes revocados; solo los vínculos vigentes recuperan su alcance de gestión.

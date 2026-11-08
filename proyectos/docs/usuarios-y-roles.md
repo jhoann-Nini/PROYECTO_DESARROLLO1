@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.1 (Fase 1)  
+**Versión:** 3.2 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -318,6 +318,17 @@ Para la prueba 10 de autorización contextual por establecimiento se aprueba la 
 - Una sesión, identificador de tienda enviado por el cliente o selección previa no sustituye la comprobación del vínculo vigente en el backend.
 
 Esta decisión valida el alcance contextual de los permisos: los roles definen capacidades generales y la relación cuenta-establecimiento limita dónde pueden ejercerse. No autoriza todavía implementar endpoints, tablas o migraciones; eso corresponde a la fase de implementación posterior.
+Para la prueba 11 sobre suspensión de un establecimiento se aprueba la **opción A — bloqueo de operaciones**:
+
+- Mientras un establecimiento esté suspendido, ninguno de sus representantes podrá crear, modificar ni eliminar productos, precios o información comercial del establecimiento.
+- La suspensión del establecimiento bloquea las operaciones comerciales de ese recurso; no desactiva las cuentas personales de sus representantes ni les retira otros roles.
+- Los vínculos vigentes entre el establecimiento y sus representantes se conservan durante la suspensión. No se interpretan como revocados.
+- El backend debe comprobar el estado vigente del establecimiento en cada operación comercial protegida y rechazar la solicitud mientras permanezca suspendido, incluso si el representante conserva una sesión activa.
+- La suspensión y la reactivación deben ser acciones autorizadas y auditadas, registrando actor, establecimiento, fecha, motivo cuando corresponda y cambio de estado.
+- Al reactivar el establecimiento, los vínculos que sigan vigentes vuelven a habilitar el alcance de gestión que corresponda; la reactivación no debe restaurar vínculos o permisos revocados por separado.
+- La interfaz puede informar el estado de suspensión, pero la restricción debe imponerse en backend y no depender de ocultar botones.
+
+Esta decisión define el comportamiento esperado y sus criterios de aceptación; no significa que el bloqueo ya esté implementado o probado funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -364,6 +375,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-08 | Cuenta suspendida no ejecuta operaciones protegidas | Respuesta de acceso denegado |
 | AUTH-09 | Cambios de rol/asignación son trazables | Actor, fecha, recurso y cambio quedan registrados |
 | AUTH-10 | La UI refleja permisos pero no los sustituye | Pruebas de API confirman la protección independiente del frontend |
+| AUTH-11 | Establecimiento suspendido no permite operaciones comerciales | Representantes vinculados reciben denegación en backend; vínculos y cuentas personales permanecen vigentes |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -396,6 +408,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba la autorización contextual por establecimiento: los roles no conceden acceso a tiendas sin vínculo vigente; los intentos se rechazan y auditan en backend.
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend, incluida la revocación independiente de un rol sin retirar los demás.
 - [x] Se aprueba que la desactivación de una cuenta bloquee todos sus roles y accesos hasta una reactivación autorizada.
+- [x] Se aprueba que la suspensión de un establecimiento bloquee sus operaciones comerciales en backend, conserve los vínculos con representantes y permita reactivación autorizada y auditada.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -437,3 +450,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.9: aprobación de la revocación independiente de un vínculo cuenta-establecimiento, sin afectar las demás representaciones vigentes.
 - v3.0: aprobación de la revocación independiente de un representante en un establecimiento, sin afectar a los demás representantes.
 - v3.1: aprobación de la autorización contextual por establecimiento, con rechazo HTTP `403` y auditoría cuando una cuenta intenta operar sobre una tienda no asignada.
+- v3.2: aprobación del bloqueo de operaciones comerciales durante la suspensión de un establecimiento, conservando los vínculos de representantes y exigiendo reactivación autorizada y auditada.

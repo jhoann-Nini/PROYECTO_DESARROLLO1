@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.5 (Fase 1)  
+**Versión:** 2.6 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -252,6 +252,14 @@ Para la prueba 4 del flujo de moderación se aprueba la **opción A**:
 - El administrador asignado revisa y resuelve el caso conforme al flujo aprobado para reportes `ESCALADO`.
 - Si no existe un administrador disponible sin conflicto, el reporte permanece sin resolución, se registra la incidencia y se requiere asignación administrativa; nunca se permite que el moderador en conflicto lo resuelva.
 
+Para la prueba 5 del flujo de moderación se aprueba la **opción A**:
+
+- Si un usuario sin capacidad de moderación intenta cambiar el estado o resolver un reporte, el backend rechaza la petición con respuesta HTTP `403 Forbidden`.
+- El estado y el contenido del reporte permanecen sin cambios como resultado de esa petición no autorizada.
+- El sistema registra el intento en la auditoría de seguridad con la identidad disponible del solicitante, la operación intentada, el recurso afectado, la fecha y el resultado de acceso denegado.
+- El registro no debe almacenar contraseñas, tokens ni secretos. Si la petición no permite identificar de forma fiable al solicitante, se registra como intento no autenticado con los datos técnicos permitidos por la política de privacidad.
+- La protección se aplica en backend para todas las rutas y operaciones equivalentes; ocultar botones en frontend no se considera un control de autorización.
+
 ## 8. Reglas de relación entre cuentas y establecimientos
 
 La autorización de tienda requiere una relación explícita entre la cuenta y el establecimiento. No basta con recibir `idEstablecimiento` desde el frontend.
@@ -339,7 +347,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
-- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO` y el bloqueo/escalamiento automático por conflicto de interés).
+- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO`, el bloqueo/escalamiento automático por conflicto de interés y el rechazo auditado de intentos no autorizados).
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
@@ -377,3 +385,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.3: aprobación de la transición automática `NO_PROCEDENTE` → `CERRADO` tras registrar la justificación.
 - v2.4: aprobación de la resolución administrativa de reportes `ESCALADO` y su cierre automático tras registrar y aplicar la decisión.
 - v2.5: aprobación del bloqueo y escalamiento automático cuando un moderador tiene conflicto de interés.
+- v2.6: aprobación del rechazo HTTP `403` y registro de auditoría ante intentos de moderación no autorizados.

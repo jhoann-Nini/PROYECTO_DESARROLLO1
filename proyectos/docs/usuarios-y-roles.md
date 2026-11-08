@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.7 (Fase 1)  
+**Versión:** 2.8 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -298,6 +298,14 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía crea
 - El rol Administrador debe asignarse mediante un procedimiento controlado, nunca desde el registro público.
 - Los cambios de rol deben quedar auditados.
 - Al suspender una cuenta, se bloquean las operaciones protegidas independientemente del rol.
+
+Para la prueba 7 del ciclo de vida de la cuenta se aprueba la **opción A**:
+
+- Cuando una cuenta se desactiva o suspende, se bloquea el acceso a toda la cuenta, no solamente las capacidades de un rol particular.
+- Mientras la cuenta permanezca inactiva, no puede iniciar sesión ni ejecutar operaciones mediante ninguno de sus roles, incluido `USUARIO_REGISTRADO`.
+- El backend debe comprobar el estado vigente de la cuenta en cada operación protegida y rechazar el acceso aunque el cliente conserve una sesión o datos de roles anteriores.
+- La desactivación debe quedar auditada con la cuenta afectada, el actor autorizado que la realizó, la fecha y el motivo cuando corresponda.
+- La reactivación requiere una acción autorizada y debe quedar igualmente registrada. Reactivar la cuenta no restaura roles que hayan sido revocados por separado.
 - La revocación de rol o asignación debe aplicarse en solicitudes posteriores; no se debe confiar indefinidamente en datos de rol antiguos almacenados en el cliente.
 - No se permitirá que una cuenta se otorgue permisos a sí misma.
 
@@ -395,3 +403,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.5: aprobación del bloqueo y escalamiento automático cuando un moderador tiene conflicto de interés.
 - v2.6: aprobación del rechazo HTTP `403` y registro de auditoría ante intentos de moderación no autorizados.
 - v2.7: aprobación de la revocación independiente de un rol, conservando los permisos de los demás roles vigentes.
+- v2.8: aprobación del bloqueo integral de acceso al desactivar una cuenta, con reactivación autorizada y auditada.

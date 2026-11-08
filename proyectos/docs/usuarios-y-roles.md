@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.0 (Fase 1)  
+**Versión:** 4.1 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -423,6 +423,19 @@ Esta decisión define el comportamiento esperado; no significa que el control de
 
 Esta decisión define el comportamiento esperado; no significa que la propagación global de revocaciones esté implementada o probada funcionalmente.
 
+### Prueba 20. Fallo temporal de la verificación de permisos
+
+**Decisión aprobada: opción A — denegar por seguridad (fail closed).**
+
+- Si el backend no puede consultar o verificar de forma confiable los permisos vigentes, debe denegar temporalmente las operaciones protegidas que dependan de esa autorización.
+- El sistema no debe permitir la operación basándose en permisos antiguos, datos cacheados cuya vigencia no pueda garantizarse ni supuestos de autorización.
+- La operación protegida debe responder con un error controlado que indique que no fue posible completar la autorización; no debe presentarse como un rechazo por falta de permiso cuando la causa real sea la indisponibilidad del servicio de autorización. La respuesta no debe revelar detalles internos.
+- Las funciones públicas o no protegidas que no dependan de la fuente de autorización pueden continuar si sus propias condiciones de seguridad y disponibilidad se cumplen.
+- Una vez restablecida la verificación, el backend debe volver a consultar los permisos vigentes antes de permitir nuevas operaciones protegidas. No se deben ejecutar automáticamente operaciones que fueron rechazadas durante la falla.
+- Los fallos de verificación y las operaciones bloqueadas deben registrarse para monitoreo y auditoría, sin almacenar contraseñas, tokens ni secretos.
+
+Esta decisión define el comportamiento esperado; no significa que el manejo de fallos de autorización esté implementado o probado funcionalmente.
+
 ## 9. Ciclo de vida de los roles
 
 - Toda cuenta nueva obtiene el rol Usuario registrado por defecto.
@@ -477,6 +490,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-17 | La revocación de un permiso específico surte efecto durante una sesión activa | La siguiente solicitud se valida con permisos vigentes; acción revocada recibe 403 sin cambios; otras funciones autorizadas siguen disponibles y se registra auditoría |
 | AUTH-18 | La revocación prevalece sobre operaciones aún no confirmadas | La autorización se valida de forma consistente al confirmar; si la revocación se hizo efectiva antes, se cancela la operación sin cambios parciales y se registra auditoría |
 | AUTH-19 | La revocación se aplica a todas las sesiones activas | Cualquier sesión/dispositivo recibe 403 en la siguiente solicitud protegida tras la revocación; no hay cambios y las demás funciones autorizadas continúan disponibles |
+| AUTH-20 | La autorización falla de forma segura cuando no puede verificarse | Si la fuente de permisos no está disponible o no es confiable, las operaciones protegidas se bloquean sin usar permisos obsoletos; las funciones independientes pueden continuar |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -518,6 +532,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la revocación de un permiso específico sea efectiva en la siguiente solicitud, incluso durante una sesión activa, sin cerrar la sesión ni afectar otras funciones autorizadas.
 - [x] Se aprueba que una revocación confirmada antes de la aplicación definitiva de una operación impida su confirmación, con control de concurrencia, sin escrituras parciales y con auditoría.
 - [x] Se aprueba que la revocación de un permiso se aplique globalmente a todas las sesiones y dispositivos, sin depender de notificaciones al cliente y sin cerrar las demás funciones autorizadas.
+- [x] Se aprueba la política de denegación por seguridad: si no puede verificarse la autorización vigente, se bloquean las operaciones protegidas sin recurrir a permisos obsoletos; las funciones independientes pueden continuar.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -568,3 +583,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.8: aprobación de la revocación inmediata de permisos durante una sesión activa; el backend valida permisos vigentes en cada solicitud, deniega con HTTP `403` la acción revocada y conserva las demás funciones autorizadas.
 - v3.9: aprobación de la prioridad de la revocación sobre operaciones en curso aún no confirmadas; se exige autorización consistente al confirmar, cancelación sin escrituras parciales y auditoría.
 - v4.0: aprobación de la revocación global e inmediata en todas las sesiones y dispositivos; el backend hace cumplir los permisos vigentes sin depender de la actualización de la interfaz.
+- v4.1: aprobación de la política de denegación por seguridad ante fallos de verificación de permisos; se bloquean operaciones protegidas y no se utilizan autorizaciones obsoletas.

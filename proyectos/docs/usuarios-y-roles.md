@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.1 (Fase 1)  
+**Versión:** 2.2 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -216,6 +216,17 @@ Reglas:
 - El autor de una reseña debe poder conocer el estado público de su contenido sin acceder a datos privados de quien reportó.
 - Los reportes duplicados deben controlarse según una regla de unicidad definida en la fase de implementación.
 
+### 7.1 Transiciones y cierre de reportes
+
+Para la prueba 1 del flujo de moderación se aprueba la **opción A**:
+
+- Cuando el moderador o administrador determina que un reporte es `PROCEDENTE`, registra el motivo y la acción aplicada (por ejemplo, ocultar la reseña).
+- Una vez guardada correctamente la resolución y aplicada la acción, el sistema cambia automáticamente el reporte de `PROCEDENTE` a `CERRADO`.
+- El cierre automático no elimina la trazabilidad: se conservan el actor que tomó la decisión, la fecha, el motivo, la acción aplicada y la fecha del cierre automático.
+- Si no se puede aplicar la acción requerida, el sistema no debe cerrar el reporte como si la operación hubiera sido exitosa; debe conservar un estado que permita corregir o reintentar la operación y registrar el error.
+
+Esta aprobación cubre únicamente la transición `PROCEDENTE` → `CERRADO`. Las transiciones para `NO_PROCEDENTE` y `ESCALADO` se validarán por separado.
+
 ## 8. Reglas de relación entre cuentas y establecimientos
 
 La autorización de tienda requiere una relación explícita entre la cuenta y el establecimiento. No basta con recibir `idEstablecimiento` desde el frontend.
@@ -303,7 +314,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
-- [ ] Se aprueba la política de moderación y sus estados.
+- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobada la transición `PROCEDENTE` → `CERRADO` automático).
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
@@ -337,3 +348,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 **Historial**
 - v1.0: borrador inicial con visitante, usuario, administrador y representante.
 - v2.0: especificación de los cuatro perfiles solicitados, matriz de permisos, reglas de propiedad, moderación y criterios de cierre de Fase 1.
+- v2.2: aprobación de la transición automática `PROCEDENTE` → `CERRADO` tras registrar y aplicar la decisión.

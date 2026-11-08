@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.9 (Fase 1)  
+**Versión:** 3.0 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -299,6 +299,16 @@ Para la prueba 8 de la relación cuenta-establecimiento se aprueba la **opción 
 
 Esta decisión define el comportamiento esperado, pero no autoriza todavía crear tablas, migraciones ni modificar entidades; eso pertenece a una fase posterior.
 
+Para la prueba 9 de la relación establecimiento-representantes se aprueba la **opción A**:
+
+- Si un establecimiento tiene dos representantes y el administrador revoca únicamente la representación del Representante 1, ese representante pierde inmediatamente la capacidad de gestionar el establecimiento.
+- El vínculo vigente del Representante 2 permanece activo y conserva las capacidades autorizadas para gestionar ese mismo establecimiento.
+- La revocación debe identificar el vínculo específico entre la cuenta del representante y el establecimiento; no debe eliminar ni desactivar las relaciones de otros representantes.
+- El backend debe comprobar la vigencia del vínculo correspondiente en cada operación. Una sesión previa del Representante 1 no puede conservar permisos después de la revocación.
+- Se registra el vínculo revocado, el administrador que realizó la acción, la fecha y el motivo cuando corresponda.
+
+Esta decisión confirma que la revocación es independiente en ambos sentidos de la relación N:M: una cuenta puede perder acceso a una tienda sin perder acceso a otras, y una tienda puede retirar a un representante sin afectar a los demás. No autoriza todavía crear tablas, migraciones ni modificar entidades; eso pertenece a una fase posterior.
+
 ## 9. Ciclo de vida de los roles
 
 - Toda cuenta nueva obtiene el rol Usuario registrado por defecto.
@@ -414,3 +424,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.7: aprobación de la revocación independiente de un rol, conservando los permisos de los demás roles vigentes.
 - v2.8: aprobación del bloqueo integral de acceso al desactivar una cuenta, con reactivación autorizada y auditada.
 - v2.9: aprobación de la revocación independiente de un vínculo cuenta-establecimiento, sin afectar las demás representaciones vigentes.
+- v3.0: aprobación de la revocación independiente de un representante en un establecimiento, sin afectar a los demás representantes.

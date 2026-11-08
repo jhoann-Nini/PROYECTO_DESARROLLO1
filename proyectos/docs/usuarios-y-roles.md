@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.9 (Fase 1)  
+**Versión:** 4.0 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -410,6 +410,19 @@ Esta decisión define el comportamiento esperado; no significa que la revocació
 
 Esta decisión define el comportamiento esperado; no significa que el control de concurrencia y la cancelación de operaciones estén implementados o probados funcionalmente.
 
+### Prueba 19. Revocación global en varias sesiones y dispositivos
+
+**Decisión aprobada: opción A — revocación global inmediata.**
+
+- La revocación de un permiso específico debe aplicarse a todas las sesiones activas de la cuenta, independientemente del dispositivo o navegador utilizado.
+- Ninguna sesión puede seguir ejecutando la acción protegida con el permiso revocado. El backend debe consultar una fuente vigente y compartida de autorización; no debe confiar en permisos almacenados localmente ni en claims de sesión que hayan quedado obsoletos.
+- La siguiente solicitud protegida desde cualquiera de las sesiones debe denegarse con HTTP `403 Forbidden` y no producir cambios cuando el permiso ya esté revocado.
+- La revocación es granular: las demás funciones y permisos que continúen vigentes deben seguir disponibles en cada sesión. No es obligatorio cerrar todas las sesiones ni desactivar la cuenta.
+- El cambio de permisos y los intentos denegados desde cualquiera de las sesiones deben quedar registrados en auditoría, con actor, cuenta, sesión o dispositivo identificable de forma segura, recurso, acción, fecha y resultado; sin almacenar tokens ni secretos.
+- La interfaz puede actualizarse o informar el cambio, pero la seguridad no debe depender de que el dispositivo reciba una notificación: el backend debe hacer cumplir la revocación global.
+
+Esta decisión define el comportamiento esperado; no significa que la propagación global de revocaciones esté implementada o probada funcionalmente.
+
 ## 9. Ciclo de vida de los roles
 
 - Toda cuenta nueva obtiene el rol Usuario registrado por defecto.
@@ -463,6 +476,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-16 | Representante sin permiso específico no modifica productos | Backend responde 403, no cambia datos y registra el intento de auditoría |
 | AUTH-17 | La revocación de un permiso específico surte efecto durante una sesión activa | La siguiente solicitud se valida con permisos vigentes; acción revocada recibe 403 sin cambios; otras funciones autorizadas siguen disponibles y se registra auditoría |
 | AUTH-18 | La revocación prevalece sobre operaciones aún no confirmadas | La autorización se valida de forma consistente al confirmar; si la revocación se hizo efectiva antes, se cancela la operación sin cambios parciales y se registra auditoría |
+| AUTH-19 | La revocación se aplica a todas las sesiones activas | Cualquier sesión/dispositivo recibe 403 en la siguiente solicitud protegida tras la revocación; no hay cambios y las demás funciones autorizadas continúan disponibles |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -503,6 +517,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la vigencia del vínculo de representante no conceda permisos generales: las acciones sobre productos requieren el permiso específico y, si falta, se deniegan con HTTP `403` y auditoría.
 - [x] Se aprueba que la revocación de un permiso específico sea efectiva en la siguiente solicitud, incluso durante una sesión activa, sin cerrar la sesión ni afectar otras funciones autorizadas.
 - [x] Se aprueba que una revocación confirmada antes de la aplicación definitiva de una operación impida su confirmación, con control de concurrencia, sin escrituras parciales y con auditoría.
+- [x] Se aprueba que la revocación de un permiso se aplique globalmente a todas las sesiones y dispositivos, sin depender de notificaciones al cliente y sin cerrar las demás funciones autorizadas.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -552,3 +567,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.7: aprobación de la denegación HTTP `403` y auditoría cuando un representante sin permiso específico intenta modificar productos; el vínculo vigente no concede permisos generales.
 - v3.8: aprobación de la revocación inmediata de permisos durante una sesión activa; el backend valida permisos vigentes en cada solicitud, deniega con HTTP `403` la acción revocada y conserva las demás funciones autorizadas.
 - v3.9: aprobación de la prioridad de la revocación sobre operaciones en curso aún no confirmadas; se exige autorización consistente al confirmar, cancelación sin escrituras parciales y auditoría.
+- v4.0: aprobación de la revocación global e inmediata en todas las sesiones y dispositivos; el backend hace cumplir los permisos vigentes sin depender de la actualización de la interfaz.

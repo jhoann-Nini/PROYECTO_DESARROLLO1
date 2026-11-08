@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.0 (Fase 1)  
+**Versión:** 3.1 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -308,6 +308,16 @@ Para la prueba 9 de la relación establecimiento-representantes se aprueba la **
 - Se registra el vínculo revocado, el administrador que realizó la acción, la fecha y el motivo cuando corresponda.
 
 Esta decisión confirma que la revocación es independiente en ambos sentidos de la relación N:M: una cuenta puede perder acceso a una tienda sin perder acceso a otras, y una tienda puede retirar a un representante sin afectar a los demás. No autoriza todavía crear tablas, migraciones ni modificar entidades; eso pertenece a una fase posterior.
+Para la prueba 10 de autorización contextual por establecimiento se aprueba la **opción A**:
+
+- Una cuenta con los roles `USUARIO_REGISTRADO` y `REPRESENTANTE_ESTABLECIMIENTO` puede operar sobre la Tienda A únicamente dentro de las capacidades permitidas por ambos roles y por su vínculo vigente con A.
+- Si la cuenta intenta modificar un producto de la Tienda B sin tener una asignación vigente a B, el backend rechaza la operación con HTTP `403 Forbidden`.
+- El intento denegado se registra en la auditoría de seguridad, identificando la cuenta, la operación, el establecimiento y el resultado, sin almacenar contraseñas, tokens ni secretos.
+- La denegación sobre B no revoca ni altera los roles de la cuenta ni su vínculo o permisos vigentes sobre A.
+- La autorización se valida en el servidor en cada solicitud y aplica denegación por defecto; tener el rol de representante no concede acceso global a todos los establecimientos.
+- Una sesión, identificador de tienda enviado por el cliente o selección previa no sustituye la comprobación del vínculo vigente en el backend.
+
+Esta decisión valida el alcance contextual de los permisos: los roles definen capacidades generales y la relación cuenta-establecimiento limita dónde pueden ejercerse. No autoriza todavía implementar endpoints, tablas o migraciones; eso corresponde a la fase de implementación posterior.
 
 ## 9. Ciclo de vida de los roles
 
@@ -383,6 +393,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
 - [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO`, el bloqueo/escalamiento automático por conflicto de interés y el rechazo auditado de intentos no autorizados).
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes), incluida la revocación independiente de cada vínculo.
+- [x] Se aprueba la autorización contextual por establecimiento: los roles no conceden acceso a tiendas sin vínculo vigente; los intentos se rechazan y auditan en backend.
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend, incluida la revocación independiente de un rol sin retirar los demás.
 - [x] Se aprueba que la desactivación de una cuenta bloquee todos sus roles y accesos hasta una reactivación autorizada.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
@@ -425,3 +436,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.8: aprobación del bloqueo integral de acceso al desactivar una cuenta, con reactivación autorizada y auditada.
 - v2.9: aprobación de la revocación independiente de un vínculo cuenta-establecimiento, sin afectar las demás representaciones vigentes.
 - v3.0: aprobación de la revocación independiente de un representante en un establecimiento, sin afectar a los demás representantes.
+- v3.1: aprobación de la autorización contextual por establecimiento, con rechazo HTTP `403` y auditoría cuando una cuenta intenta operar sobre una tienda no asignada.

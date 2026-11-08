@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.6 (Fase 1)  
+**Versión:** 3.7 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -373,6 +373,17 @@ Para la prueba 15 sobre productos tras la reapertura de un establecimiento se ap
 - Los productos que no hayan sido revisados y validados permanecen sin publicar y no deben aparecer en consultas públicas.
 
 Esta decisión define el comportamiento esperado; no significa que el proceso de revisión y publicación esté implementado o probado funcionalmente.
+Para la prueba 16 sobre permisos específicos de representantes se aprueba la **opción A — denegar la operación**:
+
+- La vigencia del vínculo entre una cuenta y un establecimiento no concede por sí sola todos los permisos de gestión.
+- El representante que tenga únicamente permisos de consulta no puede modificar precios ni otros datos de productos.
+- El backend debe validar en cada solicitud la identidad autenticada, el estado de la cuenta, el estado operativo del establecimiento, la vigencia del vínculo y el permiso específico requerido para la acción.
+- Si el representante carece del permiso de modificación, el backend responde HTTP `403 Forbidden` y no modifica el producto ni sus datos comerciales.
+- El intento denegado debe registrarse en auditoría con actor, establecimiento, producto, acción solicitada, fecha y resultado, sin guardar tokens, contraseñas ni secretos.
+- La interfaz debe reflejar los permisos disponibles, pero ocultar o deshabilitar controles no sustituye la autorización obligatoria en backend.
+- Los permisos de otros representantes y los vínculos vigentes no se modifican por el intento denegado.
+
+Esta decisión define el comportamiento esperado; no significa que la autorización específica esté implementada o probada funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -424,6 +435,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-13 | Establecimiento cerrado no admite gestión ni publicación | Backend rechaza operaciones; establecimiento y productos no aparecen públicamente; se conserva historial auditable |
 | AUTH-14 | Reapertura controlada de establecimiento cerrado | Requiere administrador autorizado, auditoría, revisión de productos y vínculos vigentes; no restaura accesos automáticamente |
 | AUTH-15 | Productos tras reapertura requieren revisión antes de publicarse | Producto no revisado permanece no publicado; backend valida estado de tienda, vínculo, permisos y registra la revisión |
+| AUTH-16 | Representante sin permiso específico no modifica productos | Backend responde 403, no cambia datos y registra el intento de auditoría |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -461,6 +473,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba el cierre lógico del establecimiento: bloqueo de gestión, retirada de publicación y conservación del historial, sin eliminación física automática de sus registros.
 - [x] Se aprueba la reapertura controlada de un establecimiento cerrado, con verificación y auditoría; no se restauran automáticamente representantes, permisos ni publicaciones.
 - [x] Se aprueba que los productos de un establecimiento reabierto permanezcan sin publicar hasta que un representante vigente los revise y el sistema valide su publicación.
+- [x] Se aprueba que la vigencia del vínculo de representante no conceda permisos generales: las acciones sobre productos requieren el permiso específico y, si falta, se deniegan con HTTP `403` y auditoría.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -507,3 +520,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.4: aprobación del cierre lógico del establecimiento, con bloqueo de operaciones, retirada de publicación y conservación de relaciones, productos e historial para trazabilidad.
 - v3.5: aprobación de la reapertura controlada del establecimiento cerrado, con revisión de vínculos y productos, autorización administrativa y sin restauración automática de accesos ni publicaciones.
 - v3.6: aprobación de la revisión obligatoria de productos tras la reapertura; no se restauran publicaciones anteriores y cada producto requiere revisión, validación y auditoría.
+- v3.7: aprobación de la denegación HTTP `403` y auditoría cuando un representante sin permiso específico intenta modificar productos; el vínculo vigente no concede permisos generales.

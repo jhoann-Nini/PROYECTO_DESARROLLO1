@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.6 (Fase 1)  
+**Versión:** 2.7 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -260,6 +260,14 @@ Para la prueba 5 del flujo de moderación se aprueba la **opción A**:
 - El registro no debe almacenar contraseñas, tokens ni secretos. Si la petición no permite identificar de forma fiable al solicitante, se registra como intento no autenticado con los datos técnicos permitidos por la política de privacidad.
 - La protección se aplica en backend para todas las rutas y operaciones equivalentes; ocultar botones en frontend no se considera un control de autorización.
 
+Para la prueba 6 del modelo de múltiples roles se aprueba la **opción A**:
+
+- Cuando una cuenta tiene los roles `Usuario registrado` y `Moderador`, la revocación del rol `Moderador` retira únicamente las capacidades asociadas a ese rol.
+- La cuenta conserva el rol `Usuario registrado` y sus permisos vigentes, siempre que la cuenta y sus demás condiciones de acceso sigan activas.
+- La pérdida de capacidades de moderación debe surtir efecto inmediatamente en las operaciones del backend; no basta con actualizar u ocultar elementos de la interfaz.
+- El sistema registra quién revocó el rol, a qué cuenta, cuál rol fue revocado, cuándo ocurrió y el motivo cuando corresponda.
+- Después de la revocación, cualquier intento de ejecutar una operación exclusiva de moderación debe rechazarse conforme a la regla de acceso denegado aprobada; las operaciones permitidas al usuario registrado deben seguir disponibles.
+
 ## 8. Reglas de relación entre cuentas y establecimientos
 
 La autorización de tienda requiere una relación explícita entre la cuenta y el establecimiento. No basta con recibir `idEstablecimiento` desde el frontend.
@@ -386,3 +394,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.4: aprobación de la resolución administrativa de reportes `ESCALADO` y su cierre automático tras registrar y aplicar la decisión.
 - v2.5: aprobación del bloqueo y escalamiento automático cuando un moderador tiene conflicto de interés.
 - v2.6: aprobación del rechazo HTTP `403` y registro de auditoría ante intentos de moderación no autorizados.
+- v2.7: aprobación de la revocación independiente de un rol, conservando los permisos de los demás roles vigentes.

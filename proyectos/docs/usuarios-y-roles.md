@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.5 (Fase 1)  
+**Versión:** 3.6 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -362,6 +362,17 @@ Para la prueba 14 sobre reapertura de un establecimiento cerrado se aprueba la *
 - El backend debe validar el nuevo estado del establecimiento, la vigencia del vínculo y los permisos del actor en cada operación; la interfaz no sustituye esos controles.
 
 Esta decisión define el comportamiento esperado de reapertura; no significa que el flujo esté implementado o probado funcionalmente.
+Para la prueba 15 sobre productos tras la reapertura de un establecimiento se aprueba la **opción A — revisión obligatoria**:
+
+- Al cerrar definitivamente el establecimiento, todos sus productos quedan sin publicación, independientemente del estado que tuvieran antes del cierre.
+- La reapertura del establecimiento no reactiva ni publica automáticamente los productos que estaban publicados antes del cierre.
+- Cada producto debe ser revisado por un representante con vínculo vigente y permisos suficientes. Debe confirmar o actualizar, según corresponda, nombre, descripción, precio, disponibilidad y demás datos comerciales definidos para el catálogo.
+- La publicación debe pasar por las validaciones de negocio del sistema; no basta con que el representante cambie manualmente el estado a publicado.
+- El backend debe comprobar que el establecimiento está operativo, que el representante mantiene un vínculo vigente y que tiene permiso para gestionar el producto.
+- La revisión y el cambio de estado de cada producto deben quedar registrados, incluyendo actor, producto, establecimiento, fecha y resultado.
+- Los productos que no hayan sido revisados y validados permanecen sin publicar y no deben aparecer en consultas públicas.
+
+Esta decisión define el comportamiento esperado; no significa que el proceso de revisión y publicación esté implementado o probado funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -412,6 +423,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-12 | Reactivación no restaura vínculos revocados | Solo representantes con vínculo vigente recuperan acceso; estado y vínculo se validan en backend |
 | AUTH-13 | Establecimiento cerrado no admite gestión ni publicación | Backend rechaza operaciones; establecimiento y productos no aparecen públicamente; se conserva historial auditable |
 | AUTH-14 | Reapertura controlada de establecimiento cerrado | Requiere administrador autorizado, auditoría, revisión de productos y vínculos vigentes; no restaura accesos automáticamente |
+| AUTH-15 | Productos tras reapertura requieren revisión antes de publicarse | Producto no revisado permanece no publicado; backend valida estado de tienda, vínculo, permisos y registra la revisión |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -448,6 +460,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la reactivación de un establecimiento conserve únicamente los vínculos vigentes y no restaure representantes, roles ni cuentas revocadas o desactivadas por separado.
 - [x] Se aprueba el cierre lógico del establecimiento: bloqueo de gestión, retirada de publicación y conservación del historial, sin eliminación física automática de sus registros.
 - [x] Se aprueba la reapertura controlada de un establecimiento cerrado, con verificación y auditoría; no se restauran automáticamente representantes, permisos ni publicaciones.
+- [x] Se aprueba que los productos de un establecimiento reabierto permanezcan sin publicar hasta que un representante vigente los revise y el sistema valide su publicación.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -493,3 +506,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.3: aprobación de la reactivación del establecimiento sin restaurar vínculos de representantes revocados; solo los vínculos vigentes recuperan su alcance de gestión.
 - v3.4: aprobación del cierre lógico del establecimiento, con bloqueo de operaciones, retirada de publicación y conservación de relaciones, productos e historial para trazabilidad.
 - v3.5: aprobación de la reapertura controlada del establecimiento cerrado, con revisión de vínculos y productos, autorización administrativa y sin restauración automática de accesos ni publicaciones.
+- v3.6: aprobación de la revisión obligatoria de productos tras la reapertura; no se restauran publicaciones anteriores y cada producto requiere revisión, validación y auditoría.

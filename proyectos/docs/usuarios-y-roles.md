@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.8 (Fase 1)  
+**Versión:** 2.9 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -289,6 +289,14 @@ Reglas obligatorias:
 - En cada operación, el backend debe comprobar que la cuenta autenticada tenga una asignación vigente al establecimiento indicado.
 - Revocar un vínculo debe retirar la capacidad de escritura sobre ese establecimiento sin afectar los vínculos de otros representantes.
 
+Para la prueba 8 de la relación cuenta-establecimiento se aprueba la **opción A**:
+
+- Si una cuenta representa los establecimientos A y B, y un administrador revoca únicamente el vínculo con el establecimiento A, la cuenta pierde inmediatamente la capacidad de gestionar A.
+- El vínculo vigente con el establecimiento B permanece activo y la cuenta conserva las capacidades autorizadas para gestionar B.
+- La revocación debe identificar el vínculo específico cuenta-establecimiento; no debe eliminar ni desactivar otras relaciones de esa cuenta.
+- El backend debe comprobar la vigencia del vínculo correspondiente en cada operación. Una sesión o selección previa del establecimiento A no puede conservar permisos después de la revocación.
+- Se registra el vínculo revocado, el administrador que realizó la acción, la fecha y el motivo cuando corresponda.
+
 Esta decisión define el comportamiento esperado, pero no autoriza todavía crear tablas, migraciones ni modificar entidades; eso pertenece a una fase posterior.
 
 ## 9. Ciclo de vida de los roles
@@ -364,7 +372,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
 - [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO`, el bloqueo/escalamiento automático por conflicto de interés y el rechazo auditado de intentos no autorizados).
-- [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
+- [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes), incluida la revocación independiente de cada vínculo.
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend, incluida la revocación independiente de un rol sin retirar los demás.
 - [x] Se aprueba que la desactivación de una cuenta bloquee todos sus roles y accesos hasta una reactivación autorizada.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
@@ -405,3 +413,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v2.6: aprobación del rechazo HTTP `403` y registro de auditoría ante intentos de moderación no autorizados.
 - v2.7: aprobación de la revocación independiente de un rol, conservando los permisos de los demás roles vigentes.
 - v2.8: aprobación del bloqueo integral de acceso al desactivar una cuenta, con reactivación autorizada y auditada.
+- v2.9: aprobación de la revocación independiente de un vínculo cuenta-establecimiento, sin afectar las demás representaciones vigentes.

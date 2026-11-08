@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.4 (Fase 1)  
+**Versión:** 3.5 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -351,6 +351,17 @@ Para la prueba 13 sobre cierre definitivo de un establecimiento se aprueba la **
 - La conservación de datos debe respetar las políticas de retención, privacidad y obligaciones legales aplicables; el cierre lógico no autoriza conservar datos indefinidamente sin justificación.
 
 Esta decisión define el comportamiento esperado; no significa que el cierre lógico, la despublicación o las restricciones estén implementados o probados funcionalmente.
+Para la prueba 14 sobre reapertura de un establecimiento cerrado se aprueba la **opción A — reapertura controlada**:
+
+- La reapertura debe ser solicitada y ejecutada por un administrador autorizado; no ocurre automáticamente por una solicitud del antiguo representante.
+- Antes de reabrir, se debe verificar la identidad y los datos vigentes del establecimiento, su estado y las condiciones administrativas que correspondan.
+- La reapertura debe registrarse como una transición explícita de estado, con actor autorizado, fecha, motivo y resultado en la auditoría.
+- Los vínculos históricos con representantes se conservan para trazabilidad, pero no se consideran vigentes por el solo hecho de reabrir el establecimiento.
+- Solo los representantes con asignaciones vigentes y verificadas podrán recuperar capacidades de gestión. Los vínculos revocados o finalizados deben ser reasignados mediante un proceso autorizado y auditado.
+- Los productos conservados históricamente no deben publicarse ni habilitarse automáticamente: su estado, vigencia y contenido deben revisarse antes de volver a mostrarlos o permitir operaciones.
+- El backend debe validar el nuevo estado del establecimiento, la vigencia del vínculo y los permisos del actor en cada operación; la interfaz no sustituye esos controles.
+
+Esta decisión define el comportamiento esperado de reapertura; no significa que el flujo esté implementado o probado funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -400,6 +411,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-11 | Establecimiento suspendido no permite operaciones comerciales | Representantes vinculados reciben denegación en backend; vínculos y cuentas personales permanecen vigentes |
 | AUTH-12 | Reactivación no restaura vínculos revocados | Solo representantes con vínculo vigente recuperan acceso; estado y vínculo se validan en backend |
 | AUTH-13 | Establecimiento cerrado no admite gestión ni publicación | Backend rechaza operaciones; establecimiento y productos no aparecen públicamente; se conserva historial auditable |
+| AUTH-14 | Reapertura controlada de establecimiento cerrado | Requiere administrador autorizado, auditoría, revisión de productos y vínculos vigentes; no restaura accesos automáticamente |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -435,6 +447,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la suspensión de un establecimiento bloquee sus operaciones comerciales en backend, conserve los vínculos con representantes y permita reactivación autorizada y auditada.
 - [x] Se aprueba que la reactivación de un establecimiento conserve únicamente los vínculos vigentes y no restaure representantes, roles ni cuentas revocadas o desactivadas por separado.
 - [x] Se aprueba el cierre lógico del establecimiento: bloqueo de gestión, retirada de publicación y conservación del historial, sin eliminación física automática de sus registros.
+- [x] Se aprueba la reapertura controlada de un establecimiento cerrado, con verificación y auditoría; no se restauran automáticamente representantes, permisos ni publicaciones.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -479,3 +492,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.2: aprobación del bloqueo de operaciones comerciales durante la suspensión de un establecimiento, conservando los vínculos de representantes y exigiendo reactivación autorizada y auditada.
 - v3.3: aprobación de la reactivación del establecimiento sin restaurar vínculos de representantes revocados; solo los vínculos vigentes recuperan su alcance de gestión.
 - v3.4: aprobación del cierre lógico del establecimiento, con bloqueo de operaciones, retirada de publicación y conservación de relaciones, productos e historial para trazabilidad.
+- v3.5: aprobación de la reapertura controlada del establecimiento cerrado, con revisión de vínculos y productos, autorización administrativa y sin restauración automática de accesos ni publicaciones.

@@ -23,6 +23,9 @@ Este documento reúne escenarios y textos visibles del flujo de reseñas y valor
 | CP-104-13 | Ocultar/desactivar una valoración y consultar el promedio público. | La valoración inactiva no se incluye en el promedio ni en el conteo. | Prueba añadida en el PR #59; está pendiente de integrarse a `main`. |
 | CP-104-14 | Revisar una reseña propia y una de otra persona. | Las acciones de edición/eliminación aparecen solo para la propia; «Reportar» aparece para las ajenas. | `ResenasCliente.test.tsx`: permisos de acciones y reporte. |
 | CP-104-15 | Navegar por el formulario con teclado y revisar vista móvil. | Los controles tienen etiquetas, foco visible y mensajes legibles sin desbordar la pantalla. | Validación manual pendiente. |
+| CP-104-16 | Modificar reseña propia con texto válido (S2-20). | Se abre el modal con texto precargado, se envían cambios (`PUT /api/resenas/{id}`) y se actualiza la lista. | `EditarResena.test.tsx` y `ResenaPropiedadIntegrationTest.java`: 200 OK. |
+| CP-104-17 | Eliminar reseña propia con confirmación (S2-20). | Diálogo modal solicita confirmación; al confirmar (`DELETE /api/resenas/{id}`) la reseña se desactiva y retira. | `EditarResena.test.tsx` y `ResenaPropiedadIntegrationTest.java`: 204 No Content. |
+| CP-104-18 | Intentar editar o eliminar sin permisos o con token inválido (S2-20). | Backend rechaza con 403 Forbidden o 401 Unauthorized; el frontend presenta alerta controlada sin caerse. | `EditarResena.test.tsx` y `ResenaPropiedadIntegrationTest.java`: validación de rechazo 403/401. |
 
 ## Textos actuales de la interfaz
 
@@ -58,6 +61,22 @@ Este documento reúne escenarios y textos visibles del flujo de reseñas y valor
 | Sin coincidencias | `No encontramos reseñas con esos filtros.` |
 | Explicación de promedio | `Promedio real de valoraciones, independiente de las reseñas.` |
 
+### Edición y eliminación de reseñas (S2-20)
+
+| Situación | Texto |
+| --- | --- |
+| Botón de edición | `Editar reseña` |
+| Botón de eliminación | `Eliminar reseña` |
+| Título modal de edición | `Editar reseña` |
+| Campo de texto en edición | `Tu reseña actualizada` |
+| Confirmar edición | `Guardar cambios` |
+| Cancelar modal | `Cancelar` |
+| Título modal de eliminación | `Eliminar reseña` |
+| Pregunta de confirmación | `¿Deseas eliminar tu opinión?` |
+| Confirmar eliminación | `Eliminar` |
+| Error inesperado / denegado | `No fue posible completar la acción. Inténtalo de nuevo más tarde.` |
+
+
 ### Texto de ayuda propuesto
 
 El límite y la guía siguientes están en el PR #57, pendiente de integrarse a `main`:
@@ -73,5 +92,7 @@ El límite y la guía siguientes están en el PR #57, pendiente de integrarse a 
 - `proyectos/frontend/src/app/productos/[id]/DetalleProductoCliente.test.tsx`
 - `proyectos/backend/src/test/java/com/example/backend/controller/ResenaSecurityIntegrationTest.java`
 - `proyectos/backend/src/test/java/com/example/backend/controller/ValoracionSecurityIntegrationTest.java`
+- `proyectos/backend/src/test/java/com/example/backend/controller/ResenaPropiedadIntegrationTest.java`
+- `proyectos/frontend/src/app/resenas/EditarResena.test.tsx`
 
 > Los escenarios descritos como validación manual no se marcaron como ejecutados. La tabla identifica pruebas que existen en el repositorio y señala cuando una cobertura está pendiente de integrar.

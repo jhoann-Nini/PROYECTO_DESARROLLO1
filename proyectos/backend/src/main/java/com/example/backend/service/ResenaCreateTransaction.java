@@ -49,6 +49,9 @@ public class ResenaCreateTransaction {
     public ResenaResponse crearOActualizar(ResenaRequest request, Jwt jwt) {
         // Obtener usuario a partir del JWT
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        if (!Boolean.TRUE.equals(usuario.getEstado())) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
+        }
 
         // Obtener y validar producto
         Producto producto = productoRepository.findById(request.idProducto())

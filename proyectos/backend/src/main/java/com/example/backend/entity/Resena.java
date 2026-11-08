@@ -32,6 +32,9 @@ public class Resena {
     @Column(nullable = false)
     private Boolean estado = true;
 
+    @Column(name = "oculta_por_reportes", nullable = false)
+    private Boolean ocultaPorReportes = false;
+
     public Long getIdResena() { return idResena; }
     public void setIdResena(Long idResena) { this.idResena = idResena; }
 
@@ -52,4 +55,7 @@ public class Resena {
 
     public Boolean getEstado() { return estado; }
     public void setEstado(Boolean estado) { this.estado = estado; }
+
+    public Boolean getOcultaPorReportes() { return ocultaPorReportes; }
+    public void setOcultaPorReportes(Boolean ocultaPorReportes) { this.ocultaPorReportes = ocultaPorReportes; }
 }

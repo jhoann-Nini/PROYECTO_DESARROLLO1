@@ -221,43 +221,47 @@ export default function Home() {
     }
   }, []);
 
-  // Carga inicial: productos, categorías y marcas
+  // Cargar productos sin esperar los metadatos del catálogo.
+  // Categorías y marcas se consultan en paralelo y enriquecen las tarjetas al llegar.
   useEffect(() => {
     let activo = true;
 
-    async function consultarApi() {
-      const [resultadoProductos, resultadoCategorias, resultadoMarcas] =
-        await Promise.allSettled([
-          obtenerProductos<Producto>(),
-          obtenerCategorias(),
-          obtenerMarcas(),
-        ]);
+    obtenerProductos<Producto>()
+      .then((datos) => {
+        if (!activo) return;
 
-      if (!activo) return;
-
-      if (resultadoCategorias.status === "fulfilled") {
-        setCategoriasApi(resultadoCategorias.value);
-      }
-      if (resultadoMarcas.status === "fulfilled") {
-        setMarcasApi(resultadoMarcas.value);
-      }
-
-      if (
-        resultadoProductos.status === "fulfilled" &&
-        resultadoProductos.value &&
-        resultadoProductos.value.length > 0
-      ) {
-        setProductosBackend(resultadoProductos.value);
-        setEstadoBackend("online");
-      } else {
+        if (datos.length > 0) {
+          setProductosBackend(datos);
+          setEstadoBackend("online");
+        } else {
+          setProductosBackend(PRODUCTOS_MOCK);
+          setEstadoBackend("offline");
+        }
+      })
+      .catch(() => {
+        if (!activo) return;
         setProductosBackend(PRODUCTOS_MOCK);
         setEstadoBackend("offline");
-      }
+      })
+      .finally(() => {
+        if (activo) setCargandoApi(false);
+      });
 
-      setCargandoApi(false);
-    }
+    obtenerCategorias()
+      .then((datos) => {
+        if (activo) setCategoriasApi(datos);
+      })
+      .catch(() => {
+        // Los productos pueden mostrarse aunque falle la carga de categorías.
+      });
 
-    consultarApi();
+    obtenerMarcas()
+      .then((datos) => {
+        if (activo) setMarcasApi(datos);
+      })
+      .catch(() => {
+        // Los productos pueden mostrarse aunque falle la carga de marcas.
+      });
 
     return () => {
       activo = false;
@@ -857,6 +861,18 @@ export default function Home() {
           error={errorComentario || null}
           onPublicar={manejarEnvioComentario}
           onPedirLogin={() => setModalAuthAbierto(true)}
+          onResenaEditada={(actualizada) =>
+            setResenas((previas) =>
+              previas.map((previa) =>
+                previa.idResena === actualizada.idResena ? actualizada : previa,
+              ),
+            )
+          }
+          onResenaEliminada={(idResena) =>
+            setResenas((previas) =>
+              previas.filter((previa) => previa.idResena !== idResena),
+            )
+          }
         />
 
         <CtaComparador />

@@ -323,17 +323,27 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
 }
 
 /**
- * Actualiza el comentario de una reseña existente. Requiere autenticación.
- * Contrato pendiente de MG (TEC-76/77/78); hasta entonces el backend puede
- * responder 404/405 y la UI muestra un error controlado.
+ * Actualiza una reseña existente. Requiere autenticación Bearer y ser el autor.
+ *
+ * @param idResena Identificador de la reseña a modificar.
+ * @param comentario Contenido actualizado de la opinión (obligatorio, máx 1000 caracteres).
+ * @param puntuacion Calificación opcional de 1 a 5 estrellas.
+ * @returns La reseña actualizada en el backend.
  */
 export async function editarResena(
   idResena: number,
   comentario: string,
+  puntuacion?: number | null,
 ): Promise<ResenaResponse> {
+  const payload: { comentario: string; puntuacion?: number } = {
+    comentario: comentario.trim(),
+  };
+  if (puntuacion !== undefined && puntuacion !== null) {
+    payload.puntuacion = puntuacion;
+  }
   return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
     method: "PUT",
-    body: JSON.stringify({ comentario }),
+    body: JSON.stringify(payload),
   });
 }
 
@@ -344,6 +354,25 @@ export async function editarResena(
 export async function eliminarResena(idResena: number): Promise<void> {
   return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {
     method: "DELETE",
+  });
+}
+
+/**
+ * Crea un reporte persistente sobre una reseña. Requiere una sesión autenticada.
+ * La identidad del reportante se obtiene exclusivamente del JWT en el backend.
+ */
+export interface CrearReporteResenaRequest {
+  motivo: "spam" | "lenguaje-ofensivo" | "falso" | "otro";
+  descripcion?: string;
+}
+
+export async function crearReporteResena(
+  idResena: number,
+  request: CrearReporteResenaRequest,
+): Promise<void> {
+  await apiFetchAutenticado<unknown>(`/api/resenas/${idResena}/reportes`, {
+    method: "POST",
+    body: JSON.stringify(request),
   });
 }
 
@@ -373,7 +402,7 @@ export async function obtenerMiValoracion(
     if (!token) return null;
     const res = await apiFetchAutenticado<ValoracionResponse>(
       `/api/valoraciones/mi-valoracion?idProducto=${idProducto}`,
-      { method: "GET" },
+      { method: "GET", accessToken: token },
     );
     return res || null;
   } catch (err) {

@@ -619,6 +619,8 @@ describe("OpinionesHome", () => {
       evento.preventDefault(),
     ),
     onPedirLogin: vi.fn(),
+    onResenaEditada: vi.fn(),
+    onResenaEliminada: vi.fn(),
   };
 
   it("muestra el aviso de login y el formulario", () => {

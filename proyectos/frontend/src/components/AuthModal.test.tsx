@@ -86,6 +86,18 @@ describe("Componente AuthModal", () => {
     expect(signUpCall.email).toBe("juan@example.com");
     expect(signUpCall.password).toBe("Password123!");
     expect(signUpCall.options?.emailRedirectTo).toContain("/auth/callback");
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/¡Registro exitoso! Hemos enviado un enlace de confirmación/i),
+      ).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: /Entrar a TecReview/i }),
+      ).toBeDefined();
+      expect(
+        screen.queryByRole("button", { name: /Creando cuenta/i }),
+      ).toBeNull();
+    });
   });
 
   it("2. Tras iniciar sesión en Supabase debe consultar obtenerMiPerfil y llamar onLoginSuccess con el perfil de negocio", async () => {

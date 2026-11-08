@@ -52,9 +52,9 @@ public class ResenaService {
             if (!productoRepository.existsById(idProducto)) {
                 throw new ResourceNotFoundException("Producto no encontrado con id " + idProducto);
             }
-            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(idProducto);
+            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(idProducto);
         } else {
-            resenas = resenaRepository.findByEstadoTrueOrderByFechaCreacionDesc();
+            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
         }
         return resenas.stream().map(this::toResponse).toList();
     }
@@ -75,6 +75,7 @@ public class ResenaService {
             if ("uk_resena_usuario_producto_activa".equals(constraintName)) {
                 // Recuperar y actualizar en nueva transacción
                 Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
                 Producto producto = productoRepository.findById(request.idProducto())
                         .filter(p -> Boolean.TRUE.equals(p.getEstado()))
                         .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id " + request.idProducto()));
@@ -107,6 +108,7 @@ public class ResenaService {
         }
 
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
 
         Resena resena = resenaRepository.findById(idResena)
                 .filter(r -> Boolean.TRUE.equals(r.getEstado()))
@@ -116,7 +118,7 @@ public class ResenaService {
             throw new ResourceNotFoundException("Reseña no encontrada con id " + idResena + " para el producto con id " + idProducto);
         }
 
-        // Verificar que el usuario autenticado sea el autor de la reseña
+        // S2-19: Verificar que el usuario autenticado sea el autor de la reseña
         if (!resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar esta reseña.");
         }
@@ -151,6 +153,7 @@ public class ResenaService {
         }
 
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
 
         Resena resena = resenaRepository.findById(idResena)
                 .filter(r -> Boolean.TRUE.equals(r.getEstado()))
@@ -169,6 +172,15 @@ public class ResenaService {
 
         resena.setEstado(false);
         resenaRepository.save(resena);
+    }
+
+    /**
+     * S2-19: Valida que el usuario se encuentre activo en la plataforma.
+     */
+    private void validarUsuarioActivo(Usuario usuario) {
+        if (!Boolean.TRUE.equals(usuario.getEstado())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
+        }
     }
 
     private ResenaResponse toResponse(Resena r) {

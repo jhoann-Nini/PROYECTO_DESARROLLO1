@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 3.3 (Fase 1)  
+**Versión:** 3.4 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -339,6 +339,18 @@ Para la prueba 12 sobre reactivación de un establecimiento se aprueba la **opci
 - La reactivación del establecimiento no reactiva cuentas personales desactivadas ni restaura roles o permisos revocados de forma independiente.
 
 Esta decisión establece el comportamiento esperado para la reactivación; no significa que el flujo esté implementado o probado funcionalmente.
+Para la prueba 13 sobre cierre definitivo de un establecimiento se aprueba la **opción A — cierre lógico y conservación histórica**:
+
+- El establecimiento cambia a un estado definitivo de cerrado y deja de estar disponible para operaciones comerciales y de gestión.
+- El establecimiento y sus productos dejan de mostrarse en las vistas y consultas públicas; los productos asociados quedan inactivos/no publicados, sin borrarse físicamente por este cambio de estado.
+- Los representantes pierden la capacidad de gestionar ese establecimiento. Sus cuentas personales, otros roles y vínculos con otros establecimientos no se modifican.
+- Se conserva el registro del establecimiento, sus relaciones históricas con representantes, los productos asociados y los registros de actividad necesarios para trazabilidad, auditoría y soporte.
+- Los vínculos históricos deben distinguirse de asignaciones vigentes: conservar el historial no concede permisos de gestión ni permite reactivar automáticamente una representación.
+- El cierre debe ser realizado por un actor autorizado y quedar auditado, incluyendo actor, establecimiento, fecha, motivo cuando corresponda y estado anterior/nuevo.
+- Las operaciones del backend deben rechazar cambios sobre el establecimiento cerrado. Cualquier reapertura excepcional deberá ser una acción explícita y autorizada, auditada y sujeta a la revisión de los vínculos vigentes; no se presume por el cierre lógico.
+- La conservación de datos debe respetar las políticas de retención, privacidad y obligaciones legales aplicables; el cierre lógico no autoriza conservar datos indefinidamente sin justificación.
+
+Esta decisión define el comportamiento esperado; no significa que el cierre lógico, la despublicación o las restricciones estén implementados o probados funcionalmente.
 
 ## 9. Ciclo de vida de los roles
 
@@ -387,6 +399,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-10 | La UI refleja permisos pero no los sustituye | Pruebas de API confirman la protección independiente del frontend |
 | AUTH-11 | Establecimiento suspendido no permite operaciones comerciales | Representantes vinculados reciben denegación en backend; vínculos y cuentas personales permanecen vigentes |
 | AUTH-12 | Reactivación no restaura vínculos revocados | Solo representantes con vínculo vigente recuperan acceso; estado y vínculo se validan en backend |
+| AUTH-13 | Establecimiento cerrado no admite gestión ni publicación | Backend rechaza operaciones; establecimiento y productos no aparecen públicamente; se conserva historial auditable |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -421,6 +434,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la desactivación de una cuenta bloquee todos sus roles y accesos hasta una reactivación autorizada.
 - [x] Se aprueba que la suspensión de un establecimiento bloquee sus operaciones comerciales en backend, conserve los vínculos con representantes y permita reactivación autorizada y auditada.
 - [x] Se aprueba que la reactivación de un establecimiento conserve únicamente los vínculos vigentes y no restaure representantes, roles ni cuentas revocadas o desactivadas por separado.
+- [x] Se aprueba el cierre lógico del establecimiento: bloqueo de gestión, retirada de publicación y conservación del historial, sin eliminación física automática de sus registros.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -464,3 +478,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v3.1: aprobación de la autorización contextual por establecimiento, con rechazo HTTP `403` y auditoría cuando una cuenta intenta operar sobre una tienda no asignada.
 - v3.2: aprobación del bloqueo de operaciones comerciales durante la suspensión de un establecimiento, conservando los vínculos de representantes y exigiendo reactivación autorizada y auditada.
 - v3.3: aprobación de la reactivación del establecimiento sin restaurar vínculos de representantes revocados; solo los vínculos vigentes recuperan su alcance de gestión.
+- v3.4: aprobación del cierre lógico del establecimiento, con bloqueo de operaciones, retirada de publicación y conservación de relaciones, productos e historial para trazabilidad.

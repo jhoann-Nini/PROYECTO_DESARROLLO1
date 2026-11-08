@@ -1115,7 +1115,7 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
-      // El presupuesto por defecto es 1000 ($4.000.000 COP).
+      // El presupuesto por defecto es $4.000.000 COP.
       // El producto más caro ($5.209.900) sigue visible y muestra su badge 'Supera presupuesto'
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       expect(screen.getAllByText("Supera presupuesto").length).toBeGreaterThanOrEqual(1);
@@ -1308,7 +1308,7 @@ describe("Página principal / (Home)", () => {
       const slider = screen.getByLabelText(
         "Ajustar presupuesto máximo en pesos colombianos",
       );
-      fireEvent.change(slider, { target: { value: "100" } });
+      fireEvent.change(slider, { target: { value: "400000" } });
       fireEvent.pointerUp(slider);
 
       expect(

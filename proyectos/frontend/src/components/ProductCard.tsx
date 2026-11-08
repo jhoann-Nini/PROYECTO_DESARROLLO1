@@ -4,6 +4,7 @@
 import { Producto } from "@/types/producto";
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
+import { sanearPrecioCOP } from "@/data/precios";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 
 interface ProductCardProps {
@@ -29,9 +30,7 @@ export default function ProductCard({
     limitePresupuestoCOP !== null &&
     producto.precioReferencia !== null &&
     producto.precioReferencia !== undefined
-      ? (producto.precioReferencia < 10000
-          ? producto.precioReferencia * 4000
-          : producto.precioReferencia) <= limitePresupuestoCOP
+      ? sanearPrecioCOP(producto.precioReferencia) <= limitePresupuestoCOP
       : null;
 
   return (

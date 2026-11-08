@@ -6,7 +6,7 @@ import {
   MetricaPuntuacion,
   TiendaPrecio,
 } from "@/types/producto";
-import { normalizarPrecioCOP } from "./precios";
+import { sanearPrecioCOP } from "./precios";
 
 export interface FichaNormalizada {
   categoriaTipo: CategoriaDispositivo;
@@ -56,7 +56,7 @@ export const INFO_CATEGORIAS: Record<
 
 export function formatearCOP(valor: number | null | undefined): string {
   if (valor === null || valor === undefined) return "Consultar disponibilidad";
-  const monto = normalizarPrecioCOP(valor);
+  const monto = sanearPrecioCOP(valor);
   const formateado = new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",

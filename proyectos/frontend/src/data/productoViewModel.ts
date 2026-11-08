@@ -4,7 +4,7 @@ import type {
   TiendaPrecio,
 } from "@/types/producto";
 import { detectarCategoria, formatearCOP } from "./specsHelper";
-import { normalizarPrecioCOP } from "./precios";
+import { sanearPrecioCOP } from "./precios";
 
 export type CaracteristicaClave =
   | "5g"
@@ -286,7 +286,7 @@ function extraerTiendas(
     if (!item || typeof item !== "object") continue;
 
     const registro = item as Record<string, unknown>;
-    const precio = normalizarPrecioCOP(
+    const precio = sanearPrecioCOP(
       typeof registro.precio === "number"
         ? registro.precio
         : Number(registro.precio)
@@ -356,7 +356,7 @@ export function crearProductoViewModel(
     categoria,
     categoriaEtiqueta,
     imagen,
-    precioCOP: normalizarPrecioCOP(producto.precioReferencia),
+    precioCOP: sanearPrecioCOP(producto.precioReferencia),
     precioFormateado: formatearCOP(producto.precioReferencia),
     disponible: producto.estado === true,
     rating: normalizarRating(opciones.rating),

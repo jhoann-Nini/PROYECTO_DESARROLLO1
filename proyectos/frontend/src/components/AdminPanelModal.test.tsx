@@ -70,7 +70,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       idCategoria: 1,
       idMarca: 10,
       imagen: "https://example.com/phone2.jpg",
-      precioReferencia: 699.99,
+      precioReferencia: 1_749_000,
       estado: true,
     },
   ];
@@ -523,7 +523,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       expect(screen.getByText("#101")).toBeDefined();
       expect(screen.getByText("Smartphones")).toBeDefined();
       expect(screen.getByText("Nothing")).toBeDefined();
-      expect(screen.getByText("$699.99")).toBeDefined();
+      expect(screen.getByText(/1\.749\.000/)).toBeDefined();
     });
 
     it("debe validar campos y crear un producto exitosamente", async () => {

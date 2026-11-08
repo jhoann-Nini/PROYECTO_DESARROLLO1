@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.2 (Fase 1)  
+**Versión:** 4.3 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -516,8 +516,8 @@ No incluye:
 
 La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 
-- [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
-- [ ] Se confirma que Visitante es acceso público y no un rol persistido.
+- [x] Se aprueban los cuatro perfiles y sus nombres canónicos: Administrador, Moderador, Usuario registrado y Representante de establecimiento (Tienda).
+- [x] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
 - [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO`, el bloqueo/escalamiento automático por conflicto de interés y el rechazo auditado de intentos no autorizados).
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes), incluida la revocación independiente de cada vínculo.
@@ -587,3 +587,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.0: aprobación de la revocación global e inmediata en todas las sesiones y dispositivos; el backend hace cumplir los permisos vigentes sin depender de la actualización de la interfaz.
 - v4.1: aprobación de la política de denegación por seguridad ante fallos de verificación de permisos; se bloquean operaciones protegidas y no se utilizan autorizaciones obsoletas.
 - v4.2: aprobación de la recuperación con validación nueva de permisos; no se restauran permisos anteriores ni se ejecutan automáticamente operaciones bloqueadas durante la falla.
+- v4.3: aprobación de los cuatro perfiles funcionales y sus nombres canónicos; Visitante se confirma como acceso público, no como rol persistido.

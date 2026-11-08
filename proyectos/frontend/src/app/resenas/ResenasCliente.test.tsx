@@ -458,10 +458,7 @@ describe("ResenasCliente", () => {
       screen.queryByRole("button", { name: "Eliminar reseña" })
     ).toBeNull();
     expect(
-      screen.queryByRole("button", { name: "Reportar reseña" })
-    ).toBeNull();
-    expect(
-      screen.getAllByRole("button", { name: "Iniciar sesión para reportar reseña" })
+      screen.getAllByRole("button", { name: "Reportar reseña" })
     ).toHaveLength(2);
   });
 

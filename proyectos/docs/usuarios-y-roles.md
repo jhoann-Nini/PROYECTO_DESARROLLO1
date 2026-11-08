@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 2.2 (Fase 1)  
+**Versión:** 2.3 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -227,6 +227,13 @@ Para la prueba 1 del flujo de moderación se aprueba la **opción A**:
 
 Esta aprobación cubre únicamente la transición `PROCEDENTE` → `CERRADO`. Las transiciones para `NO_PROCEDENTE` y `ESCALADO` se validarán por separado.
 
+Para la prueba 2 del flujo de moderación se aprueba la **opción A**:
+
+- Cuando el moderador o administrador determina que un reporte es `NO_PROCEDENTE`, registra la justificación y la decisión.
+- Una vez guardada correctamente la resolución, el sistema cambia automáticamente el reporte de `NO_PROCEDENTE` a `CERRADO`.
+- Se conservan el actor que tomó la decisión, la fecha, la justificación y la fecha del cierre automático.
+- El cierre no elimina el reporte ni su historial.
+
 ## 8. Reglas de relación entre cuentas y establecimientos
 
 La autorización de tienda requiere una relación explícita entre la cuenta y el establecimiento. No basta con recibir `idEstablecimiento` desde el frontend.
@@ -314,7 +321,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [ ] Se aprueban los cuatro perfiles y sus nombres canónicos.
 - [ ] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
-- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobada la transición `PROCEDENTE` → `CERRADO` automático).
+- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE` y `NO_PROCEDENTE`).
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes).
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
@@ -349,3 +356,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v1.0: borrador inicial con visitante, usuario, administrador y representante.
 - v2.0: especificación de los cuatro perfiles solicitados, matriz de permisos, reglas de propiedad, moderación y criterios de cierre de Fase 1.
 - v2.2: aprobación de la transición automática `PROCEDENTE` → `CERRADO` tras registrar y aplicar la decisión.
+- v2.3: aprobación de la transición automática `NO_PROCEDENTE` → `CERRADO` tras registrar la justificación.

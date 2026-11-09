@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.4 (Fase 1)  
+**Versión:** 5.5 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -508,6 +508,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-30 | Prohibición de auto-reactivación del rol Administrador suspendido | La cuenta afectada no puede levantar su propia suspensión ni modificar su rol para recuperar capacidades administrativas, incluso mediante peticiones directas a la API; el backend rechaza y audita esos intentos; solo otro administrador autorizado puede levantar la suspensión; los demás roles vigentes permanecen intactos |
 | AUTH-31 | Aplicación global de la suspensión administrativa en sesiones activas | La suspensión del rol Administrador surte efecto en todas las sesiones y dispositivos desde que se confirma; el backend valida el estado vigente del rol en cada solicitud y deniega las operaciones administrativas sin exigir cierre de sesión, renovación de token ni notificación al cliente; se conservan las operaciones permitidas por otros roles vigentes |
 | AUTH-32 | Suspensión administrativa durante una operación en curso | Si la suspensión del rol Administrador se confirma antes de la aplicación definitiva de una operación administrativa, el backend vuelve a validar la autorización al confirmar, cancela la operación sin escrituras parciales y registra el intento; las operaciones confirmadas antes de la suspensión no se revierten automáticamente |
+| AUTH-33 | Rechazo de intentos no autorizados de suspender el rol Administrador | Si una cuenta sin autoridad administrativa intenta suspender el rol Administrador de otra cuenta, el backend rechaza la solicitud con HTTP `403`, no modifica roles ni sesiones y registra el intento en auditoría |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -561,6 +562,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba la prohibición de auto-reactivación del rol Administrador suspendido, incluso mediante solicitudes directas a la API; el backend rechaza y audita los intentos y exige la intervención de otro administrador autorizado.
 - [x] Se aprueba que la suspensión del rol Administrador surta efecto global e inmediatamente en todas las sesiones y dispositivos; el backend rechaza las operaciones administrativas desde la confirmación, sin exigir cierre de sesión ni renovación de token, y conserva las funciones de otros roles vigentes.
 - [x] Se aprueba que una suspensión administrativa confirmada antes de la aplicación definitiva cancele la operación en curso sin cambios parciales; el backend revalida al confirmar y audita el intento, sin revertir operaciones ya confirmadas.
+- [x] Se aprueba que los intentos de suspender el rol Administrador por cuentas sin autoridad sean rechazados por el backend con HTTP `403`, sin cambios en roles ni sesiones y con registro de auditoría.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -625,3 +627,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.2: aprobación de la prohibición de auto-reactivación del rol Administrador suspendido, incluso mediante API; solo otro administrador autorizado puede levantar la suspensión y los intentos de auto-reactivación se rechazan y auditan.
 - v5.3: aprobación de la aplicación global e inmediata de la suspensión del rol Administrador en todas las sesiones y dispositivos, con validación en cada solicitud, sin cierre de sesión ni renovación de token y conservando los permisos de otros roles vigentes.
 - v5.4: aprobación de la cancelación de operaciones administrativas aún no confirmadas cuando la suspensión del rol Administrador se hace efectiva, con revalidación al confirmar, ausencia de escrituras parciales y auditoría; no se revierten operaciones ya confirmadas.
+- v5.5: aprobación del rechazo HTTP `403` de intentos no autorizados de suspender el rol Administrador, sin modificar roles ni sesiones y con registro de auditoría.

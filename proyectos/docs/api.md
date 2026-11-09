@@ -421,22 +421,24 @@ El mecanismo definitivo de autenticación deberá establecerse durante la implem
 
 # 13. Roles y autorización
 
-TecnoReview contempla los siguientes tipos de usuario:
+Los perfiles funcionales canónicos de TecReview son:
 
-VISITANTE
-USUARIO
-ADMINISTRADOR
-REPRESENTANTE_ESTABLECIMIENTO
+- `ADMINISTRADOR`
+- `MODERADOR`
+- `USUARIO_REGISTRADO`
+- `REPRESENTANTE_ESTABLECIMIENTO`
 
-Los permisos deben ser controlados desde el backend.
+Visitante representa acceso público y no es un rol persistido.
 
-No es suficiente ocultar botones en el frontend.
+Una cuenta puede tener varios roles simultáneamente. Los permisos efectivos corresponden a la unión de las capacidades de sus roles vigentes, sujetos al estado general de la cuenta, a la vigencia de cada asignación, al contexto del recurso, a los permisos específicos y a las reglas de conflicto de interés. El rol o los permisos nunca deben aceptarse desde el cuerpo de la solicitud como autoridad: el backend obtiene la identidad de un JWT validado y consulta el estado vigente de las asignaciones.
 
-Por ejemplo, aunque el frontend no muestre el botón de eliminar producto a un usuario normal, el backend también debe impedir:
+Para operaciones de representante, el backend debe comprobar además que exista un vínculo vigente entre la cuenta y el establecimiento objetivo y que la acción concreta esté permitida para ese vínculo. Tener el rol de representante no concede acceso global a todos los establecimientos.
 
-DELETE /api/productos/1
+La suspensión de una cuenta bloquea todos sus roles. La suspensión o revocación de un rol individual bloquea solo sus capacidades y conserva los demás roles vigentes. La suspensión del rol Administrador debe surtir efecto en todas las sesiones/dispositivos desde su confirmación; cada solicitud administrativa vuelve a validar el estado vigente. Una cuenta no puede autoasignarse, auto-reactivarse ni cambiar por API una asignación administrativa suspendida.
 
-si el usuario no tiene autorización.
+Los permisos se controlan en el backend. Ocultar botones en el frontend no sustituye la autorización del servidor. Las operaciones no autorizadas responden con `403 Forbidden`; las solicitudes sin autenticación válida responden con `401 Unauthorized`.
+
+**Estado de implementación:** este bloque describe el contrato funcional objetivo aprobado. El código actual todavía contiene una relación JPA de un único rol por usuario y no implementa la matriz completa de perfiles, vínculos y suspensión global; requiere migración y pruebas en una fase posterior.
 
 ---
 
@@ -1016,3 +1018,33 @@ Versión: 1.0
 Estado: Borrador
 Última actualización: Pendiente
 Responsable: Equipo de desarrollo TecnoReview
+
+
+---
+
+# 26. Contrato objetivo de moderación de reportes
+
+## Estados y transiciones
+
+Los reportes de reseñas utilizan los estados `PENDIENTE`, `EN_REVISION`, `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO`.
+
+- Un reporte nuevo inicia en `PENDIENTE`.
+- Un moderador o administrador autorizado y sin conflicto puede iniciar la revisión.
+- Desde `EN_REVISION`, el caso puede resolverse como `PROCEDENTE` o `NO_PROCEDENTE`, o pasar a `ESCALADO`.
+- Un caso `ESCALADO` solo puede ser resuelto por un administrador autorizado sin conflicto de interés.
+- `PROCEDENTE` se cierra automáticamente solo después de registrar la decisión y aplicar correctamente la acción correctiva.
+- `NO_PROCEDENTE` se cierra automáticamente después de guardar la justificación.
+- Si la acción correctiva falla, el reporte no se cierra; se conserva para corrección y se registra el error.
+- El cierre conserva el reporte y todo su historial.
+
+## Autorización y auditoría
+
+Toda transición se valida en backend. Un usuario sin capacidad de moderación recibe `403 Forbidden` y no altera el reporte. Los intentos denegados se auditan sin guardar contraseñas, tokens ni secretos. El conflicto de interés bloquea la intervención del moderador y provoca el escalamiento; si no hay administrador disponible sin conflicto, el caso permanece escalado hasta que se asigne uno.
+
+## Endpoints
+
+El backend actual documenta e implementa el registro de reportes en `POST /api/resenas/{idResena}/reportes` y la consulta de los reportes propios en `GET /api/reportes/mis-reportes`. La API de asignación, revisión, transición de estados, resolución, escalamiento y consulta administrativa todavía debe definirse y construirse para cumplir el flujo objetivo. No se deben presentar esos endpoints administrativos como existentes hasta que se implementen y prueben.
+
+**Estado de implementación:** el flujo anterior es el contrato funcional aprobado, no una afirmación de que el ciclo completo de moderación esté disponible actualmente. El enum y las operaciones actuales del backend representan una versión parcial y deben alinearse en una fase posterior.
+
+En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.

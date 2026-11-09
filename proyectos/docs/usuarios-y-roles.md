@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.8 (Fase 1)  
+**Versión:** 4.9 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -468,6 +468,7 @@ Para la prueba 7 del ciclo de vida de la cuenta se aprueba la **opción A**:
 - Pueden coexistir varias cuentas con el rol Administrador. Cada cuenta conserva su identidad y sus acciones administrativas se auditan individualmente; revocar el rol a una cuenta no modifica los roles de las demás.
 - No se puede retirar, degradar ni desactivar la última cuenta con rol Administrador activo. Antes de hacerlo, debe existir otra cuenta Administrador activa, asignada mediante el procedimiento controlado. Esta protección también impide la autoeliminación del último administrador.
 - Un administrador puede renunciar voluntariamente a su propio rol si, al confirmar el cambio, existe al menos otra cuenta Administrador activa. La operación retira únicamente el rol Administrador de su cuenta, conserva sus demás roles y queda auditada. La regla de protección del último administrador prevalece siempre. Los permisos efectivos posteriores se recalculan con los roles restantes; por ejemplo, si conserva `USUARIO_REGISTRADO`, mantiene las funciones correspondientes a ese perfil.
+- Un administrador autorizado puede suspender temporalmente el rol Administrador de otra cuenta por una causa justificada. La suspensión bloquea las capacidades administrativas, pero no desactiva la cuenta ni afecta los permisos de sus otros roles vigentes. Deben registrarse el actor, la cuenta afectada, el motivo y las fechas de inicio y levantamiento. El levantamiento de la suspensión requiere una acción autorizada y auditada. No se puede suspender al último Administrador activo.
 
 Esta decisión define el comportamiento esperado, pero no autoriza todavía modificar el esquema de usuarios/roles ni implementar la autorización; eso pertenece a fases posteriores.
 
@@ -501,6 +502,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-24 | No se puede retirar ni desactivar al último Administrador activo | Backend rechaza la operación si deja la plataforma sin administradores; primero debe existir otro Administrador activo asignado mediante el procedimiento controlado; el intento queda auditado |
 | AUTH-25 | Renuncia voluntaria al rol Administrador | Se permite retirar el propio rol solo si existe otro Administrador activo; se conservan los demás roles de la cuenta y se registra la operación; nunca se permite dejar la plataforma sin administradores |
 | AUTH-26 | Renuncia de Administrador con otros roles vigentes | Al retirar el rol Administrador, el backend revoca solo las capacidades asociadas a ese rol; conserva los demás roles y sus permisos, sin desactivar la cuenta ni afectar funciones independientes |
+| AUTH-27 | Suspensión temporal del rol Administrador | Un administrador autorizado puede suspender temporalmente solo las capacidades administrativas de otra cuenta; se conservan sus demás roles y permisos; se auditan actor, cuenta afectada, motivo y fechas; no se puede suspender al último Administrador activo |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -548,6 +550,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba la protección del último Administrador activo: no se permite retirar su rol ni desactivar esa cuenta hasta que exista otro administrador activo asignado de forma controlada.
 - [x] Se aprueba la renuncia voluntaria al rol Administrador cuando existe otro administrador activo; solo se retira ese rol, se conservan los demás y la operación queda auditada.
 - [x] Se aprueba que la renuncia al rol Administrador no desactive la cuenta ni retire los permisos de los demás roles vigentes; las capacidades administrativas se revocan de forma independiente.
+- [x] Se aprueba la suspensión temporal exclusiva del rol Administrador, conservando los demás roles y permisos; el levantamiento es autorizado y auditado y no puede dejar la plataforma sin administradores.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -606,3 +609,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.6: aprobación de la protección del último Administrador activo; se impide retirar su rol o desactivar su cuenta mientras no exista otro administrador activo.
 - v4.7: aprobación de la renuncia voluntaria al rol Administrador cuando existe otro administrador activo, conservando los demás roles y registrando la operación.
 - v4.8: precisión de los efectos de la renuncia administrativa: revocación exclusiva de capacidades de Administrador y conservación de permisos de los demás roles vigentes.
+- v4.9: aprobación de la suspensión temporal exclusiva del rol Administrador, con conservación de otros roles, auditoría, levantamiento autorizado y protección del último administrador.

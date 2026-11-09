@@ -46,47 +46,61 @@ Algunas relaciones pueden requerir tablas intermedias dependiendo de la implemen
 
 # 3. Entidad: ROL
 
-Representa los diferentes roles disponibles dentro del sistema.
+Catálogo de perfiles funcionales que pueden asignarse a las cuentas.
 
 ## Atributos
 
-Campo       |  Tipo conceptual   |  Descripción
-id_rol     |  PK               |  Identificador del rol
-nombre     |  VARCHAR           |  Nombre del rol
-descripcion |  TEXT               |  Descripción del rol
+| Campo | Tipo conceptual | Descripción |
+|---|---|---|
+| id_rol | PK | Identificador del rol |
+| nombre | VARCHAR | Nombre canónico único del rol |
+| descripcion | TEXT | Descripción del rol |
 
-### Roles iniciales
+### Roles canónicos
 
-Usuario registrado
-Administrador
-Representante de establecimiento
+- `ADMINISTRADOR`
+- `MODERADOR`
+- `USUARIO_REGISTRADO`
+- `REPRESENTANTE_ESTABLECIMIENTO`
 
-El visitante no requiere necesariamente un registro en la tabla ROL, ya que puede utilizar la plataforma sin autenticarse.
+Visitante es acceso público y no se persiste como rol ni requiere una cuenta.
 
 ---
 
 # 4. Entidad: USUARIO
 
-Representa a las personas que poseen una cuenta en TecnoReview.
+Representa una cuenta individual. Una cuenta puede tener varios roles vigentes; por tanto, el rol no debe modelarse como un único atributo obligatorio dentro de USUARIO en el modelo objetivo.
 
 ## Atributos
 
-Campo        | Tipo conceptual | Descripción
-id_usuario    | PK              | Identificador del usuario
-nombre        | VARCHAR      | Nombre del usuario
-correo        | VARCHAR      | Correo electrónico
-password    | VARCHAR      |Contraseña segura
-id_rol        | FK              | Rol asignado al usuario
-fecha_registro | TIMESTAMP      | Fecha de creación de la cuenta
-estado        | BOOLEAN      | Estado de la cuenta
+| Campo | Tipo conceptual | Descripción |
+|---|---|---|
+| id_usuario | PK | Identificador del usuario |
+| nombre | VARCHAR | Nombre del usuario |
+| correo | VARCHAR | Correo electrónico único |
+| password | VARCHAR / nullable según autenticación | Credencial local si aplica; no almacenar contraseñas en texto plano |
+| supabase_uid | VARCHAR, UNIQUE, nullable según integración | Identificador del usuario en Supabase Auth |
+| fecha_registro | TIMESTAMP | Fecha de creación de la cuenta |
+| estado | BOOLEAN | Estado general de la cuenta; una cuenta inactiva no puede operar con ninguno de sus roles |
 
-## Relaciones
+El campo conceptual `id_rol` único de la versión anterior se sustituye por la relación intermedia `USUARIO_ROL`. Esta es una evolución del modelo objetivo y no afirma que el esquema o la entidad JPA actuales ya estén migrados.
 
-Un usuario pertenece a un rol.
+## Relación cuenta-roles
 
-ROL 1 ───────── N USUARIO
+Una cuenta puede tener uno o varios roles, y un rol puede asignarse a muchas cuentas. La relación es muchos a muchos y debe resolverse mediante una entidad/tabla intermedia.
 
-Un rol puede estar asociado a muchos usuarios, mientras que cada usuario tendrá un rol asignado.
+### USUARIO_ROL
+
+| Campo | Tipo conceptual | Descripción |
+|---|---|---|
+| id_usuario | PK/FK | Cuenta a la que se asigna el rol |
+| id_rol | PK/FK | Rol asignado |
+| estado_asignacion | VARCHAR/ENUM | Vigente, suspendida o revocada, según la política de roles |
+| fecha_asignacion | TIMESTAMP | Fecha de asignación |
+| asignado_por | FK a USUARIO | Actor autorizado que asignó el rol, cuando aplique |
+| fecha_cambio | TIMESTAMP | Fecha del último cambio de estado |
+
+La clave primaria compuesta `(id_usuario, id_rol)` evita duplicar una asignación del mismo rol a la misma cuenta. Los cambios de asignación, suspensión y revocación deben conservar trazabilidad. La cuenta inactiva bloquea todos sus roles; suspender o revocar un rol individual no elimina los demás roles vigentes.
 
 ---
 
@@ -235,23 +249,24 @@ Las coordenadas permitirán relacionar el establecimiento con la funcionalidad d
 
 # 11. Relación entre establecimientos y usuarios
 
-Un representante de establecimiento deberá poder estar asociado con el establecimiento que tiene autorizado administrar.
+La relación cuenta-establecimiento es de muchos a muchos: una cuenta con el rol Representante de establecimiento puede representar varios establecimientos y un establecimiento puede tener varios representantes.
 
-Inicialmente se contempla:
+### USUARIO_ESTABLECIMIENTO
 
-USUARIO 1 ───────── N ESTABLECIMIENTO
+| Campo | Tipo conceptual | Descripción |
+|---|---|---|
+| id_usuario | PK/FK | Cuenta representante |
+| id_establecimiento | PK/FK | Establecimiento representado |
+| estado_vinculo | VARCHAR/ENUM | Vigente, suspendido o revocado |
+| fecha_inicio | TIMESTAMP | Inicio de la relación |
+| fecha_fin | TIMESTAMP, nullable | Fin o revocación del vínculo |
+| asignado_por | FK a USUARIO | Administrador autorizado que asignó el vínculo, cuando aplique |
 
-Sin embargo, la cardinalidad definitiva deberá confirmarse según las reglas de negocio.
+La clave primaria compuesta `(id_usuario, id_establecimiento)` evita duplicar el vínculo. Revocar un vínculo afecta únicamente a esa relación; no elimina otros vínculos de la cuenta ni los demás representantes del establecimiento. La autorización se valida por establecimiento y por permiso específico en cada operación.
 
-Una alternativa sería:
+La suspensión del establecimiento bloquea sus operaciones comerciales, pero no desactiva las cuentas personales ni borra los vínculos. El cierre es lógico y conserva el historial. La reapertura exige revisión y no restaura automáticamente vínculos revocados ni publicaciones.
 
-USUARIO 1 ───────── 1 ESTABLECIMIENTO
-
-si cada representante solamente puede administrar un establecimiento.
-
-Otra alternativa sería permitir que un representante administre varios establecimientos.
-
-Esta decisión deberá definirse antes de implementar definitivamente la relación en PostgreSQL.
+Esta relación es parte del modelo objetivo aprobado. La entidad y el esquema actuales deben migrarse y probarse en una fase de implementación; esta documentación no afirma que la relación ya exista en producción.
 
 ---
 
@@ -585,3 +600,29 @@ Versión: 1.0
 Estado: Borrador inicial
 Documento: Modelo de datos
 Última actualización: Pendiente de registrar
+
+
+---
+
+# 24. Reportes y trazabilidad de moderación (modelo objetivo)
+
+Un reporte se asocia con una reseña y con la cuenta que lo crea. El flujo aprobado requiere conservar el reporte incluso después de su cierre.
+
+### REPORTE_RESENA
+
+| Campo | Tipo conceptual | Descripción |
+|---|---|---|
+| id_reporte | PK | Identificador del reporte |
+| id_resena | FK a RESENA | Reseña reportada |
+| id_usuario | FK a USUARIO | Cuenta reportante |
+| motivo | VARCHAR | Categoría del reporte |
+| descripcion | TEXT, nullable | Detalle adicional |
+| estado | ENUM/VARCHAR | PENDIENTE, EN_REVISION, PROCEDENTE, NO_PROCEDENTE, ESCALADO o CERRADO |
+| fecha_creacion | TIMESTAMP | Fecha de recepción |
+| fecha_actualizacion | TIMESTAMP | Última actualización |
+
+### Historial de moderación
+
+El diseño debe conservar cada transición de estado y sus datos de auditoría: estado anterior/nuevo, actor, fecha, motivo, justificación, acción aplicada, resultado y datos del escalamiento/cierre. La resolución de un caso escalado corresponde a un administrador autorizado sin conflicto de interés. Los cierres son automáticos únicamente después de completar las condiciones aprobadas.
+
+Los scripts SQL y entidades actuales pueden representar una versión parcial del flujo; los estados y restricciones deberán alinearse con esta especificación mediante migraciones revisadas. No se debe ejecutar ni aplicar una migración de base de datos como parte de esta revisión documental.

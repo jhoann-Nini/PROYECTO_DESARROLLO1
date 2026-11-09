@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.2 (Fase 1)  
+**Versión:** 5.3 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -506,6 +506,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-28 | Reactivación autorizada del rol Administrador suspendido | Otro administrador autorizado debe validar y levantar la suspensión mediante una acción explícita; se registra actor, cuenta afectada, fecha y decisión/motivo; se restauran únicamente las capacidades administrativas suspendidas y se conservan los demás roles y permisos; no existe reactivación automática por vencimiento del tiempo |
 | AUTH-29 | Alcance de la suspensión del rol Administrador en cuentas multirrol | La suspensión bloquea únicamente las capacidades administrativas; la cuenta conserva los permisos de sus otros roles vigentes, como Usuario registrado; el backend valida cada operación y deniega las acciones administrativas con respuesta de acceso denegado, sin bloquear las funciones independientes; los intentos denegados quedan auditados |
 | AUTH-30 | Prohibición de auto-reactivación del rol Administrador suspendido | La cuenta afectada no puede levantar su propia suspensión ni modificar su rol para recuperar capacidades administrativas, incluso mediante peticiones directas a la API; el backend rechaza y audita esos intentos; solo otro administrador autorizado puede levantar la suspensión; los demás roles vigentes permanecen intactos |
+| AUTH-31 | Aplicación global de la suspensión administrativa en sesiones activas | La suspensión del rol Administrador surte efecto en todas las sesiones y dispositivos desde que se confirma; el backend valida el estado vigente del rol en cada solicitud y deniega las operaciones administrativas sin exigir cierre de sesión, renovación de token ni notificación al cliente; se conservan las operaciones permitidas por otros roles vigentes |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -557,6 +558,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la reactivación del rol Administrador suspendido requiera la intervención explícita de otro administrador autorizado, con validación y auditoría; no se reactiva automáticamente por el vencimiento de un plazo.
 - [x] Se aprueba que la suspensión del rol Administrador en una cuenta multirrol bloquee solo las operaciones administrativas y conserve las funciones de los demás roles vigentes; el backend deniega y audita los intentos administrativos.
 - [x] Se aprueba la prohibición de auto-reactivación del rol Administrador suspendido, incluso mediante solicitudes directas a la API; el backend rechaza y audita los intentos y exige la intervención de otro administrador autorizado.
+- [x] Se aprueba que la suspensión del rol Administrador surta efecto global e inmediatamente en todas las sesiones y dispositivos; el backend rechaza las operaciones administrativas desde la confirmación, sin exigir cierre de sesión ni renovación de token, y conserva las funciones de otros roles vigentes.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -619,3 +621,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.0: aprobación de la reactivación explícita y autorizada del rol Administrador suspendido por otro administrador, con validación, auditoría y conservación de los demás roles; se descarta la reactivación automática por vencimiento del plazo.
 - v5.1: precisión del alcance de la suspensión administrativa en cuentas multirrol: se bloquean solo las operaciones de Administrador, se conservan los permisos de los demás roles vigentes y se auditan los intentos administrativos denegados.
 - v5.2: aprobación de la prohibición de auto-reactivación del rol Administrador suspendido, incluso mediante API; solo otro administrador autorizado puede levantar la suspensión y los intentos de auto-reactivación se rechazan y auditan.
+- v5.3: aprobación de la aplicación global e inmediata de la suspensión del rol Administrador en todas las sesiones y dispositivos, con validación en cada solicitud, sin cierre de sesión ni renovación de token y conservando los permisos de otros roles vigentes.

@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.3 (Fase 1)  
+**Versión:** 4.4 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -441,6 +441,7 @@ Esta decisión define el comportamiento esperado; no significa que el manejo de 
 - Toda cuenta nueva obtiene el rol Usuario registrado por defecto.
 - Los roles Moderador y Representante de establecimiento solo pueden asignarse por un administrador autorizado.
 - El rol Administrador debe asignarse mediante un procedimiento controlado, nunca desde el registro público.
+- La asignación y retirada del rol Administrador son operaciones exclusivas de un administrador autorizado; requieren validación en backend y auditoría. El titular no puede asignarse ni elevarse ese rol a sí mismo.
 - Los cambios de rol deben quedar auditados.
 - Al suspender una cuenta, se bloquean las operaciones protegidas independientemente del rol.
 
@@ -492,6 +493,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-19 | La revocación se aplica a todas las sesiones activas | Cualquier sesión/dispositivo recibe 403 en la siguiente solicitud protegida tras la revocación; no hay cambios y las demás funciones autorizadas continúan disponibles |
 | AUTH-20 | La autorización falla de forma segura cuando no puede verificarse | Si la fuente de permisos no está disponible o no es confiable, las operaciones protegidas se bloquean sin usar permisos obsoletos; las funciones independientes pueden continuar |
 | AUTH-21 | La recuperación del servicio de autorización exige revalidar permisos actuales | Antes de reanudar operaciones protegidas, el backend consulta nuevamente los permisos vigentes; las operaciones bloqueadas durante la falla no se ejecutan automáticamente |
+| AUTH-22 | El rol Administrador solo se asigna o retira por un administrador autorizado | Backend valida la autoridad del actor; impide autoasignación y cambios desde registro público; registra actor, cuenta afectada, cambio y fecha |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -588,3 +590,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.1: aprobación de la política de denegación por seguridad ante fallos de verificación de permisos; se bloquean operaciones protegidas y no se utilizan autorizaciones obsoletas.
 - v4.2: aprobación de la recuperación con validación nueva de permisos; no se restauran permisos anteriores ni se ejecutan automáticamente operaciones bloqueadas durante la falla.
 - v4.3: aprobación de los cuatro perfiles funcionales y sus nombres canónicos; Visitante se confirma como acceso público, no como rol persistido.
+- v4.4: aprobación de la asignación y retirada controladas del rol Administrador, exclusivas de un administrador autorizado, sin autoasignación y con auditoría.

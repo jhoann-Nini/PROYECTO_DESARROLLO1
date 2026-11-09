@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.0 (Fase 1)  
+**Versión:** 5.1 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -504,6 +504,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-26 | Renuncia de Administrador con otros roles vigentes | Al retirar el rol Administrador, el backend revoca solo las capacidades asociadas a ese rol; conserva los demás roles y sus permisos, sin desactivar la cuenta ni afectar funciones independientes |
 | AUTH-27 | Suspensión temporal del rol Administrador | Un administrador autorizado puede suspender temporalmente solo las capacidades administrativas de otra cuenta; se conservan sus demás roles y permisos; se auditan actor, cuenta afectada, motivo y fechas; no se puede suspender al último Administrador activo |
 | AUTH-28 | Reactivación autorizada del rol Administrador suspendido | Otro administrador autorizado debe validar y levantar la suspensión mediante una acción explícita; se registra actor, cuenta afectada, fecha y decisión/motivo; se restauran únicamente las capacidades administrativas suspendidas y se conservan los demás roles y permisos; no existe reactivación automática por vencimiento del tiempo |
+| AUTH-29 | Alcance de la suspensión del rol Administrador en cuentas multirrol | La suspensión bloquea únicamente las capacidades administrativas; la cuenta conserva los permisos de sus otros roles vigentes, como Usuario registrado; el backend valida cada operación y deniega las acciones administrativas con respuesta de acceso denegado, sin bloquear las funciones independientes; los intentos denegados quedan auditados |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -553,6 +554,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la renuncia al rol Administrador no desactive la cuenta ni retire los permisos de los demás roles vigentes; las capacidades administrativas se revocan de forma independiente.
 - [x] Se aprueba la suspensión temporal exclusiva del rol Administrador, conservando los demás roles y permisos; el levantamiento es autorizado y auditado y no puede dejar la plataforma sin administradores.
 - [x] Se aprueba que la reactivación del rol Administrador suspendido requiera la intervención explícita de otro administrador autorizado, con validación y auditoría; no se reactiva automáticamente por el vencimiento de un plazo.
+- [x] Se aprueba que la suspensión del rol Administrador en una cuenta multirrol bloquee solo las operaciones administrativas y conserve las funciones de los demás roles vigentes; el backend deniega y audita los intentos administrativos.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -613,3 +615,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.8: precisión de los efectos de la renuncia administrativa: revocación exclusiva de capacidades de Administrador y conservación de permisos de los demás roles vigentes.
 - v4.9: aprobación de la suspensión temporal exclusiva del rol Administrador, con conservación de otros roles, auditoría, levantamiento autorizado y protección del último administrador.
 - v5.0: aprobación de la reactivación explícita y autorizada del rol Administrador suspendido por otro administrador, con validación, auditoría y conservación de los demás roles; se descarta la reactivación automática por vencimiento del plazo.
+- v5.1: precisión del alcance de la suspensión administrativa en cuentas multirrol: se bloquean solo las operaciones de Administrador, se conservan los permisos de los demás roles vigentes y se auditan los intentos administrativos denegados.

@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.4 (Fase 1)  
+**Versión:** 4.6 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -465,6 +465,8 @@ Para la prueba 7 del ciclo de vida de la cuenta se aprueba la **opción A**:
 - Para cada operación, el backend debe comprobar la capacidad requerida, la identidad autenticada, el estado de la cuenta y la relación con el recurso. No debe depender de un “rol principal”, del orden de los roles ni de roles enviados por el cliente.
 - Solo un administrador autorizado puede asignar o revocar roles adicionales. Toda modificación debe quedar auditada y aplicarse en las solicitudes posteriores.
 - La asignación de roles no puede permitir autoelevación de privilegios. El rol Administrador seguirá sujeto al procedimiento controlado definido anteriormente.
+- Pueden coexistir varias cuentas con el rol Administrador. Cada cuenta conserva su identidad y sus acciones administrativas se auditan individualmente; revocar el rol a una cuenta no modifica los roles de las demás.
+- No se puede retirar, degradar ni desactivar la última cuenta con rol Administrador activo. Antes de hacerlo, debe existir otra cuenta Administrador activa, asignada mediante el procedimiento controlado. Esta protección también impide la autoeliminación del último administrador.
 
 Esta decisión define el comportamiento esperado, pero no autoriza todavía modificar el esquema de usuarios/roles ni implementar la autorización; eso pertenece a fases posteriores.
 
@@ -494,6 +496,8 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-20 | La autorización falla de forma segura cuando no puede verificarse | Si la fuente de permisos no está disponible o no es confiable, las operaciones protegidas se bloquean sin usar permisos obsoletos; las funciones independientes pueden continuar |
 | AUTH-21 | La recuperación del servicio de autorización exige revalidar permisos actuales | Antes de reanudar operaciones protegidas, el backend consulta nuevamente los permisos vigentes; las operaciones bloqueadas durante la falla no se ejecutan automáticamente |
 | AUTH-22 | El rol Administrador solo se asigna o retira por un administrador autorizado | Backend valida la autoridad del actor; impide autoasignación y cambios desde registro público; registra actor, cuenta afectada, cambio y fecha |
+| AUTH-23 | Pueden coexistir varias cuentas con rol Administrador | Cada administrador conserva identidad propia y sus acciones se auditan individualmente; revocar uno no afecta los roles ni el acceso administrativo de los demás |
+| AUTH-24 | No se puede retirar ni desactivar al último Administrador activo | Backend rechaza la operación si deja la plataforma sin administradores; primero debe existir otro Administrador activo asignado mediante el procedimiento controlado; el intento queda auditado |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -537,6 +541,8 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la revocación de un permiso se aplique globalmente a todas las sesiones y dispositivos, sin depender de notificaciones al cliente y sin cerrar las demás funciones autorizadas.
 - [x] Se aprueba la política de denegación por seguridad: si no puede verificarse la autorización vigente, se bloquean las operaciones protegidas sin recurrir a permisos obsoletos; las funciones independientes pueden continuar.
 - [x] Se aprueba que, tras una falla del servicio de autorización, la recuperación exija consultar nuevamente los permisos vigentes antes de reanudar operaciones protegidas; las solicitudes bloqueadas no se reproducen automáticamente.
+- [x] Se aprueba que puedan coexistir varias cuentas Administrador, con identidad y auditoría individual; revocar una no afecta a las demás.
+- [x] Se aprueba la protección del último Administrador activo: no se permite retirar su rol ni desactivar esa cuenta hasta que exista otro administrador activo asignado de forma controlada.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -591,3 +597,5 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.2: aprobación de la recuperación con validación nueva de permisos; no se restauran permisos anteriores ni se ejecutan automáticamente operaciones bloqueadas durante la falla.
 - v4.3: aprobación de los cuatro perfiles funcionales y sus nombres canónicos; Visitante se confirma como acceso público, no como rol persistido.
 - v4.4: aprobación de la asignación y retirada controladas del rol Administrador, exclusivas de un administrador autorizado, sin autoasignación y con auditoría.
+- v4.5: aprobación de múltiples cuentas con rol Administrador simultáneamente, con identidad y auditoría individual y sin afectar a otros administradores al revocar uno.
+- v4.6: aprobación de la protección del último Administrador activo; se impide retirar su rol o desactivar su cuenta mientras no exista otro administrador activo.

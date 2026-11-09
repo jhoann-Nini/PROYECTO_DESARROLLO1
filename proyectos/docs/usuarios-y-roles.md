@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 4.6 (Fase 1)  
+**Versión:** 4.7 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -467,6 +467,7 @@ Para la prueba 7 del ciclo de vida de la cuenta se aprueba la **opción A**:
 - La asignación de roles no puede permitir autoelevación de privilegios. El rol Administrador seguirá sujeto al procedimiento controlado definido anteriormente.
 - Pueden coexistir varias cuentas con el rol Administrador. Cada cuenta conserva su identidad y sus acciones administrativas se auditan individualmente; revocar el rol a una cuenta no modifica los roles de las demás.
 - No se puede retirar, degradar ni desactivar la última cuenta con rol Administrador activo. Antes de hacerlo, debe existir otra cuenta Administrador activa, asignada mediante el procedimiento controlado. Esta protección también impide la autoeliminación del último administrador.
+- Un administrador puede renunciar voluntariamente a su propio rol si, al confirmar el cambio, existe al menos otra cuenta Administrador activa. La operación retira únicamente el rol Administrador de su cuenta, conserva sus demás roles y queda auditada. La regla de protección del último administrador prevalece siempre.
 
 Esta decisión define el comportamiento esperado, pero no autoriza todavía modificar el esquema de usuarios/roles ni implementar la autorización; eso pertenece a fases posteriores.
 
@@ -498,6 +499,7 @@ Esta decisión define el comportamiento esperado, pero no autoriza todavía modi
 | AUTH-22 | El rol Administrador solo se asigna o retira por un administrador autorizado | Backend valida la autoridad del actor; impide autoasignación y cambios desde registro público; registra actor, cuenta afectada, cambio y fecha |
 | AUTH-23 | Pueden coexistir varias cuentas con rol Administrador | Cada administrador conserva identidad propia y sus acciones se auditan individualmente; revocar uno no afecta los roles ni el acceso administrativo de los demás |
 | AUTH-24 | No se puede retirar ni desactivar al último Administrador activo | Backend rechaza la operación si deja la plataforma sin administradores; primero debe existir otro Administrador activo asignado mediante el procedimiento controlado; el intento queda auditado |
+| AUTH-25 | Renuncia voluntaria al rol Administrador | Se permite retirar el propio rol solo si existe otro Administrador activo; se conservan los demás roles de la cuenta y se registra la operación; nunca se permite dejar la plataforma sin administradores |
 
 ## 11. Decisiones de alcance de la Fase 1
 
@@ -543,6 +545,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que, tras una falla del servicio de autorización, la recuperación exija consultar nuevamente los permisos vigentes antes de reanudar operaciones protegidas; las solicitudes bloqueadas no se reproducen automáticamente.
 - [x] Se aprueba que puedan coexistir varias cuentas Administrador, con identidad y auditoría individual; revocar una no afecta a las demás.
 - [x] Se aprueba la protección del último Administrador activo: no se permite retirar su rol ni desactivar esa cuenta hasta que exista otro administrador activo asignado de forma controlada.
+- [x] Se aprueba la renuncia voluntaria al rol Administrador cuando existe otro administrador activo; solo se retira ese rol, se conservan los demás y la operación queda auditada.
 - [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
@@ -599,3 +602,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v4.4: aprobación de la asignación y retirada controladas del rol Administrador, exclusivas de un administrador autorizado, sin autoasignación y con auditoría.
 - v4.5: aprobación de múltiples cuentas con rol Administrador simultáneamente, con identidad y auditoría individual y sin afectar a otros administradores al revocar uno.
 - v4.6: aprobación de la protección del último Administrador activo; se impide retirar su rol o desactivar su cuenta mientras no exista otro administrador activo.
+- v4.7: aprobación de la renuncia voluntaria al rol Administrador cuando existe otro administrador activo, conservando los demás roles y registrando la operación.

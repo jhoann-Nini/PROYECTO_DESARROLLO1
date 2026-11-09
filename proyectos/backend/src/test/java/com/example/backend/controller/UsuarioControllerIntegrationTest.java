@@ -219,6 +219,7 @@ class UsuarioControllerIntegrationTest {
                 .andExpect(jsonPath("$.nombre", is("Juan Pérez")))
                 .andExpect(jsonPath("$.correo", is(email)))
                 .andExpect(jsonPath("$.rol", is("Usuario registrado")))
+                .andExpect(jsonPath("$.roles[0]", is("Usuario registrado")))
                 .andExpect(jsonPath("$.activo", is(true)))
                 .andExpect(jsonPath("$.idUsuario").isNumber())
                 .andExpect(jsonPath("$.fechaRegistro").isNotEmpty());

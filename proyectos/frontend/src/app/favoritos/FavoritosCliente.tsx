@@ -13,6 +13,13 @@ import type {
   Producto,
 } from "@/types/producto";
 import { construirCatalogo } from "@/data/catalogoApi";
+import { ORDENES_CATALOGO, type OrdenCatalogo } from "@/data/catalogo";
+import {
+  filtrarFavoritos,
+  opcionesCategoriaFavoritos,
+  ordenarFavoritos,
+  type FiltroCategoriaFavoritos,
+} from "@/data/favoritosCatalogo";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
@@ -28,6 +35,8 @@ export default function FavoritosCliente() {
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
   const [aviso, setAviso] = useState("");
+  const [categoria, setCategoria] = useState<FiltroCategoriaFavoritos>("todas");
+  const [orden, setOrden] = useState<OrdenCatalogo>("relevancia");
 
   useEffect(() => {
     let activo = true;
@@ -78,6 +87,16 @@ export default function FavoritosCliente() {
       .map((id) => porId.get(id))
       .filter((producto): producto is ProductoViewModel => Boolean(producto));
   }, [ids, productos]);
+
+  const opcionesCategoria = useMemo(
+    () => opcionesCategoriaFavoritos(favoritos),
+    [favoritos],
+  );
+
+  const favoritosVisibles = useMemo(
+    () => ordenarFavoritos(filtrarFavoritos(favoritos, categoria), orden),
+    [favoritos, categoria, orden],
+  );
 
   const noDisponibles = Math.max(0, ids.length - favoritos.length);
 
@@ -200,20 +219,82 @@ export default function FavoritosCliente() {
             </p>
           )}
 
-          <section
-            aria-label="Productos favoritos"
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-          >
-            {favoritos.map((producto) => (
-              <TarjetaProducto
-                key={producto.idProducto}
-                producto={producto}
-                onVerDetalle={(vista) =>
-                  router.push(`/productos/${vista.idProducto}`)
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="favoritos-categoria"
+                className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+              >
+                Filtrar por categoría
+              </label>
+              <select
+                id="favoritos-categoria"
+                value={categoria}
+                onChange={(evento) =>
+                  setCategoria(
+                    evento.target.value as FiltroCategoriaFavoritos,
+                  )
                 }
-              />
-            ))}
-          </section>
+                className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              >
+                <option value="todas">Todas las categorías</option>
+                {opcionesCategoria.map((opcion) => (
+                  <option key={opcion.valor} value={opcion.valor}>
+                    {opcion.etiqueta} ({opcion.cantidad})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="favoritos-orden"
+                className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+              >
+                Ordenar favoritos
+              </label>
+              <select
+                id="favoritos-orden"
+                value={orden}
+                onChange={(evento) =>
+                  setOrden(evento.target.value as OrdenCatalogo)
+                }
+                className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              >
+                {ORDENES_CATALOGO.map((opcion) => (
+                  <option key={opcion.valor} value={opcion.valor}>
+                    {opcion.etiqueta}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {favoritosVisibles.length === 0 ? (
+            <EstadoVacio
+              titulo="No hay favoritos en esa categoría."
+              descripcion="Prueba con otra categoría o vuelve a ver todos tus favoritos."
+              accion={{
+                etiqueta: "Quitar filtros",
+                onClick: () => setCategoria("todas"),
+              }}
+            />
+          ) : (
+            <section
+              aria-label="Productos favoritos"
+              className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+            >
+              {favoritosVisibles.map((producto) => (
+                <TarjetaProducto
+                  key={producto.idProducto}
+                  producto={producto}
+                  onVerDetalle={(vista) =>
+                    router.push(`/productos/${vista.idProducto}`)
+                  }
+                />
+              ))}
+            </section>
+          )}
         </>
       )}
     </main>

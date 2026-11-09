@@ -6,7 +6,7 @@ export interface PresupuestoHomeProps {
   onCambiarPresupuesto: (valor: number) => void;
   /**
    * Se invoca al terminar el ajuste del slider (pointer, mouse, touch o teclado)
-   * con el valor actual del control (50–1500), no con el valor en COP.
+   * con el valor actual del control, expresado en COP (200.000–6.000.000).
    */
   onFinalizarAjuste?: (valor: number) => void;
   totalEnPresupuesto: number;
@@ -54,9 +54,9 @@ export default function PresupuestoHome({
       <div className="space-y-2">
         <input
           type="range"
-          min="50"
-          max="1500"
-          step="25"
+          min="200000"
+          max="6000000"
+          step="100000"
           value={presupuestoMax}
           onChange={(evento) => onCambiarPresupuesto(Number(evento.target.value))}
           onPointerUp={manejarFinAjuste}

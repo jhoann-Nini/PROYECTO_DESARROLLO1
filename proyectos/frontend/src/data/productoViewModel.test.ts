@@ -45,11 +45,11 @@ describe("crearProductoViewModel", () => {
     expect(vista.precioFormateado).toContain("5.499.000");
     expect(vista.precioFormateado).toContain("COP");
 
-    const legado = crearProductoViewModel({
+    const precioBajo = crearProductoViewModel({
       ...productoBase,
       precioReferencia: 437.25,
     });
-    expect(legado.precioCOP).toBe(1_749_000);
+    expect(precioBajo.precioCOP).toBe(437);
 
     const sinPrecio = crearProductoViewModel({
       ...productoBase,

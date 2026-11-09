@@ -28,7 +28,7 @@ import {
 import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
-import { normalizarPrecioCOP } from "@/data/precios";
+import { sanearPrecioCOP } from "@/data/precios";
 import { seleccionarDestacados } from "@/data/destacados";
 import {
   normalizarTexto,
@@ -94,7 +94,7 @@ function filtrarRanking<T extends ItemRankingFiltrable>(
       return true;
     }
 
-    return normalizarPrecioCOP(item.precioReferencia) <= limitePresupuestoCOP;
+    return sanearPrecioCOP(item.precioReferencia) <= limitePresupuestoCOP;
   });
 }
 
@@ -116,7 +116,7 @@ function filtrarOfertas(
 
     if (!filtrarPorPresupuesto) return true;
 
-    return normalizarPrecioCOP(oferta.precioActual) <= limitePresupuestoCOP;
+    return sanearPrecioCOP(oferta.precioActual) <= limitePresupuestoCOP;
   });
 }
 
@@ -153,7 +153,8 @@ export default function Home() {
 
   // Búsqueda y presupuesto
   const [busqueda, setBusqueda] = useState("");
-  const [presupuestoMax, setPresupuestoMax] = useState<number>(1000);
+  // El presupuesto vive en COP: 4.000.000 equivale al antiguo valor 1000.
+  const [presupuestoMax, setPresupuestoMax] = useState<number>(4_000_000);
   const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] =
     useState(false);
 
@@ -472,10 +473,8 @@ export default function Home() {
     };
   }, []);
 
-  const limitePresupuestoCOP = useMemo(
-    () => normalizarPrecioCOP(presupuestoMax),
-    [presupuestoMax],
-  );
+  // El slider ya entrega el límite en COP: no hay nada que convertir.
+  const limitePresupuestoCOP = presupuestoMax;
 
   const vistas = useMemo(
     () =>

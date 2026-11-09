@@ -12,7 +12,7 @@ import type {
   CategoriaDispositivo,
 } from "@/types/producto";
 import { esAdministrador } from "@/types/producto";
-import { detectarCategoria, INFO_CATEGORIAS } from "@/data/specsHelper";
+import { detectarCategoria, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
 import {
   obtenerProductos,
   obtenerCategorias,
@@ -1179,17 +1179,17 @@ export default function AdminPanelModal({
 
                       <div>
                         <label htmlFor={idPrecioInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Precio de Referencia ($)
+                          Precio de Referencia (COP)
                         </label>
                         <input
                           id={idPrecioInput}
                           type="number"
-                          step="0.01"
+                          step="1"
                           min="0"
                           value={formPrecioReferencia}
                           onChange={(e) => setFormPrecioReferencia(e.target.value)}
                           disabled={guardando}
-                          placeholder="Ej: 699.99"
+                          placeholder="Ej: 1749000"
                           className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
                             erroresForm.precioReferencia
                               ? "border-red-300 focus:ring-red-400"
@@ -1496,7 +1496,7 @@ export default function AdminPanelModal({
                           </td>
                           <td className="py-2.5 px-3 text-right font-sans text-[var(--color-ink)]">
                             {prod.precioReferencia !== null && prod.precioReferencia !== undefined
-                              ? `$${Number(prod.precioReferencia).toFixed(2)}`
+                              ? formatearCOP(prod.precioReferencia)
                               : "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">

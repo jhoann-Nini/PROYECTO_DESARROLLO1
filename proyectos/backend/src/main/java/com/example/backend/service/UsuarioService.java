@@ -152,11 +152,9 @@ public class UsuarioService {
                         .sorted()
                         .toList();
 
-        // Compatibilidad de lectura con perfiles existentes antes de aplicar la migración.
-        if (rolesActivos.isEmpty() && usuario.getRol() != null && usuario.getRol().getNombre() != null) {
-            rolesActivos = List.of(usuario.getRol().getNombre());
-        }
-        String rolPrincipal = rolesActivos.isEmpty() ? "Usuario registrado" : rolesActivos.get(0);
+        // No inferir permisos vigentes desde usuario.id_rol: puede ser un valor legado
+        // después de que la asignación multirrol haya sido revocada.
+        String rolPrincipal = rolesActivos.isEmpty() ? "Sin roles activos" : rolesActivos.get(0);
 
         return new UsuarioMeResponse(
                 usuario.getIdUsuario(),

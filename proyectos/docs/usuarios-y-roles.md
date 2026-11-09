@@ -1,7 +1,7 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.5 (Fase 1)  
+**Versión:** 5.6 (Fase 1)  
 **Estado:** Propuesta para validación  
 **Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
 **Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
@@ -202,12 +202,12 @@ Estados conceptuales del reporte:
 
 | Estado | Significado | Quién puede establecerlo |
 |---|---|---|
-| PENDIENTE | Reporte recibido y aún no revisado | Sistema |
-| EN_REVISION | Un moderador inició la evaluación | Moderador / Administrador |
-| PROCEDENTE | Se confirma el incumplimiento | Moderador / Administrador |
-| NO_PROCEDENTE | No se confirma el incumplimiento | Moderador / Administrador |
-| ESCALADO | Requiere decisión administrativa o existe conflicto | Moderador |
-| CERRADO | La decisión quedó registrada y finalizada | Moderador / Administrador |
+| PENDIENTE | Reporte recibido y aún no revisado | Sistema al registrar el reporte |
+| EN_REVISION | Un moderador o administrador autorizado inició la evaluación | Moderador / Administrador sin conflicto |
+| PROCEDENTE | Se confirma el incumplimiento y se registra la acción correctiva | Moderador / Administrador sin conflicto, si el caso no está escalado |
+| NO_PROCEDENTE | No se confirma el incumplimiento y se registra la justificación | Moderador / Administrador sin conflicto, si el caso no está escalado |
+| ESCALADO | El caso requiere decisión administrativa o existe conflicto de interés | Sistema al detectar conflicto; moderador autorizado puede solicitar escalamiento |
+| CERRADO | La decisión quedó registrada y las acciones exigidas se completaron | Sistema, automáticamente tras validar el resultado |
 
 Reglas:
 - Toda resolución debe registrar actor, fecha, motivo, reporte y acción aplicada.
@@ -215,6 +215,14 @@ Reglas:
 - La cantidad de reportes puede activar una revisión o una medida automática provisional, pero no debe sustituir la decisión trazable de moderación.
 - El autor de una reseña debe poder conocer el estado público de su contenido sin acceder a datos privados de quien reportó.
 - Los reportes duplicados deben controlarse según una regla de unicidad definida en la fase de implementación.
+- **Transiciones válidas:** `PENDIENTE` → `EN_REVISION`; `EN_REVISION` → `PROCEDENTE`, `NO_PROCEDENTE` o `ESCALADO`; `ESCALADO` → `PROCEDENTE` o `NO_PROCEDENTE` únicamente por un administrador autorizado y sin conflicto; las decisiones finales pasan a `CERRADO` según las reglas de cierre automático aprobadas.
+- **Cierre de `PROCEDENTE`:** solo después de guardar la decisión y confirmar la aplicación de la acción correctiva. Si la acción falla, el reporte no se cierra y el error queda registrado.
+- **Cierre de `NO_PROCEDENTE`:** después de guardar la justificación de la decisión.
+- **Cierre de `ESCALADO`:** el moderador no resuelve el caso; un administrador autorizado y sin conflicto decide, registra la justificación y la acción. El cierre automático ocurre tras completar la acción requerida.
+- **Conflicto de interés:** el moderador involucrado no puede revisar ni resolver el caso. El sistema bloquea la acción y escala el reporte a un administrador sin conflicto. Si no existe uno disponible, el reporte permanece escalado y pendiente de asignación.
+- **Autorización:** todas las transiciones y acciones se validan en backend. Una cuenta sin capacidad de moderación recibe HTTP `403`; no se modifica el reporte y se registra el intento sin almacenar contraseñas, tokens ni secretos.
+- **Trazabilidad:** se conserva el estado anterior y nuevo, actor, fecha, motivo, justificación, acción aplicada, resultado de la acción y datos del escalamiento/cierre. El reporte y su historial no se eliminan al cerrarlo.
+- **Sin reapertura implícita:** un reporte cerrado no vuelve a estados anteriores por una petición ordinaria; cualquier mecanismo extraordinario de reapertura requerirá una decisión administrativa explícita y auditada en una fase posterior.
 
 ### 7.1 Transiciones y cierre de reportes
 
@@ -536,7 +544,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueban los cuatro perfiles y sus nombres canónicos: Administrador, Moderador, Usuario registrado y Representante de establecimiento (Tienda).
 - [x] Se confirma que Visitante es acceso público y no un rol persistido.
 - [x] Se aprueba la matriz de permisos (validación funcional de Fase 1).
-- [ ] Se aprueba la política de moderación y sus estados (en validación; aprobados los cierres automáticos de `PROCEDENTE`, `NO_PROCEDENTE`, la resolución administrativa de casos `ESCALADO`, el bloqueo/escalamiento automático por conflicto de interés y el rechazo auditado de intentos no autorizados).
+- [x] Se aprueba la política de moderación y sus estados: transiciones válidas, roles autorizados, escalamiento por conflicto, resolución administrativa de casos `ESCALADO`, cierres automáticos condicionados a la aplicación de acciones, conservación de historial y rechazo auditado de intentos no autorizados.
 - [x] Se aprueba la cardinalidad cuenta-establecimiento: muchos a muchos (una cuenta puede representar varias tiendas y una tienda puede tener varios representantes), incluida la revocación independiente de cada vínculo.
 - [x] Se aprueba la autorización contextual por establecimiento: los roles no conceden acceso a tiendas sin vínculo vigente; los intentos se rechazan y auditan en backend.
 - [x] Se aprueba el modelo de múltiples roles por cuenta y la unión de capacidades con validación contextual en backend, incluida la revocación independiente de un rol sin retirar los demás.
@@ -563,7 +571,7 @@ La fase solo puede declararse terminada cuando se cumplan todos estos puntos:
 - [x] Se aprueba que la suspensión del rol Administrador surta efecto global e inmediatamente en todas las sesiones y dispositivos; el backend rechaza las operaciones administrativas desde la confirmación, sin exigir cierre de sesión ni renovación de token, y conserva las funciones de otros roles vigentes.
 - [x] Se aprueba que una suspensión administrativa confirmada antes de la aplicación definitiva cancele la operación en curso sin cambios parciales; el backend revalida al confirmar y audita el intento, sin revertir operaciones ya confirmadas.
 - [x] Se aprueba que los intentos de suspender el rol Administrador por cuentas sin autoridad sean rechazados por el backend con HTTP `403`, sin cambios en roles ni sesiones y con registro de auditoría.
-- [ ] Se revisa que no existan contradicciones entre este documento y los documentos de API/modelo de datos.
+- [x] Se revisa y alinea la documentación de API y modelo de datos con los perfiles canónicos, múltiples roles por cuenta, vínculos cuenta-establecimiento y política de moderación; se distinguen expresamente las reglas objetivo de las capacidades que aún no están implementadas.
 - [ ] Se revisa el documento con el equipo y se registran las decisiones pendientes o aprobadas.
 
 **La Fase 2 no debe comenzar mientras exista algún criterio de cierre sin aprobar.** Las pruebas de autorización automatizadas se implementarán en la fase correspondiente; en esta fase se validan la coherencia, cobertura y aprobación de la especificación, no el comportamiento del backend.
@@ -628,3 +636,4 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.3: aprobación de la aplicación global e inmediata de la suspensión del rol Administrador en todas las sesiones y dispositivos, con validación en cada solicitud, sin cierre de sesión ni renovación de token y conservando los permisos de otros roles vigentes.
 - v5.4: aprobación de la cancelación de operaciones administrativas aún no confirmadas cuando la suspensión del rol Administrador se hace efectiva, con revalidación al confirmar, ausencia de escrituras parciales y auditoría; no se revierten operaciones ya confirmadas.
 - v5.5: aprobación del rechazo HTTP `403` de intentos no autorizados de suspender el rol Administrador, sin modificar roles ni sesiones y con registro de auditoría.
+- v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.

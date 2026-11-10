@@ -1,10 +1,10 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.6 (Fase 1)  
-**Estado:** Propuesta para validación  
-**Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
-**Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
+**Versión:** 5.7 (Fase 1 implementada: asignaciones y auditoría)  
+**Estado:** Especificación funcional aprobada; implementación inicial de asignaciones y auditoría integrada en backend.  
+**Alcance:** Define perfiles, responsabilidades, permisos y reglas de acceso. La sección 12 diferencia las capacidades implementadas de las que siguen siendo objetivos de fases posteriores.  
+**Importante:** La implementación inicial de múltiples roles, representantes y auditoría está incorporada en backend. Esto no significa que todas las capacidades descritas en la matriz y el flujo de moderación estén implementadas.
 
 ---
 
@@ -636,14 +636,14 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.3: aprobación de la aplicación global e inmediata de la suspensión del rol Administrador en todas las sesiones y dispositivos, con validación en cada solicitud, sin cierre de sesión ni renovación de token y conservando los permisos de otros roles vigentes.
 - v5.4: aprobación de la cancelación de operaciones administrativas aún no confirmadas cuando la suspensión del rol Administrador se hace efectiva, con revalidación al confirmar, ausencia de escrituras parciales y auditoría; no se revierten operaciones ya confirmadas.
 - v5.5: aprobación del rechazo HTTP `403` de intentos no autorizados de suspender el rol Administrador, sin modificar roles ni sesiones y con registro de auditoría.
-- v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.
+- v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.\n- v5.7: actualización del estado real de la implementación técnica de asignaciones y auditoría, confirmación de migraciones 008/009 aplicadas y documentación del bloqueo común para revocaciones concurrentes del rol Administrador.
 
 
 ---
 
 ## 12. Implementación técnica de Fase 1: asignaciones y auditoría
 
-**Estado:** endpoints iniciales implementados en la rama `feat/phase-1-role-and-representative-management`. La implementación requiere la aplicación controlada de las migraciones SQL `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql`; todavía no se han ejecutado en Supabase.
+**Estado:** endpoints iniciales implementados en backend. Las migraciones `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` están aplicadas en la base de datos según la validación confirmada por el equipo. No deben volver a ejecutarse.
 
 ### 12.1 Modelo de asignaciones
 
@@ -678,12 +678,12 @@ El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API
 
 ### 12.4 Validación completada y notas de despliegue
 
-- **Pruebas Maven ejecutadas y corregidas:** suite completa de 281 pruebas pasando sin fallos ni omisiones (`BUILD SUCCESS`).
+- **Pruebas Maven:** la última ejecución reportada por el equipo fue de 281 pruebas pasando (`BUILD SUCCESS`). Los cambios de concurrencia descritos aquí requieren una nueva ejecución antes de considerar cerrada la validación.
 - **Pruebas de integración de endpoints (`AdministracionAsignacionesIntegrationTest`):** cobertura de los cuatro endpoints (`POST`/`DELETE` roles y `POST`/`DELETE` representación) con matriz de roles: 401 Unauthorized sin token, 403 Forbidden para roles no admin (Usuario registrado, Moderador, Representante, Admin inactivo/revocado), 201 Created y 204 No Content para Administrador activo, y 409 Conflict ante duplicados o revocaciones sobre recursos ya revocados.
-- **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** ejecutada sobre PostgreSQL real (Testcontainers). Demuestra que el bloqueo pesimista (`SELECT ... FOR UPDATE` vía `findAdministradoresActivosForUpdate()`) serializa revocaciones concurrentes sobre los últimos dos administradores: exactamente una transacción tiene éxito y la otra falla con HTTP 409 (`ConflictException`), garantizando que siempre queda al menos 1 administrador activo.
+- **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** utiliza PostgreSQL real mediante Testcontainers. La revocación de administradores se serializa ahora mediante bloqueo pesimista de la fila del rol Administrador, adquirido antes de bloquear al usuario objetivo y las asignaciones activas. La prueba verifica que ambas transacciones terminan, exactamente una revocación tiene éxito y la otra se rechaza por protección del último administrador.
 - **Serialización de revocación de representantes:** verificada bajo concurrencia sobre el mismo establecimiento; el bloqueo pesimista en `findByUsuarioAndEstablecimientoForUpdate` serializa las solicitudes, completando una y rechazando la segunda con HTTP 409.
 - **Integridad de migraciones y orden de ejecución:**
   - La migración `008_multirole_y_representantes.sql` debe ejecutarse antes que `009_auditoria_asignaciones.sql`.
   - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
-  - Ninguna migración de Fase 1 ha sido aplicada en Supabase aún.
+  - Las migraciones 008 y 009 ya fueron aplicadas y su registro en `schema_version` fue corregido y validado por el equipo. No repetir su ejecución.
 - **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.

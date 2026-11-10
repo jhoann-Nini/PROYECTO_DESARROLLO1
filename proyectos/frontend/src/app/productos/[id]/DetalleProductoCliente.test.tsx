@@ -95,6 +95,29 @@ const PRODUCTO: Producto = {
   },
 };
 
+const PRODUCTO_CON_TIENDAS = {
+  ...PRODUCTO,
+  caracteristicas: null,
+  ranking: 3,
+  marca: "Samsung",
+  precio: 5_499_000,
+  detalleSpecs: {
+    tiendas: [
+      {
+        nombre: "Tienda Central",
+        precio: 5_250_000,
+        envioGratis: true,
+        url: "https://tienda.example.com/s25-ultra",
+      },
+      {
+        nombre: "Tienda Local",
+        precio: 5_100_000,
+        envioGratis: false,
+      },
+    ],
+  },
+} as unknown as Producto;
+
 const RESENA = {
   idResena: 12,
   idProducto: 204,
@@ -217,6 +240,27 @@ describe("DetalleProductoCliente", () => {
     expect(
       screen.getByRole("heading", { name: "Especificaciones" }),
     ).toBeDefined();
+  });
+
+  it("presenta los enlaces a tiendas con contexto accesible y apertura externa", async () => {
+    mockProducto.mockResolvedValue(PRODUCTO_CON_TIENDAS);
+
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const enlace = await screen.findByRole("link", {
+      name: "Ver tienda: Tienda Central (abre en una pestaña nueva)",
+    });
+
+    expect(enlace.getAttribute("href")).toBe(
+      "https://tienda.example.com/s25-ultra",
+    );
+    expect(enlace.getAttribute("target")).toBe("_blank");
+    expect(enlace.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(
+      screen.getByText("Los enlaces abren la tienda en una pestaña nueva."),
+    ).toBeDefined();
+    expect(screen.getByText("Precio en Tienda Central:")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Tienda Local/ })).toBeNull();
   });
 
   it("muestra un vacío limpio cuando no hay especificaciones registradas", async () => {

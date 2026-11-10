@@ -4,6 +4,7 @@
 import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
 import { useState, useEffect, useMemo } from "react";
 import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
+import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
 import {
   obtenerMiValoracion,
   obtenerResenas,
@@ -14,6 +15,7 @@ import {
 } from "@/services/api";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
 interface FichaTecnicaModalProps {
   producto: DispositivoKimovil | Producto | null;
@@ -23,18 +25,6 @@ interface FichaTecnicaModalProps {
   onValoracionGuardada?: () => void;
   onResenaGuardada?: (resena: ResenaResponse) => void;
 }
-
-const PALABRAS_MALICIOSAS = [
-  "spam",
-  "insulto",
-  "estafa",
-  "odio",
-  "tonto",
-  "idiota",
-  "fraude",
-  "mierda",
-  "puta",
-];
 
 export default function FichaTecnicaModal({
   producto,
@@ -73,6 +63,12 @@ export default function FichaTecnicaModal({
 
   // Pestaña de navegación seleccionada explícitamente
   const [pestanaSeleccionada, setPestanaSeleccionada] = useState<string | null>(null);
+
+  // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(nuevaResenaTexto),
+    [nuevaResenaTexto],
+  );
 
   const idProducto = useMemo(() => {
     if (!producto) return null;
@@ -184,14 +180,10 @@ export default function FichaTecnicaModal({
       return;
     }
 
-    const esMalicioso = PALABRAS_MALICIOSAS.some((palabra) =>
-      nuevaResenaTexto.toLowerCase().includes(palabra)
-    );
-    if (esMalicioso) {
+    if (contieneLenguajeNoPermitido(nuevaResenaTexto)) {
       setErrorResena(
         "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso."
       );
-      setNuevaResenaTexto("");
       return;
     }
 
@@ -704,6 +696,9 @@ export default function FichaTecnicaModal({
                           placeholder={`Comparte tu experiencia con ${ficha.nombre}...`}
                           className="w-full resize-none rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30 sm:text-sm"
                         />
+                        {terminosDetectados.length > 0 && (
+                          <AvisoTerminosResena />
+                        )}
                         {errorResena && (
                           <p className="text-xs text-red-700 font-medium" role="alert">
                             ⚠️ {errorResena}

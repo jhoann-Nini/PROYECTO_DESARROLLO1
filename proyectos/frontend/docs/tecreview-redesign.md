@@ -693,9 +693,14 @@ aplicación rota.
   y `obtenerPalabrasDetectadas` devuelve las coincidencias canónicas.
 - [x] La detección ignora mayúsculas, tildes, separadores y evasiones leet
   comunes (`est@fa`, `m i e r d a`, `ESTU-PIDO`) y reconoce plurales simples.
+- [x] La coincidencia exige palabra completa: textos válidos como `computadora`
+  o `último` no activan `puta` ni `timo`.
 - [x] No hay falsos positivos por subcadenas de palabras válidas (`operación`).
 - [x] `contieneLenguajeNoPermitido` conserva su firma y comportamiento para los
   consumidores existentes.
+- [x] Los formularios de publicación de la home, `/resenas`, el detalle de
+  producto y `FichaTecnicaModal` usan el detector compartido y no mantienen
+  listas duplicadas.
 
 ### Decisiones registradas del Bloque M
 
@@ -712,9 +717,13 @@ aplicación rota.
 - [x] Mientras se escribe, si el comentario contiene términos bloqueados se
   muestra un aviso preventivo con el texto “Tu reseña contiene términos que
   requieren revisión antes de publicarse.”.
-- [x] El aviso usa `role="status"` y desaparece al limpiar el texto.
-- [x] El aviso no sustituye el bloqueo existente al enviar ni la decisión final
-  del backend.
+- [x] El aviso usa `role="status"`, `aria-live="polite"` y `aria-atomic="true"`,
+  y desaparece al limpiar el texto.
+- [x] El componente compartido `AvisoTerminosResena` se usa en la home,
+  `/resenas`, el detalle de producto y `FichaTecnicaModal`.
+- [x] El aviso no sustituye el bloqueo existente al enviar, no borra el texto
+  escrito y no impide seguir editando.
+- [x] El aviso no sustituye la decisión final del backend.
 
 ### Decisiones registradas del Bloque N
 
@@ -788,7 +797,9 @@ aplicación rota.
 
 1. Rating agregado: el detalle ya usa `valoracion-stats`; el listado sigue sin
    rating agregado. Evaluar un endpoint batch para las tarjetas.
-2. “Compra verificada”: omitir hasta que exista en el modelo.
+2. “Compra verificada” en reseñas no está modelada y el frontend no la infiere.
+   TEC-153 corresponde a la verificación de ofertas de tiendas y se documenta
+   aparte en `docs/superpowers/specs/2026-11-09-tec-153-criterio-verificacion-oferta-tienda.md`.
 3. Galería: una imagen + placeholders hasta tener varias por producto.
 4. Blog: contenido estático aprobado e implementado; no se prevé un CMS a
    corto plazo.
@@ -869,6 +880,19 @@ aplicación rota.
   formulario, y las reseñas propias ya se pueden editar/eliminar y las ajenas
   reportar con modales accesibles. La persistencia de edición/eliminación
   depende de TEC-76/77/78 y la de reportes de un endpoint futuro.
+- **2026-11-09:** Ajustes de moderación y accesibilidad en `adrian` (TEC-96,
+  TEC-98 y TEC-136). `npm test`: 545 pruebas en 53 archivos; `npm run lint` y
+  `npx tsc --noEmit` exitosos. En la revisión actual, `npm run build` falla dos
+  veces con un error interno de Turbopack al crear el proceso de PostCSS para
+  `globals.css`; no se pudo confirmar el build de producción. El detector usa
+  coincidencia por palabra completa
+  (sin falsos positivos en `computadora` ni `último`), los formularios de
+  publicación de home, `/resenas`, detalle de producto y `FichaTecnicaModal`
+  comparten `AvisoTerminosResena` y conservan el texto al rechazar, y los
+  enlaces de “Dónde comprar” anuncian la tienda y la apertura en pestaña nueva.
+  TEC-153 queda documentada como criterio propuesto para verificar ofertas de
+  tiendas, sujeto a aprobación del equipo y al contrato futuro del backend, en
+  `docs/superpowers/specs/2026-11-09-tec-153-criterio-verificacion-oferta-tienda.md`.
 - Sin cambios en backend, `.env` ni base de datos.
 
 ---

@@ -705,6 +705,29 @@ describe("OpinionesHome", () => {
 
     expect(screen.queryByText("Identificarse para opinar")).toBeNull();
   });
+
+  it("muestra el aviso de revisión con términos bloqueados y no con falsos positivos", () => {
+    const { rerender } = render(
+      <OpinionesHome {...propsBase} comentario="esto es un timo" />,
+    );
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+
+    rerender(
+      <OpinionesHome
+        {...propsBase}
+        comentario="la computadora y el último pedido funcionan bien"
+      />,
+    );
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
+  });
 });
 
 describe("CtaComparador", () => {

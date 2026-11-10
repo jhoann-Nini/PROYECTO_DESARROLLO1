@@ -123,6 +123,8 @@ public class AdministracionAsignacionesService {
     @Transactional
     public void revocarRepresentante(Long usuarioId, Long establecimientoId, String sub, String motivo) {
         Usuario actor = obtenerActor(sub);
+        usuarios.findByIdForUpdate(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
         UsuarioEstablecimiento asignacion = usuarioEstablecimientos
                 .findByUsuarioAndEstablecimientoForUpdate(usuarioId, establecimientoId)
                 .orElseThrow(() -> new ResourceNotFoundException("La representación no existe."));

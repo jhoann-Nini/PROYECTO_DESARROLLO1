@@ -15,6 +15,7 @@ import com.example.backend.entity.Producto;
 import com.example.backend.entity.Resena;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
@@ -197,6 +198,7 @@ class ResenaPropiedadIntegrationTest {
         autor.setCorreo("autor@example.com");
         autor.setSupabaseUid(SUB_AUTOR);
         autor.setRol(rolUsuario);
+        asignarRolActivo(autor, rolUsuario);
         autor.setEstado(true);
         autor.setFechaRegistro(LocalDateTime.now());
         idUsuarioAutor = usuarioRepository.save(autor).getIdUsuario();
@@ -207,6 +209,7 @@ class ResenaPropiedadIntegrationTest {
         impostor.setCorreo("impostor@example.com");
         impostor.setSupabaseUid(SUB_IMPOSTOR);
         impostor.setRol(rolUsuario);
+        asignarRolActivo(impostor, rolUsuario);
         impostor.setEstado(true);
         impostor.setFechaRegistro(LocalDateTime.now());
         idUsuarioImpostor = usuarioRepository.save(impostor).getIdUsuario();
@@ -217,6 +220,7 @@ class ResenaPropiedadIntegrationTest {
         admin.setCorreo("admin@example.com");
         admin.setSupabaseUid(SUB_ADMIN);
         admin.setRol(rolAdmin);
+        asignarRolActivo(admin, rolAdmin);
         admin.setEstado(true);
         admin.setFechaRegistro(LocalDateTime.now());
         usuarioRepository.save(admin);
@@ -227,6 +231,7 @@ class ResenaPropiedadIntegrationTest {
         inactivo.setCorreo("inactivo@example.com");
         inactivo.setSupabaseUid(SUB_INACTIVO);
         inactivo.setRol(rolUsuario);
+        asignarRolActivo(inactivo, rolUsuario);
         inactivo.setEstado(false);
         inactivo.setFechaRegistro(LocalDateTime.now());
         idUsuarioInactivo = usuarioRepository.save(inactivo).getIdUsuario();
@@ -240,6 +245,14 @@ class ResenaPropiedadIntegrationTest {
         resena.setEstado(true);
         resena.setFechaCreacion(LocalDateTime.now());
         idResenaAutor = resenaRepository.save(resena).getIdResena();
+    }
+
+    private void asignarRolActivo(Usuario usuario, Rol rol) {
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(asignacion);
     }
 
     private String generarToken(String sub, String email) throws Exception {

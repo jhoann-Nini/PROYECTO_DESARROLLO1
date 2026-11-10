@@ -2,6 +2,8 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -24,15 +26,41 @@ public class Usuario {
     @Column(name = "supabase_uid", unique = true, length = 64)
     private String supabaseUid;
 
+    /**
+     * Relación heredada conservada durante la transición al modelo multirrol.
+     * El origen de permisos será usuario_roles cuando la migración esté aplicada.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol", nullable = false)
     private Rol rol;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<UsuarioRol> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<UsuarioEstablecimiento> establecimientos = new ArrayList<>();
 
     @Column(name = "fecha_registro", nullable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
     @Column(nullable = false)
     private Boolean estado = true;
+
+    public void agregarRol(UsuarioRol asignacion) {
+        if (asignacion == null) {
+            return;
+        }
+        asignacion.setUsuario(this);
+        roles.add(asignacion);
+    }
+
+    public void agregarEstablecimiento(UsuarioEstablecimiento vinculacion) {
+        if (vinculacion == null) {
+            return;
+        }
+        vinculacion.setUsuario(this);
+        establecimientos.add(vinculacion);
+    }
 
     public Long getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
@@ -46,6 +74,10 @@ public class Usuario {
     public void setSupabaseUid(String supabaseUid) { this.supabaseUid = supabaseUid; }
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
+    public List<UsuarioRol> getRoles() { return roles; }
+    public void setRoles(List<UsuarioRol> roles) { this.roles = roles; }
+    public List<UsuarioEstablecimiento> getEstablecimientos() { return establecimientos; }
+    public void setEstablecimientos(List<UsuarioEstablecimiento> establecimientos) { this.establecimientos = establecimientos; }
     public LocalDateTime getFechaRegistro() { return fechaRegistro; }
     public void setFechaRegistro(LocalDateTime fechaRegistro) { this.fechaRegistro = fechaRegistro; }
     public Boolean getEstado() { return estado; }

@@ -676,10 +676,14 @@ El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API
 - La autorización de `/api/admin/**` se realiza mediante el gestor administrativo existente y falla cerrada.
 - Las operaciones de escritura y su evento de auditoría se guardan dentro de la misma transacción.
 
-### 12.4 Pendientes de validación
+### 12.4 Validación completada y notas de despliegue
 
-- Ejecutar las pruebas Maven en un entorno con Java y acceso a las dependencias del proyecto.
-- Añadir/ejecutar pruebas de integración de los cuatro endpoints, autorización y concurrencia del último administrador.
-- Revisar la migración 006 en un entorno de prueba PostgreSQL antes de aplicarla en Supabase.
-- Implementar consultas de lectura de historial de auditoría y endpoints de consulta/listado de asignaciones en una iteración posterior.
-- La migración 005 debe aplicarse antes que la 006. No aplicar la 006 directamente sobre el esquema Supabase actual mientras las tablas de asignaciones no existan.
+- **Pruebas Maven ejecutadas y corregidas:** suite completa de 281 pruebas pasando sin fallos ni omisiones (`BUILD SUCCESS`).
+- **Pruebas de integración de endpoints (`AdministracionAsignacionesIntegrationTest`):** cobertura de los cuatro endpoints (`POST`/`DELETE` roles y `POST`/`DELETE` representación) con matriz de roles: 401 Unauthorized sin token, 403 Forbidden para roles no admin (Usuario registrado, Moderador, Representante, Admin inactivo/revocado), 201 Created y 204 No Content para Administrador activo, y 409 Conflict ante duplicados o revocaciones sobre recursos ya revocados.
+- **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** ejecutada sobre PostgreSQL real (Testcontainers). Demuestra que el bloqueo pesimista (`SELECT ... FOR UPDATE` vía `findAdministradoresActivosForUpdate()`) serializa revocaciones concurrentes sobre los últimos dos administradores: exactamente una transacción tiene éxito y la otra falla con HTTP 409 (`ConflictException`), garantizando que siempre queda al menos 1 administrador activo.
+- **Serialización de revocación de representantes:** verificada bajo concurrencia sobre el mismo establecimiento; el bloqueo pesimista en `findByUsuarioAndEstablecimientoForUpdate` serializa las solicitudes, completando una y rechazando la segunda con HTTP 409.
+- **Integridad de migraciones y orden de ejecución:**
+  - La migración `005_multirole_y_representantes.sql` debe ejecutarse antes que `006_auditoria_asignaciones.sql`.
+  - **Advertencia de numeración:** En `proyectos/backend/src/main/resources/db/migration/` los archivos fueron nombrados `005_multirole_y_representantes.sql` y `006_auditoria_asignaciones.sql`. Sin embargo, en `proyectos/docs/sql/` ya existían `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`. Antes de aplicar las migraciones en la base de datos de producción (Supabase), se debe consolidar la secuencia numérica (por ejemplo renumerándolas a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` o el siguiente consecutivo disponible) para prevenir colisiones en la tabla `schema_version`.
+  - Ninguna migración de Fase 1 ha sido aplicada en Supabase aún.
+- **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.

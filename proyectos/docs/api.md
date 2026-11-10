@@ -1048,3 +1048,67 @@ El backend actual documenta e implementa el registro de reportes en `POST /api/r
 **Estado de implementación:** el flujo anterior es el contrato funcional aprobado, no una afirmación de que el ciclo completo de moderación esté disponible actualmente. El enum y las operaciones actuales del backend representan una versión parcial y deben alinearse en una fase posterior.
 
 En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.
+
+
+---
+
+# Endpoints administrativos de asignaciones (Fase 1)
+
+Todas las rutas de esta sección requieren un JWT de Supabase válido y una asignación activa del rol `Administrador`. El backend identifica al actor mediante el claim `sub`; el cliente no puede indicar quién realiza la operación.
+
+## Asignar o reactivar un rol
+
+`POST /api/admin/usuarios/{usuarioId}/roles/{rolId}`
+
+Cuerpo opcional:
+
+```json
+{ "motivo": "Asignación autorizada" }
+```
+
+- Respuesta: `201 Created`.
+- Rechaza usuarios inactivos, roles inexistentes y asignaciones que ya estén activas.
+- Si la pareja usuario/rol existe revocada, la reactiva y registra el evento `REACTIVADO`.
+
+## Revocar un rol
+
+`DELETE /api/admin/usuarios/{usuarioId}/roles/{rolId}`
+
+Cuerpo opcional: `{"motivo":"Cambio de responsabilidades"}`.
+
+- Respuesta: `204 No Content`.
+- Registra fecha, actor y motivo tanto en la asignación como en auditoría.
+- No permite revocar el último rol activo de Administrador.
+
+## Asignar o reactivar representante
+
+`POST /api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion`
+
+Cuerpo opcional:
+
+```json
+{ "motivo": "Representante autorizado" }
+```
+
+- Respuesta: `201 Created`.
+- Rechaza usuarios o establecimientos inactivos y asignaciones ya activas.
+- Reactiva una relación previamente revocada y registra el evento.
+
+## Revocar representante
+
+`DELETE /api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion`
+
+Cuerpo opcional: `{"motivo":"Fin de representación"}`.
+
+- Respuesta: `204 No Content`.
+- Registra fecha, actor y motivo; no elimina la relación ni los eventos anteriores.
+
+## Códigos de respuesta
+
+- `401 Unauthorized`: token ausente o inválido.
+- `403 Forbidden`: cuenta autenticada sin rol Administrador activo.
+- `404 Not Found`: usuario, rol, establecimiento o asignación inexistente.
+- `409 Conflict`: operación duplicada, recurso inactivo o intento de retirar el último administrador.
+- `201 Created` / `204 No Content`: operación exitosa.
+
+**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/005_multirole_y_representantes.sql` y después `006_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.

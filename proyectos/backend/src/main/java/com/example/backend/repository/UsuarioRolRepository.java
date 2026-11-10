@@ -14,8 +14,8 @@ public interface UsuarioRolRepository extends JpaRepository<UsuarioRol, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT ur FROM UsuarioRol ur
-        JOIN FETCH ur.rol r
-        JOIN FETCH ur.usuario u
+        JOIN ur.rol r
+        JOIN ur.usuario u
         WHERE ur.estado = true AND u.estado = true
           AND LOWER(r.nombre) = 'administrador'
         """)

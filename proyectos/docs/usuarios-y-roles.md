@@ -643,7 +643,7 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 
 ## 12. Implementación técnica de Fase 1: asignaciones y auditoría
 
-**Estado:** endpoints iniciales implementados en la rama `feat/phase-1-role-and-representative-management`. La implementación requiere la aplicación controlada de las migraciones SQL `005_multirole_y_representantes.sql` y `006_auditoria_asignaciones.sql`; todavía no se han ejecutado en Supabase.
+**Estado:** endpoints iniciales implementados en la rama `feat/phase-1-role-and-representative-management`. La implementación requiere la aplicación controlada de las migraciones SQL `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql`; todavía no se han ejecutado en Supabase.
 
 ### 12.1 Modelo de asignaciones
 
@@ -683,7 +683,7 @@ El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API
 - **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** ejecutada sobre PostgreSQL real (Testcontainers). Demuestra que el bloqueo pesimista (`SELECT ... FOR UPDATE` vía `findAdministradoresActivosForUpdate()`) serializa revocaciones concurrentes sobre los últimos dos administradores: exactamente una transacción tiene éxito y la otra falla con HTTP 409 (`ConflictException`), garantizando que siempre queda al menos 1 administrador activo.
 - **Serialización de revocación de representantes:** verificada bajo concurrencia sobre el mismo establecimiento; el bloqueo pesimista en `findByUsuarioAndEstablecimientoForUpdate` serializa las solicitudes, completando una y rechazando la segunda con HTTP 409.
 - **Integridad de migraciones y orden de ejecución:**
-  - La migración `005_multirole_y_representantes.sql` debe ejecutarse antes que `006_auditoria_asignaciones.sql`.
-  - **Advertencia de numeración:** En `proyectos/backend/src/main/resources/db/migration/` los archivos fueron nombrados `005_multirole_y_representantes.sql` y `006_auditoria_asignaciones.sql`. Sin embargo, en `proyectos/docs/sql/` ya existían `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`. Antes de aplicar las migraciones en la base de datos de producción (Supabase), se debe consolidar la secuencia numérica (por ejemplo renumerándolas a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` o el siguiente consecutivo disponible) para prevenir colisiones en la tabla `schema_version`.
+  - La migración `008_multirole_y_representantes.sql` debe ejecutarse antes que `009_auditoria_asignaciones.sql`.
+  - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
   - Ninguna migración de Fase 1 ha sido aplicada en Supabase aún.
 - **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.

@@ -324,3 +324,4 @@ class AdministracionAsignacionesConcurrencyTest {
         assertThat(auditoria.get(0).getAccion()).isEqualTo("REVOCADO");
     }
 }
+

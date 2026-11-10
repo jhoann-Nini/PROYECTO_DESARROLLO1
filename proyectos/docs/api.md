@@ -1111,4 +1111,4 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 - `409 Conflict`: operación duplicada, recurso inactivo o intento de retirar el último administrador.
 - `201 Created` / `204 No Content`: operación exitosa.
 
-**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/005_multirole_y_representantes.sql` y después `006_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
+**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.

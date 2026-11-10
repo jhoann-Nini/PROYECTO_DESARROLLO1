@@ -1,7 +1,7 @@
 BEGIN;
 
 -- Fase 1: trazabilidad independiente de las asignaciones de roles y representantes.
--- Requiere 005_multirole_y_representantes.sql. No modifica ni elimina datos existentes.
+-- Requiere 008_multirole_y_representantes.sql. No modifica ni elimina datos existentes.
 
 ALTER TABLE public.usuario_rol
     ADD COLUMN IF NOT EXISTS fecha_revocacion TIMESTAMP WITHOUT TIME ZONE NULL,
@@ -118,7 +118,7 @@ WHERE NOT EXISTS (
 
 INSERT INTO public.schema_version (version, descripcion)
 VALUES (
-    '006_auditoria_asignaciones',
+    '009_auditoria_asignaciones',
     'Auditoria independiente de asignacion, revocacion y reactivacion de roles y representantes'
 )
 ON CONFLICT (version) DO NOTHING;

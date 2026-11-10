@@ -173,6 +173,7 @@ class UsuarioServiceTest {
         nuevoPersistido.setCorreo(testEmail);
         nuevoPersistido.setSupabaseUid(validUuidStr);
         nuevoPersistido.setRol(rolDefault);
+        asignarRolActivo(nuevoPersistido, rolDefault);
         nuevoPersistido.setEstado(true);
         nuevoPersistido.setFechaRegistro(LocalDateTime.now());
 

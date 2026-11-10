@@ -138,6 +138,48 @@ class AdministracionAsignacionesServiceTest {
         verify(auditoriaEstablecimientos).save(any(AuditoriaUsuarioEstablecimiento.class));
     }
 
+
+    @Test
+    void asignarRol_asignacionRevocada_reactivaYAudita() {
+        UsuarioRol existente = new UsuarioRol();
+        existente.setEstado(false);
+        existente.setUsuario(objetivo);
+        existente.setRol(rolUsuario);
+        given(usuarios.findByIdForUpdate(20L)).willReturn(Optional.of(objetivo));
+        given(roles.findById(3L)).willReturn(Optional.of(rolUsuario));
+        given(usuarioRoles.findByUsuario_IdUsuarioAndRol_IdRol(20L, 3L)).willReturn(Optional.of(existente));
+        given(usuarioRoles.save(any(UsuarioRol.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+        UsuarioRol result = service.asignarRol(20L, 3L, "admin-sub", "Restitución");
+
+        assertThat(result.getEstado()).isTrue();
+        assertThat(result.getFechaRevocacion()).isNull();
+        assertThat(result.getRevocadoPor()).isNull();
+        verify(auditoriaRoles).save(any(AuditoriaUsuarioRol.class));
+    }
+
+    @Test
+    void revocarRepresentante_registraFechaActorYAuditoria() {
+        Establecimiento tienda = new Establecimiento();
+        tienda.setIdEstablecimiento(40L);
+        UsuarioEstablecimiento asignacion = new UsuarioEstablecimiento();
+        asignacion.setIdUsuarioEstablecimiento(50L);
+        asignacion.setUsuario(objetivo);
+        asignacion.setEstablecimiento(tienda);
+        asignacion.setEstado(true);
+        given(usuarioEstablecimientos.findByUsuarioAndEstablecimientoForUpdate(20L, 40L))
+                .willReturn(Optional.of(asignacion));
+        given(usuarioEstablecimientos.save(any(UsuarioEstablecimiento.class)))
+                .willAnswer(invocation -> invocation.getArgument(0));
+
+        service.revocarRepresentante(20L, 40L, "admin-sub", "Fin de representación");
+
+        assertThat(asignacion.getEstado()).isFalse();
+        assertThat(asignacion.getRevocadoPor()).isSameAs(actor);
+        assertThat(asignacion.getFechaRevocacion()).isNotNull();
+        verify(auditoriaEstablecimientos).save(any(AuditoriaUsuarioEstablecimiento.class));
+    }
+
     private Usuario usuario(Long id, String sub) {
         Usuario u = new Usuario();
         u.setIdUsuario(id);

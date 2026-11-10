@@ -369,7 +369,7 @@ aplicación rota.
 
 ---
 
-## 8.3 Criterios de aceptación del Bloque E
+## 8.3 Criterios de aceptación del Bloque E — Comparador (TEC-111)
 
 - [x] `/comparador` usa `AppShell`, `.theme-tecreview` y la paleta oficial.
 - [x] La selección se persiste en `localStorage` (`tecreview:comparador`), se hidrata sin romper SSR y se sincroniza entre pestañas.
@@ -377,7 +377,10 @@ aplicación rota.
 - [x] El selector busca por nombre, marca y categoría sobre el catálogo real.
 - [x] La tabla muestra precio, disponibilidad, marca, categoría y especificaciones; los datos ausentes se muestran como “Sin dato”.
 - [x] Las filas con valores distintos se marcan y el checkbox “Solo diferencias” oculta las iguales.
-- [x] Se puede quitar un producto y vaciar el comparador.
+- [x] Se puede quitar un producto y vaciar el comparador desde la interfaz.
+- [x] La pantalla muestra carga, error con “Reintentar” y un vacío explícito cuando no hay selección o el catálogo no tiene productos.
+- [x] El selector, los botones Agregar/Quitar/Vaciar y la casilla “Solo diferencias” tienen nombre accesible y foco visible.
+- [x] La selección persistida se hidrata en cliente sin leer `localStorage` durante el render SSR; los ids que ya no existen en el catálogo se descartan al cargar el catálogo.
 - [x] La sugerencia se deriva de disponibilidad, precio y cantidad de especificaciones; no declara un ganador absoluto.
 - [x] Header, bottom nav y CTA de la home enlazan a `/comparador`.
 - [x] `npm test`, `npm run build` y `npm run lint` pasan.
@@ -394,6 +397,8 @@ aplicación rota.
    comprimen las columnas hasta volverlas ilegibles.
 4. El comparador se limita a 4 productos para mantener la tabla legible y el
    estado persistente simple.
+5. “Comparados recientemente” es un historial independiente de la selección:
+   conserva hasta 5 ids, mientras la comparación activa se limita a 4.
 
 ---
 
@@ -764,16 +769,26 @@ aplicación rota.
   se muestra en el diálogo.
 - [x] Tras enviar, el modal se cierra y la reseña muestra “Reporte enviado” sin
   permitir reenviar.
+- [x] El envío exige sesión y usa `POST /api/resenas/{idResena}/reportes`; el
+  backend toma el usuario del JWT y rechaza duplicados con 409.
+- [x] El modal solo confirma y cierra después de una respuesta exitosa del
+  backend; si falla, permanece abierto y muestra el error.
 - [x] El modal atrapa el foco, cierra con Escape, backdrop y “Cancelar”, y
   bloquea el scroll.
 
 ### Decisiones registradas del Bloque P
 
-1. No existe endpoint de reportes ni TEC de backend asignada; el envío se
-   resuelve en estado local y se documenta como pendiente de persistencia.
-2. El botón “Reportar” se muestra también sin sesión (todas las reseñas son
-   ajenas); la autorización real queda para el backend cuando exista el
-   endpoint.
+1. El backend ya expone `POST /api/resenas/{idResena}/reportes` y
+   `GET /api/reportes/mis-reportes`. El frontend envía el reporte real; la
+   identidad del reportante sale del JWT y el backend valida autoría, motivo,
+   descripción y duplicados (409).
+2. Sin sesión, “Reportar” abre `AuthModal`; las reseñas propias no muestran la
+   acción. La autorización y la prevención definitiva de duplicados viven en el
+   backend.
+3. La confirmación “Reporte enviado” es estado local de la sesión actual. Si se
+   recarga la página, el frontend no consulta `mis-reportes` para precargar ese
+   estado; el backend sigue rechazando el duplicado con 409. No se simula ni se
+   inventa persistencia adicional.
 
 ---
 
@@ -893,6 +908,16 @@ aplicación rota.
   TEC-153 queda documentada como criterio propuesto para verificar ofertas de
   tiendas, sujeto a aprobación del equipo y al contrato futuro del backend, en
   `docs/superpowers/specs/2026-11-09-tec-153-criterio-verificacion-oferta-tienda.md`.
+- **2026-11-09:** Verificación de TEC-103 y TEC-111 en `adrian`.
+  `npm test`: 548 pruebas en 53 archivos; `npx tsc --noEmit` y `npm run lint`
+  exitosos. TEC-103 conserva el flujo accesible de reporte y queda documentado
+  contra el endpoint real `POST /api/resenas/{idResena}/reportes` (JWT y 409 en
+  duplicados); la confirmación “Reporte enviado” es de la sesión actual y el
+  backend es la autoridad final. TEC-111 cubre selección máxima de 4,
+  agregar/quitar/vaciar, tabla, diferencias, carga/error/reintento/vacío,
+  accesibilidad e hidratación; los ids persistidos que ya no existen en el
+  catálogo se descartan al cargar el catálogo. Se añadieron pruebas para la poda
+  de ids obsoletos y para vaciar la selección desde la UI.
 - Sin cambios en backend, `.env` ni base de datos.
 
 ---

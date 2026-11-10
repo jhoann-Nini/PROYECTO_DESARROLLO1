@@ -194,6 +194,84 @@ describe("ComparadorCliente", () => {
     ]);
   });
 
+  it("descarta ids persistidos que ya no están en el catálogo y permite seguir comparando", async () => {
+    configurarExito([crearProducto(5), crearProducto(6)]);
+    seleccionarEnStorage([1, 2, 3, 4]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+      ).toEqual([]);
+    });
+
+    const boton = screen.getByRole("button", {
+      name: "Agregar Producto 5 al comparador",
+    }) as HTMLButtonElement;
+    expect(boton.disabled).toBe(false);
+
+    fireEvent.click(boton);
+
+    await waitFor(() => {
+      const tabla = screen.getByRole("table", {
+        name: "Comparación de productos",
+      });
+      expect(
+        within(tabla).getByRole("link", { name: "Producto 5" }),
+      ).toBeDefined();
+    });
+    expect(
+      JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+    ).toEqual([5]);
+  });
+
+  it("descarta la selección persistida si el catálogo carga vacío", async () => {
+    configurarExito([]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+      ).toEqual([]);
+    });
+
+    expect(
+      screen.getByText("No hay productos registrados en el catálogo."),
+    ).toBeDefined();
+    expect(
+      screen.getByText("Aún no has agregado productos al comparador."),
+    ).toBeDefined();
+  });
+
+  it("vacía la selección desde la tabla y persiste el comparador vacío", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Vaciar comparador" }),
+      ).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Vaciar comparador" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Aún no has agregado productos al comparador."),
+      ).toBeDefined();
+    });
+    expect(
+      JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+    ).toEqual([]);
+  });
+
   it("quita un producto de la tabla", async () => {
     configurarExito([crearProducto(1), crearProducto(2)]);
     seleccionarEnStorage([1, 2]);

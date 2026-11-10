@@ -1,6 +1,7 @@
 package com.example.backend.config;
 
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.UsuarioRepository;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -15,13 +16,8 @@ import org.springframework.security.web.access.intercept.RequestAuthorizationCon
 import org.springframework.stereotype.Component;
 
 /**
- * Gestor de autorización exclusivo para operaciones administrativas (POST, PUT, DELETE).
- *
- * Implementa el principio de Zero-Trust y Fail-Safe Defaults:
- * - Valida la existencia positiva del usuario en public.usuario mediante el claim 'sub' con formato UUID.
- * - Verifica que el estado de la cuenta sea activo (estado = true).
- * - Verifica que el rol asociado en public.rol sea estrictamente 'Administrador'.
- * - Ante cualquier fallo de base de datos o ausencia de datos en BD, deniega el acceso sin conceder permisos.
+ * Gestor de autorización administrativa.
+ * Consulta asignaciones vigentes en cada solicitud y aplica denegación por defecto.
  */
 @Component
 public class AdminAuthorizationManager implements AuthorizationManager<RequestAuthorizationContext> {
@@ -36,7 +32,9 @@ public class AdminAuthorizationManager implements AuthorizationManager<RequestAu
     }
 
     @Override
-    public AuthorizationDecision authorize(Supplier<? extends Authentication> authenticationSupplier, RequestAuthorizationContext context) {
+    public AuthorizationDecision authorize(
+            Supplier<? extends Authentication> authenticationSupplier,
+            RequestAuthorizationContext context) {
         if (authenticationSupplier == null) {
             return new AuthorizationDecision(false);
         }
@@ -56,30 +54,37 @@ public class AdminAuthorizationManager implements AuthorizationManager<RequestAu
             return new AuthorizationDecision(false);
         }
 
-        // Validación explícita del formato UUID del claim 'sub'
         try {
             UUID.fromString(sub.trim());
         } catch (IllegalArgumentException e) {
-            log.warn("Rechazo de autorización administrativa: el claim 'sub' no es un UUID válido: '{}'", sub);
+            log.warn("Rechazo de autorización administrativa: claim 'sub' inválido.");
             return new AuthorizationDecision(false);
         }
 
         try {
             boolean esAdmin = usuarioRepository.findBySupabaseUid(sub)
-                    .filter(u -> Boolean.TRUE.equals(u.getEstado()))
-                    .map(Usuario::getRol)
-                    .filter(r -> r != null && ROL_ADMINISTRADOR.equalsIgnoreCase(r.getNombre()))
-                    .isPresent();
-
+                    .filter(usuario -> Boolean.TRUE.equals(usuario.getEstado()))
+                    .map(this::tieneRolAdministradorVigente)
+                    .orElse(false);
             return new AuthorizationDecision(esAdmin);
         } catch (DataAccessException dae) {
-            log.error("Fallo de acceso a datos en PostgreSQL durante la verificación de autorización administrativa (sub: {}): {}", sub, dae.getMessage(), dae);
-            // Principio Fail-Closed: ante indisponibilidad de BD nunca conceder acceso
+            log.error("Fallo de base de datos al verificar autorización administrativa (sub: {}).", sub, dae);
             return new AuthorizationDecision(false);
         } catch (Exception ex) {
-            log.error("Error inesperado al consultar el rol de usuario para autorización administrativa (sub: {}): {}", sub, ex.getMessage(), ex);
-            // Fail-closed seguro
+            log.error("Error inesperado al verificar autorización administrativa (sub: {}).", sub, ex);
             return new AuthorizationDecision(false);
         }
+    }
+
+    private boolean tieneRolAdministradorVigente(Usuario usuario) {
+        if (usuario.getRoles() == null) {
+            return false;
+        }
+        return usuario.getRoles().stream()
+                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                .map(UsuarioRol::getRol)
+                .anyMatch(rol -> rol != null
+                        && rol.getNombre() != null
+                        && ROL_ADMINISTRADOR.equalsIgnoreCase(rol.getNombre()));
     }
 }

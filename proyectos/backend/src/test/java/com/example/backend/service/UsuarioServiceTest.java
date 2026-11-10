@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.dto.UsuarioMeResponse;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
@@ -65,6 +66,14 @@ class UsuarioServiceTest {
         rolDefault.setDescripcion("Rol predeterminado");
     }
 
+    private void asignarRolActivo(Usuario usuario, Rol rol) {
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(asignacion);
+    }
+
     private Jwt buildJwt(String sub, String email, Boolean emailVerified, Map<String, Object> userMetadata) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("sub", sub);
@@ -96,6 +105,7 @@ class UsuarioServiceTest {
         existente.setCorreo(testEmail);
         existente.setSupabaseUid(validUuidStr);
         existente.setRol(rolDefault);
+        asignarRolActivo(existente, rolDefault);
         existente.setEstado(true);
         existente.setFechaRegistro(LocalDateTime.now().minusDays(5));
 
@@ -129,6 +139,7 @@ class UsuarioServiceTest {
         nuevoPersistido.setCorreo(testEmail);
         nuevoPersistido.setSupabaseUid(validUuidStr);
         nuevoPersistido.setRol(rolDefault);
+        asignarRolActivo(nuevoPersistido, rolDefault);
         nuevoPersistido.setEstado(true);
         nuevoPersistido.setFechaRegistro(LocalDateTime.now());
 
@@ -162,6 +173,7 @@ class UsuarioServiceTest {
         nuevoPersistido.setCorreo(testEmail);
         nuevoPersistido.setSupabaseUid(validUuidStr);
         nuevoPersistido.setRol(rolDefault);
+        asignarRolActivo(nuevoPersistido, rolDefault);
         nuevoPersistido.setEstado(true);
         nuevoPersistido.setFechaRegistro(LocalDateTime.now());
 

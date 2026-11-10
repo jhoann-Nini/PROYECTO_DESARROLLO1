@@ -254,6 +254,10 @@ export default function DetalleProductoCliente({
     );
   }
 
+  const hayEnlacesTienda = ficha.tiendas.some(
+    (tienda) => tienda.url && /^https?:\/\//i.test(tienda.url),
+  );
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav
@@ -342,12 +346,19 @@ export default function DetalleProductoCliente({
             className="mt-6 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2
-                id="titulo-donde-comprar"
-                className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
-              >
-                Dónde comprar
-              </h2>
+              <div>
+                <h2
+                  id="titulo-donde-comprar"
+                  className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+                >
+                  Dónde comprar
+                </h2>
+                {hayEnlacesTienda && (
+                  <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    Los enlaces abren la tienda en una pestaña nueva.
+                  </p>
+                )}
+              </div>
               {ficha.tiendas.length > 0 && (
                 <p className="text-xs text-[var(--color-subtle)]">
                   {ficha.tiendas.length}{" "}
@@ -381,6 +392,9 @@ export default function DetalleProductoCliente({
                       </div>
                       <div className="flex items-center gap-3">
                         <p className="font-semibold text-[var(--color-ink)]">
+                          <span className="sr-only">
+                            Precio en {tienda.nombre}:{" "}
+                          </span>
                           {formatearCOP(tienda.precio)}
                         </p>
                         {urlValida && (
@@ -388,10 +402,10 @@ export default function DetalleProductoCliente({
                             href={urlValida}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label={`Ver tienda: ${tienda.nombre} (abre en una pestaña nueva)`}
                             className="rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)]"
                           >
                             Ver tienda
-                            <span className="sr-only">: {tienda.nombre}</span>
                           </a>
                         )}
                       </div>

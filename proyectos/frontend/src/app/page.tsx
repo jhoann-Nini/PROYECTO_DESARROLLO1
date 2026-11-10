@@ -30,6 +30,7 @@ import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { sanearPrecioCOP } from "@/data/precios";
 import { seleccionarDestacados } from "@/data/destacados";
+import { contieneLenguajeNoPermitido } from "@/data/resenas";
 import {
   normalizarTexto,
   type ProductoViewModel,
@@ -613,18 +614,6 @@ export default function Home() {
         ? productosBackend[0].idProducto
         : "";
 
-  const palabrasMaliciosas = [
-    "spam",
-    "insulto",
-    "estafa",
-    "odio",
-    "tonto",
-    "idiota",
-    "fraude",
-    "mierda",
-    "puta",
-  ];
-
   const manejarEnvioComentario = async (
     evento: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -648,15 +637,10 @@ export default function Home() {
       return;
     }
 
-    const esMalicioso = palabrasMaliciosas.some((palabra) =>
-      comentario.toLowerCase().includes(palabra),
-    );
-
-    if (esMalicioso) {
+    if (contieneLenguajeNoPermitido(comentario)) {
       setErrorComentario(
         "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso.",
       );
-      setComentario("");
       return;
     }
 

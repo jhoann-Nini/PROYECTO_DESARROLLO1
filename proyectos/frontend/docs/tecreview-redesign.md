@@ -369,7 +369,7 @@ aplicación rota.
 
 ---
 
-## 8.3 Criterios de aceptación del Bloque E
+## 8.3 Criterios de aceptación del Bloque E — Comparador (TEC-111)
 
 - [x] `/comparador` usa `AppShell`, `.theme-tecreview` y la paleta oficial.
 - [x] La selección se persiste en `localStorage` (`tecreview:comparador`), se hidrata sin romper SSR y se sincroniza entre pestañas.
@@ -377,7 +377,10 @@ aplicación rota.
 - [x] El selector busca por nombre, marca y categoría sobre el catálogo real.
 - [x] La tabla muestra precio, disponibilidad, marca, categoría y especificaciones; los datos ausentes se muestran como “Sin dato”.
 - [x] Las filas con valores distintos se marcan y el checkbox “Solo diferencias” oculta las iguales.
-- [x] Se puede quitar un producto y vaciar el comparador.
+- [x] Se puede quitar un producto y vaciar el comparador desde la interfaz.
+- [x] La pantalla muestra carga, error con “Reintentar” y un vacío explícito cuando no hay selección o el catálogo no tiene productos.
+- [x] El selector, los botones Agregar/Quitar/Vaciar y la casilla “Solo diferencias” tienen nombre accesible y foco visible.
+- [x] La selección persistida se hidrata en cliente sin leer `localStorage` durante el render SSR; los ids que ya no existen en el catálogo se descartan al cargar el catálogo.
 - [x] La sugerencia se deriva de disponibilidad, precio y cantidad de especificaciones; no declara un ganador absoluto.
 - [x] Header, bottom nav y CTA de la home enlazan a `/comparador`.
 - [x] `npm test`, `npm run build` y `npm run lint` pasan.
@@ -394,6 +397,8 @@ aplicación rota.
    comprimen las columnas hasta volverlas ilegibles.
 4. El comparador se limita a 4 productos para mantener la tabla legible y el
    estado persistente simple.
+5. “Comparados recientemente” es un historial independiente de la selección:
+   conserva hasta 5 ids, mientras la comparación activa se limita a 4.
 
 ---
 
@@ -693,9 +698,14 @@ aplicación rota.
   y `obtenerPalabrasDetectadas` devuelve las coincidencias canónicas.
 - [x] La detección ignora mayúsculas, tildes, separadores y evasiones leet
   comunes (`est@fa`, `m i e r d a`, `ESTU-PIDO`) y reconoce plurales simples.
+- [x] La coincidencia exige palabra completa: textos válidos como `computadora`
+  o `último` no activan `puta` ni `timo`.
 - [x] No hay falsos positivos por subcadenas de palabras válidas (`operación`).
 - [x] `contieneLenguajeNoPermitido` conserva su firma y comportamiento para los
   consumidores existentes.
+- [x] Los formularios de publicación de la home, `/resenas`, el detalle de
+  producto y `FichaTecnicaModal` usan el detector compartido y no mantienen
+  listas duplicadas.
 
 ### Decisiones registradas del Bloque M
 
@@ -712,9 +722,13 @@ aplicación rota.
 - [x] Mientras se escribe, si el comentario contiene términos bloqueados se
   muestra un aviso preventivo con el texto “Tu reseña contiene términos que
   requieren revisión antes de publicarse.”.
-- [x] El aviso usa `role="status"` y desaparece al limpiar el texto.
-- [x] El aviso no sustituye el bloqueo existente al enviar ni la decisión final
-  del backend.
+- [x] El aviso usa `role="status"`, `aria-live="polite"` y `aria-atomic="true"`,
+  y desaparece al limpiar el texto.
+- [x] El componente compartido `AvisoTerminosResena` se usa en la home,
+  `/resenas`, el detalle de producto y `FichaTecnicaModal`.
+- [x] El aviso no sustituye el bloqueo existente al enviar, no borra el texto
+  escrito y no impide seguir editando.
+- [x] El aviso no sustituye la decisión final del backend.
 
 ### Decisiones registradas del Bloque N
 
@@ -755,16 +769,26 @@ aplicación rota.
   se muestra en el diálogo.
 - [x] Tras enviar, el modal se cierra y la reseña muestra “Reporte enviado” sin
   permitir reenviar.
+- [x] El envío exige sesión y usa `POST /api/resenas/{idResena}/reportes`; el
+  backend toma el usuario del JWT y rechaza duplicados con 409.
+- [x] El modal solo confirma y cierra después de una respuesta exitosa del
+  backend; si falla, permanece abierto y muestra el error.
 - [x] El modal atrapa el foco, cierra con Escape, backdrop y “Cancelar”, y
   bloquea el scroll.
 
 ### Decisiones registradas del Bloque P
 
-1. No existe endpoint de reportes ni TEC de backend asignada; el envío se
-   resuelve en estado local y se documenta como pendiente de persistencia.
-2. El botón “Reportar” se muestra también sin sesión (todas las reseñas son
-   ajenas); la autorización real queda para el backend cuando exista el
-   endpoint.
+1. El backend ya expone `POST /api/resenas/{idResena}/reportes` y
+   `GET /api/reportes/mis-reportes`. El frontend envía el reporte real; la
+   identidad del reportante sale del JWT y el backend valida autoría, motivo,
+   descripción y duplicados (409).
+2. Sin sesión, “Reportar” abre `AuthModal`; las reseñas propias no muestran la
+   acción. La autorización y la prevención definitiva de duplicados viven en el
+   backend.
+3. La confirmación “Reporte enviado” es estado local de la sesión actual. Si se
+   recarga la página, el frontend no consulta `mis-reportes` para precargar ese
+   estado; el backend sigue rechazando el duplicado con 409. No se simula ni se
+   inventa persistencia adicional.
 
 ---
 
@@ -788,7 +812,9 @@ aplicación rota.
 
 1. Rating agregado: el detalle ya usa `valoracion-stats`; el listado sigue sin
    rating agregado. Evaluar un endpoint batch para las tarjetas.
-2. “Compra verificada”: omitir hasta que exista en el modelo.
+2. “Compra verificada” en reseñas no está modelada y el frontend no la infiere.
+   TEC-153 corresponde a la verificación de ofertas de tiendas y se documenta
+   aparte en `docs/superpowers/specs/2026-11-09-tec-153-criterio-verificacion-oferta-tienda.md`.
 3. Galería: una imagen + placeholders hasta tener varias por producto.
 4. Blog: contenido estático aprobado e implementado; no se prevé un CMS a
    corto plazo.
@@ -869,6 +895,29 @@ aplicación rota.
   formulario, y las reseñas propias ya se pueden editar/eliminar y las ajenas
   reportar con modales accesibles. La persistencia de edición/eliminación
   depende de TEC-76/77/78 y la de reportes de un endpoint futuro.
+- **2026-11-09:** Ajustes de moderación y accesibilidad en `adrian` (TEC-96,
+  TEC-98 y TEC-136). `npm test`: 545 pruebas en 53 archivos; `npm run lint` y
+  `npx tsc --noEmit` exitosos. En la revisión actual, `npm run build` falla dos
+  veces con un error interno de Turbopack al crear el proceso de PostCSS para
+  `globals.css`; no se pudo confirmar el build de producción. El detector usa
+  coincidencia por palabra completa
+  (sin falsos positivos en `computadora` ni `último`), los formularios de
+  publicación de home, `/resenas`, detalle de producto y `FichaTecnicaModal`
+  comparten `AvisoTerminosResena` y conservan el texto al rechazar, y los
+  enlaces de “Dónde comprar” anuncian la tienda y la apertura en pestaña nueva.
+  TEC-153 queda documentada como criterio propuesto para verificar ofertas de
+  tiendas, sujeto a aprobación del equipo y al contrato futuro del backend, en
+  `docs/superpowers/specs/2026-11-09-tec-153-criterio-verificacion-oferta-tienda.md`.
+- **2026-11-09:** Verificación de TEC-103 y TEC-111 en `adrian`.
+  `npm test`: 548 pruebas en 53 archivos; `npx tsc --noEmit` y `npm run lint`
+  exitosos. TEC-103 conserva el flujo accesible de reporte y queda documentado
+  contra el endpoint real `POST /api/resenas/{idResena}/reportes` (JWT y 409 en
+  duplicados); la confirmación “Reporte enviado” es de la sesión actual y el
+  backend es la autoridad final. TEC-111 cubre selección máxima de 4,
+  agregar/quitar/vaciar, tabla, diferencias, carga/error/reintento/vacío,
+  accesibilidad e hidratación; los ids persistidos que ya no existen en el
+  catálogo se descartan al cargar el catálogo. Se añadieron pruebas para la poda
+  de ids obsoletos y para vaciar la selección desde la UI.
 - Sin cambios en backend, `.env` ni base de datos.
 
 ---

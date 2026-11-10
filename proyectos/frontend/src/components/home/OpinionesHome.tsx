@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import type { ResenaResponse } from "@/services/api";
+import { obtenerPalabrasDetectadas } from "@/data/resenas";
 import EditarResena from "@/app/resenas/EditarResena";
 import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
+import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 import type { Producto, UsuarioSesion } from "@/types/producto";
 
 export interface OpinionesHomeProps {
@@ -50,6 +52,11 @@ export default function OpinionesHome({
   const [resenaAReportar, setResenaAReportar] = useState<number | null>(null);
   const [resenasReportadas, setResenasReportadas] = useState<Set<number>>(
     () => new Set(),
+  );
+  // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(comentario),
+    [comentario],
   );
 
   return (
@@ -163,6 +170,9 @@ export default function OpinionesHome({
               </button>
             </div>
           </div>
+          {terminosDetectados.length > 0 && (
+            <AvisoTerminosResena className="mt-2" />
+          )}
           {error && (
             <p className="mt-2 text-xs text-[var(--color-ink)]" role="alert">
               ⚠️ {error}

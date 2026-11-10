@@ -22,8 +22,9 @@ vi.mock("@/services/api", async (importOriginal) => {
   };
 });
 
-import { editarResena, eliminarResena } from "@/services/api";
+import { crearResena, editarResena, eliminarResena } from "@/services/api";
 
+const mockCrear = vi.mocked(crearResena);
 const mockEditar = vi.mocked(editarResena);
 const mockEliminar = vi.mocked(eliminarResena);
 
@@ -108,6 +109,7 @@ function renderComponente(
 
 afterEach(() => {
   cleanup();
+  mockCrear.mockReset();
   mockEditar.mockReset();
   mockEliminar.mockReset();
 });
@@ -326,5 +328,49 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
     expect(
       screen.queryByRole("button", { name: "Eliminar reseña" }),
     ).toBeNull();
+  });
+
+  it("muestra el aviso de revisión mientras se escribe y lo quita con texto limpio", () => {
+    renderComponente({ usuario: usuarioAutor });
+
+    const area = screen.getByLabelText(
+      /Escribe tu opinión sobre/i,
+    ) as HTMLTextAreaElement;
+
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+
+    fireEvent.change(area, {
+      target: { value: "la computadora y el último pedido" },
+    });
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
+  });
+
+  it("no borra el texto ni envía al detectar términos bloqueados", async () => {
+    renderComponente({ usuario: usuarioAutor });
+
+    const area = screen.getByLabelText(
+      /Escribe tu opinión sobre/i,
+    ) as HTMLTextAreaElement;
+
+    fireEvent.change(area, { target: { value: "esto es un timo" } });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar opinión" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/El comentario contiene palabras no permitidas/i),
+      ).toBeDefined();
+    });
+
+    expect(area.value).toBe("esto es un timo");
+    expect(mockCrear).not.toHaveBeenCalled();
   });
 });

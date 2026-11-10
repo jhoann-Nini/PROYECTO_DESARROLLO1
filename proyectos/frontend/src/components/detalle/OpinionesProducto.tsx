@@ -8,8 +8,9 @@ import {
   eliminarResena,
   type ResenaResponse,
 } from "@/services/api";
-import { contieneLenguajeNoPermitido } from "@/data/resenas";
+import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
 interface OpinionesProductoProps {
   idProducto: number;
@@ -91,6 +92,12 @@ export default function OpinionesProducto({
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
   const [exito, setExito] = useState("");
+
+  // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(texto),
+    [texto],
+  );
 
   // Estado para edición en línea de reseñas propias
   const [idResenaEnEdicion, setIdResenaEnEdicion] = useState<number | null>(null);
@@ -322,6 +329,9 @@ export default function OpinionesProducto({
           placeholder="Cuenta tu experiencia con el producto…"
           className="mt-2 w-full resize-y rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
         />
+        {terminosDetectados.length > 0 && (
+          <AvisoTerminosResena className="mt-2" />
+        )}
 
         <div className="mt-2 flex items-center gap-2">
           <span className="text-xs font-medium text-[var(--color-subtle)]">

@@ -79,6 +79,18 @@ export default function ComparadorCliente() {
     };
   }, [intento]);
 
+  useEffect(() => {
+    if (!hidratado || cargando || error) return;
+
+    const idsDisponibles = new Set(
+      productos.map((producto) => producto.idProducto),
+    );
+
+    ids
+      .filter((id) => !idsDisponibles.has(id))
+      .forEach((id) => quitar(id));
+  }, [cargando, error, hidratado, ids, productos, quitar]);
+
   const seleccionados = useMemo(() => {
     const porId = new Map(
       productos.map((producto) => [producto.idProducto, producto]),

@@ -409,6 +409,61 @@ describe("ResenasCliente", () => {
     ).toBe(0);
   });
 
+  it("no avisa con falsos positivos por subcadena y sí con términos reales", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+
+    fireEvent.change(area, {
+      target: { value: "la computadora y el último pedido funcionan bien" },
+    });
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
+
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("no borra el texto al rechazar una reseña con términos bloqueados", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/El comentario contiene palabras no permitidas/i),
+      ).toBeDefined();
+    });
+
+    expect(area.value).toBe("esto es una estafa");
+    expect(mockCrear).not.toHaveBeenCalled();
+  });
+
   it("muestra editar y eliminar solo en las reseñas propias", async () => {
     sesionMock.usuario = usuarioMock;
 

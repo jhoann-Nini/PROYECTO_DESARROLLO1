@@ -637,3 +637,53 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.4: aprobación de la cancelación de operaciones administrativas aún no confirmadas cuando la suspensión del rol Administrador se hace efectiva, con revalidación al confirmar, ausencia de escrituras parciales y auditoría; no se revierten operaciones ya confirmadas.
 - v5.5: aprobación del rechazo HTTP `403` de intentos no autorizados de suspender el rol Administrador, sin modificar roles ni sesiones y con registro de auditoría.
 - v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.
+
+
+---
+
+## 12. Implementación técnica de Fase 1: asignaciones y auditoría
+
+**Estado:** endpoints iniciales implementados en la rama `feat/phase-1-role-and-representative-management`. La implementación requiere la aplicación controlada de las migraciones SQL `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql`; todavía no se han ejecutado en Supabase.
+
+### 12.1 Modelo de asignaciones
+
+- `usuario_rol` conserva una fila por pareja usuario/rol y usa `estado` para indicar si la asignación está vigente.
+- `usuario_establecimiento` conserva una fila por pareja usuario/establecimiento y usa `estado` para indicar si la representación está vigente.
+- Las revocaciones registran fecha, actor y motivo en la asignación actual.
+- Las reactivaciones actualizan el estado de la asignación y generan un nuevo evento de auditoría; los eventos anteriores permanecen en las tablas de auditoría.
+- `auditoria_usuario_rol` y `auditoria_usuario_establecimiento` registran `ASIGNADO`, `REVOCADO` y `REACTIVADO`, junto con actor, fecha, recurso y motivo.
+- Para las asignaciones históricas migradas, el actor queda nulo cuando no existe evidencia fiable del responsable original.
+
+### 12.2 Endpoints administrativos implementados
+
+Todas las rutas siguientes requieren JWT válido y rol **Administrador** activo, verificado en backend:
+
+| Método | Ruta | Acción |
+|---|---|---|
+| POST | `/api/admin/usuarios/{usuarioId}/roles/{rolId}` | Asignar o reactivar un rol |
+| DELETE | `/api/admin/usuarios/{usuarioId}/roles/{rolId}` | Revocar un rol |
+| POST | `/api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion` | Asignar o reactivar representante |
+| DELETE | `/api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion` | Revocar representante |
+
+El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API obtiene al actor desde el `sub` del JWT; no acepta el identificador del administrador desde el cliente.
+
+### 12.3 Reglas de protección
+
+- No se asignan roles a cuentas inactivas ni representantes a cuentas o establecimientos inactivos.
+- No se permiten asignaciones duplicadas activas.
+- Revocar una asignación ya revocada produce conflicto.
+- No se puede revocar el último rol activo de Administrador.
+- La autorización de `/api/admin/**` se realiza mediante el gestor administrativo existente y falla cerrada.
+- Las operaciones de escritura y su evento de auditoría se guardan dentro de la misma transacción.
+
+### 12.4 Validación completada y notas de despliegue
+
+- **Pruebas Maven ejecutadas y corregidas:** suite completa de 281 pruebas pasando sin fallos ni omisiones (`BUILD SUCCESS`).
+- **Pruebas de integración de endpoints (`AdministracionAsignacionesIntegrationTest`):** cobertura de los cuatro endpoints (`POST`/`DELETE` roles y `POST`/`DELETE` representación) con matriz de roles: 401 Unauthorized sin token, 403 Forbidden para roles no admin (Usuario registrado, Moderador, Representante, Admin inactivo/revocado), 201 Created y 204 No Content para Administrador activo, y 409 Conflict ante duplicados o revocaciones sobre recursos ya revocados.
+- **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** ejecutada sobre PostgreSQL real (Testcontainers). Demuestra que el bloqueo pesimista (`SELECT ... FOR UPDATE` vía `findAdministradoresActivosForUpdate()`) serializa revocaciones concurrentes sobre los últimos dos administradores: exactamente una transacción tiene éxito y la otra falla con HTTP 409 (`ConflictException`), garantizando que siempre queda al menos 1 administrador activo.
+- **Serialización de revocación de representantes:** verificada bajo concurrencia sobre el mismo establecimiento; el bloqueo pesimista en `findByUsuarioAndEstablecimientoForUpdate` serializa las solicitudes, completando una y rechazando la segunda con HTTP 409.
+- **Integridad de migraciones y orden de ejecución:**
+  - La migración `008_multirole_y_representantes.sql` debe ejecutarse antes que `009_auditoria_asignaciones.sql`.
+  - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
+  - Ninguna migración de Fase 1 ha sido aplicada en Supabase aún.
+- **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.

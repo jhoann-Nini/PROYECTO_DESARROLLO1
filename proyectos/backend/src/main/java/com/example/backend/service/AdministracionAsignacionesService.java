@@ -70,12 +70,21 @@ public class AdministracionAsignacionesService {
     @Transactional
     public void revocarRol(Long usuarioId, Long rolId, String sub, String motivo) {
         Usuario actor = obtenerActor(sub);
-        usuarios.findByIdForUpdate(usuarioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
+        // Todas las revocaciones del rol Administrador se serializan sobre la fila
+        // del rol antes de bloquear usuarios o asignaciones, evitando órdenes
+        // de bloqueo opuestos entre dos administradores concurrentes.
         UsuarioRol asignacion = usuarioRoles.findByUsuario_IdUsuarioAndRol_IdRol(usuarioId, rolId)
                 .orElseThrow(() -> new ResourceNotFoundException("La asignación de rol no existe."));
         if (!Boolean.TRUE.equals(asignacion.getEstado())) throw new ConflictException("El rol ya está revocado.");
-        if (asignacion.getRol() != null && ADMIN.equalsIgnoreCase(asignacion.getRol().getNombre())) {
+        boolean esAdministrador = asignacion.getRol() != null
+                && ADMIN.equalsIgnoreCase(asignacion.getRol().getNombre());
+        if (esAdministrador) {
+            roles.findByNombreForUpdate(ADMIN)
+                    .orElseThrow(() -> new ResourceNotFoundException("Rol Administrador no encontrado."));
+        }
+        usuarios.findByIdForUpdate(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado."));
+        if (esAdministrador) {
             List<UsuarioRol> administradores = usuarioRoles.findAdministradoresActivosForUpdate();
             if (administradores.size() <= 1) throw new ConflictException("No se puede revocar el último rol de Administrador activo.");
         }

@@ -158,6 +158,34 @@ export async function obtenerProductos<T = unknown>(): Promise<T[]> {
 }
 
 /**
+ * Consulta únicamente los productos activos de una categoría real.
+ * El identificador debe provenir de `GET /api/categorias`; nunca se asume
+ * un ID fijo para celulares, tablets, portátiles o auriculares.
+ */
+export async function obtenerProductosPorCategoria<T = unknown>(
+  idCategoria: number,
+): Promise<T[]> {
+  if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+    throw new ApiError(
+      "El identificador de categoría debe ser un número entero positivo.",
+      400,
+    );
+  }
+
+  const datos = await apiFetch<unknown>(
+    `/api/productos?idCategoria=${idCategoria}`,
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de productos).",
+    );
+  }
+
+  return datos as T[];
+}
+
+/**
  * Respuesta del endpoint de perfil del backend Spring Boot (GET /api/usuarios/me).
  */
 export interface UsuarioMeResponse {
@@ -247,6 +275,7 @@ export interface ResenaResponse {
   idUsuario: number;
   nombreUsuario: string;
   comentario: string;
+  puntuacion?: number | null;
   fechaCreacion: string;
   estado: boolean;
 }
@@ -257,6 +286,7 @@ export interface ResenaResponse {
 export interface CrearResenaRequest {
   idProducto: number;
   comentario: string;
+  puntuacion?: number;
 }
 
 /**
@@ -293,6 +323,60 @@ export async function crearResena(request: CrearResenaRequest): Promise<ResenaRe
 }
 
 /**
+ * Actualiza una reseña existente. Requiere autenticación Bearer y ser el autor.
+ *
+ * @param idResena Identificador de la reseña a modificar.
+ * @param comentario Contenido actualizado de la opinión (obligatorio, máx 1000 caracteres).
+ * @param puntuacion Calificación opcional de 1 a 5 estrellas.
+ * @returns La reseña actualizada en el backend.
+ */
+export async function editarResena(
+  idResena: number,
+  comentario: string,
+  puntuacion?: number | null,
+): Promise<ResenaResponse> {
+  const payload: { comentario: string; puntuacion?: number } = {
+    comentario: comentario.trim(),
+  };
+  if (puntuacion !== undefined && puntuacion !== null) {
+    payload.puntuacion = puntuacion;
+  }
+  return apiFetchAutenticado<ResenaResponse>(`/api/resenas/${idResena}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Elimina una reseña existente. Requiere autenticación.
+ * Contrato pendiente de MG (TEC-76/77/78).
+ */
+export async function eliminarResena(idResena: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/resenas/${idResena}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * Crea un reporte persistente sobre una reseña. Requiere una sesión autenticada.
+ * La identidad del reportante se obtiene exclusivamente del JWT en el backend.
+ */
+export interface CrearReporteResenaRequest {
+  motivo: "spam" | "lenguaje-ofensivo" | "falso" | "otro";
+  descripcion?: string;
+}
+
+export async function crearReporteResena(
+  idResena: number,
+  request: CrearReporteResenaRequest,
+): Promise<void> {
+  await apiFetchAutenticado<unknown>(`/api/resenas/${idResena}/reportes`, {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
  * Representación de una valoración devuelta por la API REST de TecReview.
  */
 export interface ValoracionResponse {
@@ -307,40 +391,6 @@ export interface ValoracionResponse {
 }
 
 /**
- * Payload para registrar o actualizar la valoración de un producto en el backend.
- */
-export interface CrearValoracionRequest {
-  idProducto: number;
-  puntuacion: number;
-}
-
-/**
- * Registra o actualiza la valoración de 1 a 5 estrellas de un producto en Spring Boot.
- * Requiere autenticación Bearer con token JWT válido de Supabase.
- *
- * @param request Datos de la valoración (idProducto y puntuacion de 1 a 5).
- * @returns La valoración guardada en la base de datos.
- */
-export async function crearValoracion(
-  request: CrearValoracionRequest,
-): Promise<ValoracionResponse> {
-  if (
-    !Number.isInteger(request.puntuacion) ||
-    request.puntuacion < 1 ||
-    request.puntuacion > 5
-  ) {
-    throw new ApiError(
-      "La puntuación debe ser un número entero entre 1 y 5.",
-      400,
-    );
-  }
-  return apiFetchAutenticado<ValoracionResponse>("/api/valoraciones", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
-}
-
-/**
  * Consulta la valoración activa del usuario autenticado para un producto específico.
  * Retorna null si el usuario no ha valorado este producto o no está autenticado.
  */
@@ -352,7 +402,7 @@ export async function obtenerMiValoracion(
     if (!token) return null;
     const res = await apiFetchAutenticado<ValoracionResponse>(
       `/api/valoraciones/mi-valoracion?idProducto=${idProducto}`,
-      { method: "GET" },
+      { method: "GET", accessToken: token },
     );
     return res || null;
   } catch (err) {
@@ -362,6 +412,32 @@ export async function obtenerMiValoracion(
     return null;
   }
 }
+
+/**
+ * Estadísticas públicas de valoración de un producto.
+ */
+export interface ValoracionPublicaStats {
+  idProducto: number;
+  promedioPuntuacion: number | null;
+  cantidadValoraciones: number;
+}
+
+/**
+ * Consulta el promedio de estrellas (1 a 5) y el total de valoraciones activas de un producto.
+ * No requiere autenticación. Se usa en la ficha técnica de cada producto.
+ *
+ * @param idProducto Identificador único del producto.
+ * @returns Estadísticas de valoración del producto.
+ */
+export async function obtenerValoracionStats(
+  idProducto: number,
+): Promise<ValoracionPublicaStats> {
+  return apiFetch<ValoracionPublicaStats>(
+    `/api/productos/${idProducto}/valoracion-stats`,
+  );
+}
+
+
 
 
 // ============================================================================
@@ -612,4 +688,93 @@ export async function obtenerMasComentados(limit?: number): Promise<ProductoMasC
   }
 
   return datos as ProductoMasComentado[];
+}
+
+/**
+ * Descarga el catálogo completo de productos en formato CSV llamando al endpoint administrativo
+ * protegido GET /api/productos/exportar-csv.
+ *
+ * Utiliza fetch nativo con respuesta en blob para evitar que el CSV sea procesado como JSON.
+ *
+ * @param options Opciones adicionales para la solicitud, como un token explícito.
+ * @returns Promesa con el Blob del archivo CSV y el nombre de archivo extraído del encabezado.
+ */
+export async function descargarCatalogoCsv(options?: {
+  accessToken?: string;
+}): Promise<{ blob: Blob; nombreArchivo: string }> {
+  if (!API_URL) {
+    throw new ApiError("No se ha configurado la URL de la API.");
+  }
+
+  const token = options?.accessToken || (await obtenerTokenAcceso());
+  if (!token) {
+    throw new ApiError(
+      "No se encontró una sesión de autenticación activa para autorizar la descarga del catálogo.",
+      401,
+    );
+  }
+
+  const url = `${API_URL.replace(/\/$/, "")}/api/productos/exportar-csv`;
+  let respuesta: Response;
+
+  try {
+    respuesta = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "text/csv, application/octet-stream, */*",
+      },
+    });
+  } catch {
+    throw new ApiError(
+      "No fue posible conectarse con el servidor para exportar el catálogo. Verifica que el backend esté activo e inténtalo de nuevo.",
+    );
+  }
+
+  if (!respuesta.ok) {
+    let mensajeError = `El servidor respondió con un error (${respuesta.status}) al intentar exportar el catálogo.`;
+    if (respuesta.status === 403) {
+      mensajeError = "No tienes permisos de administrador para exportar el catálogo de productos.";
+    } else if (respuesta.status === 401) {
+      mensajeError = "Tu sesión ha expirado o no es válida. Por favor, inicia sesión nuevamente.";
+    } else {
+      try {
+        const errorJson = await respuesta.json();
+        if (errorJson && typeof errorJson.message === "string" && errorJson.message.trim()) {
+          mensajeError = errorJson.message.trim();
+        } else if (errorJson && typeof errorJson.error === "string" && errorJson.error.trim()) {
+          mensajeError = errorJson.error.trim();
+        }
+      } catch {
+        // Si no es JSON, conservar mensaje por status
+      }
+    }
+    throw new ApiError(mensajeError, respuesta.status);
+  }
+
+  let nombreArchivo = "catalogo_productos.csv";
+  const disposition = respuesta.headers.get("Content-Disposition");
+  if (disposition) {
+    const filenameMatch = disposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+    if (filenameMatch && filenameMatch[1]) {
+      nombreArchivo = filenameMatch[1].replace(/['"]/g, "").trim();
+    }
+  }
+
+  const blob = await respuesta.blob();
+  return { blob, nombreArchivo };
+}
+
+/**
+ * Utilidad para invocar la descarga en el navegador a partir de un Blob.
+ */
+export function dispararDescargaArchivo(blob: Blob, nombreArchivo: string): void {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 }

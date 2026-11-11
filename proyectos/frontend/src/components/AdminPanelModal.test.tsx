@@ -26,6 +26,8 @@ vi.mock("@/services/api", async () => {
     crearMarca: vi.fn(),
     actualizarMarca: vi.fn(),
     eliminarMarca: vi.fn(),
+    descargarCatalogoCsv: vi.fn(),
+    dispararDescargaArchivo: vi.fn(),
   };
 });
 
@@ -68,7 +70,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       idCategoria: 1,
       idMarca: 10,
       imagen: "https://example.com/phone2.jpg",
-      precioReferencia: 699.99,
+      precioReferencia: 1_749_000,
       estado: true,
     },
   ];
@@ -521,7 +523,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       expect(screen.getByText("#101")).toBeDefined();
       expect(screen.getByText("Smartphones")).toBeDefined();
       expect(screen.getByText("Nothing")).toBeDefined();
-      expect(screen.getByText("$699.99")).toBeDefined();
+      expect(screen.getByText(/1\.749\.000/)).toBeDefined();
     });
 
     it("debe validar campos y crear un producto exitosamente", async () => {
@@ -670,7 +672,6 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       { idCategoria: 2, nombre: "Laptops", descripcion: "Portátiles y ultrabooks", estado: true },
       { idCategoria: 3, nombre: "Tablets", descripcion: "Tabletas táctiles", estado: true },
       { idCategoria: 4, nombre: "Auriculares", descripcion: "Auriculares y audio", estado: true },
-      { idCategoria: 5, nombre: "Monitores", descripcion: "Pantallas de escritorio", estado: true },
     ];
 
     it("permite registrar características técnicas pertinentes a la categoría al crear un producto", async () => {
@@ -892,9 +893,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       vi.mocked(api.obtenerCategorias).mockResolvedValue(categoriasCompletas);
       vi.mocked(api.crearProducto).mockResolvedValue({
         idProducto: 601,
-        nombre: "Monitor Gaming",
+        nombre: "Galaxy Tab S10",
         descripcion: null,
-        idCategoria: 5,
+        idCategoria: 3,
         idMarca: 10,
         imagen: null,
         precioReferencia: null,
@@ -920,9 +921,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         target: { value: "ANC avanzada" },
       });
 
-      // Cambiar a Monitores
+      // Cambiar a Tablets
       fireEvent.change(screen.getByLabelText(/Categoría/i), {
-        target: { value: "5" },
+        target: { value: "3" },
       });
 
       // Hacer clic en 'Conservar como personalizadas'
@@ -933,15 +934,15 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       expect(screen.getByTestId("input-spec-personalizada-clave-0")).toBeDefined();
       expect((screen.getByTestId("input-spec-personalizada-clave-0") as HTMLInputElement).value).toBe("cancelacion_ruido");
 
-      // Rellenar datos del monitor
+      // Rellenar datos de la tablet
       fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
-        target: { value: "Monitor Gaming 27" },
+        target: { value: "Galaxy Tab S10" },
       });
       fireEvent.change(screen.getByLabelText(/Marca/i), {
         target: { value: "10" },
       });
-      fireEvent.change(screen.getByTestId("input-spec-panel"), {
-        target: { value: "Fast IPS 2K" },
+      fireEvent.change(screen.getByTestId("input-spec-pantalla"), {
+        target: { value: "12.1'' LCD 3K 144Hz" },
       });
 
       fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
@@ -949,9 +950,9 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       await waitFor(() => {
         expect(api.crearProducto).toHaveBeenCalledWith(
           expect.objectContaining({
-            idCategoria: 5,
+            idCategoria: 3,
             caracteristicas: {
-              panel: "Fast IPS 2K",
+              pantalla: "12.1'' LCD 3K 144Hz",
               cancelacion_ruido: "ANC avanzada",
             },
           }),
@@ -1040,6 +1041,81 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         );
       });
       expect(await screen.findByText(/Producto actualizado exitosamente/i)).toBeDefined();
+    });
+  });
+
+  describe("Fase 4.7.1-B: Exportación del catálogo a CSV", () => {
+    it("debe mostrar el botón 'Exportar catálogo CSV' en la pestaña de productos", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+      expect(btnExportar).toBeDefined();
+    });
+
+    it("al hacer clic en 'Exportar catálogo CSV', descarga el archivo y muestra mensaje de éxito", async () => {
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Prueba"], { type: "text/csv" });
+      vi.mocked(api.descargarCatalogoCsv).mockResolvedValueOnce({
+        blob: fakeBlob,
+        nombreArchivo: "catalogo_productos_20261021.csv",
+      });
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+
+      fireEvent.click(btnExportar);
+
+      await waitFor(() => {
+        expect(api.descargarCatalogoCsv).toHaveBeenCalledTimes(1);
+        expect(api.dispararDescargaArchivo).toHaveBeenCalledWith(
+          fakeBlob,
+          "catalogo_productos_20261021.csv",
+        );
+      });
+
+      expect(await screen.findByText(/Catálogo exportado exitosamente a CSV/i)).toBeDefined();
+    });
+
+    it("al fallar la descarga del CSV, muestra el mensaje de error comprensible en el panel", async () => {
+      vi.mocked(api.descargarCatalogoCsv).mockRejectedValueOnce(
+        new api.ApiError("No tienes permisos de administrador para exportar el catálogo de productos.", 403),
+      );
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      const btnExportar = screen.getByRole("button", { name: /Exportar catálogo CSV/i });
+
+      fireEvent.click(btnExportar);
+
+      await waitFor(() => {
+        expect(api.descargarCatalogoCsv).toHaveBeenCalledTimes(1);
+      });
+
+      expect(
+        await screen.findByText(/No tienes permisos de administrador para exportar el catálogo de productos/i),
+      ).toBeDefined();
+      expect(api.dispararDescargaArchivo).not.toHaveBeenCalled();
     });
   });
 });

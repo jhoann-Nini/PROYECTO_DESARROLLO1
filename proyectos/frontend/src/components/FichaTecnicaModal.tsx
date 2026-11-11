@@ -4,7 +4,18 @@
 import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
 import { useState, useEffect, useMemo } from "react";
 import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
-import { crearValoracion, obtenerMiValoracion } from "@/services/api";
+import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
+import {
+  obtenerMiValoracion,
+  obtenerResenas,
+  crearResena,
+  obtenerValoracionStats,
+  type ResenaResponse,
+  type ValoracionPublicaStats,
+} from "@/services/api";
+import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import { CLASE_FOCO } from "@/components/ui/foco";
+import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
 interface FichaTecnicaModalProps {
   producto: DispositivoKimovil | Producto | null;
@@ -12,6 +23,7 @@ interface FichaTecnicaModalProps {
   usuarioSesion?: UsuarioSesion | null;
   onPedirLogin?: () => void;
   onValoracionGuardada?: () => void;
+  onResenaGuardada?: (resena: ResenaResponse) => void;
 }
 
 export default function FichaTecnicaModal({
@@ -20,6 +32,7 @@ export default function FichaTecnicaModal({
   usuarioSesion,
   onPedirLogin,
   onValoracionGuardada,
+  onResenaGuardada,
 }: FichaTecnicaModalProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -34,9 +47,28 @@ export default function FichaTecnicaModal({
   const [puntuacionSeleccionada, setPuntuacionSeleccionada] = useState<number>(0);
   const [puntuacionActual, setPuntuacionActual] = useState<number | null>(null);
   const [hoverEstrella, setHoverEstrella] = useState<number>(0);
-  const [enviandoValoracion, setEnviandoValoracion] = useState(false);
-  const [mensajeExito, setMensajeExito] = useState("");
-  const [errorValoracion, setErrorValoracion] = useState("");
+  const [errorImagenUrl, setErrorImagenUrl] = useState<string | null>(null);
+
+  // Estados para las opiniones/reseñas comunitarias escritas de este producto
+  const [resenasProducto, setResenasProducto] = useState<ResenaResponse[]>([]);
+  const [cargandoResenas, setCargandoResenas] = useState<boolean>(false);
+  const [errorCargaResenas, setErrorCargaResenas] = useState<string>("");
+  const [nuevaResenaTexto, setNuevaResenaTexto] = useState<string>("");
+  const [enviandoResena, setEnviandoResena] = useState<boolean>(false);
+  const [errorResena, setErrorResena] = useState<string>("");
+  const [exitoResena, setExitoResena] = useState<string>("");
+
+  // Estadísticas públicas de valoración comunitaria (promedio de estrellas)
+  const [valoracionStats, setValoracionStats] = useState<ValoracionPublicaStats | null>(null);
+
+  // Pestaña de navegación seleccionada explícitamente
+  const [pestanaSeleccionada, setPestanaSeleccionada] = useState<string | null>(null);
+
+  // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(nuevaResenaTexto),
+    [nuevaResenaTexto],
+  );
 
   const idProducto = useMemo(() => {
     if (!producto) return null;
@@ -49,6 +81,25 @@ export default function FichaTecnicaModal({
     return null;
   }, [producto]);
 
+  // Resetear estados locales durante el render cuando cambia el producto (patrón recomendado por React)
+  const [prevIdProducto, setPrevIdProducto] = useState(idProducto);
+  if (idProducto !== prevIdProducto) {
+    setPrevIdProducto(idProducto);
+    setPuntuacionSeleccionada(0);
+    setPuntuacionActual(null);
+    setHoverEstrella(0);
+    setErrorImagenUrl(null);
+    setResenasProducto([]);
+    setCargandoResenas(Boolean(idProducto));
+    setErrorCargaResenas("");
+    setNuevaResenaTexto("");
+    setErrorResena("");
+    setExitoResena("");
+    setValoracionStats(null);
+    setPestanaSeleccionada(null);
+  }
+
+  // Cargar valoración de estrellas previa del usuario
   useEffect(() => {
     let montado = true;
     if (usuarioSesion && idProducto) {
@@ -56,7 +107,6 @@ export default function FichaTecnicaModal({
         .then((val) => {
           if (montado && val) {
             setPuntuacionActual(val.puntuacion);
-            setPuntuacionSeleccionada(val.puntuacion);
           }
         })
         .catch(() => {});
@@ -66,43 +116,109 @@ export default function FichaTecnicaModal({
     };
   }, [usuarioSesion, idProducto]);
 
-  const manejarGuardarValoracion = async (e: React.FormEvent) => {
+  // Cargar estadísticas públicas de valoración comunitaria
+  useEffect(() => {
+    let montado = true;
+    if (idProducto) {
+      obtenerValoracionStats(idProducto)
+        .then((stats) => {
+          if (montado) setValoracionStats(stats);
+        })
+        .catch(() => {
+          // Si falla, simplemente no se muestran estadísticas
+        });
+    }
+    return () => {
+      montado = false;
+    };
+  }, [idProducto]);
+
+  // Cargar reseñas comunitarias escritas del producto
+  useEffect(() => {
+    let montado = true;
+    if (idProducto) {
+      obtenerResenas(idProducto)
+        .then((datos) => {
+          if (montado) {
+            setResenasProducto(datos);
+          }
+        })
+        .catch((err) => {
+          if (montado) {
+            setErrorCargaResenas(
+              err instanceof Error ? err.message : "Error al cargar las opiniones."
+            );
+          }
+        })
+        .finally(() => {
+          if (montado) {
+            setCargandoResenas(false);
+          }
+        });
+    }
+    return () => {
+      montado = false;
+    };
+  }, [idProducto]);
+
+  const manejarGuardarResena = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usuarioSesion) {
-      setErrorValoracion("Debes iniciar sesión para valorar este dispositivo.");
+      setErrorResena("Debes iniciar sesión para publicar una opinión.");
       return;
     }
     if (!idProducto) {
-      setErrorValoracion("No se pudo identificar el código del dispositivo a valorar.");
+      setErrorResena("No se pudo identificar el código del dispositivo a reseñar.");
       return;
     }
-    if (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5) {
-      setErrorValoracion("Por favor selecciona una puntuación entre 1 y 5 estrellas.");
+    if (puntuacionSeleccionada !== 0 && (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5)) {
+      setErrorResena("Por favor selecciona una puntuación entre 1 y 5 estrellas.");
+      return;
+    }
+    if (!nuevaResenaTexto.trim()) {
+      setErrorResena("Por favor escribe tu opinión antes de publicar.");
       return;
     }
 
-    setEnviandoValoracion(true);
-    setErrorValoracion("");
-    setMensajeExito("");
+    if (contieneLenguajeNoPermitido(nuevaResenaTexto)) {
+      setErrorResena(
+        "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso."
+      );
+      return;
+    }
+
+    setEnviandoResena(true);
+    setErrorResena("");
+    setExitoResena("");
 
     try {
-      const res = await crearValoracion({
+      const res = await crearResena({
         idProducto,
-        puntuacion: puntuacionSeleccionada,
+        comentario: nuevaResenaTexto.trim(),
+        ...(puntuacionSeleccionada > 0 ? { puntuacion: puntuacionSeleccionada } : {}),
       });
-      setPuntuacionActual(res.puntuacion);
-      setMensajeExito(
-        `¡Tu valoración de ${res.puntuacion} ${res.puntuacion === 1 ? "estrella" : "estrellas"} ha sido guardada!`
-      );
+      setNuevaResenaTexto("");
+      if (puntuacionSeleccionada > 0) {
+        setPuntuacionActual(puntuacionSeleccionada);
+      }
+      setPuntuacionSeleccionada(0);
+      setExitoResena("¡Tu opinión ha sido publicada con éxito!");
+      setResenasProducto((prev) => [res, ...prev.filter((r) => r.idResena !== res.idResena)]);
+      if (idProducto) {
+        obtenerValoracionStats(idProducto)
+          .then((st) => setValoracionStats(st))
+          .catch(() => {});
+      }
+      onResenaGuardada?.(res);
       onValoracionGuardada?.();
     } catch (err) {
-      setErrorValoracion(
+      setErrorResena(
         err instanceof Error
           ? err.message
-          : "No fue posible registrar tu valoración. Inténtalo más tarde."
+          : "No fue posible publicar tu opinión. Inténtalo más tarde."
       );
     } finally {
-      setEnviandoValoracion(false);
+      setEnviandoResena(false);
     }
   };
 
@@ -111,21 +227,47 @@ export default function FichaTecnicaModal({
     return normalizarFichaProducto(producto);
   }, [producto]);
 
-  const pestanas = useMemo(() => {
+  const pestanasSpecs = useMemo(() => {
     if (!ficha || !ficha.secciones || ficha.secciones.length === 0) return [];
     return ficha.secciones.map((sec, idx) => ({
       id: `sec-${idx}`,
       etiqueta: sec.titulo,
       icono: sec.icono,
       seccion: sec,
+      esOpiniones: false,
     }));
   }, [ficha]);
 
-  const [pestanaSeleccionada, setPestanaSeleccionada] = useState<string | null>(null);
-  const pestanaActiva =
-    pestanaSeleccionada && pestanas.some((p) => p.id === pestanaSeleccionada)
-      ? pestanaSeleccionada
-      : pestanas[0]?.id || "";
+  const pestanas = useMemo(() => {
+    const lista: Array<{
+      id: string;
+      etiqueta: string;
+      icono: string;
+      seccion?: NonNullable<ReturnType<typeof normalizarFichaProducto>>["secciones"][number];
+      esOpiniones?: boolean;
+    }> = [...pestanasSpecs];
+
+    lista.push({
+      id: "tab-opiniones-comunidad",
+      etiqueta: `Opiniones (${resenasProducto.length})`,
+      icono: "💬",
+      esOpiniones: true,
+    });
+
+    return lista;
+  }, [pestanasSpecs, resenasProducto.length]);
+
+  const pestanaActiva = useMemo(() => {
+    if (pestanaSeleccionada && pestanas.some((p) => p.id === pestanaSeleccionada)) {
+      return pestanaSeleccionada;
+    }
+    if (pestanasSpecs.length > 0) {
+      return pestanasSpecs[0].id;
+    }
+    return pestanaSeleccionada === "tab-opiniones-comunidad"
+      ? "tab-opiniones-comunidad"
+      : "";
+  }, [pestanaSeleccionada, pestanas, pestanasSpecs]);
 
   if (!producto || !ficha) return null;
 
@@ -134,34 +276,36 @@ export default function FichaTecnicaModal({
   const precioFormateado = formatearCOP(ficha.precio);
 
   const seccionActiva =
-    pestanas.find((p) => p.id === pestanaActiva)?.seccion || ficha.secciones[0];
+    pestanaActiva !== "tab-opiniones-comunidad"
+      ? pestanasSpecs.find((p) => p.id === pestanaActiva)?.seccion || ficha.secciones[0]
+      : undefined;
 
   return (
     <div
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-3 sm:p-5 backdrop-blur-xs animate-fadeIn"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-3 backdrop-blur-sm sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-titulo-dispositivo"
     >
-      <div className="relative flex flex-col w-full max-w-4xl lg:max-w-5xl max-h-[92vh] overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl text-slate-900 dark:text-slate-100">
+      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col overflow-hidden rounded-card border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] lg:max-w-5xl">
         
         {/* Cabecera accesible superior */}
-        <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="text-xs font-bold font-doto uppercase tracking-wider text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-md">
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-4 sm:px-7">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="rounded-full border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-brand-blue)]">
               FICHA TÉCNICA
             </span>
 
-            <span className="text-xs font-doto uppercase tracking-wider text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2.5 py-1 rounded-md flex items-center gap-1.5 font-bold shadow-2xs">
+            <span className="flex items-center gap-1.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)]">
               <span aria-hidden="true">{ficha.categoriaIcono}</span>
               <span>{ficha.categoriaEtiqueta}</span>
             </span>
 
             {ranking !== null && (
-              <span className="font-doto hidden sm:inline-block text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-200 dark:border-slate-700 font-bold">
+              <span className="hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-subtle)] sm:inline-block">
                 RANKING #{ranking}
               </span>
             )}
@@ -169,7 +313,7 @@ export default function FichaTecnicaModal({
 
           <button
             onClick={onClose}
-            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none cursor-pointer"
+            className="shrink-0 cursor-pointer whitespace-nowrap rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50"
             aria-label="Cerrar ventana de especificaciones técnicas (Escape)"
           >
             ✕ CERRAR
@@ -182,34 +326,44 @@ export default function FichaTecnicaModal({
             
             {/* Columna Izquierda: Imagen y Resumen de Puntuación */}
             <div className="lg:col-span-5 flex flex-col gap-4">
-              <div className="relative aspect-[4/3] w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-6 flex items-center justify-center overflow-hidden">
-                <img
-                  src={ficha.imagen}
-                  alt={`Vista frontal de ${ficha.nombre}`}
-                  className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 hover:scale-105"
-                />
+              <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6">
+                {ficha.imagen && ficha.imagen.trim().length > 0 && errorImagenUrl !== ficha.imagen ? (
+                  <img
+                    src={ficha.imagen}
+                    alt={`Vista frontal de ${ficha.nombre}`}
+                    onError={() => setErrorImagenUrl(ficha.imagen)}
+                    className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 hover:scale-105"
+                  />
+                ) : (
+                  <ProductImagePlaceholder
+                    categoria={ficha.categoriaEtiqueta || ficha.categoriaTipo}
+                    marca={ficha.marca}
+                    nombre={ficha.nombre}
+                    tamano="lg"
+                  />
+                )}
 
-                <span className="font-doto uppercase tracking-wider absolute top-3 left-3 rounded-md bg-white/95 dark:bg-slate-900/90 px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                <span className="absolute left-3 top-3 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)] backdrop-blur">
                   {ficha.marca}
                 </span>
 
-                <span className="font-sans font-extrabold tracking-tight absolute bottom-3 right-3 rounded-md bg-blue-700 dark:bg-blue-600 px-3 py-1 text-sm text-white shadow-xs">
+                <span className="absolute bottom-3 right-3 rounded-full bg-[var(--color-brand-solid)] px-3 py-1 text-sm font-semibold tracking-tight text-[var(--color-on-solid)] shadow-[var(--shadow-paper-hover)]">
                   {precioFormateado}
                 </span>
               </div>
 
-              {/* Evaluación Global */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/70 p-5">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3">
-                  <span className="text-xs font-bold font-doto text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-                    PUNTUACIÓN TECREVIEW
+              {/* Evaluación Global y Técnica */}
+              <div className="rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
+                <div className="mb-3 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                    Puntuación TecReview
                   </span>
                   {ficha.puntuacionGlobal !== null ? (
-                    <span className="text-xl font-extrabold font-sans text-blue-700 dark:text-blue-400 tracking-tight">
+                    <span className="text-xl font-semibold tracking-tight text-[var(--color-brand-blue)]">
                       {ficha.puntuacionGlobal.toFixed(1)} / 10
                     </span>
                   ) : (
-                    <span className="text-xs font-bold font-doto text-slate-500 uppercase tracking-wider">
+                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                       Pendiente de valoraciones
                     </span>
                   )}
@@ -217,11 +371,11 @@ export default function FichaTecnicaModal({
 
                 {/* Benchmark real (solo si está disponible) */}
                 {ficha.benchmark && (
-                  <div className="mb-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 flex items-center justify-between text-xs">
-                    <span className="text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider font-doto text-[11px]">
+                  <div className="mb-4 flex items-center justify-between rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs">
+                    <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                       {ficha.benchmark.etiqueta}:
                     </span>
-                    <span className="text-slate-900 dark:text-white font-bold font-sans tracking-tight">
+                    <span className="font-semibold tracking-tight text-[var(--color-ink)]">
                       {ficha.benchmark.valor}
                     </span>
                   </div>
@@ -232,15 +386,15 @@ export default function FichaTecnicaModal({
                   <div className="space-y-3 text-xs">
                     {ficha.metricas.map((metrica, idx) => (
                       <div key={idx}>
-                        <div className="flex justify-between text-slate-700 dark:text-slate-300 mb-1 font-medium">
+                        <div className="mb-1 flex justify-between font-medium text-[var(--color-subtle)]">
                           <span>{metrica.nombre}</span>
-                          <span className="font-bold text-slate-900 dark:text-white font-sans">
+                          <span className="font-semibold text-[var(--color-ink)]">
                             {metrica.puntos.toFixed(1)}
                           </span>
                         </div>
-                        <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-canvas)]">
                           <div
-                            className="h-full bg-blue-700 dark:bg-blue-500 rounded-full transition-all duration-300"
+                            className="h-full rounded-full bg-[var(--color-brand-solid)] transition-all duration-300"
                             style={{ width: `${Math.min(metrica.puntos * 10, 100)}%` }}
                           ></div>
                         </div>
@@ -250,236 +404,392 @@ export default function FichaTecnicaModal({
                 ) : (
                   !ficha.benchmark &&
                   ficha.puntuacionGlobal === null && (
-                    <p className="text-xs text-slate-500 text-center py-2 font-mono">
-                      Sin valoraciones técnicas registradas aún.
-                    </p>
+                    <div className="py-2 text-center">
+                      <p className="text-xs text-[var(--color-subtle)]">
+                        Sin evaluación técnica de laboratorio registrada aún.
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-[var(--color-subtle)]">
+                        (Pruebas de hardware y benchmarks no cargados)
+                      </p>
+                    </div>
                   )
                 )}
+
+                {/* Estadísticas de valoración comunitaria (promedio estrellas) */}
+                {valoracionStats && valoracionStats.cantidadValoraciones > 0 && (
+                  <div className="mt-3 flex items-center justify-between rounded-md border border-amber-200 bg-amber-50 p-2.5">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-amber-700">
+                      <span aria-hidden="true">⭐</span> Valoración de la comunidad:
+                    </span>
+                    <span className="text-xs font-semibold">
+                      <span className="text-amber-700">
+                        {valoracionStats.promedioPuntuacion?.toFixed(1)} / 5
+                      </span>
+                      <span className="ml-1 text-[var(--color-subtle)]">
+                        ({valoracionStats.cantidadValoraciones} {valoracionStats.cantidadValoraciones === 1 ? "voto" : "votos"})
+                      </span>
+                    </span>
+                  </div>
+                )}
+
+                {/* Acceso directo a las opiniones comunitarias del producto */}
+                <button
+                  type="button"
+                  onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
+                  className="mt-2 flex w-full cursor-pointer items-center justify-between rounded-md border border-[var(--color-brand-blue)]/25 bg-[var(--color-canvas)] p-2.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-brand-blue)]/10"
+                >
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--color-brand-blue)]">
+                    <span aria-hidden="true">💬</span> Opiniones de la comunidad:
+                  </span>
+                  <span className="rounded-full bg-[var(--color-brand-blue)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--color-brand-blue)]">
+                    {cargandoResenas ? "..." : `${resenasProducto.length} ${resenasProducto.length === 1 ? "reseña" : "reseñas"}`}
+                  </span>
+                </button>
               </div>
 
-              {/* SECCIÓN DE VALORACIÓN POR ESTRELLAS (1 a 5) */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/70 p-5 mt-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-3">
-                  <span className="text-xs font-bold font-doto text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    TU VALORACIÓN
+              {/* SECCIÓN INFORMATIVA DE VALORACIONES Y OPINIONES UNIFICADAS */}
+              <div className="mt-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
+                <div className="mb-3 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                    TU CALIFICACIÓN (1 A 5 ESTRELLAS)
                   </span>
                   {puntuacionActual !== null && (
-                    <span className="text-xs font-bold font-sans text-amber-500">
+                    <span className="text-xs font-semibold text-[var(--color-star)]">
                       ★ {puntuacionActual} / 5
                     </span>
                   )}
                 </div>
 
-                {!usuarioSesion ? (
-                  <div className="text-center py-2">
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
-                      Inicia sesión para calificar este dispositivo con estrellas.
-                    </p>
-                    {onPedirLogin && (
-                      <button
-                        type="button"
-                        onClick={onPedirLogin}
-                        className="font-doto uppercase tracking-wider rounded-lg bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-3.5 py-1.5 text-xs font-bold text-white transition-colors cursor-pointer"
-                      >
-                        Identificarse para valorar
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <form onSubmit={manejarGuardarValoracion} className="flex flex-col gap-3">
-                    <div
-                      className="flex items-center justify-center gap-1.5"
-                      role="group"
-                      aria-label="Calificación de 1 a 5 estrellas"
-                    >
-                      {[1, 2, 3, 4, 5].map((estrella) => {
-                        const activa = (hoverEstrella || puntuacionSeleccionada) >= estrella;
-                        return (
-                          <button
-                            key={estrella}
-                            type="button"
-                            disabled={enviandoValoracion}
-                            onClick={() => {
-                              setPuntuacionSeleccionada(estrella);
-                              setErrorValoracion("");
-                              setMensajeExito("");
-                            }}
-                            onMouseEnter={() => setHoverEstrella(estrella)}
-                            onMouseLeave={() => setHoverEstrella(0)}
-                            aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
-                            className={`p-1 text-2xl transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded cursor-pointer disabled:opacity-50 ${
-                              activa ? "text-amber-400" : "text-slate-300 dark:text-slate-700"
-                            }`}
-                          >
-                            ★
-                          </button>
-                        );
-                      })}
-                    </div>
+                <p className="text-xs leading-relaxed text-[var(--color-subtle)] mb-3">
+                  Las valoraciones se integran con las opiniones de la comunidad. Publica tu puntuación de 1 a 5 estrellas junto con tu comentario.
+                </p>
 
-                    <div className="text-center">
-                      <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                        {puntuacionSeleccionada > 0
-                          ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
-                          : "Selecciona de 1 a 5 estrellas"}
-                      </span>
-                    </div>
-
-                    {errorValoracion && (
-                      <p className="text-xs text-red-600 dark:text-red-400 text-center font-medium" role="alert">
-                        ⚠️ {errorValoracion}
-                      </p>
-                    )}
-
-                    {mensajeExito && (
-                      <p className="text-xs text-green-600 dark:text-green-400 text-center font-medium" role="status">
-                        {mensajeExito}
-                      </p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={enviandoValoracion || puntuacionSeleccionada === 0}
-                      className="w-full font-doto uppercase tracking-wider rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
-                    >
-                      {enviandoValoracion
-                        ? "Guardando..."
-                        : puntuacionActual !== null
-                          ? "Actualizar valoración"
-                          : "Guardar valoración"}
-                    </button>
-                  </form>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
+                  className={`w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                >
+                  {usuarioSesion ? "Calificar y escribir opinión" : "Ver opiniones de la comunidad"}
+                </button>
               </div>
             </div>
 
             {/* Columna Derecha: Selector de Pestañas y Contenido Dinámico */}
             <div className="lg:col-span-7 flex flex-col gap-5">
               <div>
-                <span className="text-xs text-blue-700 dark:text-blue-400 font-bold font-doto uppercase tracking-wider">
-                  {ficha.marca} {"//"} ESPECIFICACIONES TÉCNICAS
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
+                  {ficha.marca} / Especificaciones técnicas
                 </span>
                 <h2
                   id="modal-titulo-dispositivo"
-                  className="text-2xl sm:text-3xl font-black font-doto text-slate-900 dark:text-white mt-1 leading-tight uppercase tracking-wide"
+                  className="mt-1 text-2xl font-semibold leading-tight tracking-[-0.02em] text-[var(--color-ink)] sm:text-3xl"
                 >
                   {ficha.nombre}
                 </h2>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400 leading-relaxed border-l-3 border-blue-700 dark:border-blue-500 pl-3">
+                <p className="mt-2 border-l-2 border-[var(--color-brand-blue)]/60 pl-3 text-sm leading-relaxed text-[var(--color-subtle)]">
                   {ficha.resumen}
                 </p>
               </div>
 
-              {/* Contenido condicional: Secciones dinámicas o Estado Vacío */}
-              {pestanas.length > 0 && seccionActiva ? (
-                <>
-                  {/* Barra de pestañas generada dinámicamente según la categoría y características */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-doto font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-0.5">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" aria-hidden="true" />
-                        <span>Especificaciones por categoría ({ficha.categoriaEtiqueta}):</span>
-                      </span>
-                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold tracking-normal lowercase">
-                        (selecciona para ver)
-                      </span>
-                    </div>
+              {/* Barra de pestañas que incluye especificaciones de hardware y opiniones de la comunidad */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between px-0.5 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true" />
+                    <span>Especificaciones & Comunidad ({ficha.categoriaEtiqueta}):</span>
+                  </span>
+                  <span className="text-[10px] font-medium lowercase tracking-normal text-[var(--color-brand-blue)]">
+                    (selecciona para ver)
+                  </span>
+                </div>
 
-                    <div
-                      role="tablist"
-                      aria-label="Categorías de especificaciones del dispositivo"
-                      className="flex flex-wrap gap-2 p-1.5 bg-slate-100/90 dark:bg-slate-950/70 rounded-xl border border-slate-200 dark:border-slate-800"
-                    >
-                      {pestanas.map((p) => {
-                        const activa = pestanaActiva === p.id;
-                        return (
-                          <button
-                            key={p.id}
-                            role="tab"
-                            aria-selected={activa}
-                            aria-controls={`panel-${p.id}`}
-                            id={`tab-${p.id}`}
-                            onClick={() => setPestanaSeleccionada(p.id)}
-                            className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold font-doto uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none ${
-                              activa
-                                ? "bg-white dark:bg-slate-900 text-blue-700 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-500 shadow-sm"
-                                : "bg-white/60 dark:bg-slate-900/50 border border-slate-300/80 dark:border-slate-700/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-white dark:hover:bg-slate-800/80 shadow-2xs"
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                                activa
-                                  ? "bg-blue-600 dark:bg-blue-400 scale-125 shadow-[0_0_8px_rgba(59,130,246,0.8)]"
-                                  : "bg-slate-400 dark:bg-slate-600 group-hover:bg-blue-500 group-hover:scale-110"
-                              }`}
-                              aria-hidden="true"
-                            />
-                            <span aria-hidden="true">{p.icono}</span>
-                            <span>{p.etiqueta}</span>
-                          </button>
-                        );
-                      })}
+                <div
+                  role="tablist"
+                  aria-label="Categorías de especificaciones del dispositivo"
+                  className="flex flex-wrap gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-1.5"
+                >
+                  {pestanas.map((p) => {
+                    const activa = pestanaActiva === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        role="tab"
+                        aria-selected={activa}
+                        aria-controls={`panel-${p.id}`}
+                        id={`tab-${p.id}`}
+                        onClick={() => setPestanaSeleccionada(p.id)}
+                        className={`group relative flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50 ${
+                          activa
+                            ? "border-[var(--color-brand-blue)]/50 bg-[var(--color-canvas)] text-[var(--color-brand-blue)]"
+                            : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-brand-blue)]"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                            activa
+                              ? "bg-[var(--color-brand-solid)] scale-125 shadow-[0_0_8px_rgba(163,230,53,0.8)]"
+                              : "bg-[var(--color-subtle)]/50 group-hover:bg-[var(--color-brand-blue)]/60 group-hover:scale-110"
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <span aria-hidden="true">{p.icono}</span>
+                        <span>{p.etiqueta}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Panel de contenido dinámico según la pestaña activa */}
+              {pestanaActiva === "tab-opiniones-comunidad" ? (
+                /* PANEL DE OPINIONES DE LA COMUNIDAD PARA ESTE PRODUCTO */
+                <div
+                  id="panel-tab-opiniones-comunidad"
+                  role="tabpanel"
+                  aria-labelledby="tab-tab-opiniones-comunidad"
+                  className="space-y-4 mt-1"
+                >
+                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
+                    <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                      <h4 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink)]">
+                        <span aria-hidden="true">💬</span>
+                        <span>Opiniones de la comunidad ({resenasProducto.length})</span>
+                      </h4>
+                      {idProducto && (
+                        <span className="text-[10px] text-[var(--color-subtle)]">
+                          Ref #{idProducto}
+                        </span>
+                      )}
                     </div>
+                    <p className="text-xs leading-relaxed text-[var(--color-subtle)]">
+                      Reseñas y comentarios compartidos por los usuarios para{" "}
+                      <span className="font-medium text-[var(--color-ink)]">
+                        {ficha.nombre}
+                      </span>.
+                    </p>
                   </div>
 
-                  {/* Panel de contenido dinámico correspondiente a la pestaña activa */}
-                  <div
-                    id={`panel-${pestanaActiva}`}
-                    role="tabpanel"
-                    aria-labelledby={`tab-${pestanaActiva}`}
-                    className="space-y-3.5 mt-1"
-                  >
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide mb-1.5 flex items-center gap-2">
-                        <span aria-hidden="true">{seccionActiva.icono}</span>
-                        <span>{seccionActiva.titulo}</span>
-                      </h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                        {seccionActiva.descripcion}
-                      </p>
+                  {/* Listado de reseñas */}
+                  {cargandoResenas && resenasProducto.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-[var(--color-subtle)]">
+                      Cargando opiniones de la comunidad...
                     </div>
-
-                    {/* Desglose en tarjetas si la especificación incluye múltiples puntos delimitados por · */}
-                    {seccionActiva.descripcion.includes(" · ") && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {seccionActiva.descripcion
-                          .split(" · ")
-                          .map((parte) => parte.trim())
-                          .filter(Boolean)
-                          .map((parte, pIdx) => (
-                            <div
-                              key={pIdx}
-                              className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-3.5 flex items-start gap-2.5"
-                            >
-                              <span className="text-blue-600 dark:text-blue-400 font-bold text-sm mt-0.5">•</span>
-                              <span className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
-                                {parte}
+                  ) : errorCargaResenas ? (
+                    <div className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                      {errorCargaResenas}
+                    </div>
+                  ) : resenasProducto.length > 0 ? (
+                    <div className="space-y-2.5 max-h-[280px] overflow-y-auto pr-1">
+                      {resenasProducto.map((r) => (
+                        <div
+                          key={r.idResena}
+                          className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3.5 text-xs transition-colors"
+                        >
+                          <div className="mb-1.5 flex items-center justify-between text-[var(--color-subtle)]">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-[var(--color-brand-blue)]">
+                                @{r.nombreUsuario || "Usuario de TecReview"}
+                              </span>
+                              {r.puntuacion && (
+                                <span className="font-semibold text-[var(--color-star)]">
+                                  ★ {r.puntuacion}/5
+                                </span>
+                              )}
+                              <span
+                                className="rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] px-1.5 py-0.5 text-[10px] text-[var(--color-subtle)]"
+                                title={`Reseña del producto #${r.idProducto}`}
+                              >
+                                #{r.idProducto}
                               </span>
                             </div>
-                          ))}
-                      </div>
-                    )}
+                            <span className="text-[10px]">
+                              {r.fechaCreacion
+                                ? new Date(r.fechaCreacion).toLocaleDateString("es-CO")
+                                : ""}
+                            </span>
+                          </div>
+                          <p className="whitespace-pre-wrap text-xs leading-relaxed text-[var(--color-ink)] sm:text-sm">
+                            {r.comentario}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6 text-center text-xs text-[var(--color-subtle)]">
+                      Aún no hay opiniones de la comunidad para este dispositivo. ¡Sé el primero en compartir tu experiencia!
+                    </div>
+                  )}
 
-                    {seccionActiva.detalleExtra && (
-                      <div className="rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 p-3.5 text-xs text-blue-900 dark:text-blue-300">
-                        <span className="font-bold">Detalle adicional: </span>
-                        <span>{seccionActiva.detalleExtra}</span>
+                  {/* Formulario unificado para publicar una opinión con calificación */}
+                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
+                    <span className="mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                      Publicar una opinión sobre este dispositivo
+                    </span>
+                    {!usuarioSesion ? (
+                      <div className="flex flex-col items-center justify-between gap-3 text-xs sm:flex-row">
+                        <p className="text-[var(--color-subtle)]">
+                          Debes iniciar sesión para publicar una opinión en la comunidad.
+                        </p>
+                        {onPedirLogin && (
+                          <button
+                            type="button"
+                            onClick={onPedirLogin}
+                            className={`shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                          >
+                            Identificarse para valorar
+                          </button>
+                        )}
                       </div>
+                    ) : (
+                      <form onSubmit={manejarGuardarResena} className="flex flex-col gap-3">
+                        {/* Selector de calificación de 1 a 5 estrellas */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                            Calificación:
+                          </span>
+                          <div
+                            role="group"
+                            aria-label="Calificación de 1 a 5 estrellas"
+                            className="flex items-center gap-1"
+                          >
+                            {[1, 2, 3, 4, 5].map((estrella) => {
+                              const activa = (hoverEstrella || puntuacionSeleccionada) >= estrella;
+                              return (
+                                <button
+                                  key={estrella}
+                                  type="button"
+                                  disabled={enviandoResena}
+                                  onClick={() => {
+                                    setPuntuacionSeleccionada(estrella);
+                                    setErrorResena("");
+                                  }}
+                                  onMouseEnter={() => setHoverEstrella(estrella)}
+                                  onMouseLeave={() => setHoverEstrella(0)}
+                                  aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
+                                  className={`cursor-pointer rounded p-1 text-xl leading-none transition-transform hover:scale-110 focus:outline-none disabled:opacity-50 ${CLASE_FOCO}`}
+                                >
+                                  <span
+                                    aria-hidden="true"
+                                    className={
+                                      activa
+                                        ? "text-[var(--color-star)]"
+                                        : "text-neutral-400 dark:text-neutral-500"
+                                    }
+                                  >
+                                    {activa ? "★" : "☆"}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                            {puntuacionSeleccionada > 0
+                              ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
+                              : "Selecciona de 1 a 5 estrellas"}
+                          </span>
+                        </div>
+
+                        <textarea
+                          rows={2}
+                          value={nuevaResenaTexto}
+                          onChange={(e) => setNuevaResenaTexto(e.target.value)}
+                          placeholder={`Comparte tu experiencia con ${ficha.nombre}...`}
+                          className="w-full resize-none rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30 sm:text-sm"
+                        />
+                        {terminosDetectados.length > 0 && (
+                          <AvisoTerminosResena />
+                        )}
+                        {errorResena && (
+                          <p className="text-xs text-red-700 font-medium" role="alert">
+                            ⚠️ {errorResena}
+                          </p>
+                        )}
+                        {exitoResena && (
+                          <p className="text-xs text-emerald-700 font-medium" role="status">
+                            ✓ {exitoResena}
+                          </p>
+                        )}
+                        <div className="flex justify-end">
+                          <button
+                            type="submit"
+                            disabled={enviandoResena || !nuevaResenaTexto.trim()}
+                            className={`rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${CLASE_FOCO}`}
+                          >
+                            {enviandoResena ? "Publicando..." : "Publicar opinión"}
+                          </button>
+                        </div>
+                      </form>
                     )}
                   </div>
-                </>
+                </div>
+              ) : pestanasSpecs.length > 0 && seccionActiva ? (
+                /* PANELES DE ESPECIFICACIONES TÉCNICAS */
+                <div
+                  id={`panel-${pestanaActiva}`}
+                  role="tabpanel"
+                  aria-labelledby={`tab-${pestanaActiva}`}
+                  className="space-y-3.5 mt-1"
+                >
+                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
+                    <h4 className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--color-ink)]">
+                      <span aria-hidden="true">{seccionActiva.icono}</span>
+                      <span>{seccionActiva.titulo}</span>
+                    </h4>
+                    <p className="text-sm leading-relaxed text-[var(--color-subtle)]">
+                      {seccionActiva.descripcion}
+                    </p>
+                  </div>
+
+                  {/* Desglose en tarjetas si la especificación incluye múltiples puntos delimitados por · */}
+                  {seccionActiva.descripcion.includes(" · ") && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {seccionActiva.descripcion
+                        .split(" · ")
+                        .map((parte) => parte.trim())
+                        .filter(Boolean)
+                        .map((parte, pIdx) => (
+                          <div
+                            key={pIdx}
+                            className="flex items-start gap-2.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3.5"
+                          >
+                            <span className="mt-0.5 text-sm font-semibold text-[var(--color-brand-blue)]">•</span>
+                            <span className="text-xs font-medium leading-relaxed text-[var(--color-ink)]">
+                              {parte}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {seccionActiva.detalleExtra && (
+                    <div className="rounded-xl border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/5 p-3.5 text-xs text-[var(--color-ink)]">
+                      <span className="font-bold">Detalle adicional: </span>
+                      <span>{seccionActiva.detalleExtra}</span>
+                    </div>
+                  )}
+                </div>
               ) : (
                 /* Estado vacío cuando el producto no tiene especificaciones registradas */
-                <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center bg-slate-50/50 dark:bg-slate-950/40 my-auto">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl mb-3">
-                    📋
+                <div className="my-auto rounded-card border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
-                  <h3 className="text-sm font-bold font-doto uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  <h3 className="text-sm font-semibold text-[var(--color-ink)]">
                     Sin especificaciones técnicas registradas
                   </h3>
-                  <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                  <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
                     Este producto no dispone de características técnicas detalladas registradas en el catálogo. Podrán ser asignadas a través del módulo de administración en una próxima actualización.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                  >
+                    <span aria-hidden="true">💬</span>
+                    <span>Ver opiniones de la comunidad ({resenasProducto.length})</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -487,10 +797,10 @@ export default function FichaTecnicaModal({
         </div>
 
         {/* Pie de modal */}
-        <div className="flex justify-end px-5 sm:px-7 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shrink-0">
+        <div className="flex shrink-0 justify-end border-t border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-3.5 sm:px-7">
           <button
             onClick={onClose}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
           >
             Cerrar ficha técnica
           </button>

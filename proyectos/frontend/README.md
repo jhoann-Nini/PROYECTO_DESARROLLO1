@@ -1,4 +1,4 @@
-# Frontend - TecnoReview (Nothing Movil UI)
+# Frontend - TecReview (Nothing Movil UI)
 
 Plataforma frontend desarrollada con **Next.js 16**, **React 19**, **TypeScript** y **Tailwind CSS**, con arquitectura orientada al consumo de servicios REST en Spring Boot y diseño industrial inspirado en **Nothing Phone (Nothing OS)** sobre la estructura comparativa de **Kimovil**.
 
@@ -41,6 +41,10 @@ proyectos/frontend/
 │   │   ├── globals.css         # Importación de fuentes Nothing, temas y utilidades
 │   │   ├── layout.tsx          # Layout raíz con metadata y soporte dark
 │   │   ├── page.tsx            # Página principal (Nothing Movil + Integración API)
+│   │   ├── categorias/
+│   │   │   └── [slug]/
+│   │   │       ├── page.tsx              # Ruta dinámica de categoría
+│   │   │       └── CategoriaPageContent.tsx  # Listado, búsqueda y orden por categoría
 │   │   └── productos/
 │   │       └── page.tsx        # Inspector de endpoint y payload JSON
 │   ├── components/
@@ -48,6 +52,8 @@ proyectos/frontend/
 │   │   └── ProductCard.tsx     # Tarjeta de catálogo de productos
 │   ├── data/
 │   │   └── mockProductos.ts    # Datos de respaldo técnico (fallback si la API está offline)
+│   ├── lib/
+│   │   └── categorias.ts       # Slugs navegables y resolución contra /api/categorias
 │   ├── services/
 │   │   └── api.ts              # Cliente HTTP centralizado (apiFetch, ApiError, obtenerProductos)
 │   └── types/
@@ -95,6 +101,25 @@ npm run build
 
 ---
 
+## 🗂️ Navegación por Categorías
+
+La fila de categorías de la página principal enlaza a páginas propias:
+
+| Categoría   | Ruta                     |
+|-------------|--------------------------|
+| Celulares   | `/categorias/celulares`   |
+| Tablets     | `/categorias/tablets`     |
+| Portátiles  | `/categorias/portatiles`  |
+| Auriculares | `/categorias/auriculares` |
+
+Cada página resuelve el slug contra los nombres reales de `GET /api/categorias`
+(sin asumir IDs fijos) y consulta `GET /api/productos?idCategoria=<id>`. Incluye
+búsqueda, orden por nombre/precio, ficha técnica, estados de carga, vacío y error
+con reintento. Si el backend no responde, la página muestra el error: no se usan
+datos simulados en las páginas de categoría.
+
+---
+
 ## 🧪 Pruebas de Integración (CP-05)
 
 - **Caso**: CP-05 - Consumir endpoint desde el frontend.
@@ -102,3 +127,16 @@ npm run build
   - Al iniciar el cliente, se dispara la solicitud HTTP `GET` a `${NEXT_PUBLIC_API_URL}/api/productos`.
   - Si el backend de Spring Boot se encuentra activo, los datos reales se inyectan en pantalla con el indicador `ONLINE (:8080)`.
   - Si el backend está apagado o en mantenimiento, el cliente activa el modo de prueba con datos simulados y advertencia informativa, garantizando tolerancia a fallos.
+
+### Datos de prueba del catálogo local
+
+`src/data/mockProductos.ts` incluye 4 productos de respaldo, uno por categoría:
+
+| Categoría   | Producto de prueba                     |
+|-------------|----------------------------------------|
+| Móviles     | Nothing Phone (2a) Special Edition     |
+| Tablets     | OnePlus Pad 2                          |
+| Portátiles  | Lenovo ThinkPad E14 Gen 5              |
+| Auriculares | Nothing Ear (2) Transparent White      |
+
+La categoría Monitores fue retirada de la navegación, de las fichas técnicas y de los formularios del panel administrativo.

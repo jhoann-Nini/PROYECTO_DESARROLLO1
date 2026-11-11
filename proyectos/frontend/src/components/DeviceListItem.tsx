@@ -4,6 +4,7 @@
 import { DispositivoKimovil } from "@/types/producto";
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
+import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 
 interface DeviceListItemProps {
   item: DispositivoKimovil;
@@ -12,7 +13,8 @@ interface DeviceListItemProps {
 }
 
 export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: DeviceListItemProps) {
-  const [imgSrc, setImgSrc] = useState(item.imagen);
+  const [errorImagen, setErrorImagen] = useState(false);
+  const tieneImagenValida = Boolean(item.imagen && item.imagen.trim().length > 0 && !errorImagen);
 
   const nombreSinMarca = item.nombre.toLowerCase().startsWith(item.marca.toLowerCase())
     ? item.nombre.slice(item.marca.length).trim()
@@ -25,12 +27,12 @@ export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: Dev
     >
       {/* Columna Izquierda: Ranking y Tendencia */}
       <div className="flex flex-col items-center justify-center min-w-[38px] border-r border-slate-200 dark:border-slate-800/80 pr-2.5 sm:pr-3 shrink-0">
-        <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-doto tracking-wider">
+        <span className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-wider">
           #{item.ranking}
         </span>
         <div className="mt-0.5 flex items-center text-[10px] font-bold">
           {item.ranking === 1 && esTopDeseado ? (
-            <span className="text-emerald-500 dark:text-emerald-400 font-doto flex items-center gap-0.5" title="Top Rendimiento">
+            <span className="text-emerald-500 dark:text-emerald-400 flex items-center gap-0.5" title="Top Rendimiento">
               ★ TOP
             </span>
           ) : item.tendencia === "sube" ? (
@@ -51,17 +53,22 @@ export default function DeviceListItem({ item, onVerDetalle, esTopDeseado }: Dev
 
       {/* Miniatura del Dispositivo */}
       <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0a0e17] p-1 flex items-center justify-center">
-        <img
-          src={imgSrc}
-          alt={`Imagen de ${item.nombre}`}
-          onError={() =>
-            setImgSrc(
-              "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80"
-            )
-          }
-          className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
+        {tieneImagenValida ? (
+          <img
+            src={item.imagen}
+            alt={`Imagen de ${item.nombre}`}
+            onError={() => setErrorImagen(true)}
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <ProductImagePlaceholder
+            categoria={item.categoria}
+            marca={item.marca}
+            nombre={item.nombre}
+            tamano="sm"
+          />
+        )}
         {item.descuento && (
           <span className="absolute bottom-0 right-0 rounded-tl-md bg-blue-600 px-1 py-0.2 text-[8px] font-bold text-white leading-tight font-sans">
             {item.descuento}

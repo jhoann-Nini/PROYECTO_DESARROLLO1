@@ -3,10 +3,12 @@ package com.example.backend.service;
 import com.example.backend.dto.UsuarioMeResponse;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,11 +22,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Servicio de aprovisionamiento Just-In-Time (JIT) y gestión del perfil del usuario autenticado.
- *
- * Implementa la creación segura de perfiles en public.usuario a partir de tokens Supabase ES256,
- * respetando el principio de Zero-Trust respecto a claims de rol del cliente y manejando
- * la concurrencia mediante transacciones aisladas.
+ * Aprovisionamiento Just-In-Time del perfil local a partir de un JWT de Supabase.
+ * Los roles se asignan desde el catálogo de la base de datos, nunca desde claims del cliente.
  */
 @Service
 public class UsuarioService {
@@ -42,18 +41,11 @@ public class UsuarioService {
         this.requiresNewTx.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     }
 
-    /**
-     * Obtiene el perfil del usuario autenticado o lo aprovisiona si es la primera vez que accede.
-     *
-     * @param jwt Token JWT validado por Spring Security
-     * @return DTO con los datos de negocio del usuario (sin contraseñas ni secretos)
-     */
     public UsuarioMeResponse obtenerOProveerUsuario(Jwt jwt) {
         if (jwt == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT de Supabase requerido.");
         }
 
-        // 1. Validar sub exclusivamente del token y verificar que sea un UUID válido
         String sub = jwt.getSubject();
         if (sub == null || sub.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El claim 'sub' es obligatorio en el token.");
@@ -64,29 +56,22 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El claim 'sub' debe ser un UUID válido.");
         }
 
-        // 2. Inspeccionar verificación de correo en los claims disponibles
         Boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (emailVerified != null && !emailVerified) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El correo electrónico asociado al token no ha sido verificado.");
         }
 
-        // 3. Buscar primero por supabase_uid
         Optional<Usuario> usuarioExistente = usuarioRepository.findBySupabaseUid(sub);
         if (usuarioExistente.isPresent()) {
             return toResponse(usuarioExistente.get());
         }
 
-        // 4. Obtener y validar el correo electrónico desde el claim 'email'
         String rawEmail = jwt.getClaimAsString("email");
         if (rawEmail == null || rawEmail.isBlank() || !rawEmail.contains("@")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El token debe contener un correo electrónico válido en el claim 'email'.");
         }
         final String email = rawEmail.trim().toLowerCase();
 
-        // 5. Verificar si existe cuenta previa con el mismo correo
-        // Regla de seguridad: Si existe una cuenta histórica sin supabase_uid o asociada a otro identificador,
-        // no vincular automáticamente sin autorización demostrada (409 Conflict).
-        // Si fue creada concurrentemente con este mismo sub, devolver su perfil.
         Optional<Usuario> usuarioPorCorreo = usuarioRepository.findByCorreo(email);
         if (usuarioPorCorreo.isPresent()) {
             Usuario u = usuarioPorCorreo.get();
@@ -96,35 +81,31 @@ public class UsuarioService {
             throw new ConflictException("Existe una cuenta previa registrada con el correo " + email + " sin vinculación segura al identificador de Supabase.");
         }
 
-        // 6. Asignar rol inicial "Usuario registrado" consultando RolRepository
-        // Regla de seguridad: No aceptar roles del cliente ni de user_metadata.
         Rol rolDefault = rolRepository.findByNombre("Usuario registrado")
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         "El rol predeterminado 'Usuario registrado' no existe en el sistema."
                 ));
 
-        // 7. Extraer nombre desde claims confiables o fallback al usuario/correo
-        String nombre = extraerNombre(jwt, email);
-
-        // 8. Crear y persistir el nuevo usuario
         Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setNombre(nombre);
+        nuevoUsuario.setNombre(extraerNombre(jwt, email));
         nuevoUsuario.setCorreo(email);
         nuevoUsuario.setSupabaseUid(sub);
-        nuevoUsuario.setRol(rolDefault);
+        nuevoUsuario.setRol(rolDefault); // compatibilidad temporal con usuario.id_rol
         nuevoUsuario.setEstado(true);
         nuevoUsuario.setFechaRegistro(LocalDateTime.now());
         nuevoUsuario.setPassword(null);
 
+        UsuarioRol asignacionInicial = new UsuarioRol();
+        asignacionInicial.setRol(rolDefault);
+        asignacionInicial.setEstado(true);
+        asignacionInicial.setFechaAsignacion(LocalDateTime.now());
+        nuevoUsuario.agregarRol(asignacionInicial);
+
         Usuario usuarioPersistido;
         try {
-            // Se ejecuta en una transacción aislada (REQUIRES_NEW) para no contaminar
-            // la transacción principal ante fallos de concurrencia.
             usuarioPersistido = requiresNewTx.execute(status -> usuarioRepository.saveAndFlush(nuevoUsuario));
         } catch (DataIntegrityViolationException ex) {
-            // Manejo de concurrencia: si dos peticiones simultáneas intentaron crear el mismo supabase_uid o correo,
-            // la segunda recupera el registro ya confirmado por la primera.
             usuarioPersistido = usuarioRepository.findBySupabaseUid(sub)
                     .orElseGet(() -> usuarioRepository.findByCorreo(email)
                             .filter(u -> sub.equals(u.getSupabaseUid()))
@@ -134,7 +115,6 @@ public class UsuarioService {
         if (usuarioPersistido == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No fue posible persistir el perfil de usuario.");
         }
-
         return toResponse(usuarioPersistido);
     }
 
@@ -158,30 +138,35 @@ public class UsuarioService {
     }
 
     private String truncarNombre(String nombre) {
-        if (nombre.length() > 150) {
-            return nombre.substring(0, 150);
-        }
-        return nombre;
+        return nombre.length() > 150 ? nombre.substring(0, 150) : nombre;
     }
 
     private UsuarioMeResponse toResponse(Usuario usuario) {
+        List<String> rolesActivos = usuario.getRoles() == null ? List.of() :
+                usuario.getRoles().stream()
+                        .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                        .map(UsuarioRol::getRol)
+                        .filter(rol -> rol != null && rol.getNombre() != null)
+                        .map(Rol::getNombre)
+                        .distinct()
+                        .sorted()
+                        .toList();
+
+        // No inferir permisos vigentes desde usuario.id_rol: puede ser un valor legado
+        // después de que la asignación multirrol haya sido revocada.
+        String rolPrincipal = rolesActivos.isEmpty() ? "Sin roles activos" : rolesActivos.get(0);
+
         return new UsuarioMeResponse(
                 usuario.getIdUsuario(),
                 usuario.getNombre(),
                 usuario.getCorreo(),
-                usuario.getRol() != null ? usuario.getRol().getNombre() : "Usuario registrado",
+                rolPrincipal,
                 usuario.getEstado(),
-                usuario.getFechaRegistro()
+                usuario.getFechaRegistro(),
+                rolesActivos
         );
     }
 
-    /**
-     * Obtiene la entidad Usuario autenticada a partir del token JWT validado por Spring Security,
-     * aprovisionándola JIT si es la primera vez que interactúa con el sistema.
-     *
-     * @param jwt Token JWT inyectado
-     * @return Entidad Usuario persistida
-     */
     public Usuario obtenerUsuarioDesdeJwt(Jwt jwt) {
         if (jwt == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token JWT de Supabase requerido.");
@@ -198,4 +183,3 @@ public class UsuarioService {
                 });
     }
 }
-

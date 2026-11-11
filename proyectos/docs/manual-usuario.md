@@ -210,6 +210,39 @@ La lista definitiva de categorías dependerá de los datos registrados durante e
 
 El usuario podrá seleccionar una categoría para consultar los productos relacionados.
 
+## 12.1 Navegación por categorías en el catálogo
+
+En la página principal, la fila de categorías funciona como acceso directo: al
+seleccionar un chip (por ejemplo, «Celulares») se abre una página propia de esa
+categoría.
+
+Cada página de categoría:
+
+- Muestra el nombre, la descripción y el número de productos encontrados.
+- Lista los productos reales registrados en el catálogo para esa categoría.
+- Permite buscar dentro de la categoría por nombre, marca o descripción.
+- Permite ordenar los resultados por nombre o por precio.
+- Abre la ficha técnica del producto al seleccionarlo.
+- Incluye un botón para volver al catálogo principal.
+
+Rutas disponibles:
+
+- `/categorias/celulares`
+- `/categorias/tablets`
+- `/categorias/portatiles`
+- `/categorias/auriculares`
+
+El botón «Todos» de la página principal no abre una página nueva: restablece el
+catálogo completo en la misma vista.
+
+Si una categoría no tiene productos registrados, la página lo indica en lugar de
+mostrar datos de ejemplo. Si el servidor no responde, se muestra un mensaje de
+error con la opción «Reintentar».
+
+El contenido de cada página depende de las categorías que existan realmente en la
+base de datos; si una categoría cambia de nombre o se elimina, la página puede
+mostrar «Categoría no encontrada».
+
 ---
 
 # 13. Consulta por marca

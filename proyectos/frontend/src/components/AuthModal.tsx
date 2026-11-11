@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UsuarioSesion } from "@/types/producto";
 import { createClient } from "@/lib/supabase/client";
 import { obtenerMiPerfil, mapearPerfilABusinessSession } from "@/services/api";
@@ -11,8 +11,35 @@ interface AuthModalProps {
   onLoginSuccess: (user: UsuarioSesion) => void;
 }
 
+const AUTH_REQUEST_TIMEOUT_MS = 20_000;
+
+/**
+ * Evita que la interfaz quede bloqueada si Supabase o el backend no responden.
+ * La petición original puede continuar en red, pero la UI recupera el control.
+ */
+async function esperarRespuestaAuth<T>(
+  peticion: Promise<T>,
+  mensaje: string,
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      peticion,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error(mensaje)),
+          AUTH_REQUEST_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
-  const [modo, setModo] = useState<"login" | "registro">("login");
+  const [modo, setModo] = useState<"login" | "registro" | "recuperar">("login");
 
   // Formulario Login
   const [loginEmail, setLoginEmail] = useState("");
@@ -31,15 +58,31 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  const manejarCierre = useCallback(() => {
+    setModo("login");
+    setLoginEmail("");
+    setLoginPassword("");
+    setRegNombre("");
+    setRegEmail("");
+    setRegUsuario("");
+    setRegPassword("");
+    setRegConfirmPassword("");
+    setRegTerminos(false);
+    setError("");
+    setExito("");
+    setCargando(false);
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !cargando) onClose();
+      if (e.key === "Escape" && !cargando) manejarCierre();
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, cargando]);
+  }, [isOpen, manejarCierre, cargando]);
 
   if (!isOpen) return null;
 
@@ -57,10 +100,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setCargando(true);
     try {
       const supabase = createClient();
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signInWithPassword({
         email: loginEmail.trim(),
         password: loginPassword,
-      });
+      }),
+      "El inicio de sesión está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("Invalid login credentials")) {
@@ -79,15 +125,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       }
 
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La autenticación respondió, pero el servidor de TecReview no confirmó tu perfil. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         loginExitoso = true;
         setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 600);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error
@@ -143,19 +190,22 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           ? `${window.location.origin}/auth/callback`
           : undefined;
 
-      const { data, error: authError } = await supabase.auth.signUp({
-        email: regEmail.trim(),
-        password: regPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            name: regNombre.trim(),
-            full_name: regNombre.trim(),
-            user_name: regUsuario.trim(),
-            usuario: regUsuario.trim(),
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signUp({
+          email: regEmail.trim(),
+          password: regPassword,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              name: regNombre.trim(),
+              full_name: regNombre.trim(),
+              user_name: regUsuario.trim(),
+              usuario: regUsuario.trim(),
+            },
           },
-        },
-      });
+        }),
+        "El registro está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("User already registered")) {
@@ -177,23 +227,25 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       if (!data.session?.access_token) {
         registroExitoso = true;
         setExito("¡Registro exitoso! Hemos enviado un enlace de confirmación a tu correo. Por favor revisa tu bandeja de entrada antes de iniciar sesión.");
-        setTimeout(() => {
-          onClose();
-        }, 3500);
+        // El registro terminó: salir del formulario de creación para que nunca
+        // permanezca visible el estado «Creando cuenta...».
+        setCargando(false);
+        setModo("login");
         return;
       }
 
       // Si Supabase devuelve la sesión activa de inmediato
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La cuenta se creó, pero TecReview no confirmó tu perfil a tiempo. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         registroExitoso = true;
         setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 800);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error
@@ -215,47 +267,93 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     }
   };
 
+  const manejarRecuperacion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setExito("");
+
+    const correo = loginEmail.trim();
+    if (!correo) {
+      setError("Escribe el correo electrónico asociado a tu cuenta.");
+      return;
+    }
+
+    setCargando(true);
+    try {
+      const supabase = createClient();
+      const { error: recoveryError } = await esperarRespuestaAuth(
+        supabase.auth.resetPasswordForEmail(correo, {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }),
+        "La solicitud está tardando demasiado. Inténtalo nuevamente.",
+      );
+
+      if (recoveryError) {
+        setError("No fue posible solicitar la recuperación. Verifica el correo e inténtalo nuevamente.");
+        return;
+      }
+
+      setExito("Si existe una cuenta asociada a ese correo, recibirás instrucciones para restablecer tu contraseña.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No fue posible solicitar la recuperación.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const claseInput =
+    "w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]";
+
   return (
     <div
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) manejarCierre();
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-xs animate-fadeIn"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl text-slate-900 dark:text-slate-100">
+      <div className="relative max-h-[calc(100vh-2rem)] w-full max-w-md animate-scale-in overflow-y-auto rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
         {/* Cabecera modal */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between border-b border-[var(--color-hairline)] pb-4">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-            <h2 id="auth-modal-title" className="font-doto text-base font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              ACCESO A <span className="text-blue-700 dark:text-blue-400">TECREVIEW</span>.
+            <span className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true" />
+            <h2 id="auth-modal-title" className="text-base font-semibold tracking-tight text-[var(--color-ink)]">
+              Acceso a <span className="text-[var(--color-brand-blue)]">TecReview</span>.
             </h2>
           </div>
           <button
-            onClick={onClose}
-            className="font-doto uppercase tracking-wider rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+            type="button"
+            onClick={manejarCierre}
+            className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
             aria-label="Cerrar modal de autenticación"
           >
-            ✕ CERRAR
+            ✕ Cerrar
           </button>
         </div>
 
         {/* Pestañas de Login / Registro */}
-        <div className="my-5 flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-950 p-1">
+        <div className="my-5 flex rounded-md bg-[var(--color-canvas)] p-1">
           <button
             type="button"
             onClick={() => {
               setModo("login");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex-1 cursor-pointer rounded-md py-2 text-xs font-semibold transition-all duration-200 ${
               modo === "login"
-                ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-[var(--color-paper)] text-[var(--color-brand-blue)] shadow-[var(--shadow-paper)]"
+                : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
             }`}
           >
             INICIAR SESIÓN
@@ -264,13 +362,21 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             type="button"
             onClick={() => {
               setModo("registro");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
-            className={`flex-1 rounded-lg py-2 text-xs font-bold font-doto uppercase tracking-wider transition-all cursor-pointer ${
+            className={`flex-1 cursor-pointer rounded-md py-2 text-xs font-semibold transition-all duration-200 ${
               modo === "registro"
-                ? "bg-white dark:bg-slate-800 text-blue-700 dark:text-blue-400 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-[var(--color-paper)] text-[var(--color-brand-blue)] shadow-[var(--shadow-paper)]"
+                : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
             }`}
           >
             CREAR CUENTA
@@ -279,12 +385,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
         {/* Notificaciones de error o éxito */}
         {error && (
-          <div className="mb-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/80 p-3 text-xs text-red-700 dark:text-red-300" role="alert">
+          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-800" role="alert">
             ⚠️ {error}
           </div>
         )}
         {exito && (
-          <div className="mb-4 rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/80 p-3 text-xs text-emerald-800 dark:text-emerald-300" role="status">
+          <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800" role="status">
             ✅ {exito}
           </div>
         )}
@@ -293,45 +399,111 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         {modo === "login" && (
           <form onSubmit={manejarLogin} className="space-y-4 text-xs">
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Correo electrónico (*)</label>
+              <label htmlFor="login-email" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Correo electrónico (*)
+              </label>
               <input
-                type="text"
+                id="login-email"
+                type="email"
+                autoComplete="email"
                 value={loginEmail}
                 onChange={(e) => setLoginEmail(e.target.value)}
                 placeholder="ejemplo@tecreview.com"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                className={claseInput}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Contraseña (*)</label>
+              <label htmlFor="login-password" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Contraseña (*)
+              </label>
               <input
+                id="login-password"
                 type="password"
+                autoComplete="current-password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2.5 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                className={claseInput}
                 required
               />
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="accent-blue-700 rounded" />
+            <div className="flex items-center justify-between text-[11px] text-[var(--color-subtle)]">
+              <label htmlFor="login-recordar" className="flex cursor-pointer items-center gap-2">
+                <input
+                  id="login-recordar"
+                  type="checkbox"
+                  className="rounded accent-[var(--color-brand-blue)]"
+                />
                 <span>Recordar sesión</span>
               </label>
-              <a href="#" className="hover:text-blue-700 dark:hover:text-blue-400 transition-colors">¿Olvidaste tu contraseña?</a>
+              <button
+                type="button"
+                onClick={() => {
+                  setModo("recuperar");
+                  setError("");
+                  setExito("");
+                }}
+                className="transition-colors hover:text-[var(--color-brand-blue)]"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
             </div>
 
             <button
               type="submit"
               disabled={cargando}
-              className={`w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs ${
-                cargando ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-all hover:bg-[var(--color-brand-solid)]/90 ${
+                cargando ? "cursor-not-allowed opacity-70" : "cursor-pointer"
               }`}
             >
               {cargando ? "Iniciando sesión..." : "Entrar a TecReview"}
+            </button>
+          </form>
+        )}
+
+
+        {/* FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA */}
+        {modo === "recuperar" && (
+          <form onSubmit={manejarRecuperacion} className="space-y-4 text-xs">
+            <p className="text-sm text-[var(--color-subtle)]">
+              Escribe tu correo y te enviaremos un enlace para crear una nueva contraseña.
+            </p>
+            <div>
+              <label htmlFor="recovery-email" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Correo electrónico
+              </label>
+              <input
+                id="recovery-email"
+                type="email"
+                autoComplete="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="ejemplo@tecreview.com"
+                className={claseInput}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={cargando}
+              className="w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {cargando ? "Enviando..." : "Enviar enlace de recuperación"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setModo("login");
+                setLoginEmail("");
+                setError("");
+                setExito("");
+              }}
+              className="w-full text-center text-xs font-semibold text-[var(--color-brand-blue)] hover:underline"
+            >
+              Volver a iniciar sesión
             </button>
           </form>
         )}
@@ -340,37 +512,49 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         {modo === "registro" && (
           <form onSubmit={manejarRegistro} className="space-y-3.5 text-xs">
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Nombre completo (*)</label>
+              <label htmlFor="reg-nombre" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Nombre completo (*)
+              </label>
               <input
+                id="reg-nombre"
                 type="text"
+                autoComplete="name"
                 value={regNombre}
                 onChange={(e) => setRegNombre(e.target.value)}
                 placeholder="Ej. Adrian Gómez"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-4 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
+                className={claseInput}
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Usuario (*)</label>
+                <label htmlFor="reg-usuario" className="mb-1 block font-medium text-[var(--color-ink)]">
+                  Usuario (*)
+                </label>
                 <input
+                  id="reg-usuario"
                   type="text"
+                  autoComplete="username"
                   value={regUsuario}
                   onChange={(e) => setRegUsuario(e.target.value)}
                   placeholder="adriang"
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
+                  className={claseInput}
                   required
                 />
               </div>
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Correo (*)</label>
+                <label htmlFor="reg-email" className="mb-1 block font-medium text-[var(--color-ink)]">
+                  Correo (*)
+                </label>
                 <input
+                  id="reg-email"
                   type="email"
+                  autoComplete="email"
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
                   placeholder="adrian@mail.com"
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
+                  className={claseInput}
                   required
                 />
               </div>
@@ -378,35 +562,44 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Contraseña (*)</label>
+                <label htmlFor="reg-password" className="mb-1 block font-medium text-[var(--color-ink)]">
+                  Contraseña (*)
+                </label>
                 <input
+                  id="reg-password"
                   type="password"
+                  autoComplete="new-password"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
+                  className={claseInput}
                   required
                 />
               </div>
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">Confirmar (*)</label>
+                <label htmlFor="reg-confirm" className="mb-1 block font-medium text-[var(--color-ink)]">
+                  Confirmar (*)
+                </label>
                 <input
+                  id="reg-confirm"
                   type="password"
+                  autoComplete="new-password"
                   value={regConfirmPassword}
                   onChange={(e) => setRegConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-blue-700 focus:outline-none"
+                  className={claseInput}
                   required
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 cursor-pointer pt-1">
+            <label htmlFor="reg-terminos" className="flex cursor-pointer items-center gap-2 pt-1 text-[11px] text-[var(--color-subtle)]">
               <input
+                id="reg-terminos"
                 type="checkbox"
                 checked={regTerminos}
                 onChange={(e) => setRegTerminos(e.target.checked)}
-                className="accent-blue-700 rounded"
+                className="rounded accent-[var(--color-brand-blue)]"
               />
               <span>Acepto los términos de servicio y normas de la comunidad.</span>
             </label>
@@ -414,8 +607,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             <button
               type="submit"
               disabled={cargando}
-              className={`w-full rounded-xl bg-blue-700 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 py-3 text-xs font-bold text-white transition-all shadow-xs ${
-                cargando ? "opacity-70 cursor-not-allowed" : "cursor-pointer"
+              className={`w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-all hover:bg-[var(--color-brand-solid)]/90 ${
+                cargando ? "cursor-not-allowed opacity-70" : "cursor-pointer"
               }`}
             >
               {cargando ? "Creando cuenta..." : "Crear mi cuenta"}

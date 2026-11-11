@@ -1,0 +1,579 @@
+// @vitest-environment happy-dom
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import type {
+  Producto,
+  ProductoMejorValorado,
+  UsuarioSesion,
+} from "@/types/producto";
+import type { ResenaResponse } from "@/services/api";
+import { REGLAS_RESENAS } from "@/data/resenas";
+
+const usuarioMock: UsuarioSesion = {
+  id: "auth-1",
+  nombre: "Ana Torres",
+  usuario: "ana",
+  email: "ana@example.com",
+  rol: "Usuario registrado",
+  idUsuario: 10,
+  activo: true,
+};
+
+const sesionMock = vi.hoisted(() => ({
+  usuario: null as UsuarioSesion | null,
+  cargando: false,
+  error: null as string | null,
+  establecerUsuario: vi.fn(),
+  limpiarError: vi.fn(),
+  cerrarSesion: vi.fn(),
+  reintentar: vi.fn(),
+}));
+
+vi.mock("@/hooks/useSesionTecReview", () => ({
+  useSesionTecReview: () => sesionMock,
+}));
+
+vi.mock("@/services/api", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/services/api")>();
+  return {
+    ...actual,
+    obtenerResenas: vi.fn(),
+    obtenerProductos: vi.fn(),
+    obtenerMejorValorados: vi.fn(),
+    crearResena: vi.fn(),
+    crearReporteResena: vi.fn(),
+  };
+});
+
+import {
+  ApiError,
+  crearResena,
+  crearReporteResena,
+  obtenerMejorValorados,
+  obtenerProductos,
+  obtenerResenas,
+} from "@/services/api";
+import ResenasCliente from "./ResenasCliente";
+
+const mockResenas = vi.mocked(obtenerResenas);
+const mockProductos = vi.mocked(obtenerProductos);
+const mockRanking = vi.mocked(obtenerMejorValorados);
+const mockCrear = vi.mocked(crearResena);
+const mockCrearReporte = vi.mocked(crearReporteResena);
+
+const PRODUCTOS: Producto[] = [
+  {
+    idProducto: 1,
+    nombre: "Galaxy S25",
+    descripcion: "Smartphone",
+    idCategoria: 1,
+    idMarca: 1,
+    imagen: null,
+    precioReferencia: 3_500_000,
+    estado: true,
+  },
+  {
+    idProducto: 2,
+    nombre: "iPhone 16",
+    descripcion: "Smartphone",
+    idCategoria: 1,
+    idMarca: 2,
+    imagen: null,
+    precioReferencia: 4_200_000,
+    estado: true,
+  },
+];
+
+const RESENAS: ResenaResponse[] = [
+  {
+    idResena: 1,
+    idProducto: 1,
+    nombreProducto: "Galaxy S25",
+    idUsuario: 10,
+    nombreUsuario: "Ana Torres",
+    comentario: "La batería me dura todo el día.",
+    fechaCreacion: "2026-10-20T12:00:00",
+    estado: true,
+  },
+  {
+    idResena: 2,
+    idProducto: 2,
+    nombreProducto: "iPhone 16",
+    idUsuario: 11,
+    nombreUsuario: "Luis Pérez",
+    comentario: "Cámara muy consistente.",
+    fechaCreacion: "2026-10-22T12:00:00",
+    estado: true,
+  },
+];
+
+const RANKING: ProductoMejorValorado[] = [
+  {
+    idProducto: 1,
+    nombre: "Galaxy S25",
+    descripcion: null,
+    idCategoria: 1,
+    idMarca: 1,
+    imagen: null,
+    precioReferencia: 3_500_000,
+    promedioPuntuacion: 4.5,
+    cantidadValoraciones: 12,
+    posicionRanking: 1,
+  },
+];
+
+function configurarExito() {
+  mockResenas.mockResolvedValue(RESENAS);
+  mockProductos.mockResolvedValue(PRODUCTOS);
+  mockRanking.mockResolvedValue(RANKING);
+}
+
+describe("ResenasCliente", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sesionMock.usuario = null;
+    sesionMock.establecerUsuario.mockClear();
+    configurarExito();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("muestra las reseñas reales y el resumen derivado", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    expect(screen.getByText("Cámara muy consistente.")).toBeDefined();
+    expect(screen.getByText("2 de 2 reseñas.")).toBeDefined();
+    expect(screen.getByText("Ana Torres")).toBeDefined();
+    expect(screen.getByText("Luis Pérez")).toBeDefined();
+    expect(
+      screen.getByRole("heading", { name: "Mejor valorados" }),
+    ).toBeDefined();
+    expect(screen.getByText("(12 opiniones)")).toBeDefined();
+  });
+
+  it("filtra por texto y por producto", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(
+      screen.getByLabelText("Buscar reseñas por comentario, autor o producto"),
+      { target: { value: "cámara" } },
+    );
+
+    expect(screen.getByText("Cámara muy consistente.")).toBeDefined();
+    expect(screen.queryByText("La batería me dura todo el día.")).toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Filtrar por producto"), {
+      target: { value: "1" },
+    });
+
+    expect(
+      screen.getByText("No encontramos reseñas con esos filtros."),
+    ).toBeDefined();
+  });
+
+  it("ordena por fecha ascendente", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Orden"), {
+      target: { value: "antiguas" },
+    });
+
+    const listado = screen.getByRole("list", {
+      name: "Listado de reseñas",
+    });
+    const items = within(listado).getAllByRole("listitem");
+    const textos = items.map((item) => item.textContent ?? "");
+    const indiceAna = textos.findIndex((texto) => texto.includes("Ana Torres"));
+    const indiceLuis = textos.findIndex((texto) =>
+      texto.includes("Luis Pérez"),
+    );
+
+    expect(indiceAna).toBeGreaterThanOrEqual(0);
+    expect(indiceLuis).toBeGreaterThanOrEqual(0);
+    expect(indiceAna).toBeLessThan(indiceLuis);
+  });
+
+  it("exige sesión para publicar y abre el modal de autenticación", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Quiero compartir mi experiencia." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
+
+    expect(
+      screen.getByText("Debes iniciar sesión para publicar una reseña."),
+    ).toBeDefined();
+    expect(mockCrear).not.toHaveBeenCalled();
+  });
+
+  it("publica una reseña con sesión y la agrega al listado", async () => {
+    sesionMock.usuario = usuarioMock;
+    const nueva: ResenaResponse = {
+      idResena: 99,
+      idProducto: 1,
+      nombreProducto: "Galaxy S25",
+      idUsuario: 10,
+      nombreUsuario: "Ana Torres",
+      comentario: "Mi nueva reseña.",
+      fechaCreacion: "2026-10-26T12:00:00",
+      estado: true,
+    };
+    mockCrear.mockResolvedValue(nueva);
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi nueva reseña." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
+
+    await waitFor(() => {
+      expect(mockCrear).toHaveBeenCalledWith({
+        idProducto: 1,
+        comentario: "Mi nueva reseña.",
+      });
+    });
+    expect(screen.getByText("Tu reseña fue publicada.")).toBeDefined();
+    expect(screen.getByText("Mi nueva reseña.")).toBeDefined();
+  });
+
+  it("muestra el mensaje oficial cuando la reseña ya existe (409)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.duplicada, 409),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Ya has valorado este producto. Puedes editar tu reseña existente.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
+  });
+
+  it("muestra el mensaje oficial al superar el límite por hora (429)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.limite, 429),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Has alcanzado el límite de 5 reseñas por hora. Intenta de nuevo más tarde.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
+  });
+
+  it("muestra el error de carga y permite reintentar", async () => {
+    mockResenas.mockRejectedValueOnce(
+      new ApiError("No fue posible conectarse con el servidor.", 500),
+    );
+
+    render(<ResenasCliente />);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.getAttribute("data-estado")).toBe("error");
+    expect(alerta.textContent).toContain("No pudimos cargar las reseñas");
+
+    fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+  });
+
+  it("muestra el estado vacío reutilizable cuando no hay reseñas", async () => {
+    mockResenas.mockResolvedValueOnce([]);
+
+    render(<ResenasCliente />);
+
+    const mensaje = await screen.findByText(
+      "Aún no hay reseñas registradas.",
+    );
+    expect(mensaje.closest('[data-estado="vacio"]')).not.toBeNull();
+  });
+
+  it("avisa preventivamente cuando el comentario contiene términos bloqueados", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "no simplemente hace esto es un timo" },
+    });
+
+    const aviso = screen
+      .getAllByRole("status")
+      .find((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+      ;
+    expect(aviso?.textContent).toBe(
+      "Tu reseña contiene términos que requieren revisión antes de publicarse."
+    );
+  });
+
+  it("quita el aviso cuando el texto queda limpio", async () => {    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+    fireEvent.change(area, { target: { value: "esto es un timo" } });
+    expect(
+      screen
+        .getAllByRole("status")
+        .some((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña")),
+    ).toBe(true);
+
+    fireEvent.change(area, { target: { value: "excelente producto" } });
+    expect(
+      screen
+        .queryAllByRole("status")
+        .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+        .length,
+    ).toBe(0);
+  });
+
+  it("no avisa con falsos positivos por subcadena y sí con términos reales", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+
+    fireEvent.change(area, {
+      target: { value: "la computadora y el último pedido funcionan bien" },
+    });
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
+
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("no borra el texto al rechazar una reseña con términos bloqueados", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/El comentario contiene palabras no permitidas/i),
+      ).toBeDefined();
+    });
+
+    expect(area.value).toBe("esto es una estafa");
+    expect(mockCrear).not.toHaveBeenCalled();
+  });
+
+  it("muestra editar y eliminar solo en las reseñas propias", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const listado = screen.getByRole("list", { name: "Listado de reseñas" });
+    const items = within(listado).getAllByRole("listitem");
+    const propia = items.find((item) =>
+      (item.textContent ?? "").includes("Ana Torres")
+    );
+    const ajena = items.find((item) =>
+      (item.textContent ?? "").includes("Luis Pérez")
+    );
+
+    expect(
+      within(propia as HTMLElement).getByRole("button", {
+        name: "Editar reseña",
+      })
+    ).toBeDefined();
+    expect(
+      within(propia as HTMLElement).getByRole("button", {
+        name: "Eliminar reseña",
+      })
+    ).toBeDefined();
+    expect(
+      within(ajena as HTMLElement).queryByRole("button", {
+        name: "Editar reseña",
+      })
+    ).toBeNull();
+  });
+
+  it("no muestra acciones de edición sin sesión", async () => {
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    expect(
+      screen.queryByRole("button", { name: "Editar reseña" })
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Eliminar reseña" })
+    ).toBeNull();
+    expect(
+      screen.getAllByRole("button", { name: "Reportar reseña" })
+    ).toHaveLength(2);
+  });
+
+  it("muestra Reportar en reseñas ajenas y no en las propias", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const listado = screen.getByRole("list", { name: "Listado de reseñas" });
+    const items = within(listado).getAllByRole("listitem");
+    const propia = items.find((item) =>
+      (item.textContent ?? "").includes("Ana Torres")
+    );
+    const ajena = items.find((item) =>
+      (item.textContent ?? "").includes("Luis Pérez")
+    );
+
+    expect(
+      within(propia as HTMLElement).queryByRole("button", {
+        name: "Reportar reseña",
+      })
+    ).toBeNull();
+    expect(
+      within(ajena as HTMLElement).getByRole("button", {
+        name: "Reportar reseña",
+      })
+    ).toBeDefined();
+  });
+
+  it("marca la reseña como reportada solo después de persistir el reporte", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrearReporte.mockResolvedValue(undefined);
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Cámara muy consistente.")).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Reportar reseña" })
+    );
+
+    const dialogo = screen.getByRole("dialog", { name: "Reportar reseña" });
+    fireEvent.click(within(dialogo).getByRole("radio", { name: "Spam" }));
+    fireEvent.click(
+      within(dialogo).getByRole("button", { name: "Enviar reporte" })
+    );
+
+    await waitFor(() => {
+      expect(mockCrearReporte).toHaveBeenCalledWith(2, { motivo: "spam" });
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(screen.getByText("Reporte enviado")).toBeDefined();
+    });
+    expect(
+      screen.queryByRole("button", { name: "Reportar reseña" })
+    ).toBeNull();
+  });
+});

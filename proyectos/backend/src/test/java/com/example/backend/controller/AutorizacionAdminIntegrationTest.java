@@ -24,6 +24,7 @@ import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
@@ -232,9 +233,16 @@ class AutorizacionAdminIntegrationTest {
         u.setNombre("Usuario " + rol.getNombre());
         u.setCorreo(email);
         u.setSupabaseUid(sub);
-        u.setRol(rol);
+        u.setRol(rol); // compatibilidad con usuario.id_rol
         u.setEstado(true);
         u.setFechaRegistro(LocalDateTime.now());
+
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        u.agregarRol(asignacion);
+
         return usuarioRepository.save(u);
     }
 
@@ -555,6 +563,60 @@ class AutorizacionAdminIntegrationTest {
 
         assertThat(marcaRepository.findById(marca.getIdMarca()).orElseThrow().getEstado())
                 .isFalse();
+    }
+
+    @Test
+    @DisplayName("T-07d: Una cuenta con varios roles conserva acceso administrativo mientras el rol Administrador esté activo")
+    void cuentaMultirrolConAdministradorActivoTienePermiso() throws Exception {
+        String sub = UUID.randomUUID().toString();
+        Usuario usuario = crearUsuario(sub, "admin.multirrol@tecreview.com", rolAdmin);
+
+        UsuarioRol rolAdicional = new UsuarioRol();
+        rolAdicional.setRol(rolUsuario);
+        rolAdicional.setEstado(true);
+        rolAdicional.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(rolAdicional);
+        usuarioRepository.save(usuario);
+
+        String token = generarToken(sub, "admin.multirrol@tecreview.com", null);
+        mockMvc.perform(post("/api/categorias")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"nombre\":\"Categoria Multirrol\",\"descripcion\":\"Prueba\"}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("T-07e: Revocar Administrador bloquea sus permisos aunque conserve otro rol activo")
+    void rolAdministradorRevocadoDeniegaAccesoYConservaOtrosRoles() throws Exception {
+        String sub = UUID.randomUUID().toString();
+        Usuario usuario = crearUsuario(sub, "admin.revocado@tecreview.com", rolAdmin);
+
+        UsuarioRol asignacionAdmin = usuario.getRoles().stream()
+                .filter(asignacion -> "Administrador".equals(asignacion.getRol().getNombre()))
+                .findFirst()
+                .orElseThrow();
+        asignacionAdmin.setEstado(false);
+
+        UsuarioRol rolAdicional = new UsuarioRol();
+        rolAdicional.setRol(rolUsuario);
+        rolAdicional.setEstado(true);
+        rolAdicional.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(rolAdicional);
+        usuarioRepository.save(usuario);
+
+        String token = generarToken(sub, "admin.revocado@tecreview.com", null);
+        mockMvc.perform(post("/api/categorias")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"nombre\":\"Categoria No Autorizada\",\"descripcion\":\"Prueba\"}"))
+                .andExpect(status().isForbidden());
+
+        Usuario recargado = usuarioRepository.findBySupabaseUid(sub).orElseThrow();
+        assertThat(recargado.getRoles())
+                .filteredOn(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                .extracting(asignacion -> asignacion.getRol().getNombre())
+                .containsExactly("Usuario registrado");
     }
 
     // --- 7. Flujo JIT Intacto (/api/usuarios/me) ---

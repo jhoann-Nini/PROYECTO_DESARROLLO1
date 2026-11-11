@@ -85,11 +85,14 @@ backend/
 | Marca            | DELETE | `/api/marcas/{id}`                 | Autorizado         |
 | Registro         | POST   | `/api/auth/register`               | Público            |
 | Login            | POST   | `/api/auth/login`                  | Público            |
+| Reseñas          | GET    | `/api/resenas`                     | Público            |
 | Reseñas          | GET    | `/api/productos/{id}/resenas`      | Público            |
+| Reseña           | POST   | `/api/resenas`                     | Usuario            |
 | Reseña           | POST   | `/api/productos/{id}/resenas`      | Usuario            |
 | Reseña           | PUT    | `/api/resenas/{id}`                | Usuario autorizado |
+| Reseña           | PUT    | `/api/productos/{id}/resenas/{idResena}` | Usuario autorizado |
 | Reseña           | DELETE | `/api/resenas/{id}`                | Usuario autorizado |
-| Valoración       | POST   | `/api/productos/{id}/valoraciones` | Usuario            |
+| Reseña           | DELETE | `/api/productos/{id}/resenas/{idResena}` | Usuario autorizado |
 | Comparación      | GET    | `/api/comparador`                  | Público            |
 | Establecimientos | GET    | `/api/establecimientos`            | Público            |
 | Establecimiento  | GET    | `/api/establecimientos/{id}`       | Público            |
@@ -142,8 +145,7 @@ Usuario
 Producto
 Categoria
 Marca
-Resena
-Valoracion
+Resena (incluye puntuación de 1 a 5)
 Establecimiento
 
 ---
@@ -294,6 +296,10 @@ GET /api/productos?idCategoria=1
 
 La implementación exacta de los parámetros podrá ajustarse durante el desarrollo.
 
+> **Uso actual en el frontend:** el filtro `idCategoria` ya se utiliza en las
+> páginas `/categorias/[slug]`. El frontend obtiene primero los IDs reales desde
+> `GET /api/categorias`, por lo que nunca envía un ID fijo ni inventado.
+
 ---
 
 # 9. Categorías
@@ -415,90 +421,155 @@ El mecanismo definitivo de autenticación deberá establecerse durante la implem
 
 # 13. Roles y autorización
 
-TecnoReview contempla los siguientes tipos de usuario:
+Los perfiles funcionales canónicos de TecReview son:
 
-VISITANTE
-USUARIO
-ADMINISTRADOR
-REPRESENTANTE_ESTABLECIMIENTO
+- `ADMINISTRADOR`
+- `MODERADOR`
+- `USUARIO_REGISTRADO`
+- `REPRESENTANTE_ESTABLECIMIENTO`
 
-Los permisos deben ser controlados desde el backend.
+Visitante representa acceso público y no es un rol persistido.
 
-No es suficiente ocultar botones en el frontend.
+Una cuenta puede tener varios roles simultáneamente. Los permisos efectivos corresponden a la unión de las capacidades de sus roles vigentes, sujetos al estado general de la cuenta, a la vigencia de cada asignación, al contexto del recurso, a los permisos específicos y a las reglas de conflicto de interés. El rol o los permisos nunca deben aceptarse desde el cuerpo de la solicitud como autoridad: el backend obtiene la identidad de un JWT validado y consulta el estado vigente de las asignaciones.
 
-Por ejemplo, aunque el frontend no muestre el botón de eliminar producto a un usuario normal, el backend también debe impedir:
+Para operaciones de representante, el backend debe comprobar además que exista un vínculo vigente entre la cuenta y el establecimiento objetivo y que la acción concreta esté permitida para ese vínculo. Tener el rol de representante no concede acceso global a todos los establecimientos.
 
-DELETE /api/productos/1
+La suspensión de una cuenta bloquea todos sus roles. La suspensión o revocación de un rol individual bloquea solo sus capacidades y conserva los demás roles vigentes. La suspensión del rol Administrador debe surtir efecto en todas las sesiones/dispositivos desde su confirmación; cada solicitud administrativa vuelve a validar el estado vigente. Una cuenta no puede autoasignarse, auto-reactivarse ni cambiar por API una asignación administrativa suspendida.
 
-si el usuario no tiene autorización.
+Los permisos se controlan en el backend. Ocultar botones en el frontend no sustituye la autorización del servidor. Las operaciones no autorizadas responden con `403 Forbidden`; las solicitudes sin autenticación válida responden con `401 Unauthorized`.
+
+**Estado de implementación:** este bloque describe el contrato funcional objetivo aprobado. El código actual todavía contiene una relación JPA de un único rol por usuario y no implementa la matriz completa de perfiles, vínculos y suspensión global; requiere migración y pruebas en una fase posterior.
 
 ---
 
 # 14. Reseñas
 
-Los usuarios registrados podrán crear reseñas sobre productos.
+Los usuarios registrados podrán crear, actualizar y eliminar reseñas sobre productos. La calificación (escala de 1 a 5) está integrada directamente en la reseña.
 
 ### 14.1 Consultar reseñas de un producto
 
 GET /api/productos/{productoId}/resenas
+GET /api/resenas (admite query param opcional ?idProducto={id})
 
-Ejemplo:
+Ejemplo de respuesta (200 OK):
 
-GET /api/productos/1/resenas
+[
+  {
+    "idResena": 1,
+    "idProducto": 1,
+    "nombreProducto": "Galaxy S25",
+    "idUsuario": 5,
+    "nombreUsuario": "Juan Pérez",
+    "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
+    "puntuacion": 5,
+    "fechaCreacion": "2026-11-01T15:30:00",
+    "estado": true
+  }
+]
 
-Ejemplo:
+### 14.2 Publicar reseña
 
+POST /api/resenas
+POST /api/productos/{productoId}/resenas
+
+Requiere encabezado `Authorization: Bearer <token_supabase>`.
+
+Cuerpo de la solicitud (JSON - ResenaRequest):
+
+```json
 {
-  "titulo": "Buena experiencia",
-  "comentario": "El producto tiene buen rendimiento para estudiar."
+  "idProducto": 1,
+  "comentario": "El producto tiene buen rendimiento para estudiar y trabajar.",
+  "puntuacion": 5
 }
+```
 
-El usuario debe estar autenticado.
+- `idProducto`: Obligatorio en `/api/resenas` (en `/api/productos/{productoId}/resenas` se extrae de la URL).
+- `comentario`: Obligatorio, no vacío, máx. 1000 caracteres.
+- `puntuacion`: Opcional, entero entre 1 y 5 (si no se proporciona o es nulo, se asigna 5 por defecto).
 
-El backend debe verificar que el usuario tenga permiso para modificar la reseña.
+### 14.3 Actualizar reseña por ID (S2-17)
 
-14.4 Eliminar reseña
-DELETE /api/resenas/{id}
+PUT /api/resenas/{idResena}  
+PUT /api/productos/{productoId}/resenas/{idResena}
 
-La autorización deberá validarse en el backend.
+Permite a un usuario autenticado modificar su propia reseña existente.
 
-Los usuarios podrán valorar los productos.
+**Seguridad y Reglas de Negocio:**
+- Requiere encabezado `Authorization: Bearer <token_supabase>`.
+- Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
+- Si la reseña con `idResena` no existe o está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Validación de producto:** En la ruta anidada `/api/productos/{productoId}/resenas/{idResena}`, se comprueba que la reseña pertenezca al `productoId` indicado en la URL; si no coincide, devuelve `404 Not Found`.
+- **Control de autoría:** Solo el autor original de la reseña (`idUsuario`) puede modificarla. Si otro usuario intenta editarla, el servidor devuelve `403 Forbidden` ("No tienes permiso para modificar esta reseña").
+- **Fecha de creación inmutable:** La actualización no modifica la fecha original de publicación (`fechaCreacion`).
+- **Validación de campos:**
+  - `comentario`: Obligatorio, no vacío, máx. 1000 caracteres.
+  - `puntuacion`: Opcional, entero entre 1 y 5 (si se omite, se conserva la puntuación previa).
 
-La escala exacta de valoración todavía debe definirse en el proyecto.
+**Cuerpo de la solicitud (JSON - ResenaUpdateRequest):**
 
-Por ejemplo, podría utilizarse:
-
-1 a 5
-
-Si se adopta esta escala, una solicitud podría tener:
-
-POST /api/productos/{productoId}/valoraciones
-
-Ejemplo:
-
+```json
 {
-  "valor": 5
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "puntuacion": 5
 }
+```
 
-El backend deberá validar que el valor recibido pertenezca a la escala establecida.
+**Respuesta exitosa (200 OK - ResenaResponse):**
 
-TecnoReview contempla el registro de aspectos positivos y negativos relacionados con un producto.
-
-La estructura definitiva todavía debe definirse en función de la implementación de reseñas.
-
-Una posibilidad sería:
-
+```json
 {
-  "positivos": [
-    "Buena batería",
-    "Pantalla de buena calidad"
-  ],
-  "negativos": [
-    "Cargador lento"
-  ]
+  "idResena": 1,
+  "idProducto": 1,
+  "nombreProducto": "Galaxy S25",
+  "idUsuario": 5,
+  "nombreUsuario": "Juan Pérez",
+  "comentario": "Comentario modificado con observaciones detalladas.",
+  "puntuacion": 5,
+  "fechaCreacion": "2026-11-01T15:30:00",
+  "estado": true
 }
+```
 
-La estructura final deberá mantenerse consistente con el modelo de datos y la interfaz definida para las reseñas.
+### 14.4 Eliminar reseña (S2-18)
+
+DELETE /api/resenas/{idResena}  
+DELETE /api/productos/{productoId}/resenas/{idResena}
+
+Permite eliminar (desactivar de forma lógica) una reseña existente.
+
+**Seguridad y Reglas de Negocio:**
+- Requiere encabezado `Authorization: Bearer <token_supabase>`.
+- Si la petición es anónima o carece de token válido, devuelve `401 Unauthorized`.
+- Si la reseña con `idResena` no existe o ya está inactiva (`estado = false`), devuelve `404 Not Found`.
+- **Validación de producto:** En la ruta anidada `/api/productos/{productoId}/resenas/{idResena}`, se comprueba que la reseña pertenezca al `productoId` indicado en la URL; si no coincide, devuelve `404 Not Found`.
+- **Control de autoría y moderación:**
+  - El autor original de la reseña (`idUsuario`) tiene autorización para eliminarla.
+  - Los usuarios con rol `Administrador` pueden eliminar cualquier reseña con fines de moderación.
+  - Si otro usuario sin permisos intenta eliminarla, el servidor devuelve `403 Forbidden` ("No tienes permiso para eliminar esta reseña").
+- **Eliminación lógica:** Se establece `estado = false` en `public.resena`, de modo que no aparezca en consultas públicas y se preserve la integridad referencial.
+- Responde `204 No Content` sin cuerpo en la respuesta.
+
+---
+
+### 14.5 Validación de la propiedad de las reseñas en el backend (S2-19)
+
+El backend aplica el principio de **Zero-Trust** y autorización rigurosa del lado del servidor para garantizar que las operaciones sobre reseñas respeten la autoría legítima:
+
+- **Asociación irrefutable en creación (`POST`):** La identidad del autor (`idUsuario`) se obtiene exclusivamente a partir del token JWT validado de Supabase. El cliente no puede inyectar un autor arbitrario en el cuerpo de la petición.
+- **Modificación exclusiva por el autor (`PUT`):** Solo el usuario propietario que creó originalmente la reseña tiene permiso para editarla. Cualquier intento por otro usuario autenticado es rechazado con código `403 Forbidden` (`"No tienes permiso para modificar esta reseña."`).
+- **Eliminación por el autor o Administrador (`DELETE`):** La eliminación (lógica con `estado = false`) solo puede ser ejecutada por el autor legítimo de la reseña o por un usuario con rol `Administrador` (para fines de moderación de contenido). Cualquier otro usuario recibe `403 Forbidden` (`"No tienes permiso para eliminar esta reseña."`).
+- **Control de estado del usuario:** Cuentas de usuario suspendidas o inactivas (`estado = false`) tienen prohibido registrar, modificar o eliminar reseñas, respondiendo con `403 Forbidden` (`"Usuario inactivo o suspendido."`).
+- **Denegación anónima:** Solicitudes sin token Bearer válido reciben de inmediato `401 Unauthorized`.
+- **Correspondencia de producto:** En las rutas anidadas `/api/productos/{productoId}/resenas/{idResena}`, el servidor verifica que la reseña pertenezca efectivamente al producto indicado en la URL, respondiendo `404 Not Found` en caso de discrepancia.
+
+---
+
+# 15. Valoraciones
+
+> **Nota:** La puntuación de productos utiliza una escala de 1 a 5 y está integrada directamente en cada **Reseña**. Por tanto, la calificación y el comentario forman una sola entidad y no se gestionan mediante endpoints independientes de valoraciones.
+
+---
 
 La plataforma permitirá comparar productos.
 
@@ -901,8 +972,8 @@ Los siguientes elementos se consideran inicialmente planificados:
  [x] Endpoints de categorías.
  [x] Endpoints de marcas.
  [ ] Endpoints de usuarios.
- [ ] Endpoints de reseñas.
- [ ] Endpoints de valoraciones.
+ [x] Endpoints de reseñas (con puntuación integrada de 1 a 5, S2-17, S2-18 y validación de propiedad S2-19).
+ [x] Valoraciones (unificadas en reseñas mediante el campo puntuacion).
  [ ] Endpoint de comparación.
  [ ] Endpoints de establecimientos.
  [ ] Pruebas de API.
@@ -947,3 +1018,97 @@ Versión: 1.0
 Estado: Borrador
 Última actualización: Pendiente
 Responsable: Equipo de desarrollo TecnoReview
+
+
+---
+
+# 26. Contrato objetivo de moderación de reportes
+
+## Estados y transiciones
+
+Los reportes de reseñas utilizan los estados `PENDIENTE`, `EN_REVISION`, `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO`.
+
+- Un reporte nuevo inicia en `PENDIENTE`.
+- Un moderador o administrador autorizado y sin conflicto puede iniciar la revisión.
+- Desde `EN_REVISION`, el caso puede resolverse como `PROCEDENTE` o `NO_PROCEDENTE`, o pasar a `ESCALADO`.
+- Un caso `ESCALADO` solo puede ser resuelto por un administrador autorizado sin conflicto de interés.
+- `PROCEDENTE` se cierra automáticamente solo después de registrar la decisión y aplicar correctamente la acción correctiva.
+- `NO_PROCEDENTE` se cierra automáticamente después de guardar la justificación.
+- Si la acción correctiva falla, el reporte no se cierra; se conserva para corrección y se registra el error.
+- El cierre conserva el reporte y todo su historial.
+
+## Autorización y auditoría
+
+Toda transición se valida en backend. Un usuario sin capacidad de moderación recibe `403 Forbidden` y no altera el reporte. Los intentos denegados se auditan sin guardar contraseñas, tokens ni secretos. El conflicto de interés bloquea la intervención del moderador y provoca el escalamiento; si no hay administrador disponible sin conflicto, el caso permanece escalado hasta que se asigne uno.
+
+## Endpoints
+
+El backend actual documenta e implementa el registro de reportes en `POST /api/resenas/{idResena}/reportes` y la consulta de los reportes propios en `GET /api/reportes/mis-reportes`. La API de asignación, revisión, transición de estados, resolución, escalamiento y consulta administrativa todavía debe definirse y construirse para cumplir el flujo objetivo. No se deben presentar esos endpoints administrativos como existentes hasta que se implementen y prueben.
+
+**Estado de implementación:** el flujo anterior es el contrato funcional aprobado, no una afirmación de que el ciclo completo de moderación esté disponible actualmente. El enum y las operaciones actuales del backend representan una versión parcial y deben alinearse en una fase posterior.
+
+En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.
+
+
+---
+
+# Endpoints administrativos de asignaciones (Fase 1)
+
+Todas las rutas de esta sección requieren un JWT de Supabase válido y una asignación activa del rol `Administrador`. El backend identifica al actor mediante el claim `sub`; el cliente no puede indicar quién realiza la operación.
+
+## Asignar o reactivar un rol
+
+`POST /api/admin/usuarios/{usuarioId}/roles/{rolId}`
+
+Cuerpo opcional:
+
+```json
+{ "motivo": "Asignación autorizada" }
+```
+
+- Respuesta: `201 Created`.
+- Rechaza usuarios inactivos, roles inexistentes y asignaciones que ya estén activas.
+- Si la pareja usuario/rol existe revocada, la reactiva y registra el evento `REACTIVADO`.
+
+## Revocar un rol
+
+`DELETE /api/admin/usuarios/{usuarioId}/roles/{rolId}`
+
+Cuerpo opcional: `{"motivo":"Cambio de responsabilidades"}`.
+
+- Respuesta: `204 No Content`.
+- Registra fecha, actor y motivo tanto en la asignación como en auditoría.
+- No permite revocar el último rol activo de Administrador.
+
+## Asignar o reactivar representante
+
+`POST /api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion`
+
+Cuerpo opcional:
+
+```json
+{ "motivo": "Representante autorizado" }
+```
+
+- Respuesta: `201 Created`.
+- Rechaza usuarios o establecimientos inactivos y asignaciones ya activas.
+- Reactiva una relación previamente revocada y registra el evento.
+
+## Revocar representante
+
+`DELETE /api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion`
+
+Cuerpo opcional: `{"motivo":"Fin de representación"}`.
+
+- Respuesta: `204 No Content`.
+- Registra fecha, actor y motivo; no elimina la relación ni los eventos anteriores.
+
+## Códigos de respuesta
+
+- `401 Unauthorized`: token ausente o inválido.
+- `403 Forbidden`: cuenta autenticada sin rol Administrador activo.
+- `404 Not Found`: usuario, rol, establecimiento o asignación inexistente.
+- `409 Conflict`: operación duplicada, recurso inactivo o intento de retirar el último administrador.
+- `201 Created` / `204 No Content`: operación exitosa.
+
+**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.

@@ -2,6 +2,8 @@ package com.example.backend.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "establecimiento")
@@ -36,6 +38,16 @@ public class Establecimiento {
     @Column(nullable = false)
     private Boolean estado = true;
 
+    /**
+     * Relación heredada establecimiento.id_usuario, conservada durante la transición.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", insertable = false, updatable = false)
+    private Usuario usuarioLegado;
+
+    @OneToMany(mappedBy = "establecimiento", cascade = CascadeType.ALL)
+    private List<UsuarioEstablecimiento> representantes = new ArrayList<>();
+
     public Long getIdEstablecimiento() { return idEstablecimiento; }
     public void setIdEstablecimiento(Long idEstablecimiento) { this.idEstablecimiento = idEstablecimiento; }
     public String getNombre() { return nombre; }
@@ -54,4 +66,8 @@ public class Establecimiento {
     public void setLongitud(BigDecimal longitud) { this.longitud = longitud; }
     public Boolean getEstado() { return estado; }
     public void setEstado(Boolean estado) { this.estado = estado; }
+    public Usuario getUsuarioLegado() { return usuarioLegado; }
+    public void setUsuarioLegado(Usuario usuarioLegado) { this.usuarioLegado = usuarioLegado; }
+    public List<UsuarioEstablecimiento> getRepresentantes() { return representantes; }
+    public void setRepresentantes(List<UsuarioEstablecimiento> representantes) { this.representantes = representantes; }
 }

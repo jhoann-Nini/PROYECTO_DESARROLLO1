@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockGetSession = vi.fn();
@@ -526,6 +527,50 @@ describe("api.ts - Cliente API del frontend", () => {
         crearResena({ idProducto: 10, comentario: "Intento anónimo" }),
       ).rejects.toThrow(ApiError);
     });
+
+    it("debe enviar puntuacion y comentario en el payload JSON a POST /api/resenas", async () => {
+      const { crearResena } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-usuario-valido" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({
+          idResena: 6,
+          idProducto: 12,
+          nombreProducto: "Nothing Phone (2a)",
+          idUsuario: 3,
+          nombreUsuario: "TechFan",
+          comentario: "Excelente producto",
+          puntuacion: 5,
+          fechaCreacion: "2026-10-16T12:00:00",
+          estado: true,
+        }),
+      } as unknown as Response);
+
+      const resena = await crearResena({
+        idProducto: 12,
+        comentario: "Excelente producto",
+        puntuacion: 5,
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/resenas",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.any(Headers),
+          body: JSON.stringify({
+            idProducto: 12,
+            comentario: "Excelente producto",
+            puntuacion: 5,
+          }),
+        }),
+      );
+      expect(resena.puntuacion).toBe(5);
+    });
   });
 
   describe("Servicios CRUD de Productos (Fase 3.1)", () => {
@@ -911,7 +956,7 @@ describe("api.ts - Cliente API del frontend", () => {
       const ofertasEsperadas = [
         {
           idProducto: 10,
-          nombre: "Monitor Gaming 144Hz",
+          nombre: "Laptop Gaming 144Hz",
           precioReferencia: 400,
           precioActual: 300,
           ahorroMonetario: 100,
@@ -957,66 +1002,6 @@ describe("api.ts - Cliente API del frontend", () => {
   });
 
   describe("Servicios de Valoraciones (Fase 4.6)", () => {
-    it("crearValoracion debe enviar POST /api/valoraciones con token Bearer", async () => {
-      const { crearValoracion } = await loadApi(DEFAULT_API_URL);
-      mockGetSession.mockResolvedValue({
-        data: { session: { access_token: "token-usuario-validador" } },
-        error: null,
-      });
-
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        status: 201,
-        json: async () => ({
-          idValoracion: 8,
-          idProducto: 1,
-          nombreProducto: "Samsung Galaxy S24 Ultra",
-          idUsuario: 3,
-          nombreUsuario: "Comprador",
-          puntuacion: 5,
-          fechaCreacion: "2026-10-20T10:00:00",
-          estado: true,
-        }),
-      } as unknown as Response);
-
-      const resultado = await crearValoracion({ idProducto: 1, puntuacion: 5 });
-      expect(fetchMock).toHaveBeenCalledWith(
-        "http://localhost:8080/api/valoraciones",
-        expect.objectContaining({
-          method: "POST",
-          headers: expect.any(Headers),
-          body: JSON.stringify({ idProducto: 1, puntuacion: 5 }),
-        }),
-      );
-
-      const headers = fetchMock.mock.calls[0][1]?.headers as Headers;
-      expect(headers.get("Authorization")).toBe("Bearer token-usuario-validador");
-      expect(headers.get("Content-Type")).toBe("application/json");
-      expect(resultado.puntuacion).toBe(5);
-    });
-
-    it("crearValoracion debe rechazar puntuaciones fuera del rango 1 a 5 antes de invocar la red", async () => {
-      const { crearValoracion, ApiError } = await loadApi(DEFAULT_API_URL);
-      mockGetSession.mockResolvedValue({
-        data: { session: { access_token: "token-usuario-validador" } },
-        error: null,
-      });
-
-      await expect(crearValoracion({ idProducto: 1, puntuacion: 0 })).rejects.toThrow(ApiError);
-      await expect(crearValoracion({ idProducto: 1, puntuacion: 6 })).rejects.toThrow(ApiError);
-      expect(fetchMock).not.toHaveBeenCalled();
-    });
-
-    it("crearValoracion debe rechazar si no hay sesión activa", async () => {
-      const { crearValoracion, ApiError } = await loadApi(DEFAULT_API_URL);
-      mockGetSession.mockResolvedValue({
-        data: { session: null },
-        error: null,
-      });
-
-      await expect(crearValoracion({ idProducto: 1, puntuacion: 4 })).rejects.toThrow(ApiError);
-    });
-
     it("obtenerMiValoracion debe consultar GET /api/valoraciones/mi-valoracion y retornar la valoración", async () => {
       const { obtenerMiValoracion } = await loadApi(DEFAULT_API_URL);
       mockGetSession.mockResolvedValue({
@@ -1068,6 +1053,175 @@ describe("api.ts - Cliente API del frontend", () => {
 
       const resNoContent = await obtenerMiValoracion(5);
       expect(resNoContent).toBeNull();
+    });
+  });
+
+  describe("descargarCatalogoCsv - Exportación CSV", () => {
+    it("debe fallar si no hay sesión activa de Supabase", async () => {
+      const { descargarCatalogoCsv, ApiError } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: null },
+        error: null,
+      });
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(ApiError);
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No se encontró una sesión de autenticación activa",
+      );
+    });
+
+    it("debe enviar Authorization Bearer y descargar el Blob con nombre de Content-Disposition", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin-123" } },
+        error: null,
+      });
+
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Samsung"], { type: "text/csv" });
+      const headers = new Headers();
+      headers.set("Content-Disposition", 'attachment; filename="catalogo_productos_20261021.csv"');
+      headers.set("Content-Type", "text/csv; charset=UTF-8");
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers,
+        blob: async () => fakeBlob,
+      } as unknown as Response);
+
+      const resultado = await descargarCatalogoCsv();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/exportar-csv",
+        expect.objectContaining({
+          method: "GET",
+          headers: expect.objectContaining({
+            Authorization: "Bearer token-admin-123",
+          }),
+        }),
+      );
+
+      expect(resultado.nombreArchivo).toBe("catalogo_productos_20261021.csv");
+      expect(resultado.blob).toBe(fakeBlob);
+    });
+
+    it("debe usar nombre por defecto si no hay cabecera Content-Disposition", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin-123" } },
+        error: null,
+      });
+
+      const fakeBlob = new Blob(["id_producto,nombre\n1,Samsung"], { type: "text/csv" });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        blob: async () => fakeBlob,
+      } as unknown as Response);
+
+      const resultado = await descargarCatalogoCsv();
+      expect(resultado.nombreArchivo).toBe("catalogo_productos.csv");
+    });
+
+    it("debe rechazar con mensaje adecuado si el servidor responde 403 Forbidden", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-no-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: async () => ({ message: "Acceso denegado" }),
+      } as unknown as Response);
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No tienes permisos de administrador para exportar el catálogo",
+      );
+    });
+
+    it("debe rechazar con mensaje adecuado si falla la red", async () => {
+      const { descargarCatalogoCsv } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValueOnce({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+
+      fetchMock.mockRejectedValueOnce(new Error("Network connection error"));
+
+      await expect(descargarCatalogoCsv()).rejects.toThrow(
+        "No fue posible conectarse con el servidor para exportar el catálogo",
+      );
+    });
+  });
+
+  describe("dispararDescargaArchivo", () => {
+    it("crea un enlace temporal y simula el click para descargar el archivo", async () => {
+      const { dispararDescargaArchivo } = await loadApi(DEFAULT_API_URL);
+      const fakeBlob = new Blob(["test"], { type: "text/csv" });
+
+      const createObjectURLMock = vi.fn().mockReturnValue("blob:http://localhost/test-uuid");
+      const revokeObjectURLMock = vi.fn();
+      vi.stubGlobal("URL", {
+        createObjectURL: createObjectURLMock,
+        revokeObjectURL: revokeObjectURLMock,
+      });
+
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+      const appendChildSpy = vi.spyOn(document.body, "appendChild");
+      const removeChildSpy = vi.spyOn(document.body, "removeChild");
+
+      dispararDescargaArchivo(fakeBlob, "test.csv");
+
+      expect(createObjectURLMock).toHaveBeenCalledWith(fakeBlob);
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+      expect(appendChildSpy).toHaveBeenCalled();
+      expect(removeChildSpy).toHaveBeenCalled();
+      expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:http://localhost/test-uuid");
+    });
+  });
+
+  describe("obtenerProductosPorCategoria", () => {
+    it("debe consultar /api/productos?idCategoria=<id> con el identificador real", async () => {
+      const { obtenerProductosPorCategoria } = await loadApi(DEFAULT_API_URL);
+      const productos = [{ idProducto: 1, nombre: "Equipo" }];
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => productos,
+      } as unknown as Response);
+
+      const resultado = await obtenerProductosPorCategoria(17);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos?idCategoria=17",
+      );
+      expect(resultado).toEqual(productos);
+    });
+
+    it("debe rechazar identificadores inválidos sin llamar a la API", async () => {
+      const { obtenerProductosPorCategoria, ApiError } = await loadApi(DEFAULT_API_URL);
+
+      await expect(obtenerProductosPorCategoria(0)).rejects.toBeInstanceOf(ApiError);
+      await expect(obtenerProductosPorCategoria(-4)).rejects.toBeInstanceOf(ApiError);
+      await expect(obtenerProductosPorCategoria(1.5)).rejects.toBeInstanceOf(ApiError);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("debe lanzar ApiError cuando la respuesta no es una lista", async () => {
+      const { obtenerProductosPorCategoria, ApiError } = await loadApi(DEFAULT_API_URL);
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ productos: [] }),
+      } as unknown as Response);
+
+      await expect(obtenerProductosPorCategoria(3)).rejects.toBeInstanceOf(ApiError);
     });
   });
 });

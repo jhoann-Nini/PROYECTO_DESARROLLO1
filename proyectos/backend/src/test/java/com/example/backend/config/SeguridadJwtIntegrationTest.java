@@ -15,6 +15,7 @@ import com.example.backend.entity.Categoria;
 import com.example.backend.entity.Marca;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.RolRepository;
@@ -143,6 +144,14 @@ class SeguridadJwtIntegrationTest {
         Marca marca = new Marca();
         marca.setNombre("Marca Test " + System.nanoTime());
         this.idMarcaValida = marcaRepository.save(marca).getIdMarca();
+    }
+
+    private void asignarRolActivo(Usuario usuario, Rol rol) {
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(asignacion);
     }
 
     private String generarToken(String issuer, String audience, Date expiration, ECPrivateKey signingKey) throws Exception {
@@ -328,6 +337,7 @@ class SeguridadJwtIntegrationTest {
         admin.setCorreo("admin.test@tecreview.com");
         admin.setSupabaseUid(TEST_SUB);
         admin.setRol(rolAdmin);
+        asignarRolActivo(admin, rolAdmin);
         admin.setEstado(true);
         admin.setFechaRegistro(LocalDateTime.now());
         usuarioRepository.save(admin);

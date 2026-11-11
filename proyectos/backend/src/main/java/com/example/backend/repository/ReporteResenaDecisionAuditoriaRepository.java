@@ -9,5 +9,5 @@ public interface ReporteResenaDecisionAuditoriaRepository
         extends JpaRepository<ReporteResenaDecisionAuditoria, Long> {
 
     @EntityGraph(attributePaths = {"moderador"})
-    List<ReporteResenaDecisionAuditoria> findByReporteIdReporteOrderByFechaEventoDesc(Long idReporte);
+    List<ReporteResenaDecisionAuditoria> findByReporteIdReporteOrderByFechaEventoDescIdAuditoriaDesc(Long idReporte);
 }

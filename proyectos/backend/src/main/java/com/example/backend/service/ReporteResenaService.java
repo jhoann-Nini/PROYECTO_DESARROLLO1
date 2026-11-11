@@ -238,7 +238,7 @@ public class ReporteResenaService {
             throw new ResourceNotFoundException("Reporte no encontrado con id " + idReporte);
         }
 
-        return decisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(idReporte)
+        return decisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDescIdAuditoriaDesc(idReporte)
                 .stream()
                 .map(evento -> new ReporteResenaDecisionAuditoriaResponse(
                         evento.getIdAuditoria(),

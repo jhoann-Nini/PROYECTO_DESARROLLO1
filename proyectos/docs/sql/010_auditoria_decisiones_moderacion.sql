@@ -25,6 +25,16 @@ BEGIN
         RAISE EXCEPTION 'Preflight fallido: debe estar aplicada la migración 007_moderacion_reportes.';
     END IF;
 
+    IF NOT EXISTS (
+        SELECT 1 FROM public.schema_version
+        WHERE version = '008_multirole_y_representantes'
+    ) OR NOT EXISTS (
+        SELECT 1 FROM public.schema_version
+        WHERE version = '009_auditoria_asignaciones'
+    ) THEN
+        RAISE EXCEPTION 'Preflight fallido: deben estar aplicadas las migraciones 008 y 009 de Fase 1.';
+    END IF;
+
     IF to_regclass('public.resena') IS NULL OR to_regclass('public.usuario') IS NULL
        OR to_regclass('public.reporte_resena') IS NULL
        OR to_regclass('public.usuario_rol') IS NULL THEN

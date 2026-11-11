@@ -11,6 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.backend.config.SecurityConfig;
 import com.example.backend.entity.Categoria;
+import com.example.backend.entity.EstadoReporte;
+import com.example.backend.entity.ReporteResena;
+import com.example.backend.entity.Resena;
 import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Rol;
@@ -20,6 +23,7 @@ import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
+import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import com.nimbusds.jose.JOSEObjectType;
@@ -94,6 +98,9 @@ class ResenaSecurityIntegrationTest {
 
     @Autowired
     private ResenaRepository resenaRepository;
+
+    @Autowired
+    private ReporteResenaRepository reporteResenaRepository;
 
     private MockMvc mockMvc;
     private Long idProductoValido;
@@ -189,6 +196,124 @@ class ResenaSecurityIntegrationTest {
         SignedJWT signedJWT = new SignedJWT(header, claims);
         signedJWT.sign(new ECDSASigner(testPrivateKey));
         return signedJWT.serialize();
+    }
+
+
+    private Usuario crearUsuarioConRol(String sub, String correo, String nombreRol) {
+        Rol rol = rolRepository.findByNombre(nombreRol).orElseGet(() -> {
+            Rol nuevo = new Rol();
+            nuevo.setNombre(nombreRol);
+            nuevo.setDescripcion("Rol para pruebas de seguridad");
+            return rolRepository.save(nuevo);
+        });
+        Usuario usuario = new Usuario();
+        usuario.setNombre("Usuario " + nombreRol);
+        usuario.setCorreo(correo);
+        usuario.setSupabaseUid(sub);
+        usuario.setRol(rol);
+        usuario.setEstado(true);
+        usuario.setFechaRegistro(LocalDateTime.now());
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(asignacion);
+        return usuarioRepository.saveAndFlush(usuario);
+    }
+
+    private ReporteResena crearReportePendiente() {
+        Usuario reportante = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        Usuario autor = crearUsuarioConRol(
+                "f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f90a1",
+                "autor_moderacion@example.com",
+                "Usuario registrado");
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña reportada para prueba de moderación");
+        resena.setPuntuacion(1);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+
+        ReporteResena reporte = new ReporteResena();
+        reporte.setUsuario(reportante);
+        reporte.setResena(resena);
+        reporte.setMotivo("spam");
+        reporte.setEstado(EstadoReporte.PENDIENTE);
+        reporte.setFechaCreacion(LocalDateTime.now());
+        reporte.setFechaActualizacion(LocalDateTime.now());
+        return reporteResenaRepository.saveAndFlush(reporte);
+    }
+
+    @Test
+    @DisplayName("La bandeja de moderación rechaza al usuario ordinario")
+    void usuarioOrdinarioNoPuedeConsultarBandejaModeracion() throws Exception {
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+        mockMvc.perform(get("/api/moderacion/reportes")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("El moderador puede consultar la bandeja y avanzar un reporte")
+    void moderadorPuedeRevisarYResolverReporte() throws Exception {
+        String subModerador = "a7b8c9d0-e1f2-3a4b-5c6d-7e8f90a1b2c3";
+        crearUsuarioConRol(subModerador, "moderador_test@example.com", "Moderador");
+        ReporteResena reporte = crearReportePendiente();
+        String token = generarToken(subModerador, "moderador_test@example.com");
+
+        mockMvc.perform(get("/api/moderacion/reportes")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idReporte").value(reporte.getIdReporte()));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                                "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                        .header("Authorization", "Bearer " + token)
+                        .param("estado", "EN_REVISION"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("EN_REVISION"));
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                                "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                        .header("Authorization", "Bearer " + token)
+                        .param("estado", "ACEPTADO"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.estado").value("ACEPTADO"));
+    }
+
+    @Test
+    @DisplayName("El moderador no puede moderar un reporte que él mismo creó")
+    void moderadorNoPuedeResolverSuPropioReporte() throws Exception {
+        String subModerador = "b8c9d0e1-f2a3-4b5c-6d7e-8f90a1b2c3d4";
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_autoreporte@example.com", "Moderador");
+        Resena resena = new Resena();
+        Usuario autor = crearUsuarioConRol(
+                "c9d0e1f2-a3b4-5c6d-7e8f-90a1b2c3d4e5",
+                "autor_autoreporte@example.com",
+                "Usuario registrado");
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña para reporte propio");
+        resena.setPuntuacion(2);
+        resena.setEstado(true);
+        resena = resenaRepository.saveAndFlush(resena);
+        ReporteResena reporte = new ReporteResena();
+        reporte.setUsuario(moderador);
+        reporte.setResena(resena);
+        reporte.setMotivo("spam");
+        reporte.setEstado(EstadoReporte.PENDIENTE);
+        reporte.setFechaCreacion(LocalDateTime.now());
+        reporte.setFechaActualizacion(LocalDateTime.now());
+        reporte = reporteResenaRepository.saveAndFlush(reporte);
+        String token = generarToken(subModerador, "moderador_autoreporte@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                                "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                        .header("Authorization", "Bearer " + token)
+                        .param("estado", "EN_REVISION"))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -6,6 +6,8 @@ import java.util.Optional;
 import com.example.backend.entity.EstadoReporte;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 
 public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Long> {
 
@@ -29,6 +31,7 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
     /**
      * Consulta un reporte y carga sus relaciones para aplicar las reglas de moderación.
      */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @EntityGraph(attributePaths = {"resena", "usuario"})
     Optional<ReporteResena> findWithResenaAndUsuarioByIdReporte(Long idReporte);
 }

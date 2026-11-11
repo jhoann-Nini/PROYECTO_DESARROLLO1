@@ -63,7 +63,8 @@ BEGIN
         RETURN NEW;
     END IF;
 
-    IF NEW.id_responsable IS NOT NULL THEN
+    IF NEW.id_responsable IS NOT NULL
+       AND NEW.id_responsable IS DISTINCT FROM OLD.id_responsable THEN
         SELECT EXISTS (
             SELECT 1
             FROM public.usuario u

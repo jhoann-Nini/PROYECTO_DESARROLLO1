@@ -6,6 +6,8 @@ import com.example.backend.entity.Resena;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +32,10 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
     List<Resena> findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(@Param("idProducto") Long idProducto);
 
     Optional<Resena> findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(Long idUsuario, Long idProducto);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT r FROM Resena r JOIN FETCH r.usuario WHERE r.idResena = :idResena")
+    Optional<Resena> findByIdForModeration(@Param("idResena") Long idResena);
 
     @Query("SELECT new com.example.backend.dto.ResenaStats(r.producto.idProducto, COUNT(r.idResena)) " +
            "FROM Resena r " +

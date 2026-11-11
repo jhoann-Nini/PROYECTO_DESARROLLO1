@@ -44,7 +44,7 @@ El script es de solo lectura. Verifica el registro de la migración, las funcion
 - Reasignación por Administrador con asignación activa y rechazo tras revocación.
 - Responsable Moderador con rol heredado Usuario, pero asignación multirrol activa.
 - Rechazo de un actor suspendido o con rol revocado.
-- Rechazo de autorreporte/aut moderación.
+- Rechazo de autorreporte y automoderación.
 - Rechazo de cambio de estado sin evento de auditoría en la misma transacción.
 - Rechazo de evento sin cambio correspondiente del recurso.
 - Aceptación de transición con evento coincidente dentro de la transacción.

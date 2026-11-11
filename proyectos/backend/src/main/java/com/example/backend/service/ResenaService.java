@@ -194,7 +194,8 @@ public class ResenaService {
      */
     @Transactional
     public void actualizarOcultamientoModeracion(Long idResena, ModeracionResenaRequest request, Jwt jwt) {
-        if (idResena == null || request == null || request.motivo() == null || request.motivo().isBlank()) {
+        if (idResena == null || request == null || request.ocultar() == null
+                || request.motivo() == null || request.motivo().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La reseña y la justificación son obligatorias.");
         }
 

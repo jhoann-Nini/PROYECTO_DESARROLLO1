@@ -32,6 +32,11 @@ BEGIN
         RAISE EXCEPTION 'FALLO: fn_validar_transicion_moderacion no usa asignaciones multirrol activas.';
     END IF;
 
+    SELECT pg_get_functiondef('public.fn_proteger_rol_administrador()'::regprocedure) INTO v_def;
+    IF position('fn_usuario_tiene_rol_activo' IN v_def) = 0 THEN
+        RAISE EXCEPTION 'FALLO: fn_proteger_rol_administrador aun depende del rol heredado.';
+    END IF;
+
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
         WHERE table_schema='public'

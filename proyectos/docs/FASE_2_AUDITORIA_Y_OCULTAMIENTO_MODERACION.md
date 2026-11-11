@@ -40,8 +40,9 @@ Los dos nuevos historiales no reemplazan ni reutilizan `reporte_resena_historial
 - `GET /api/moderacion/reportes/{idReporte}/historial`
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=EN_REVISION&observacion=...`
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=ACEPTADO&observacion=...`
+- `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=RECHAZADO&observacion=...`
 
-La observación es opcional y se guarda junto con el actor, estado anterior, estado nuevo y fecha.
+La observación es opcional y se guarda junto con el actor, estado anterior, estado nuevo y fecha. Cada transición permitida queda en `reporte_resena_decision_auditoria`; no se reutiliza la tabla `reporte_resena_historial`, que conserva su propósito original de auditar reasignaciones.
 
 ### Ocultamiento manual de reseñas
 

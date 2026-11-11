@@ -86,7 +86,9 @@ class AdministracionAsignacionesServiceTest {
         asignacion.setEstado(true);
         asignacion.setRol(admin);
         given(usuarios.findByIdForUpdate(20L)).willReturn(Optional.of(objetivo));
-        given(usuarioRoles.findByUsuario_IdUsuarioAndRol_IdRol(20L, 1L)).willReturn(Optional.of(asignacion));
+        given(roles.findById(1L)).willReturn(Optional.of(admin));
+        given(roles.findByNombreForUpdate("Administrador")).willReturn(Optional.of(admin));
+        given(usuarioRoles.findByUsuarioAndRolForUpdate(20L, 1L)).willReturn(Optional.of(asignacion));
         given(usuarioRoles.findAdministradoresActivosForUpdate()).willReturn(List.of(asignacion));
 
         assertThatThrownBy(() -> service.revocarRol(20L, 1L, "admin-sub", "Retiro"))
@@ -106,7 +108,9 @@ class AdministracionAsignacionesServiceTest {
         UsuarioRol otraAsignacion = new UsuarioRol();
         otraAsignacion.setEstado(true);
         given(usuarios.findByIdForUpdate(20L)).willReturn(Optional.of(objetivo));
-        given(usuarioRoles.findByUsuario_IdUsuarioAndRol_IdRol(20L, 1L)).willReturn(Optional.of(asignacion));
+        given(roles.findById(1L)).willReturn(Optional.of(admin));
+        given(roles.findByNombreForUpdate("Administrador")).willReturn(Optional.of(admin));
+        given(usuarioRoles.findByUsuarioAndRolForUpdate(20L, 1L)).willReturn(Optional.of(asignacion));
         given(usuarioRoles.findAdministradoresActivosForUpdate()).willReturn(List.of(asignacion, otraAsignacion));
         given(usuarioRoles.save(any(UsuarioRol.class))).willAnswer(invocation -> invocation.getArgument(0));
 
@@ -279,7 +283,8 @@ class AdministracionAsignacionesServiceTest {
         UsuarioRol asignacion = new UsuarioRol();
         asignacion.setEstado(false);
         given(usuarios.findByIdForUpdate(20L)).willReturn(Optional.of(objetivo));
-        given(usuarioRoles.findByUsuario_IdUsuarioAndRol_IdRol(20L, 3L)).willReturn(Optional.of(asignacion));
+        given(roles.findById(3L)).willReturn(Optional.of(new Rol()));
+        given(usuarioRoles.findByUsuarioAndRolForUpdate(20L, 3L)).willReturn(Optional.of(asignacion));
 
         assertThatThrownBy(() -> service.revocarRol(20L, 3L, "admin-sub", null))
                 .isInstanceOf(ConflictException.class)

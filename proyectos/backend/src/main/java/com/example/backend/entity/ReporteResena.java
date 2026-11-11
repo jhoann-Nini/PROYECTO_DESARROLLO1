@@ -40,6 +40,22 @@ public class ReporteResena {
     @Column(name = "fecha_actualizacion", nullable = false)
     private LocalDateTime fechaActualizacion = LocalDateTime.now();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_responsable")
+    private Usuario responsable;
+
+    @Column(name = "fecha_inicio_revision")
+    private LocalDateTime fechaInicioRevision;
+
+    @Column(name = "fecha_revision")
+    private LocalDateTime fechaRevision;
+
+    @Column(name = "notas_revision", columnDefinition = "TEXT")
+    private String notasRevision;
+
+    @Column(name = "id_historial_reasignacion")
+    private Long idHistorialReasignacion;
+
     public ReporteResena() {
     }
 
@@ -105,6 +121,46 @@ public class ReporteResena {
 
     public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public Usuario getResponsable() {
+        return responsable;
+    }
+
+    public void setResponsable(Usuario responsable) {
+        this.responsable = responsable;
+    }
+
+    public LocalDateTime getFechaInicioRevision() {
+        return fechaInicioRevision;
+    }
+
+    public void setFechaInicioRevision(LocalDateTime fechaInicioRevision) {
+        this.fechaInicioRevision = fechaInicioRevision;
+    }
+
+    public LocalDateTime getFechaRevision() {
+        return fechaRevision;
+    }
+
+    public void setFechaRevision(LocalDateTime fechaRevision) {
+        this.fechaRevision = fechaRevision;
+    }
+
+    public String getNotasRevision() {
+        return notasRevision;
+    }
+
+    public void setNotasRevision(String notasRevision) {
+        this.notasRevision = notasRevision;
+    }
+
+    public Long getIdHistorialReasignacion() {
+        return idHistorialReasignacion;
+    }
+
+    public void setIdHistorialReasignacion(Long idHistorialReasignacion) {
+        this.idHistorialReasignacion = idHistorialReasignacion;
     }
 }
 

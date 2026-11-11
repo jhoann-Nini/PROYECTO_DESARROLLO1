@@ -27,6 +27,7 @@ No reemplaza ni edita las migraciones anteriores. No modifica los estados válid
 - Añade constraint triggers diferidos que exigen un evento de auditoría en la misma transacción que el cambio del reporte o del ocultamiento manual.
 - Para el inicio de revisión exige que el actor auditado sea el responsable asignado. Para la decisión final exige coherencia entre observación, notas y fecha.
 - Para ocultar una reseña exige coherencia entre actor, motivo y fecha de moderación.
+- Los servicios Java persisten primero el evento de auditoría (`saveAndFlush`) y después modifican el estado del reporte o el ocultamiento de la reseña. Este orden permite que los triggers `BEFORE INSERT` validen el estado anterior y que los constraint triggers diferidos validen el estado final al confirmar la transacción.
 
 ## Validación estructural en PostgreSQL
 

@@ -164,7 +164,13 @@ public class ResenaService {
         }
 
         boolean esAutor = resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
-        boolean esAdmin = usuario.getRol() != null && "Administrador".equalsIgnoreCase(usuario.getRol().getNombre());
+        boolean esAdmin = usuario.getRoles() != null
+                && usuario.getRoles().stream()
+                        .anyMatch(asignacion ->
+                                Boolean.TRUE.equals(asignacion.getEstado())
+                                && asignacion.getRol() != null
+                                && "Administrador".equalsIgnoreCase(asignacion.getRol().getNombre())
+                        );
 
         if (!esAutor && !esAdmin) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar esta reseña.");

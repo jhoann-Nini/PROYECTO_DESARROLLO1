@@ -15,6 +15,7 @@ import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
@@ -511,7 +512,14 @@ class ResenaSecurityIntegrationTest {
         admin.setRol(rolAdmin);
         admin.setEstado(true);
         admin.setFechaRegistro(LocalDateTime.now());
-        usuarioRepository.save(admin);
+        UsuarioRol asignacionAdmin = new UsuarioRol();
+        asignacionAdmin.setUsuario(admin);
+        asignacionAdmin.setRol(rolAdmin);
+        asignacionAdmin.setEstado(true);
+        asignacionAdmin.setFechaAsignacion(LocalDateTime.now());
+        admin.agregarRol(asignacionAdmin);
+
+        usuarioRepository.saveAndFlush(admin);
 
         String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
         String tokenAdmin = generarToken(subAdmin, "admin_moderador@example.com");

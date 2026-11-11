@@ -1013,4 +1013,47 @@ class ResenaSecurityIntegrationTest {
                         reporte.getIdReporte()).size());
     }
 
+
+    @Test
+    @DisplayName("Moderador no puede resolver reportes sobre su propia reseña")
+    void moderadorNoPuedeResolverReporteDeSuResena() throws Exception {
+        String subModerador = "a1b2c3d4-e5f6-0718-293a-4b5c6d7e8f90";
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_autor_resena@example.com", "Moderador");
+        Usuario reportante = crearUsuarioConRol(
+                "b2c3d4e5-f607-1829-3a4b-5c6d7e8f90a1",
+                "reportante_resena_moderador@example.com",
+                "Usuario registrado");
+
+        Resena resena = new Resena();
+        resena.setUsuario(moderador);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña escrita por el moderador");
+        resena.setPuntuacion(2);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+
+        ReporteResena reporte = new ReporteResena();
+        reporte.setUsuario(reportante);
+        reporte.setResena(resena);
+        reporte.setMotivo("spam");
+        reporte.setEstado(EstadoReporte.PENDIENTE);
+        reporte.setFechaCreacion(LocalDateTime.now());
+        reporte.setFechaActualizacion(LocalDateTime.now());
+        reporte = reporteResenaRepository.saveAndFlush(reporte);
+
+        String token = generarToken(subModerador, "moderador_autor_resena@example.com");
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                .header("Authorization", "Bearer " + token)
+                .param("estado", "EN_REVISION"))
+                .andExpect(status().isForbidden());
+
+        org.junit.jupiter.api.Assertions.assertEquals(EstadoReporte.PENDIENTE,
+                reporteResenaRepository.findById(reporte.getIdReporte()).orElseThrow().getEstado());
+        org.junit.jupiter.api.Assertions.assertEquals(0,
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                        reporte.getIdReporte()).size());
+    }
+
 }

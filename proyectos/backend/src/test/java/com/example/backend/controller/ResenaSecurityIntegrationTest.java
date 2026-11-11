@@ -267,7 +267,7 @@ class ResenaSecurityIntegrationTest {
     @DisplayName("El moderador puede consultar la bandeja y avanzar un reporte")
     void moderadorPuedeRevisarYResolverReporte() throws Exception {
         String subModerador = "a7b8c9d0-e1f2-3a4b-5c6d-7e8f90a1b2c3";
-        crearUsuarioConRol(subModerador, "moderador_test@example.com", "Moderador");
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_test@example.com", "Moderador");
         ReporteResena reporte = crearReportePendiente();
         String token = generarToken(subModerador, "moderador_test@example.com");
 
@@ -284,6 +284,13 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("EN_REVISION"));
 
+        ReporteResena reporteEnRevision = reporteResenaRepository.findById(reporte.getIdReporte()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(
+                moderador.getIdUsuario(), reporteEnRevision.getResponsable().getIdUsuario());
+        org.junit.jupiter.api.Assertions.assertNotNull(reporteEnRevision.getFechaInicioRevision());
+        org.junit.jupiter.api.Assertions.assertNull(reporteEnRevision.getFechaRevision());
+        org.junit.jupiter.api.Assertions.assertNull(reporteEnRevision.getNotasRevision());
+
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
                                 "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
                          .header("Authorization", "Bearer " + token)
@@ -291,6 +298,13 @@ class ResenaSecurityIntegrationTest {
                         .param("observacion", "Se confirma el incumplimiento"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("ACEPTADO"));
+
+        ReporteResena reporteResuelto = reporteResenaRepository.findById(reporte.getIdReporte()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertNotNull(reporteResuelto.getFechaRevision());
+        org.junit.jupiter.api.Assertions.assertEquals(
+                "Se confirma el incumplimiento", reporteResuelto.getNotasRevision());
+        org.junit.jupiter.api.Assertions.assertEquals(
+                moderador.getIdUsuario(), reporteResuelto.getResponsable().getIdUsuario());
 
         mockMvc.perform(get("/api/moderacion/reportes/" + reporte.getIdReporte() + "/historial")
                         .header("Authorization", "Bearer " + token))

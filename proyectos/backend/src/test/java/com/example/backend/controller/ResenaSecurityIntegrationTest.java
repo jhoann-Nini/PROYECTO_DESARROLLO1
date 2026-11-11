@@ -546,6 +546,93 @@ class ResenaSecurityIntegrationTest {
         org.junit.jupiter.api.Assertions.assertFalse(resenaOpt.get().getEstado());
     }
 
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} rechaza administrador con asignación revocada aunque conserve el rol heredado")
+    void deleteResenaAdminConRolRevocadoDevuelve403() throws Exception {
+        String subAdminRevocado = "f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f90a1b2";
+        Rol rolAdmin = rolRepository.findByNombre("Administrador").orElseGet(() -> {
+            Rol r = new Rol();
+            r.setNombre("Administrador");
+            r.setDescripcion("Rol de administración");
+            return rolRepository.save(r);
+        });
+
+        Usuario adminRevocado = new Usuario();
+        adminRevocado.setNombre("Administrador Revocado");
+        adminRevocado.setCorreo("admin_revocado@example.com");
+        adminRevocado.setSupabaseUid(subAdminRevocado);
+        adminRevocado.setRol(rolAdmin);
+        adminRevocado.setEstado(true);
+
+        UsuarioRol asignacionRevocada = new UsuarioRol();
+        asignacionRevocada.setRol(rolAdmin);
+        asignacionRevocada.setEstado(false);
+        asignacionRevocada.setFechaAsignacion(LocalDateTime.now().minusDays(1));
+        asignacionRevocada.setFechaRevocacion(LocalDateTime.now());
+        asignacionRevocada.setMotivoRevocacion("Prueba de revocación");
+        adminRevocado.agregarRol(asignacionRevocada);
+        usuarioRepository.saveAndFlush(adminRevocado);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenAdminRevocado = generarToken(subAdminRevocado, "admin_revocado@example.com");
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\\"idProducto\\":" + idProductoValido + ",\\"comentario\\":\\"Reseña protegida ante rol revocado\\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();
+
+        mockMvc.perform(delete("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAdminRevocado))
+                .andExpect(status().isForbidden());
+
+        org.junit.jupiter.api.Assertions.assertTrue(resenaRepository.findById(idResena).orElseThrow().getEstado());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/resenas/{id} rechaza cuenta suspendida aunque tenga asignación administrativa activa")
+    void deleteResenaCuentaSuspendidaConAdminActivoDevuelve403() throws Exception {
+        String subAdminSuspendido = "a7b8c9d0-e1f2-3a4b-5c6d-7e8f90a1b2c3";
+        Rol rolAdmin = rolRepository.findByNombre("Administrador").orElseGet(() -> {
+            Rol r = new Rol();
+            r.setNombre("Administrador");
+            r.setDescripcion("Rol de administración");
+            return rolRepository.save(r);
+        });
+
+        Usuario adminSuspendido = new Usuario();
+        adminSuspendido.setNombre("Administrador Suspendido");
+        adminSuspendido.setCorreo("admin_suspendido@example.com");
+        adminSuspendido.setSupabaseUid(subAdminSuspendido);
+        adminSuspendido.setRol(rolAdmin);
+        adminSuspendido.setEstado(false);
+
+        UsuarioRol asignacionAdmin = new UsuarioRol();
+        asignacionAdmin.setRol(rolAdmin);
+        asignacionAdmin.setEstado(true);
+        asignacionAdmin.setFechaAsignacion(LocalDateTime.now());
+        adminSuspendido.agregarRol(asignacionAdmin);
+        usuarioRepository.saveAndFlush(adminSuspendido);
+
+        String tokenAutor = generarToken(TEST_SUB, "resenas_test@example.com");
+        String tokenAdminSuspendido = generarToken(subAdminSuspendido, "admin_suspendido@example.com");
+        String respuesta = mockMvc.perform(post("/api/resenas")
+                        .header("Authorization", "Bearer " + tokenAutor)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\\"idProducto\\":" + idProductoValido + ",\\"comentario\\":\\"Reseña protegida ante cuenta suspendida\\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();
+
+        mockMvc.perform(delete("/api/resenas/" + idResena)
+                        .header("Authorization", "Bearer " + tokenAdminSuspendido))
+                .andExpect(status().isForbidden());
+
+        org.junit.jupiter.api.Assertions.assertTrue(resenaRepository.findById(idResena).orElseThrow().getEstado());
+    }
+
     @Test
     @DisplayName("DELETE /api/resenas/{id} para reseña inexistente devuelve 404 Not Found (S2-18)")
     void deleteResenaInexistenteDevuelve404() throws Exception {

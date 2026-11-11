@@ -33,7 +33,7 @@ LOCK TABLE public.reporte_resena IN SHARE ROW EXCLUSIVE MODE;
 CREATE OR REPLACE FUNCTION public.fn_validar_transicion_moderacion()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-AS $
+AS $$
 DECLARE
     v_responsable_autorizado BOOLEAN;
 BEGIN
@@ -162,7 +162,7 @@ BEGIN
 
     RETURN NEW;
 END;
-$;
+$$;
 
 
 ALTER TABLE public.resena

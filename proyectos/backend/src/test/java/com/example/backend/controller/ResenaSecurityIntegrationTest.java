@@ -25,6 +25,7 @@ import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
 import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
 import com.example.backend.repository.ReporteResenaRepository;
+import com.example.backend.repository.ReporteResenaDecisionAuditoriaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import com.nimbusds.jose.JOSEObjectType;
@@ -105,6 +106,9 @@ class ResenaSecurityIntegrationTest {
 
     @Autowired
     private ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
+
+    @Autowired
+    private ReporteResenaDecisionAuditoriaRepository reporteDecisionAuditoriaRepository;
 
     private MockMvc mockMvc;
     private Long idProductoValido;
@@ -285,6 +289,19 @@ class ResenaSecurityIntegrationTest {
                         .param("estado", "ACEPTADO"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("ACEPTADO"));
+
+        mockMvc.perform(get("/api/moderacion/reportes/" + reporte.getIdReporte() + "/historial")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(2)))
+                .andExpect(jsonPath("$[0].estadoAnterior").value("EN_REVISION"))
+                .andExpect(jsonPath("$[0].estadoNuevo").value("ACEPTADO"))
+                .andExpect(jsonPath("$[1].estadoAnterior").value("PENDIENTE"))
+                .andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(2,
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                        reporte.getIdReporte()).size());
     }
 
     @Test

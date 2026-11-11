@@ -12,6 +12,10 @@ public interface UsuarioRolRepository extends JpaRepository<UsuarioRol, Long> {
     Optional<UsuarioRol> findByUsuario_IdUsuarioAndRol_IdRol(Long usuarioId, Long rolId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT ur FROM UsuarioRol ur WHERE ur.usuario.idUsuario = :usuarioId AND ur.rol.idRol = :rolId")
+    Optional<UsuarioRol> findByUsuarioAndRolForUpdate(Long usuarioId, Long rolId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT ur FROM UsuarioRol ur
         JOIN ur.rol r

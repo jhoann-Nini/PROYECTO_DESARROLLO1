@@ -223,10 +223,17 @@ class AdministracionAsignacionesConcurrencyTest {
         });
 
         // Esperar a que ambos hilos estén listos y disparar
-        readyLatch.await(5, TimeUnit.SECONDS);
+        assertThat(readyLatch.await(5, TimeUnit.SECONDS))
+                .as("Ambos hilos deben estar listos antes de iniciar")
+                .isTrue();
         startLatch.countDown();
-        doneLatch.await(10, TimeUnit.SECONDS);
+        assertThat(doneLatch.await(15, TimeUnit.SECONDS))
+                .as("Las dos transacciones deben terminar sin quedar bloqueadas")
+                .isTrue();
         executor.shutdown();
+        assertThat(executor.awaitTermination(5, TimeUnit.SECONDS))
+                .as("El executor debe finalizar correctamente")
+                .isTrue();
 
         // Verificaciones
         assertThat(exitos.get()).as("Exactamente un hilo debe tener éxito").isEqualTo(1);

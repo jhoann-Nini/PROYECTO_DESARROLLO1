@@ -193,6 +193,44 @@ Validar de forma automatizada e integral el control de acceso, propiedad y roles
 
 ---
 
+## S2-39: Pruebas del endpoint para reportar reseñas
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral los endpoints para reportar reseñas (`POST /api/resenas/{idResena}/reportes` y `POST /api/reportes`):
+- **Registro exitoso:** Usuario autenticado registra reporte con estado inicial `PENDIENTE` (`201 Created`).
+- **Autenticación obligatoria:** Solicitudes sin token reciben `401 Unauthorized`.
+- **Prevención de autorreporte:** Un usuario no puede reportar su propia reseña (`403 Forbidden`).
+- **Integridad de reseñas:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+- **Validación de motivos y descripción:** Motivos válidos (`spam`, `lenguaje-ofensivo`, `falso`, `otro`). Si el motivo es `otro`, se exige descripción no vacía (`400 Bad Request`).
+- **Prevención de reportes duplicados:** Un usuario no puede emitir múltiples reportes sobre la misma reseña (`409 Conflict`).
+- **Múltiples reportantes:** Distintos usuarios pueden reportar una misma reseña de forma independiente.
+- **Consulta privada:** El endpoint `/api/reportes/mis-reportes` solo expone los reportes propios del usuario autenticado.
+- **Principio Zero-Trust:** El backend ignora campos de identidad o estado inyectados en el cuerpo de la petición.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Operación / Endpoint | Condición / Escenario | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-39-01** | `POST /api/resenas/{id}/reportes` | Usuario autenticado, datos válidos | `201 Created`, estado `PENDIENTE` | `201 Created` | **APROBADO** |
+| **S2-39-02** | `POST /api/resenas/{id}/reportes` | Sin autenticación (anónimo) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-39-03** | `POST /api/resenas/{id}/reportes` | Intento de autorreporte | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-39-04** | `POST /api/resenas/{id}/reportes` | Reseña inexistente (id no existe) | `404 Not Found` | `404 Not Found` | **APROBADO** |
+| **S2-39-05** | `POST /api/resenas/{id}/reportes` | Reseña eliminada lógicamente | `404 Not Found` | `404 Not Found` | **APROBADO** |
+| **S2-39-06** | `POST /api/resenas/{id}/reportes` | Motivo 'otro' sin descripción | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+| **S2-39-07** | `POST /api/resenas/{id}/reportes` | Motivo inválido no permitido | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+| **S2-39-08** | `POST /api/resenas/{id}/reportes` | Segundo reporte del mismo usuario | `409 Conflict` | `409 Conflict` | **APROBADO** |
+| **S2-39-09** | `POST /api/resenas/{id}/reportes` | Dos usuarios diferentes reportan | `201 Created` para ambos | `201 Created` | **APROBADO** |
+| **S2-39-10** | `GET /api/reportes/mis-reportes` | Usuario consulta sus reportes | `200 OK`, solo reportes propios | `200 OK` | **APROBADO** |
+| **S2-39-11** | `POST /api/resenas/{id}/reportes` | Verificación de estado inicial | Estado estrictamente `PENDIENTE` | `PENDIENTE` | **APROBADO** |
+| **S2-39-12** | `POST /api/resenas/{id}/reportes` | Intento de inyectar idUsuario/estado | Campos ignorados por backend | Ignorados | **APROBADO** |
+| **S2-39-13** | `POST /api/reportes` | idResena en cuerpo JSON | `201 Created`, reporte persistido | `201 Created` | **APROBADO** |
+| **S2-39-14** | `POST /api/reportes` | Sin idResena en cuerpo | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+
+### 3. Cobertura en suites de prueba
+- Suite: `com.example.backend.controller.ReporteResenaIntegrationTest` (14 pruebas aprobadas al 100%).
+
+---
+
 ## S2-42: Pruebas del endpoint para listar reseñas pendientes y reportadas
 
 ### 1. Alcance y objetivo

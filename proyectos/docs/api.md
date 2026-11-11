@@ -1052,6 +1052,56 @@ En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `R
 
 ---
 
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, o motivo 'otro' sin descripción requerida.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
+
+---
+
 # Endpoints administrativos de asignaciones (Fase 1)
 
 Todas las rutas de esta sección requieren un JWT de Supabase válido y una asignación activa del rol `Administrador`. El backend identifica al actor mediante el claim `sub`; el cliente no puede indicar quién realiza la operación.

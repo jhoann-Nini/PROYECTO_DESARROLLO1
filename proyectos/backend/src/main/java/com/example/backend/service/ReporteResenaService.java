@@ -183,17 +183,42 @@ public class ReporteResenaService {
                     "Transición de estado no permitida: " + actual + " -> " + nuevoEstado + ".");
         }
 
+        LocalDateTime ahora = LocalDateTime.now();
+        if (actual == EstadoReporte.PENDIENTE && nuevoEstado == EstadoReporte.EN_REVISION) {
+            reporte.setResponsable(actor);
+            reporte.setFechaInicioRevision(ahora);
+            reporte.setFechaRevision(null);
+            reporte.setNotasRevision(null);
+            reporte.setIdHistorialReasignacion(null);
+        } else if (actual == EstadoReporte.EN_REVISION
+                && (nuevoEstado == EstadoReporte.ACEPTADO || nuevoEstado == EstadoReporte.RECHAZADO)) {
+            if (reporte.getResponsable() == null) {
+                throw new ConflictException("El reporte no tiene un responsable asignado.");
+            }
+            boolean esResponsable = reporte.getResponsable().getIdUsuario().equals(actor.getIdUsuario());
+            if (!esResponsable && !esAdministradorActivo(actor)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "Solo el responsable asignado o un Administrador puede resolver este reporte.");
+            }
+            if (observacion == null || observacion.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "La justificación es obligatoria para aceptar o rechazar un reporte.");
+            }
+            reporte.setFechaRevision(ahora);
+            reporte.setNotasRevision(observacion.trim());
+        }
+
         ReporteResenaDecisionAuditoria evento = new ReporteResenaDecisionAuditoria();
         evento.setReporte(reporte);
         evento.setModerador(actor);
         evento.setEstadoAnterior(actual.name());
         evento.setEstadoNuevo(nuevoEstado.name());
         evento.setObservacion(observacion != null && !observacion.isBlank() ? observacion.trim() : null);
-        evento.setFechaEvento(LocalDateTime.now());
+        evento.setFechaEvento(ahora);
         decisionAuditoriaRepository.saveAndFlush(evento);
 
         reporte.setEstado(nuevoEstado);
-        reporte.setFechaActualizacion(LocalDateTime.now());
+        reporte.setFechaActualizacion(ahora);
         return toResponse(reporteResenaRepository.saveAndFlush(reporte));
     }
 
@@ -218,6 +243,14 @@ public class ReporteResenaService {
                         evento.getObservacion(),
                         evento.getFechaEvento()))
                 .toList();
+    }
+
+    private boolean esAdministradorActivo(Usuario usuario) {
+        return usuario.getRoles() != null && usuario.getRoles().stream()
+                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                .map(asignacion -> asignacion.getRol())
+                .anyMatch(rol -> rol != null && rol.getNombre() != null
+                        && "Administrador".equalsIgnoreCase(rol.getNombre()));
     }
 
     private void validarPermisoModeracion(Usuario usuario) {

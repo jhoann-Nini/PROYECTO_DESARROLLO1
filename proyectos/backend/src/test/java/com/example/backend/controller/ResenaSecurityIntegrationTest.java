@@ -1056,4 +1056,45 @@ class ResenaSecurityIntegrationTest {
                         reporte.getIdReporte()).size());
     }
 
+
+    @Test
+    @DisplayName("Restaurar ocultamiento manual nunca revierte el borrado lógico del autor")
+    void restaurarOcultamientoNoRevierteBorradoLogico() throws Exception {
+        String subModerador = "c3d4e5f6-0718-293a-4b5c-6d7e8f90a1b2";
+        crearUsuarioConRol(subModerador, "moderador_borrado_logico@example.com", "Moderador");
+        Usuario autor = crearUsuarioConRol(
+                "d4e5f607-1829-3a4b-5c6d-7e8f90a1b2c3",
+                "autor_borrado_logico@example.com",
+                "Usuario registrado");
+
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña eliminada por su autor");
+        resena.setPuntuacion(4);
+        resena.setEstado(false);
+        resena.setOcultaPorReportes(false);
+        resena.setOcultaPorModeracion(true);
+        resena.setModeradaPor(usuarioRepository.findBySupabaseUid(subModerador).orElseThrow());
+        resena.setFechaModeracion(LocalDateTime.now());
+        resena.setMotivoModeracion("Ocultamiento manual previo");
+        resena = resenaRepository.saveAndFlush(resena);
+
+        String token = generarToken(subModerador, "moderador_borrado_logico@example.com");
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + resena.getIdResena() + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":false,\"motivo\":\"Se retira la medida manual, no el borrado del autor\"}"))
+                .andExpect(status().isNoContent());
+
+        Resena resultado = resenaRepository.findById(resena.getIdResena()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertFalse(resultado.getEstado());
+        org.junit.jupiter.api.Assertions.assertFalse(resultado.getOcultaPorModeracion());
+
+        mockMvc.perform(get("/api/resenas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.idResena == " + resena.getIdResena() + ")]").doesNotExist());
+    }
+
 }

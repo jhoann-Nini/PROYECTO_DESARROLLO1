@@ -163,6 +163,11 @@ public class ReporteResenaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El reporte y el nuevo estado son obligatorios.");
         }
 
+        if (observacion != null && observacion.length() > 2000) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La observación no puede superar 2000 caracteres.");
+        }
+
         Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
         validarPermisoModeracion(actor);
 

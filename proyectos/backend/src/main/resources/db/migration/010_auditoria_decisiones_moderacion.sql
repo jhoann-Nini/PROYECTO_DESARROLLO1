@@ -78,6 +78,72 @@ BEGIN
     END IF;
 END $$;
 
+CREATE TABLE IF NOT EXISTS public.reporte_resena_decision_auditoria (
+    id_auditoria BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_reporte BIGINT NOT NULL,
+    id_moderador BIGINT NOT NULL,
+    estado_anterior VARCHAR(20) NOT NULL,
+    estado_nuevo VARCHAR(20) NOT NULL,
+    observacion TEXT NULL,
+    fecha_evento TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reporte_decision_auditoria_reporte
+        FOREIGN KEY (id_reporte) REFERENCES public.reporte_resena(id_reporte) ON DELETE RESTRICT,
+    CONSTRAINT fk_reporte_decision_auditoria_moderador
+        FOREIGN KEY (id_moderador) REFERENCES public.usuario(id_usuario) ON DELETE RESTRICT,
+    CONSTRAINT chk_reporte_decision_auditoria_estado_anterior
+        CHECK (estado_anterior IN ('PENDIENTE', 'EN_REVISION', 'ACEPTADO', 'RECHAZADO')),
+    CONSTRAINT chk_reporte_decision_auditoria_estado_nuevo
+        CHECK (estado_nuevo IN ('PENDIENTE', 'EN_REVISION', 'ACEPTADO', 'RECHAZADO')),
+    CONSTRAINT chk_reporte_decision_auditoria_transicion
+        CHECK (
+            (estado_anterior = 'PENDIENTE' AND estado_nuevo = 'EN_REVISION')
+            OR
+            (estado_anterior = 'EN_REVISION' AND estado_nuevo IN ('ACEPTADO', 'RECHAZADO'))
+        )
+);
+
+CREATE INDEX IF NOT EXISTS idx_reporte_decision_auditoria_reporte_fecha
+    ON public.reporte_resena_decision_auditoria (id_reporte, fecha_evento DESC);
+
+CREATE INDEX IF NOT EXISTS idx_reporte_decision_auditoria_moderador_fecha
+    ON public.reporte_resena_decision_auditoria (id_moderador, fecha_evento DESC);
+
+CREATE OR REPLACE FUNCTION public.fn_proteger_inmutabilidad_reporte_decision_auditoria()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $
+BEGIN
+    RAISE EXCEPTION
+        'Operación denegada: reporte_resena_decision_auditoria es append-only; no se permiten UPDATE ni DELETE.';
+END;
+$;
+
+DROP TRIGGER IF EXISTS trg_proteger_inmutabilidad_reporte_decision_auditoria
+    ON public.reporte_resena_decision_auditoria;
+
+CREATE TRIGGER trg_proteger_inmutabilidad_reporte_decision_auditoria
+BEFORE UPDATE OR DELETE ON public.reporte_resena_decision_auditoria
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_proteger_inmutabilidad_reporte_decision_auditoria();
+
+CREATE OR REPLACE FUNCTION public.fn_proteger_truncate_reporte_decision_auditoria()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $
+BEGIN
+    RAISE EXCEPTION
+        'Operación denegada: reporte_resena_decision_auditoria no puede ser truncada.';
+END;
+$;
+
+DROP TRIGGER IF EXISTS trg_proteger_truncate_reporte_decision_auditoria
+    ON public.reporte_resena_decision_auditoria;
+
+CREATE TRIGGER trg_proteger_truncate_reporte_decision_auditoria
+BEFORE TRUNCATE ON public.reporte_resena_decision_auditoria
+FOR EACH STATEMENT
+EXECUTE FUNCTION public.fn_proteger_truncate_reporte_decision_auditoria();
+
 CREATE TABLE IF NOT EXISTS public.resena_moderacion_auditoria (
     id_auditoria BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_resena BIGINT NOT NULL,
@@ -147,7 +213,7 @@ EXECUTE FUNCTION public.fn_proteger_truncate_resena_moderacion_auditoria();
 INSERT INTO public.schema_version (version, descripcion)
 VALUES (
     '010_auditoria_decisiones_moderacion',
-    'Auditoria append-only de decisiones de moderacion y ocultamiento manual independiente del borrado logico y del ocultamiento automatico por reportes.'
+    'Auditoria append-only de decisiones sobre reportes y ocultamiento manual independiente del borrado logico y del ocultamiento automatico por reportes.'
 );
 
 COMMIT;

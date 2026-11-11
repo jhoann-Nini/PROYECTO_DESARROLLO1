@@ -303,6 +303,29 @@ class EstablecimientoSecurityIntegrationTest {
     }
 
     @Test
+    @DisplayName("Una asignación revocada del rol Representante impide acceder a la API")
+    void representanteConRolRevocadoRecibe403() throws Exception {
+        Usuario representante = crearUsuario("representante_rol_revocado@test.com", rolRepresentante, true);
+        representante.getRoles().get(0).setEstado(false);
+        usuarioRepository.saveAndFlush(representante);
+
+        mockMvc.perform(get("/api/representante/establecimientos")
+                        .header("Authorization", "Bearer " + generarToken(representante)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Una representación revocada impide consultar el establecimiento")
+    void representanteConAsignacionRevocadaRecibe404() throws Exception {
+        Usuario representante = crearUsuario("representante_asignacion_revocada@test.com", rolRepresentante, true);
+        asignarEstablecimiento(representante, establecimientoUno, false);
+
+        mockMvc.perform(get("/api/representante/establecimientos/" + establecimientoUno.getIdEstablecimiento())
+                        .header("Authorization", "Bearer " + generarToken(representante)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     @DisplayName("Administrador activo puede consultar todos los establecimientos activos")
     void administradorPuedeConsultarTodosLosEstablecimientos() throws Exception {
         Usuario admin = crearUsuario("admin_establecimientos@test.com", rolAdmin, true);

@@ -45,6 +45,28 @@ public class ReporteResenaController {
     }
 
     /**
+     * Consulta la bandeja de reportes para moderadores y administradores activos.
+     * El endpoint queda protegido por ModeratorAuthorizationManager en SecurityConfig.
+     */
+    @GetMapping("/api/moderacion/reportes")
+    public List<ReporteResenaResponse> listarBandejaModeracion(
+            @RequestParam(defaultValue = "PENDIENTE") EstadoReporte estado,
+            @AuthenticationPrincipal Jwt jwt) {
+        return reporteResenaService.listarBandejaModeracion(estado, jwt);
+    }
+
+    /**
+     * Avanza o resuelve un reporte según las transiciones permitidas por el servicio.
+     */
+    @PatchMapping("/api/moderacion/reportes/{idReporte}/estado")
+    public ReporteResenaResponse actualizarEstadoModeracion(
+            @PathVariable Long idReporte,
+            @RequestParam EstadoReporte estado,
+            @AuthenticationPrincipal Jwt jwt) {
+        return reporteResenaService.actualizarEstadoModeracion(idReporte, estado, jwt);
+    }
+
+    /**
      * Consulta los reportes realizados por el usuario autenticado.
      */
     @GetMapping("/api/reportes/mis-reportes")

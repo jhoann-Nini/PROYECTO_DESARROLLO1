@@ -16,39 +16,39 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
     List<Resena> findByUsuarioIdUsuario(Long idUsuario);
 
     @EntityGraph(attributePaths = {"usuario", "producto"})
-    List<Resena> findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
+    List<Resena> findByEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc();
 
     @EntityGraph(attributePaths = {"usuario", "producto"})
-    List<Resena> findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(Long idProducto);
+    List<Resena> findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc(Long idProducto);
 
     @EntityGraph(attributePaths = {"usuario", "producto"})
-    @Query("SELECT r FROM Resena r WHERE r.estado = true AND r.ocultaPorReportes = false ORDER BY r.fechaCreacion DESC")
+    @Query("SELECT r FROM Resena r WHERE r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false ORDER BY r.fechaCreacion DESC")
     List<Resena> findByEstadoTrueOrderByFechaCreacionDesc();
 
     @EntityGraph(attributePaths = {"usuario", "producto"})
-    @Query("SELECT r FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false ORDER BY r.fechaCreacion DESC")
+    @Query("SELECT r FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false ORDER BY r.fechaCreacion DESC")
     List<Resena> findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(@Param("idProducto") Long idProducto);
 
     Optional<Resena> findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(Long idUsuario, Long idProducto);
 
     @Query("SELECT new com.example.backend.dto.ResenaStats(r.producto.idProducto, COUNT(r.idResena)) " +
            "FROM Resena r " +
-           "WHERE r.estado = true AND r.ocultaPorReportes = false AND r.producto.estado = true " +
+           "WHERE r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false AND r.producto.estado = true " +
            "GROUP BY r.producto.idProducto " +
            "ORDER BY COUNT(r.idResena) DESC, r.producto.idProducto ASC")
     List<ResenaStats> findMasComentadosStats(Pageable pageable);
 
     @Query("SELECT new com.example.backend.dto.ValoracionStats(r.producto.idProducto, AVG(r.puntuacion), COUNT(r.idResena)) " +
            "FROM Resena r " +
-           "WHERE r.producto.estado = true AND r.estado = true AND r.ocultaPorReportes = false " +
+           "WHERE r.producto.estado = true AND r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false " +
            "GROUP BY r.producto.idProducto " +
            "ORDER BY AVG(r.puntuacion) DESC, COUNT(r.idResena) DESC, r.producto.idProducto ASC")
     List<ValoracionStats> findMejorValoradosStats(Pageable pageable);
 
-    @Query("SELECT AVG(r.puntuacion) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false")
+    @Query("SELECT AVG(r.puntuacion) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false")
     Double findPromedioByProducto(@Param("idProducto") Long idProducto);
 
-    @Query("SELECT COUNT(r) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false")
+    @Query("SELECT COUNT(r) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false")
     Long countByProducto(@Param("idProducto") Long idProducto);
 
     @Query("SELECT COUNT(r) FROM Resena r WHERE r.usuario.idUsuario = :idUsuario AND r.fechaCreacion >= :fechaInicio")

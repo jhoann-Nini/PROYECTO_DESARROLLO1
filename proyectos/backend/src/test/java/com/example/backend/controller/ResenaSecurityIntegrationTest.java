@@ -579,7 +579,7 @@ class ResenaSecurityIntegrationTest {
         String respuesta = mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\\"idProducto\\":" + idProductoValido + ",\\"comentario\\":\\"Reseña protegida ante rol revocado\\"}"))
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña protegida ante rol revocado\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();
@@ -621,7 +621,7 @@ class ResenaSecurityIntegrationTest {
         String respuesta = mockMvc.perform(post("/api/resenas")
                         .header("Authorization", "Bearer " + tokenAutor)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\\"idProducto\\":" + idProductoValido + ",\\"comentario\\":\\"Reseña protegida ante cuenta suspendida\\"}"))
+                        .content("{\"idProducto\":" + idProductoValido + ",\"comentario\":\"Reseña protegida ante cuenta suspendida\"}"))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         long idResena = new com.fasterxml.jackson.databind.ObjectMapper().readTree(respuesta).get("idResena").asLong();

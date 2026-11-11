@@ -2,13 +2,16 @@ package com.example.backend.service;
 
 import com.example.backend.dto.ReporteResenaRequest;
 import com.example.backend.dto.ReporteResenaResponse;
+import com.example.backend.dto.ReporteResenaDecisionAuditoriaResponse;
 import com.example.backend.entity.EstadoReporte;
 import com.example.backend.entity.ReporteResena;
+import com.example.backend.entity.ReporteResenaDecisionAuditoria;
 import com.example.backend.entity.Resena;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ReporteResenaRepository;
+import com.example.backend.repository.ReporteResenaDecisionAuditoriaRepository;
 import com.example.backend.repository.ResenaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,14 +42,17 @@ public class ReporteResenaService {
     private final ReporteResenaRepository reporteResenaRepository;
     private final ResenaRepository resenaRepository;
     private final UsuarioService usuarioService;
+    private final ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
 
     public ReporteResenaService(
             ReporteResenaRepository reporteResenaRepository,
             ResenaRepository resenaRepository,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository) {
         this.reporteResenaRepository = reporteResenaRepository;
         this.resenaRepository = resenaRepository;
         this.usuarioService = usuarioService;
+        this.decisionAuditoriaRepository = decisionAuditoriaRepository;
     }
 
     /**
@@ -147,6 +153,12 @@ public class ReporteResenaService {
      */
     @Transactional
     public ReporteResenaResponse actualizarEstadoModeracion(Long idReporte, EstadoReporte nuevoEstado, Jwt jwt) {
+        return actualizarEstadoModeracion(idReporte, nuevoEstado, null, jwt);
+    }
+
+    @Transactional
+    public ReporteResenaResponse actualizarEstadoModeracion(
+            Long idReporte, EstadoReporte nuevoEstado, String observacion, Jwt jwt) {
         if (idReporte == null || nuevoEstado == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El reporte y el nuevo estado son obligatorios.");
         }
@@ -171,9 +183,41 @@ public class ReporteResenaService {
                     "Transición de estado no permitida: " + actual + " -> " + nuevoEstado + ".");
         }
 
+        ReporteResenaDecisionAuditoria evento = new ReporteResenaDecisionAuditoria();
+        evento.setReporte(reporte);
+        evento.setModerador(actor);
+        evento.setEstadoAnterior(actual.name());
+        evento.setEstadoNuevo(nuevoEstado.name());
+        evento.setObservacion(observacion != null && !observacion.isBlank() ? observacion.trim() : null);
+        evento.setFechaEvento(LocalDateTime.now());
+        decisionAuditoriaRepository.save(evento);
+
         reporte.setEstado(nuevoEstado);
         reporte.setFechaActualizacion(LocalDateTime.now());
         return toResponse(reporteResenaRepository.saveAndFlush(reporte));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReporteResenaDecisionAuditoriaResponse> listarHistorialModeracion(Long idReporte, Jwt jwt) {
+        Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarPermisoModeracion(actor);
+
+        if (!reporteResenaRepository.existsById(idReporte)) {
+            throw new ResourceNotFoundException("Reporte no encontrado con id " + idReporte);
+        }
+
+        return decisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(idReporte)
+                .stream()
+                .map(evento -> new ReporteResenaDecisionAuditoriaResponse(
+                        evento.getIdAuditoria(),
+                        evento.getReporte().getIdReporte(),
+                        evento.getModerador().getIdUsuario(),
+                        evento.getModerador().getNombre(),
+                        evento.getEstadoAnterior(),
+                        evento.getEstadoNuevo(),
+                        evento.getObservacion(),
+                        evento.getFechaEvento()))
+                .toList();
     }
 
     private void validarPermisoModeracion(Usuario usuario) {

@@ -9,5 +9,5 @@ public interface ResenaModeracionAuditoriaRepository
         extends JpaRepository<ResenaModeracionAuditoria, Long> {
 
     @EntityGraph(attributePaths = {"moderador"})
-    List<ResenaModeracionAuditoria> findByResenaIdResenaOrderByFechaEventoDesc(Long idResena);
+    List<ResenaModeracionAuditoria> findByResenaIdResenaOrderByFechaEventoDescIdAuditoriaDesc(Long idResena);
 }

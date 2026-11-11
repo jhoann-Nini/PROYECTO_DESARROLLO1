@@ -62,8 +62,9 @@ AS $function$
           ON r.id_rol = ur.id_rol
         WHERE u.id_usuario = p_id_usuario
           AND u.estado = TRUE
-          AND LOWER(TRIM(r.nombre)) = ANY (
-              SELECT LOWER(TRIM(rol_nombre)) FROM unnest(p_roles) AS rol_nombre
+          AND LOWER(TRIM(r.nombre)) IN (
+              SELECT LOWER(TRIM(roles.rol_nombre))
+              FROM unnest(p_roles) AS roles(rol_nombre)
           )
     );
 $function$;

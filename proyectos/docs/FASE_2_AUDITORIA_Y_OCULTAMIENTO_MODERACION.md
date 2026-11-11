@@ -42,7 +42,7 @@ Los dos nuevos historiales no reemplazan ni reutilizan `reporte_resena_historial
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=ACEPTADO&observacion=...`
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=RECHAZADO&observacion=...`
 
-La observación es opcional al iniciar la revisión (`PENDIENTE → EN_REVISION`) y obligatoria al aceptar o rechazar (`EN_REVISION → ACEPTADO | RECHAZADO`). Se guarda junto con el actor, estado anterior, estado nuevo y fecha. El backend asigna responsable y fecha de inicio al comenzar la revisión, y fecha de decisión y notas al resolverla, respetando las restricciones de la migración 007. Cada transición permitida queda en `reporte_resena_decision_auditoria`; no se reutiliza la tabla `reporte_resena_historial`, que conserva su propósito original de auditar reasignaciones.
+La observación es opcional al iniciar la revisión (`PENDIENTE → EN_REVISION`) y obligatoria al aceptar o rechazar (`EN_REVISION → ACEPTADO | RECHAZADO`). Se guarda junto con el actor, estado anterior, estado nuevo y fecha. El backend asigna responsable y fecha de inicio al comenzar la revisión, y fecha de decisión y notas al resolverla, respetando las restricciones de la migración 007. La resolución corresponde al responsable asignado o a un Administrador activo. Cada transición permitida queda en `reporte_resena_decision_auditoria`; no se reutiliza la tabla `reporte_resena_historial`, que conserva su propósito original de auditar reasignaciones.
 
 ### Ocultamiento manual de reseñas
 

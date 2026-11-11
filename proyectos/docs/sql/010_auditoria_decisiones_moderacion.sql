@@ -81,12 +81,12 @@ CREATE INDEX IF NOT EXISTS idx_reporte_decision_auditoria_moderador_fecha
 CREATE OR REPLACE FUNCTION public.fn_proteger_inmutabilidad_reporte_decision_auditoria()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-AS $
+AS $$
 BEGIN
     RAISE EXCEPTION
         'Operación denegada: reporte_resena_decision_auditoria es append-only; no se permiten UPDATE ni DELETE.';
 END;
-$;
+$$;
 
 DROP TRIGGER IF EXISTS trg_proteger_inmutabilidad_reporte_decision_auditoria
     ON public.reporte_resena_decision_auditoria;
@@ -99,12 +99,12 @@ EXECUTE FUNCTION public.fn_proteger_inmutabilidad_reporte_decision_auditoria();
 CREATE OR REPLACE FUNCTION public.fn_proteger_truncate_reporte_decision_auditoria()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-AS $
+AS $$
 BEGIN
     RAISE EXCEPTION
         'Operación denegada: reporte_resena_decision_auditoria no puede ser truncada.';
 END;
-$;
+$$;
 
 DROP TRIGGER IF EXISTS trg_proteger_truncate_reporte_decision_auditoria
     ON public.reporte_resena_decision_auditoria;

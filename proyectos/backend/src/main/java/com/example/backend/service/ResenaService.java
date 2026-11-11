@@ -226,6 +226,17 @@ public class ResenaService {
         String accion = request.ocultar() ? "OCULTAR" : "RESTAURAR";
         String motivo = request.motivo().trim();
 
+        // Primero se persiste el evento mientras la reseña conserva su estado anterior.
+        // El trigger BEFORE INSERT de PostgreSQL valida ese estado; el constraint trigger
+        // diferido comprobará al COMMIT que la reseña cambió y coincide con la auditoría.
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion(accion);
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
+
         if (request.ocultar()) {
             resena.setOcultaPorModeracion(true);
             resena.setModeradaPor(actor);
@@ -238,14 +249,6 @@ public class ResenaService {
             resena.setMotivoModeracion(null);
         }
 
-        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
-        evento.setResena(resena);
-        evento.setModerador(actor);
-        evento.setAccion(accion);
-        evento.setMotivo(motivo);
-        evento.setFechaEvento(ahora);
-
-        moderacionAuditoriaRepository.saveAndFlush(evento);
         resenaRepository.saveAndFlush(resena);
     }
 

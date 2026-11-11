@@ -29,7 +29,7 @@ Los dos nuevos historiales no reemplazan ni reutilizan `reporte_resena_historial
 - Solo cuentas activas con asignación activa de Moderador o Administrador pueden ocultar/restaurar.
 - La validación se realiza en SecurityConfig y nuevamente en el servicio.
 - Una cuenta suspendida no puede moderar aunque conserve asignaciones.
-- Un moderador no puede moderar su propia reseña ni resolver su propio reporte.
+- Un moderador no puede moderar su propia reseña, resolver un reporte que él mismo creó ni resolver reportes sobre reseñas de su autoría.
 - El rol Moderador no concede permisos de administración de catálogo, roles o establecimientos.
 - La justificación es obligatoria para ocultar y restaurar manualmente una reseña.
 

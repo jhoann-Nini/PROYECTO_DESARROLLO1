@@ -1112,3 +1112,68 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 - `201 Created` / `204 No Content`: operación exitosa.
 
 **Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
+
+
+---
+
+# 28. Moderación de reseñas y consulta de reportes (S2-42)
+
+Esta sección describe los endpoints del módulo de moderación para listar reseñas pendientes y reportadas, así como la consulta plana de reportes de moderación.
+
+## 28.1 Listar reseñas pendientes y reportadas
+
+Permite a los operadores de moderación consultar la cola de reseñas que han acumulado reportes, ordenadas prioritariamente por cantidad de reportes pendientes y total de reportes.
+
+- **Método y ruta canónica:** `GET /api/moderacion/resenas/reportadas`
+- **Rutas compatibles (aliases):**
+  - `GET /api/resenas/reportadas`
+  - `GET /api/admin/resenas/reportadas`
+- **Atajo para reportes en estado PENDIENTE:**
+  - `GET /api/moderacion/resenas/pendientes`
+  - `GET /api/resenas/pendientes`
+  - `GET /api/admin/resenas/pendientes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para usuarios activos con rol `Moderador` o `Administrador`.
+- **Parámetros de consulta (Query Params):**
+  - `estado` (opcional, `EstadoReporte`): Filtra para que la reseña contenga al menos un reporte con dicho estado (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`).
+  - `oculta` (opcional, `Boolean`): Filtra por `ocultaPorReportes` (`true` o `false`).
+  - `idProducto` (opcional, `Long`): Filtra reseñas asociadas al producto especificado.
+- **Códigos de respuesta:**
+  - `200 OK`: Lista JSON con objetos `ResenaReportadaResponse`:
+    ```json
+    [
+      {
+        "idResena": 1,
+        "idProducto": 10,
+        "nombreProducto": "Smartphone Pro",
+        "idAutor": 5,
+        "nombreAutor": "Usuario Autor",
+        "comentario": "Texto de la reseña reportada...",
+        "puntuacion": 1,
+        "fechaCreacion": "2026-11-10T20:00:00",
+        "estado": true,
+        "ocultaPorReportes": false,
+        "totalReportes": 2,
+        "reportesPendientes": 2,
+        "reportes": [
+          {
+            "idReporte": 101,
+            "idUsuarioReportante": 8,
+            "nombreReportante": "Usuario Reportante",
+            "motivo": "spam",
+            "descripcion": "Publicidad encubierta",
+            "estado": "PENDIENTE",
+            "fechaCreacion": "2026-11-10T21:00:00"
+          }
+        ]
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo o sin permisos de moderación (`Usuario registrado` o `Tienda`).
+
+## 28.2 Consulta plana de reportes de moderación
+
+- **Método y rutas:** `GET /api/moderacion/reportes` (alias: `GET /api/admin/reportes`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `estado` (opcional).
+- **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).

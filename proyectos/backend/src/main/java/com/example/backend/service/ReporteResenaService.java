@@ -1,7 +1,9 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.ReporteResenaItemResponse;
 import com.example.backend.dto.ReporteResenaRequest;
 import com.example.backend.dto.ReporteResenaResponse;
+import com.example.backend.dto.ResenaReportadaResponse;
 import com.example.backend.entity.EstadoReporte;
 import com.example.backend.entity.ReporteResena;
 import com.example.backend.entity.Resena;
@@ -11,8 +13,12 @@ import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.ResenaRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Servicio de negocio para la gestión de reportes sobre reseñas.
+ * Servicio de negocio para la gestión de reportes sobre reseñas y moderación de contenido.
  * Implementa las reglas de validación de negocio, integridad de autorreporte,
- * prevención de reportes duplicados y persistencia en public.reporte_resena.
+ * prevención de reportes duplicados y consulta de la cola de moderación (S2-42).
  */
 @Service
 public class ReporteResenaService {
@@ -122,6 +128,134 @@ public class ReporteResenaService {
                 .toList();
     }
 
+    /**
+     * S2-42: Lista las reseñas pendientes y reportadas para el módulo de moderación.
+     * Solo accesible para Moderadores y Administradores activos.
+     *
+     * @param estadoFiltro      Filtro opcional por estado de reporte (ej. PENDIENTE, EN_REVISION).
+     * @param ocultaFiltro      Filtro opcional por indicador de ocultamiento por reportes.
+     * @param idProductoFiltro  Filtro opcional por id de producto.
+     * @param jwt               Token de autenticación del operador.
+     * @return Lista agrupada de reseñas reportadas con el detalle y conteo de reportes.
+     */
+    @Transactional(readOnly = true)
+    public List<ResenaReportadaResponse> listarResenasReportadas(
+            EstadoReporte estadoFiltro,
+            Boolean ocultaFiltro,
+            Long idProductoFiltro,
+            Jwt jwt) {
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosModeracion(usuario);
+
+        List<ReporteResena> todosLosReportes = reporteResenaRepository.findAllConDetalles();
+
+        // Agrupar por id_resena manteniendo orden cronológico
+        Map<Long, List<ReporteResena>> reportesPorResena = todosLosReportes.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getResena().getIdResena(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        List<ResenaReportadaResponse> resultado = new ArrayList<>();
+
+        for (Map.Entry<Long, List<ReporteResena>> entry : reportesPorResena.entrySet()) {
+            List<ReporteResena> listaReportes = entry.getValue();
+            if (listaReportes.isEmpty()) {
+                continue;
+            }
+
+            Resena resena = listaReportes.get(0).getResena();
+
+            // Filtrado por idProducto si fue solicitado
+            if (idProductoFiltro != null && (resena.getProducto() == null || !idProductoFiltro.equals(resena.getProducto().getIdProducto()))) {
+                continue;
+            }
+
+            // Filtrado por ocultaPorReportes si fue solicitado
+            if (ocultaFiltro != null && !Boolean.valueOf(ocultaFiltro).equals(resena.getOcultaPorReportes())) {
+                continue;
+            }
+
+            // Filtrado por estado del reporte si fue solicitado (la reseña debe contener al menos un reporte con ese estado)
+            if (estadoFiltro != null && listaReportes.stream().noneMatch(r -> r.getEstado() == estadoFiltro)) {
+                continue;
+            }
+
+            long totalReportes = listaReportes.size();
+            long reportesPendientes = listaReportes.stream()
+                    .filter(r -> r.getEstado() == EstadoReporte.PENDIENTE || r.getEstado() == EstadoReporte.EN_REVISION)
+                    .count();
+
+            List<ReporteResenaItemResponse> itemsReporte = listaReportes.stream()
+                    .map(r -> new ReporteResenaItemResponse(
+                            r.getIdReporte(),
+                            r.getUsuario() != null ? r.getUsuario().getIdUsuario() : null,
+                            r.getUsuario() != null ? r.getUsuario().getNombre() : "Usuario anónimo",
+                            r.getMotivo(),
+                            r.getDescripcion(),
+                            r.getEstado(),
+                            r.getFechaCreacion()
+                    ))
+                    .toList();
+
+            resultado.add(new ResenaReportadaResponse(
+                    resena.getIdResena(),
+                    resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,
+                    resena.getProducto() != null ? resena.getProducto().getNombre() : null,
+                    resena.getUsuario() != null ? resena.getUsuario().getIdUsuario() : null,
+                    resena.getUsuario() != null ? resena.getUsuario().getNombre() : null,
+                    resena.getComentario(),
+                    resena.getPuntuacion(),
+                    resena.getFechaCreacion(),
+                    resena.getEstado(),
+                    resena.getOcultaPorReportes(),
+                    totalReportes,
+                    reportesPendientes,
+                    itemsReporte
+            ));
+        }
+
+        // Ordenar con prioridad: reseñas con más reportes pendientes primero
+        resultado.sort((a, b) -> {
+            int compPendientes = Long.compare(b.reportesPendientes(), a.reportesPendientes());
+            if (compPendientes != 0) {
+                return compPendientes;
+            }
+            return Long.compare(b.totalReportes(), a.totalReportes());
+        });
+
+        return resultado;
+    }
+
+    /**
+     * S2-42: Consulta plana de la cola de reportes de moderación.
+     */
+    @Transactional(readOnly = true)
+    public List<ReporteResenaResponse> listarReportesModeracion(EstadoReporte estadoFiltro, Jwt jwt) {
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosModeracion(usuario);
+
+        List<ReporteResena> reportes;
+        if (estadoFiltro != null) {
+            reportes = reporteResenaRepository.findByEstadoConDetalles(estadoFiltro);
+        } else {
+            reportes = reporteResenaRepository.findAllConDetalles();
+        }
+
+        return reportes.stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    private void validarPermisosModeracion(Usuario usuario) {
+        if (!usuario.esModeradorOAdmin()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos de moderación.");
+        }
+    }
+
     private void validarMotivoYDescripcion(ReporteResenaRequest request) {
         if (request == null || request.motivo() == null || request.motivo().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El motivo es obligatorio.");
@@ -174,4 +308,3 @@ public class ReporteResenaService {
         );
     }
 }
-

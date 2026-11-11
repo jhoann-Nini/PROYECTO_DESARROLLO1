@@ -190,3 +190,35 @@ Validar de forma automatizada e integral el control de acceso, propiedad y roles
 ### 3. Cobertura en suites de prueba
 - **Backend:** com.example.backend.controller.ResenaPropiedadIntegrationTest (20 pruebas aprobadas con MockMvc y H2 en memoria).
 - **Frontend:** proyectos/frontend/src/app/resenas/EditarResena.test.tsx (cobertura de respuestas y captura de errores controlados).
+
+---
+
+## S2-42: Pruebas del endpoint para listar reseñas pendientes y reportadas
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral el endpoint de moderación para consultar reseñas reportadas y pendientes:
+- **Moderador y Administrador:** Acceso autorizado (`200 OK`) con agrupación de reseñas, cálculo de métricas (`totalReportes`, `reportesPendientes`) y detalle de cada reporte emitido.
+- **Usuario registrado / Tienda:** Rechazo inmediato con `403 Forbidden` ("No tienes permisos de moderación.").
+- **Usuario inactivo / suspendido:** Rechazo con `403 Forbidden`.
+- **Sin autenticación:** Rechazo con `401 Unauthorized`.
+- **Filtros funcionales:** Filtrado por `estado` del reporte, `oculta` e `idProducto`.
+- **Aislamiento:** Reseñas limpias (sin reportes) no aparecen en la cola de moderación.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Endpoint | Rol / Condición | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-42-01** | `GET /api/moderacion/resenas/reportadas` | Moderador activo | `200 OK` con reseñas reportadas y detalle | `200 OK` | **APROBADO** |
+| **S2-42-02** | `GET /api/moderacion/resenas/reportadas` | Administrador activo | `200 OK` con reseñas reportadas | `200 OK` | **APROBADO** |
+| **S2-42-03** | `GET /api/moderacion/resenas/reportadas` | Usuario registrado regular | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-42-04** | `GET /api/moderacion/resenas/reportadas` | Moderador suspendido (`estado=false`) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-42-05** | `GET /api/moderacion/resenas/reportadas` | Sin token (anónimo) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-42-06** | `GET /api/moderacion/resenas/pendientes` | Moderador activo | `200 OK` solo reseñas con reportes PENDIENTE | `200 OK` | **APROBADO** |
+| **S2-42-07** | `GET /api/moderacion/resenas/reportadas?idProducto=X` | Moderador activo | `200 OK` filtrado por producto | `200 OK` | **APROBADO** |
+| **S2-42-08** | `GET /api/moderacion/resenas/reportadas?oculta=true` | Moderador activo | `200 OK` solo reseñas ocultas por moderación | `200 OK` | **APROBADO** |
+| **S2-42-09** | `GET /api/moderacion/resenas/reportadas` | Reseñas limpias | No aparecen en la lista devuelta | Excluidas | **APROBADO** |
+| **S2-42-10** | `GET /api/resenas/reportadas` & `/api/admin/...` | Administrador / Moderador | `200 OK` rutas aliases compatibles | `200 OK` | **APROBADO** |
+| **S2-42-11** | `GET /api/moderacion/reportes` | Moderador activo | `200 OK` lista plana de reportes | `200 OK` | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- Suite: `com.example.backend.controller.ModeracionResenasIntegrationTest` (11 pruebas aprobadas al 100%).

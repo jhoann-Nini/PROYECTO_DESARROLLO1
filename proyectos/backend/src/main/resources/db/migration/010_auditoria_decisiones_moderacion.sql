@@ -25,12 +25,152 @@ BEGIN
         RAISE EXCEPTION 'Preflight fallido: debe estar aplicada la migración 007_moderacion_reportes.';
     END IF;
 
-    IF to_regclass('public.resena') IS NULL OR to_regclass('public.usuario') IS NULL THEN
-        RAISE EXCEPTION 'Preflight fallido: no existen public.resena o public.usuario.';
+    IF to_regclass('public.resena') IS NULL OR to_regclass('public.usuario') IS NULL
+       OR to_regclass('public.reporte_resena') IS NULL
+       OR to_regclass('public.usuario_rol') IS NULL THEN
+        RAISE EXCEPTION 'Preflight fallido: faltan public.resena, public.usuario, public.reporte_resena o public.usuario_rol.';
     END IF;
 END $$;
 
 LOCK TABLE public.resena IN ACCESS EXCLUSIVE MODE;
+LOCK TABLE public.reporte_resena IN SHARE ROW EXCLUSIVE MODE;
+
+-- Actualizar la validación del responsable para usar las asignaciones multirrol activas
+-- introducidas en la Fase 1, no el campo heredado usuario.id_rol.
+CREATE OR REPLACE FUNCTION public.fn_validar_transicion_moderacion()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $
+DECLARE
+    v_responsable_autorizado BOOLEAN;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.estado <> 'PENDIENTE' THEN
+            RAISE EXCEPTION
+                'Operación denegada: un nuevo reporte debe crearse en estado PENDIENTE (estado intentado: %)',
+                NEW.estado;
+        END IF;
+
+        IF NEW.id_responsable IS NOT NULL
+           OR NEW.fecha_inicio_revision IS NOT NULL
+           OR NEW.fecha_revision IS NOT NULL
+           OR NEW.notas_revision IS NOT NULL
+           OR NEW.id_historial_reasignacion IS NOT NULL THEN
+            RAISE EXCEPTION
+                'Operación denegada: un nuevo reporte no puede incluir datos de moderación en su creación';
+        END IF;
+
+        RETURN NEW;
+    END IF;
+
+    IF NEW.id_responsable IS NOT NULL THEN
+        SELECT EXISTS (
+            SELECT 1
+            FROM public.usuario u
+            JOIN public.usuario_rol ur
+              ON ur.id_usuario = u.id_usuario
+             AND ur.estado = TRUE
+            JOIN public.rol r
+              ON r.id_rol = ur.id_rol
+            WHERE u.id_usuario = NEW.id_responsable
+              AND u.estado = TRUE
+              AND LOWER(TRIM(r.nombre)) IN ('administrador', 'moderador')
+        )
+        INTO v_responsable_autorizado;
+
+        IF NOT COALESCE(v_responsable_autorizado, FALSE) THEN
+            RAISE EXCEPTION
+                'Operación denegada: el responsable debe ser una cuenta activa con asignación activa de Administrador o Moderador (id_usuario: %)',
+                NEW.id_responsable;
+        END IF;
+    END IF;
+
+    IF OLD.estado = 'PENDIENTE' THEN
+        IF NEW.estado <> 'EN_REVISION' THEN
+            RAISE EXCEPTION
+                'Transición inválida: un reporte PENDIENTE solo puede pasar a EN_REVISION (se intentó pasar a %)',
+                NEW.estado;
+        END IF;
+
+        IF NEW.id_responsable IS NULL OR NEW.fecha_inicio_revision IS NULL THEN
+            RAISE EXCEPTION
+                'Iniciar revisión exige id_responsable y fecha_inicio_revision no nulos';
+        END IF;
+
+        IF NEW.fecha_revision IS NOT NULL OR NEW.notas_revision IS NOT NULL THEN
+            RAISE EXCEPTION
+                'Iniciar revisión no permite fecha_revision ni notas_revision';
+        END IF;
+
+        IF NEW.id_historial_reasignacion IS NOT NULL THEN
+            RAISE EXCEPTION
+                'Iniciar revisión no debe tener id_historial_reasignacion';
+        END IF;
+
+    ELSIF OLD.estado = 'EN_REVISION' THEN
+        IF NEW.estado = 'EN_REVISION' THEN
+            IF NEW.id_responsable IS NOT DISTINCT FROM OLD.id_responsable THEN
+                RAISE EXCEPTION
+                    'Actualización denegada: en estado EN_REVISION solo se permite la reasignación a un responsable diferente';
+            END IF;
+
+            IF NEW.fecha_inicio_revision IS NULL OR NEW.fecha_inicio_revision <= OLD.fecha_inicio_revision THEN
+                RAISE EXCEPTION
+                    'La reasignación exige una fecha_inicio_revision posterior a la anterior';
+            END IF;
+
+            IF NEW.fecha_revision IS NOT NULL OR NEW.notas_revision IS NOT NULL THEN
+                RAISE EXCEPTION
+                    'Un reporte en EN_REVISION no puede tener fecha_revision ni notas_revision';
+            END IF;
+
+            IF NEW.id_historial_reasignacion IS NULL OR NEW.id_historial_reasignacion IS NOT DISTINCT FROM OLD.id_historial_reasignacion THEN
+                RAISE EXCEPTION
+                    'La reasignación exige un nuevo id_historial_reasignacion vinculado';
+            END IF;
+
+        ELSIF NEW.estado IN ('ACEPTADO', 'RECHAZADO') THEN
+            IF NEW.id_responsable IS DISTINCT FROM OLD.id_responsable THEN
+                RAISE EXCEPTION
+                    'No se permite cambiar el responsable al emitir la decisión final';
+            END IF;
+
+            IF NEW.fecha_inicio_revision IS DISTINCT FROM OLD.fecha_inicio_revision THEN
+                RAISE EXCEPTION
+                    'No se permite alterar la fecha de inicio de revisión al emitir la decisión final';
+            END IF;
+
+            IF NEW.fecha_revision IS NULL OR NEW.fecha_revision < NEW.fecha_inicio_revision THEN
+                RAISE EXCEPTION
+                    'La decisión final exige una fecha_revision válida y cronológicamente coherente';
+            END IF;
+
+            IF NEW.notas_revision IS NULL OR TRIM(NEW.notas_revision) = '' THEN
+                RAISE EXCEPTION
+                    'La decisión final exige notas_revision no vacías';
+            END IF;
+
+            IF NEW.id_historial_reasignacion IS DISTINCT FROM OLD.id_historial_reasignacion THEN
+                RAISE EXCEPTION
+                    'No se permite alterar id_historial_reasignacion durante la decisión final';
+            END IF;
+
+        ELSE
+            RAISE EXCEPTION
+                'Transición inválida desde EN_REVISION a %',
+                NEW.estado;
+        END IF;
+
+    ELSIF OLD.estado IN ('ACEPTADO', 'RECHAZADO') THEN
+        RAISE EXCEPTION
+            'Operación denegada: un reporte en estado final (%) es inmutable y no puede reabrirse',
+            OLD.estado;
+    END IF;
+
+    RETURN NEW;
+END;
+$;
+
 
 ALTER TABLE public.resena
     ADD COLUMN IF NOT EXISTS oculta_por_moderacion BOOLEAN NOT NULL DEFAULT FALSE,

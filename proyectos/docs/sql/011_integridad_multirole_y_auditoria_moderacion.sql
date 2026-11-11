@@ -69,6 +69,24 @@ AS $function$
     );
 $function$;
 
+-- La proteccion historica del rol Administrador tambien debe respetar el multirrol.
+-- Mientras exista una asignacion activa de Administrador, no se permite degradar
+-- el campo legado usuario.id_rol. Tras revocar esa asignacion, la columna puede sincronizarse.
+CREATE OR REPLACE FUNCTION public.fn_proteger_rol_administrador()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $function$
+BEGIN
+    IF NEW.id_rol IS DISTINCT FROM OLD.id_rol
+       AND public.fn_usuario_tiene_rol_activo(OLD.id_usuario, ARRAY['administrador']) THEN
+        RAISE EXCEPTION
+            'Operacion denegada: no se puede degradar el rol legado mientras la cuenta conserve una asignacion activa de Administrador (id_usuario: %).',
+            OLD.id_usuario;
+    END IF;
+    RETURN NEW;
+END;
+$function$;
+
 -- La auditoria de reasignacion solo puede ser creada por un Administrador activo.
 -- El responsable nuevo debe ser una cuenta activa con rol activo de Administrador/Moderador.
 CREATE OR REPLACE FUNCTION public.fn_validar_historial_roles()

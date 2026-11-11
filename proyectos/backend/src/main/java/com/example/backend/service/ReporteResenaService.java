@@ -169,9 +169,11 @@ public class ReporteResenaService {
         ReporteResena reporte = reporteResenaRepository.findWithResenaAndUsuarioByIdReporte(idReporte)
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
 
-        if (reporte.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
+        boolean esReportante = reporte.getUsuario().getIdUsuario().equals(actor.getIdUsuario());
+        boolean esAutorResena = reporte.getResena().getUsuario().getIdUsuario().equals(actor.getIdUsuario());
+        if (esReportante || esAutorResena) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "No puedes moderar un reporte que tú mismo realizaste.");
+                    "No puedes moderar un reporte propio ni uno relacionado con tu propia reseña.");
         }
 
         EstadoReporte actual = reporte.getEstado();

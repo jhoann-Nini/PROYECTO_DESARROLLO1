@@ -23,6 +23,7 @@ import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
+import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
 import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
@@ -101,6 +102,9 @@ class ResenaSecurityIntegrationTest {
 
     @Autowired
     private ReporteResenaRepository reporteResenaRepository;
+
+    @Autowired
+    private ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
     private MockMvc mockMvc;
     private Long idProductoValido;
@@ -767,4 +771,182 @@ class ResenaSecurityIntegrationTest {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("Moderador oculta y restaura reseña dejando trazabilidad de ambas decisiones")
+    void moderadorPuedeOcultarYRestaurarConAuditoria() throws Exception {
+        String subModerador = "d0e1f2a3-b4c5-6d7e-8f90-a1b2c3d4e5f6";
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_ocultamiento@example.com", "Moderador");
+        Usuario autor = crearUsuarioConRol(
+                "e1f2a3b4-c5d6-7e8f-90a1-b2c3d4e5f607",
+                "autor_ocultamiento@example.com",
+                "Usuario registrado");
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña que incumple normas");
+        resena.setPuntuacion(1);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+        Long idResena = resena.getIdResena();
+        String token = generarToken(subModerador, "moderador_ocultamiento@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + idResena + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":true,\"motivo\":\"Incumple las normas de la comunidad\"}"))
+                .andExpect(status().isNoContent());
+
+        Resena oculta = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertTrue(oculta.getOcultaPorModeracion());
+        org.junit.jupiter.api.Assertions.assertEquals(moderador.getIdUsuario(), oculta.getModeradaPor().getIdUsuario());
+        mockMvc.perform(get("/api/resenas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.idResena == " + idResena + ")]").doesNotExist());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + idResena + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":false,\"motivo\":\"Revisión completada; contenido restaurado\"}"))
+                .andExpect(status().isNoContent());
+
+        Resena restaurada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertFalse(restaurada.getOcultaPorModeracion());
+        org.junit.jupiter.api.Assertions.assertNull(restaurada.getModeradaPor());
+        org.junit.jupiter.api.Assertions.assertFalse(restaurada.getOcultaPorReportes());
+
+        mockMvc.perform(get("/api/resenas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.idResena == " + idResena + ")]").exists());
+
+        mockMvc.perform(get("/api/moderacion/resenas/" + idResena + "/historial")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(2)))
+                .andExpect(jsonPath("$[0].accion").value("RESTAURAR"))
+                .andExpect(jsonPath("$[1].accion").value("OCULTAR"));
+
+        org.junit.jupiter.api.Assertions.assertEquals(2,
+                moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDesc(idResena).size());
+    }
+
+    @Test
+    @DisplayName("Restaurar ocultamiento manual no elimina el ocultamiento automático por reportes")
+    void restaurarOcultamientoManualConservaOcultamientoPorReportes() throws Exception {
+        String subModerador = "f2a3b4c5-d6e7-8f90-a1b2-c3d4e5f60718";
+        crearUsuarioConRol(subModerador, "moderador_independencia@example.com", "Moderador");
+        Usuario autor = crearUsuarioConRol(
+                "a3b4c5d6-e7f8-90a1-b2c3-d4e5f6071829",
+                "autor_independencia@example.com",
+                "Usuario registrado");
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña oculta por ambas causas");
+        resena.setPuntuacion(1);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(true);
+        resena.setOcultaPorModeracion(true);
+        resena.setModeradaPor(usuarioRepository.findBySupabaseUid(subModerador).orElseThrow());
+        resena.setFechaModeracion(LocalDateTime.now());
+        resena.setMotivoModeracion("Ocultamiento manual inicial");
+        resena = resenaRepository.saveAndFlush(resena);
+        Long idResena = resena.getIdResena();
+        String token = generarToken(subModerador, "moderador_independencia@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + idResena + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":false,\"motivo\":\"Se retira únicamente la medida manual\"}"))
+                .andExpect(status().isNoContent());
+
+        Resena restaurada = resenaRepository.findById(idResena).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertFalse(restaurada.getOcultaPorModeracion());
+        org.junit.jupiter.api.Assertions.assertTrue(restaurada.getOcultaPorReportes());
+        mockMvc.perform(get("/api/resenas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.idResena == " + idResena + ")]").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Usuario ordinario no puede ocultar reseñas")
+    void usuarioOrdinarioNoPuedeOcultarResenas() throws Exception {
+        Usuario autor = crearUsuarioConRol(
+                "b4c5d6e7-f890-a1b2-c3d4-e5f60718293a",
+                "autor_usuario_ordinario@example.com",
+                "Usuario registrado");
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña protegida");
+        resena.setPuntuacion(4);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+        String token = generarToken(TEST_SUB, "resenas_test@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + resena.getIdResena() + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":true,\"motivo\":\"Intento no autorizado\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Moderador suspendido no puede ocultar reseñas")
+    void moderadorSuspendidoNoPuedeOcultarResenas() throws Exception {
+        String subModerador = "c5d6e7f8-90a1-b2c3-d4e5-f60718293a4b";
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_suspendido@example.com", "Moderador");
+        moderador.setEstado(false);
+        usuarioRepository.saveAndFlush(moderador);
+        Usuario autor = crearUsuarioConRol(
+                "d6e7f890-a1b2-c3d4-e5f6-0718293a4b5c",
+                "autor_suspendido@example.com",
+                "Usuario registrado");
+        Resena resena = new Resena();
+        resena.setUsuario(autor);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña de prueba");
+        resena.setPuntuacion(3);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+        String token = generarToken(subModerador, "moderador_suspendido@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + resena.getIdResena() + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":true,\"motivo\":\"Intento suspendido\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Moderador no puede ocultar su propia reseña")
+    void moderadorNoPuedeOcultarSuPropiaResena() throws Exception {
+        String subModerador = "e7f890a1-b2c3-d4e5-f607-18293a4b5c6d";
+        Usuario moderador = crearUsuarioConRol(subModerador, "moderador_autor@example.com", "Moderador");
+        Resena resena = new Resena();
+        resena.setUsuario(moderador);
+        resena.setProducto(productoRepository.findById(idProductoValido).orElseThrow());
+        resena.setComentario("Reseña escrita por el moderador");
+        resena.setPuntuacion(5);
+        resena.setEstado(true);
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.saveAndFlush(resena);
+        String token = generarToken(subModerador, "moderador_autor@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/resenas/" + resena.getIdResena() + "/ocultamiento")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"ocultar\":true,\"motivo\":\"Conflicto de interés\"}"))
+                .andExpect(status().isForbidden());
+    }
+
 }

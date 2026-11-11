@@ -327,6 +327,15 @@ BEGIN
              AND a.estado_anterior = OLD.estado
              AND a.estado_nuevo = NEW.estado
              AND a.id_transaccion = txid_current()
+             AND (
+                 (OLD.estado = 'PENDIENTE'
+                  AND NEW.estado = 'EN_REVISION'
+                  AND a.id_moderador = NEW.id_responsable)
+                 OR
+                 (NEW.estado IN ('ACEPTADO', 'RECHAZADO')
+                  AND a.observacion IS NOT DISTINCT FROM NEW.notas_revision
+                  AND a.fecha_evento = NEW.fecha_revision)
+             )
        ) THEN
         RAISE EXCEPTION 'La transicion del reporte % no tiene auditoria en la misma transaccion.', NEW.id_reporte;
     END IF;
@@ -380,6 +389,13 @@ BEGIN
             WHERE a.id_resena = NEW.id_resena
               AND a.accion = v_accion
               AND a.id_transaccion = txid_current()
+              AND (
+                  (v_accion = 'RESTAURAR')
+                  OR
+                  (a.id_moderador = NEW.moderada_por
+                   AND a.motivo = NEW.motivo_moderacion
+                   AND a.fecha_evento = NEW.fecha_moderacion)
+              )
         ) THEN
             RAISE EXCEPTION 'El cambio de ocultamiento manual de la resena % no tiene auditoria en la misma transaccion.', NEW.id_resena;
         END IF;

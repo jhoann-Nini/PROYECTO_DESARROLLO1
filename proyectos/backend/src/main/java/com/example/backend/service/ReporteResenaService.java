@@ -190,7 +190,7 @@ public class ReporteResenaService {
         evento.setEstadoNuevo(nuevoEstado.name());
         evento.setObservacion(observacion != null && !observacion.isBlank() ? observacion.trim() : null);
         evento.setFechaEvento(LocalDateTime.now());
-        decisionAuditoriaRepository.save(evento);
+        decisionAuditoriaRepository.saveAndFlush(evento);
 
         reporte.setEstado(nuevoEstado);
         reporte.setFechaActualizacion(LocalDateTime.now());

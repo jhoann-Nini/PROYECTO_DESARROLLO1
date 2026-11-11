@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.ReporteResenaRequest;
 import com.example.backend.dto.ReporteResenaResponse;
+import com.example.backend.dto.ReporteResenaDecisionAuditoriaResponse;
 import com.example.backend.entity.EstadoReporte;
 import com.example.backend.service.ReporteResenaService;
 import jakarta.validation.Valid;
@@ -62,8 +63,19 @@ public class ReporteResenaController {
     public ReporteResenaResponse actualizarEstadoModeracion(
             @PathVariable Long idReporte,
             @RequestParam EstadoReporte estado,
+            @RequestParam(required = false) String observacion,
             @AuthenticationPrincipal Jwt jwt) {
-        return reporteResenaService.actualizarEstadoModeracion(idReporte, estado, jwt);
+        return reporteResenaService.actualizarEstadoModeracion(idReporte, estado, observacion, jwt);
+    }
+
+    /**
+     * Consulta el historial inmutable de decisiones sobre un reporte.
+     */
+    @GetMapping("/api/moderacion/reportes/{idReporte}/historial")
+    public List<ReporteResenaDecisionAuditoriaResponse> listarHistorialModeracion(
+            @PathVariable Long idReporte,
+            @AuthenticationPrincipal Jwt jwt) {
+        return reporteResenaService.listarHistorialModeracion(idReporte, jwt);
     }
 
     /**

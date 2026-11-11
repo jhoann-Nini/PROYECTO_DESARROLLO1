@@ -258,7 +258,7 @@ public class ResenaService {
             throw new ResourceNotFoundException("Reseña no encontrada con id " + idResena);
         }
 
-        return moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDesc(idResena)
+        return moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDescIdAuditoriaDesc(idResena)
                 .stream()
                 .map(evento -> new ResenaModeracionAuditoriaResponse(
                         evento.getIdAuditoria(),

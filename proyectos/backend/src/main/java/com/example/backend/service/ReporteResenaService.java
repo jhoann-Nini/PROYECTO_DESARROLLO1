@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.AccionModeracionRequest;
 import com.example.backend.dto.ReporteResenaItemResponse;
 import com.example.backend.dto.ReporteResenaRequest;
 import com.example.backend.dto.ReporteResenaResponse;
@@ -183,38 +184,7 @@ public class ReporteResenaService {
                 continue;
             }
 
-            long totalReportes = listaReportes.size();
-            long reportesPendientes = listaReportes.stream()
-                    .filter(r -> r.getEstado() == EstadoReporte.PENDIENTE || r.getEstado() == EstadoReporte.EN_REVISION)
-                    .count();
-
-            List<ReporteResenaItemResponse> itemsReporte = listaReportes.stream()
-                    .map(r -> new ReporteResenaItemResponse(
-                            r.getIdReporte(),
-                            r.getUsuario() != null ? r.getUsuario().getIdUsuario() : null,
-                            r.getUsuario() != null ? r.getUsuario().getNombre() : "Usuario anónimo",
-                            r.getMotivo(),
-                            r.getDescripcion(),
-                            r.getEstado(),
-                            r.getFechaCreacion()
-                    ))
-                    .toList();
-
-            resultado.add(new ResenaReportadaResponse(
-                    resena.getIdResena(),
-                    resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,
-                    resena.getProducto() != null ? resena.getProducto().getNombre() : null,
-                    resena.getUsuario() != null ? resena.getUsuario().getIdUsuario() : null,
-                    resena.getUsuario() != null ? resena.getUsuario().getNombre() : null,
-                    resena.getComentario(),
-                    resena.getPuntuacion(),
-                    resena.getFechaCreacion(),
-                    resena.getEstado(),
-                    resena.getOcultaPorReportes(),
-                    totalReportes,
-                    reportesPendientes,
-                    itemsReporte
-            ));
+            resultado.add(toResenaReportadaResponse(resena, listaReportes));
         }
 
         // Ordenar con prioridad: reseñas con más reportes pendientes primero
@@ -227,6 +197,158 @@ public class ReporteResenaService {
         });
 
         return resultado;
+    }
+
+    /**
+     * S2-43: Oculta una reseña reportada marcándola con ocultaPorReportes = true.
+     * Marca los reportes pendientes/en revisión como ACEPTADO.
+     * Acción reservada exclusivamente para Administradores.
+     */
+    @Transactional
+    public ResenaReportadaResponse ocultarResena(Long idResena, AccionModeracionRequest request, Jwt jwt) {
+        if (idResena == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ID de la reseña es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosAdministrador(usuario);
+
+        Resena resena = resenaRepository.findByIdConDetalles(idResena)
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        if (!Boolean.TRUE.equals(resena.getEstado())) {
+            throw new ConflictException("No se puede ocultar una reseña eliminada por su autor.");
+        }
+
+        resena.setOcultaPorReportes(true);
+        resena = resenaRepository.save(resena);
+
+        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdResenaOrderByFechaCreacionDesc(idResena);
+        LocalDateTime ahora = LocalDateTime.now();
+        for (ReporteResena rep : reportes) {
+            if (rep.getEstado() == EstadoReporte.PENDIENTE || rep.getEstado() == EstadoReporte.EN_REVISION) {
+                rep.setEstado(EstadoReporte.ACEPTADO);
+                rep.setFechaActualizacion(ahora);
+            }
+        }
+        reporteResenaRepository.saveAll(reportes);
+
+        return toResenaReportadaResponse(resena, reportes);
+    }
+
+    /**
+     * S2-43: Restaura la visibilidad de una reseña reportada marcándola con ocultaPorReportes = false.
+     * Marca los reportes pendientes/en revisión como RECHAZADO.
+     * Si la reseña fue eliminada lógicamente por su autor (estado = false), rechaza la publicación (409 Conflict).
+     * Acción reservada exclusivamente para Administradores.
+     */
+    @Transactional
+    public ResenaReportadaResponse publicarResena(Long idResena, AccionModeracionRequest request, Jwt jwt) {
+        if (idResena == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ID de la reseña es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosAdministrador(usuario);
+
+        Resena resena = resenaRepository.findByIdConDetalles(idResena)
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        if (!Boolean.TRUE.equals(resena.getEstado())) {
+            throw new ConflictException("No se puede publicar una reseña eliminada por su autor.");
+        }
+
+        resena.setOcultaPorReportes(false);
+        resena = resenaRepository.save(resena);
+
+        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdResenaOrderByFechaCreacionDesc(idResena);
+        LocalDateTime ahora = LocalDateTime.now();
+        for (ReporteResena rep : reportes) {
+            if (rep.getEstado() == EstadoReporte.PENDIENTE || rep.getEstado() == EstadoReporte.EN_REVISION) {
+                rep.setEstado(EstadoReporte.RECHAZADO);
+                rep.setFechaActualizacion(ahora);
+            }
+        }
+        reporteResenaRepository.saveAll(reportes);
+
+        return toResenaReportadaResponse(resena, reportes);
+    }
+
+    /**
+     * S2-43: Rechaza todos los reportes pendientes/en revisión de una reseña.
+     * Si los reportes no rechazados bajan de 3 y la reseña está activa, restablece automáticamente su visibilidad.
+     * Acción reservada exclusivamente para Administradores.
+     */
+    @Transactional
+    public ResenaReportadaResponse rechazarReportesDeResena(Long idResena, AccionModeracionRequest request, Jwt jwt) {
+        if (idResena == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ID de la reseña es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosAdministrador(usuario);
+
+        Resena resena = resenaRepository.findByIdConDetalles(idResena)
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdResenaOrderByFechaCreacionDesc(idResena);
+        LocalDateTime ahora = LocalDateTime.now();
+        for (ReporteResena rep : reportes) {
+            if (rep.getEstado() == EstadoReporte.PENDIENTE || rep.getEstado() == EstadoReporte.EN_REVISION) {
+                rep.setEstado(EstadoReporte.RECHAZADO);
+                rep.setFechaActualizacion(ahora);
+            }
+        }
+        reporteResenaRepository.saveAll(reportes);
+
+        long reportesActivos = reportes.stream()
+                .filter(r -> r.getEstado() != EstadoReporte.RECHAZADO)
+                .count();
+
+        if (reportesActivos < 3 && Boolean.TRUE.equals(resena.getEstado())) {
+            resena.setOcultaPorReportes(false);
+            resena = resenaRepository.save(resena);
+        }
+
+        return toResenaReportadaResponse(resena, reportes);
+    }
+
+    /**
+     * S2-43: Rechaza un reporte individual de una reseña.
+     * Si los reportes no rechazados de la reseña bajan de 3, restablece automáticamente su visibilidad.
+     * Acción reservada exclusivamente para Administradores.
+     */
+    @Transactional
+    public ReporteResenaResponse rechazarReporteIndividual(Long idReporte, AccionModeracionRequest request, Jwt jwt) {
+        if (idReporte == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El ID del reporte es obligatorio.");
+        }
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
+        validarPermisosAdministrador(usuario);
+
+        ReporteResena reporte = reporteResenaRepository.findByIdConDetalles(idReporte)
+                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
+
+        reporte.setEstado(EstadoReporte.RECHAZADO);
+        reporte.setFechaActualizacion(LocalDateTime.now());
+        reporteResenaRepository.save(reporte);
+
+        Resena resena = reporte.getResena();
+        if (resena != null) {
+            long reportesActivos = reporteResenaRepository.countByResenaIdResenaAndEstadoNot(
+                    resena.getIdResena(), EstadoReporte.RECHAZADO);
+            if (reportesActivos < 3 && Boolean.TRUE.equals(resena.getEstado()) && Boolean.TRUE.equals(resena.getOcultaPorReportes())) {
+                resena.setOcultaPorReportes(false);
+                resenaRepository.save(resena);
+            }
+        }
+
+        return toResponse(reporte);
     }
 
     /**
@@ -254,6 +376,47 @@ public class ReporteResenaService {
         if (!usuario.esModeradorOAdmin()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permisos de moderación.");
         }
+    }
+
+    private void validarPermisosAdministrador(Usuario usuario) {
+        if (!usuario.tieneRol("Administrador")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acción reservada exclusivamente para administradores.");
+        }
+    }
+
+    private ResenaReportadaResponse toResenaReportadaResponse(Resena resena, List<ReporteResena> listaReportes) {
+        long totalReportes = listaReportes.size();
+        long reportesPendientes = listaReportes.stream()
+                .filter(r -> r.getEstado() == EstadoReporte.PENDIENTE || r.getEstado() == EstadoReporte.EN_REVISION)
+                .count();
+
+        List<ReporteResenaItemResponse> itemsReporte = listaReportes.stream()
+                .map(r -> new ReporteResenaItemResponse(
+                        r.getIdReporte(),
+                        r.getUsuario() != null ? r.getUsuario().getIdUsuario() : null,
+                        r.getUsuario() != null ? r.getUsuario().getNombre() : "Usuario anónimo",
+                        r.getMotivo(),
+                        r.getDescripcion(),
+                        r.getEstado(),
+                        r.getFechaCreacion()
+                ))
+                .toList();
+
+        return new ResenaReportadaResponse(
+                resena.getIdResena(),
+                resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,
+                resena.getProducto() != null ? resena.getProducto().getNombre() : null,
+                resena.getUsuario() != null ? resena.getUsuario().getIdUsuario() : null,
+                resena.getUsuario() != null ? resena.getUsuario().getNombre() : null,
+                resena.getComentario(),
+                resena.getPuntuacion(),
+                resena.getFechaCreacion(),
+                resena.getEstado(),
+                resena.getOcultaPorReportes(),
+                totalReportes,
+                reportesPendientes,
+                itemsReporte
+        );
     }
 
     private void validarMotivoYDescripcion(ReporteResenaRequest request) {

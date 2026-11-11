@@ -12,3 +12,4 @@ public record ReporteResenaItemResponse(
         EstadoReporte estado,
         LocalDateTime fechaCreacion
 ) {}
+

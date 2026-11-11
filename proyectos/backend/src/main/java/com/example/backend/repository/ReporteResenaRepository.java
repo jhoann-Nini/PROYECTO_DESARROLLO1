@@ -34,4 +34,22 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
     @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})
     @Query("SELECT r FROM ReporteResena r WHERE r.estado = :estado ORDER BY r.fechaCreacion DESC")
     List<ReporteResena> findByEstadoConDetalles(@Param("estado") EstadoReporte estado);
+
+    /**
+     * Obtiene un reporte por su ID con todas sus relaciones asociadas cargadas.
+     */
+    @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})
+    @Query("SELECT r FROM ReporteResena r WHERE r.idReporte = :idReporte")
+    java.util.Optional<ReporteResena> findByIdConDetalles(@Param("idReporte") Long idReporte);
+
+    /**
+     * Obtiene los reportes de una reseña específica ordenados descendentemente.
+     */
+    @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})
+    List<ReporteResena> findByResenaIdResenaOrderByFechaCreacionDesc(Long idResena);
+
+    /**
+     * Cuenta los reportes de una reseña cuyo estado sea diferente al indicado.
+     */
+    long countByResenaIdResenaAndEstadoNot(Long idResena, EstadoReporte estado);
 }

@@ -1177,3 +1177,69 @@ Permite a los operadores de moderación consultar la cola de reseñas que han ac
 - **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
 - **Parámetros:** `estado` (opcional).
 - **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).
+
+---
+
+# 29. Acciones de moderación de reseñas (S2-43)
+
+Esta sección describe las acciones operativas de moderación sobre reseñas y reportes: **Ocultar**, **Publicar** y **Rechazar**.
+**Regla de autorización:** Estas tres operaciones están reservadas **exclusivamente para usuarios con rol `Administrador` activo**. Los roles `Moderador`, `Usuario registrado` y `Tienda` reciben `403 Forbidden`.
+
+## 29.1 Ocultar reseña
+Establece `ocultaPorReportes = true` en la reseña y actualiza automáticamente los reportes con estado `PENDIENTE` o `EN_REVISION` asociados a la reseña a `ACEPTADO`.
+
+- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/ocultar` (alias: `POST /api/admin/resenas/{idResena}/ocultar`, `/api/moderacion/resenas/{idResena}/ocultar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Contenido ofensivo verificado"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorReportes: true` y reportes en `ACEPTADO`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Si la reseña fue eliminada lógicamente por su autor.
+
+## 29.2 Publicar reseña (restaurar visibilidad)
+Restaura la visibilidad de la reseña (`ocultaPorReportes = false`) y actualiza los reportes pendientes/en revisión a `RECHAZADO`.
+
+- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/publicar` (alias: `POST /api/admin/resenas/{idResena}/publicar`, `/api/moderacion/resenas/{idResena}/publicar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reseña verificada y legítima tras revisión"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorReportes: false` y reportes en `RECHAZADO`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Si la reseña fue eliminada por su autor (`resena.estado == false`), impidiendo su republicación forzada.
+
+## 29.3 Rechazar reportes de una reseña en lote
+Marca los reportes pendientes/en revisión de una reseña como `RECHAZADO`. Si los reportes no rechazados quedan por debajo del umbral de 3 y la reseña sigue activa, se restablece automáticamente la visibilidad (`ocultaPorReportes = false`).
+
+- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/rechazar-reportes` (alias: `/api/admin/resenas/{idResena}/rechazar`, `/api/moderacion/resenas/{idResena}/rechazar-reportes`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` actualizado.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `404 Not Found`: Reseña inexistente.
+
+## 29.4 Rechazar reporte individual
+Actualiza el estado de un reporte específico a `RECHAZADO`. Recalcula los reportes activos restantes de la reseña: si bajan de 3, restablece automáticamente `ocultaPorReportes = false` (Regla 8 de moderación).
+
+- **Métodos y rutas:** `PUT /api/admin/reportes/{idReporte}/rechazar` (alias: `/api/moderacion/reportes/{idReporte}/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ReporteResenaResponse` con `estado: "RECHAZADO"`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `404 Not Found`: Reporte inexistente.
+

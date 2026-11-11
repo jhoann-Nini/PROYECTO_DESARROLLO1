@@ -18,3 +18,4 @@ public record ResenaReportadaResponse(
         long reportesPendientes,
         List<ReporteResenaItemResponse> reportes
 ) {}
+

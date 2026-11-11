@@ -411,3 +411,4 @@ class ModeracionResenasIntegrationTest {
                 .andExpect(jsonPath("$[0].motivo").isNotEmpty());
     }
 }
+

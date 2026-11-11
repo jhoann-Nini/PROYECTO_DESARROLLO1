@@ -222,3 +222,42 @@ Validar de forma automatizada e integral el endpoint de moderación para consult
 
 ### 3. Cobertura de pruebas
 - Suite: `com.example.backend.controller.ModeracionResenasIntegrationTest` (11 pruebas aprobadas al 100%).
+
+---
+
+## S2-43: Pruebas de acciones publicar, ocultar y rechazar (solo administrador)
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral los endpoints de acciones operativas de moderación sobre reseñas y reportes:
+- **Solo Administrador activo:** Ejecuta exitosamente `ocultar`, `publicar`, `rechazar-reportes` y `rechazar` individual (`200 OK`).
+- **Restricción estricta de Moderador:** Aunque el rol `Moderador` puede consultar la cola (S2-42), las acciones de resolución están reservadas exclusivamente al `Administrador`. Los intentos por un `Moderador` son denegados con `403 Forbidden`.
+- **Usuarios regulares y anónimos:** Reciben `403 Forbidden` y `401 Unauthorized` respectivamente.
+- **Regla 8 de la migración SQL 006:** Si los reportes no rechazados bajan de 3, la reseña restablece automáticamente su visibilidad (`ocultaPorReportes = false`), siempre que no haya sido eliminada lógicamente por su autor.
+- **Protección de borrado del autor:** Si una reseña tiene `estado = false`, no puede ser publicada forzadamente ni ocultada por moderación (`409 Conflict`).
+- **Manejo de errores:** `404 Not Found` ante reseñas o reportes inexistentes.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Operación / Endpoint | Rol / Condición | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-43-01** | `PUT /api/admin/resenas/{id}/ocultar` | Administrador activo | `200 OK`, `ocultaPorReportes=true`, reportes pendientes pasan a `ACEPTADO` | `200 OK` | **APROBADO** |
+| **S2-43-02** | `PUT /api/admin/resenas/{id}/ocultar` | Reseña eliminada por autor | `409 Conflict` (no se puede ocultar eliminada) | `409 Conflict` | **APROBADO** |
+| **S2-43-03** | `PUT /api/admin/resenas/{id}/publicar` | Administrador activo | `200 OK`, `ocultaPorReportes=false`, reportes pendientes pasan a `RECHAZADO` | `200 OK` | **APROBADO** |
+| **S2-43-04** | `PUT /api/admin/resenas/{id}/publicar` | Reseña eliminada por autor | `409 Conflict` (no se permite republicar borrada) | `409 Conflict` | **APROBADO** |
+| **S2-43-05** | `PUT /api/admin/resenas/{id}/rechazar-reportes` | Administrador activo | `200 OK`, reportes en `RECHAZADO`, se desoculta si activos < 3 | `200 OK` | **APROBADO** |
+| **S2-43-06** | `PUT /api/admin/reportes/{id}/rechazar` | Administrador activo | `200 OK`, reporte en `RECHAZADO`, reseña se desoculta si activos bajan a < 3 | `200 OK` | **APROBADO** |
+| **S2-43-07** | `PUT /api/admin/reportes/{id}/rechazar` | Administrador activo | `200 OK`, reporte en `RECHAZADO`, reseña sigue oculta si aún quedan >= 3 | `200 OK` | **APROBADO** |
+| **S2-43-08** | `PUT /api/admin/resenas/{id}/ocultar` | Moderador (sin Admin) | `403 Forbidden` (acción exclusiva administrador) | `403 Forbidden` | **APROBADO** |
+| **S2-43-09** | `PUT /api/moderacion/resenas/{id}/ocultar` | Moderador (sin Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-43-10** | `PUT /api/admin/resenas/{id}/publicar` | Moderador (sin Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-43-11** | `PUT /api/admin/reportes/{id}/rechazar` | Moderador (sin Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-43-12** | `PUT /api/admin/resenas/{id}/ocultar` | Usuario registrado regular | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-43-13** | `PUT /api/admin/resenas/{id}/ocultar` | Administrador suspendido | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-43-14** | `PUT /api/admin/resenas/{id}/ocultar` | Sin autenticación | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-43-15** | `PUT /api/admin/resenas/999999/ocultar` | Administrador activo | `404 Not Found` | `404 Not Found` | **APROBADO** |
+| **S2-43-16** | `PUT /api/admin/reportes/999999/rechazar` | Administrador activo | `404 Not Found` | `404 Not Found` | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- Suite: `com.example.backend.controller.ModeracionAccionesIntegrationTest` (15 pruebas aprobadas al 100%).
+- Suite completa del backend: 293 pruebas ejecutadas, 0 fallos, 0 errores.
+

@@ -278,15 +278,17 @@ class ResenaSecurityIntegrationTest {
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
                                 "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
-                        .header("Authorization", "Bearer " + token)
-                        .param("estado", "EN_REVISION"))
+                         .header("Authorization", "Bearer " + token)
+                        .param("estado", "EN_REVISION")
+                        .param("observacion", "Se inicia la revisión del reporte"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("EN_REVISION"));
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
                                 "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
-                        .header("Authorization", "Bearer " + token)
-                        .param("estado", "ACEPTADO"))
+                         .header("Authorization", "Bearer " + token)
+                        .param("estado", "ACEPTADO")
+                        .param("observacion", "Se confirma el incumplimiento"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.estado").value("ACEPTADO"));
 
@@ -295,7 +297,9 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", org.hamcrest.Matchers.hasSize(2)))
                 .andExpect(jsonPath("$[0].estadoAnterior").value("EN_REVISION"))
-                .andExpect(jsonPath("$[0].estadoNuevo").value("ACEPTADO"))
+                 .andExpect(jsonPath("$[0].estadoNuevo").value("ACEPTADO"))
+                .andExpect(jsonPath("$[0].observacion").value("Se confirma el incumplimiento"))
+                .andExpect(jsonPath("$[0].idModerador").isNumber())
                 .andExpect(jsonPath("$[1].estadoAnterior").value("PENDIENTE"))
                 .andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"));
 

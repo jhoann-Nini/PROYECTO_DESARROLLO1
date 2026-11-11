@@ -318,7 +318,7 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(jsonPath("$[1].estadoNuevo").value("EN_REVISION"));
 
         org.junit.jupiter.api.Assertions.assertEquals(2,
-                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDescIdAuditoriaDesc(
                         reporte.getIdReporte()).size());
     }
 
@@ -865,7 +865,7 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(jsonPath("$[1].accion").value("OCULTAR"));
 
         org.junit.jupiter.api.Assertions.assertEquals(2,
-                moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDesc(idResena).size());
+                moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDescIdAuditoriaDesc(idResena).size());
     }
 
     @Test
@@ -1009,7 +1009,7 @@ class ResenaSecurityIntegrationTest {
         org.junit.jupiter.api.Assertions.assertEquals(EstadoReporte.EN_REVISION, sinResolver.getEstado());
         org.junit.jupiter.api.Assertions.assertNull(sinResolver.getFechaRevision());
         org.junit.jupiter.api.Assertions.assertEquals(1,
-                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDescIdAuditoriaDesc(
                         reporte.getIdReporte()).size());
     }
 
@@ -1052,7 +1052,7 @@ class ResenaSecurityIntegrationTest {
         org.junit.jupiter.api.Assertions.assertEquals(EstadoReporte.PENDIENTE,
                 reporteResenaRepository.findById(reporte.getIdReporte()).orElseThrow().getEstado());
         org.junit.jupiter.api.Assertions.assertEquals(0,
-                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDescIdAuditoriaDesc(
                         reporte.getIdReporte()).size());
     }
 

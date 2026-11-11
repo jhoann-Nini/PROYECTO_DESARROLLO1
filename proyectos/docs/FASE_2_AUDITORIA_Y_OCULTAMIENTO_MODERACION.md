@@ -7,7 +7,7 @@ Esta entrega amplía la moderación existente sin alterar las migraciones 006 ni
 La migración nueva es:
 
 - `010_auditoria_decisiones_moderacion.sql`
-- Requiere que `007_moderacion_reportes` esté registrada en `schema_version`.
+- Requiere que `007_moderacion_reportes`, `008_multirole_y_representantes` y `009_auditoria_asignaciones` estén registradas en `schema_version`.
 - No ejecuta ni modifica datos históricos.
 - No debe aplicarse dos veces.
 

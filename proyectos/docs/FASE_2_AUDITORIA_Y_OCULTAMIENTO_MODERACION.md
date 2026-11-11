@@ -42,7 +42,7 @@ Los dos nuevos historiales no reemplazan ni reutilizan `reporte_resena_historial
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=ACEPTADO&observacion=...`
 - `PATCH /api/moderacion/reportes/{idReporte}/estado?estado=RECHAZADO&observacion=...`
 
-La observación es opcional y se guarda junto con el actor, estado anterior, estado nuevo y fecha. Cada transición permitida queda en `reporte_resena_decision_auditoria`; no se reutiliza la tabla `reporte_resena_historial`, que conserva su propósito original de auditar reasignaciones.
+La observación es opcional al iniciar la revisión (`PENDIENTE → EN_REVISION`) y obligatoria al aceptar o rechazar (`EN_REVISION → ACEPTADO | RECHAZADO`). Se guarda junto con el actor, estado anterior, estado nuevo y fecha. El backend asigna responsable y fecha de inicio al comenzar la revisión, y fecha de decisión y notas al resolverla, respetando las restricciones de la migración 007. Cada transición permitida queda en `reporte_resena_decision_auditoria`; no se reutiliza la tabla `reporte_resena_historial`, que conserva su propósito original de auditar reasignaciones.
 
 ### Ocultamiento manual de reseñas
 
@@ -79,7 +79,7 @@ Restaurar el ocultamiento manual solo cambia `oculta_por_moderacion`; no reviert
 
 ## Auditoría
 
-Los nuevos historiales registran actor y fecha y están protegidos en PostgreSQL contra UPDATE, DELETE y TRUNCATE. La escritura de la reseña y su evento de auditoría se realiza en una misma transacción del backend.
+Los nuevos historiales registran actor y fecha y están protegidos en PostgreSQL contra UPDATE, DELETE y TRUNCATE. La escritura de la reseña y su evento de auditoría se realiza en una misma transacción del backend. Las transiciones de reportes también persisten sus campos de responsable/fechas/notas y el evento de auditoría en una única transacción. La migración 010 actualiza el trigger de transición para validar asignaciones activas en `usuario_rol`, compatible con el modelo multirrol.
 
 ## Validación pendiente
 

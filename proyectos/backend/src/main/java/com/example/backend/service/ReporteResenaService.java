@@ -122,6 +122,74 @@ public class ReporteResenaService {
                 .toList();
     }
 
+
+    /**
+     * Consulta la bandeja de reportes para moderadores y administradores activos.
+     * El usuario reportante y la reseña se cargan para evitar consultas diferidas al serializar.
+     */
+    @Transactional(readOnly = true)
+    public List<ReporteResenaResponse> listarBandejaModeracion(EstadoReporte estado, Jwt jwt) {
+        Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarPermisoModeracion(actor);
+        if (estado == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El estado del reporte es obligatorio.");
+        }
+        return reporteResenaRepository.findByEstadoOrderByFechaCreacionAsc(estado)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    /**
+     * Cambia el estado de un reporte siguiendo el flujo permitido:
+     * PENDIENTE -> EN_REVISION -> ACEPTADO | RECHAZADO.
+     * No permite que un moderador resuelva un reporte que él mismo creó.
+     */
+    @Transactional
+    public ReporteResenaResponse actualizarEstadoModeracion(Long idReporte, EstadoReporte nuevoEstado, Jwt jwt) {
+        if (idReporte == null || nuevoEstado == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El reporte y el nuevo estado son obligatorios.");
+        }
+
+        Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarPermisoModeracion(actor);
+
+        ReporteResena reporte = reporteResenaRepository.findWithResenaAndUsuarioByIdReporte(idReporte)
+                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
+
+        if (reporte.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No puedes moderar un reporte que tú mismo realizaste.");
+        }
+
+        EstadoReporte actual = reporte.getEstado();
+        boolean transicionValida = (actual == EstadoReporte.PENDIENTE && nuevoEstado == EstadoReporte.EN_REVISION)
+                || (actual == EstadoReporte.EN_REVISION
+                    && (nuevoEstado == EstadoReporte.ACEPTADO || nuevoEstado == EstadoReporte.RECHAZADO));
+        if (!transicionValida) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Transición de estado no permitida: " + actual + " -> " + nuevoEstado + ".");
+        }
+
+        reporte.setEstado(nuevoEstado);
+        reporte.setFechaActualizacion(LocalDateTime.now());
+        return toResponse(reporteResenaRepository.saveAndFlush(reporte));
+    }
+
+    private void validarPermisoModeracion(Usuario usuario) {
+        validarUsuarioActivo(usuario);
+        boolean autorizado = usuario.getRoles() != null && usuario.getRoles().stream()
+                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                .map(asignacion -> asignacion.getRol())
+                .anyMatch(rol -> rol != null && rol.getNombre() != null
+                        && ("Moderador".equalsIgnoreCase(rol.getNombre())
+                        || "Administrador".equalsIgnoreCase(rol.getNombre())));
+        if (!autorizado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Se requiere un rol activo de Moderador o Administrador.");
+        }
+    }
+
     private void validarMotivoYDescripcion(ReporteResenaRequest request) {
         if (request == null || request.motivo() == null || request.motivo().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El motivo es obligatorio.");

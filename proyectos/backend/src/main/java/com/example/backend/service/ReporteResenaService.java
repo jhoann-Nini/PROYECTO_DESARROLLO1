@@ -191,14 +191,12 @@ public class ReporteResenaService {
         }
 
         LocalDateTime ahora = LocalDateTime.now();
-        if (actual == EstadoReporte.PENDIENTE && nuevoEstado == EstadoReporte.EN_REVISION) {
-            reporte.setResponsable(actor);
-            reporte.setFechaInicioRevision(ahora);
-            reporte.setFechaRevision(null);
-            reporte.setNotasRevision(null);
-            reporte.setIdHistorialReasignacion(null);
-        } else if (actual == EstadoReporte.EN_REVISION
-                && (nuevoEstado == EstadoReporte.ACEPTADO || nuevoEstado == EstadoReporte.RECHAZADO)) {
+        boolean iniciarRevision = actual == EstadoReporte.PENDIENTE
+                && nuevoEstado == EstadoReporte.EN_REVISION;
+        boolean resolverReporte = actual == EstadoReporte.EN_REVISION
+                && (nuevoEstado == EstadoReporte.ACEPTADO || nuevoEstado == EstadoReporte.RECHAZADO);
+
+        if (resolverReporte) {
             if (reporte.getResponsable() == null) {
                 throw new ConflictException("El reporte no tiene un responsable asignado.");
             }
@@ -211,10 +209,11 @@ public class ReporteResenaService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "La justificación es obligatoria para aceptar o rechazar un reporte.");
             }
-            reporte.setFechaRevision(ahora);
-            reporte.setNotasRevision(observacion.trim());
         }
 
+        // Registrar primero la auditoría mientras el reporte conserva su estado anterior.
+        // El trigger BEFORE INSERT valida ese estado; el constraint trigger diferido
+        // comprobará al COMMIT la transición y los metadatos finales del reporte.
         ReporteResenaDecisionAuditoria evento = new ReporteResenaDecisionAuditoria();
         evento.setReporte(reporte);
         evento.setModerador(actor);
@@ -223,6 +222,17 @@ public class ReporteResenaService {
         evento.setObservacion(observacion != null && !observacion.isBlank() ? observacion.trim() : null);
         evento.setFechaEvento(ahora);
         decisionAuditoriaRepository.saveAndFlush(evento);
+
+        if (iniciarRevision) {
+            reporte.setResponsable(actor);
+            reporte.setFechaInicioRevision(ahora);
+            reporte.setFechaRevision(null);
+            reporte.setNotasRevision(null);
+            reporte.setIdHistorialReasignacion(null);
+        } else if (resolverReporte) {
+            reporte.setFechaRevision(ahora);
+            reporte.setNotasRevision(observacion.trim());
+        }
 
         reporte.setEstado(nuevoEstado);
         reporte.setFechaActualizacion(ahora);

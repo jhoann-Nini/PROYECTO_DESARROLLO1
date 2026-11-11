@@ -984,4 +984,33 @@ class ResenaSecurityIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 
+
+    @Test
+    @DisplayName("Resolver un reporte exige una justificación y no cambia su estado si falta")
+    void resolverReporteSinJustificacionEsRechazado() throws Exception {
+        String subModerador = "f890a1b2-c3d4-e5f6-0718-293a4b5c6d7e";
+        crearUsuarioConRol(subModerador, "moderador_sin_nota@example.com", "Moderador");
+        ReporteResena reporte = crearReportePendiente();
+        String token = generarToken(subModerador, "moderador_sin_nota@example.com");
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                .header("Authorization", "Bearer " + token)
+                .param("estado", "EN_REVISION"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch(
+                        "/api/moderacion/reportes/" + reporte.getIdReporte() + "/estado")
+                .header("Authorization", "Bearer " + token)
+                .param("estado", "ACEPTADO"))
+                .andExpect(status().isBadRequest());
+
+        ReporteResena sinResolver = reporteResenaRepository.findById(reporte.getIdReporte()).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertEquals(EstadoReporte.EN_REVISION, sinResolver.getEstado());
+        org.junit.jupiter.api.Assertions.assertNull(sinResolver.getFechaRevision());
+        org.junit.jupiter.api.Assertions.assertEquals(1,
+                reporteDecisionAuditoriaRepository.findByReporteIdReporteOrderByFechaEventoDesc(
+                        reporte.getIdReporte()).size());
+    }
+
 }

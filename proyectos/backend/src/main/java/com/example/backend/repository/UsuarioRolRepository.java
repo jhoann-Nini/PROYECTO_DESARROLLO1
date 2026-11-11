@@ -11,6 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 public interface UsuarioRolRepository extends JpaRepository<UsuarioRol, Long> {
     Optional<UsuarioRol> findByUsuario_IdUsuarioAndRol_IdRol(Long usuarioId, Long rolId);
 
+    // New lock‑aware method used by revocarRol()
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<UsuarioRol> findByUsuarioAndRolForUpdate(Long usuarioId, Long rolId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT ur FROM UsuarioRol ur

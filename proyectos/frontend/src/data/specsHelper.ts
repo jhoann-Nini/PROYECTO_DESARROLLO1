@@ -7,6 +7,8 @@ import {
   TiendaPrecio,
 } from "@/types/producto";
 import { normalizarPrecioCOP } from "./precios";
+import { normalizarDatosFichaTecnica } from "./fichaTecnica";
+import type { DatosFichaTecnica } from "./fichaTecnica";
 
 export interface FichaNormalizada {
   categoriaTipo: CategoriaDispositivo;
@@ -26,6 +28,7 @@ export interface FichaNormalizada {
   } | null;
   tiendas: TiendaPrecio[];
   tieneEspecificacionesReales: boolean;
+  datosTecnicos?: DatosFichaTecnica;
 }
 
 export const INFO_CATEGORIAS: Record<
@@ -223,6 +226,12 @@ export function mapearCaracteristicasASecciones(
   const secciones: SeccionHardware[] = [];
   const omitirClaves = new Set([
     "secciones",
+    "version_esquema",
+    "variante",
+    "metricasComparables",
+    "benchmarks",
+    "fuentes",
+    "estado_verificacion",
     "metricas",
     "benchmark",
     "benchmark_etiqueta",
@@ -313,6 +322,7 @@ export function normalizarFichaProducto(
 
   if (tieneCaracteristicasBackend) {
     const rawSpecs = caracteristicasBackend as Record<string, unknown>;
+    const datosTecnicos = normalizarDatosFichaTecnica(rawSpecs);
     const secciones = mapearCaracteristicasASecciones(rawSpecs, categoria);
 
     let benchmark: { etiqueta: string; valor: string } | null = null;
@@ -360,6 +370,7 @@ export function normalizarFichaProducto(
       benchmark,
       tiendas: [],
       tieneEspecificacionesReales: secciones.length > 0,
+      datosTecnicos,
     };
   }
 

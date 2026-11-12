@@ -160,6 +160,18 @@ describe("PanelModeracionModal", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
+  it("advierte que la API administrativa aún no está implementada", () => {
+    mockObtener.mockReturnValue(new Promise(() => {}));
+
+    render(
+      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
+    );
+
+    expect(screen.getByRole("note").textContent).toContain(
+      "todavía no está implementada en el backend",
+    );
+  });
+
   it("muestra el estado de carga al consultar la cola", () => {
     mockObtener.mockReturnValue(new Promise(() => {}));
 

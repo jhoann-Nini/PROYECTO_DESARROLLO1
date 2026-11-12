@@ -1188,28 +1188,34 @@ el historial antiguo y el reescrito.
 
 **Criterios**
 
-- La cola de reseñas reportadas se consulta contra el contrato documentado y
+- La pantalla está preparada para consultar la cola de reseñas reportadas y
   solo se ofrece a sesiones con rol Moderador o Administrador activo.
 - La pantalla cubre carga, error con reintento, vacío, filtros por estado y
   visibilidad, detalle de reportes y acciones de administrador.
-- Un Moderador puede consultar; ocultar, publicar y rechazar reportes queda
-  reservado a Administrador según el contrato.
+- La integración real queda bloqueada: `proyectos/docs/api.md` §26 y
+  `ReporteResenaController` confirman que la API administrativa aún no existe.
 
 **Decisiones**
 
 - El panel se monta como modal accesible desde `/perfil` y reutiliza
   `EstadoVacio` y `CLASE_FOCO`.
-- No se inventaron endpoints, campos ni permisos; el backend de moderación no
-  está en este árbol y la integración real queda pendiente.
+- Las rutas `/api/moderacion/...` y `/api/admin/resenas/...` son una propuesta
+  del frontend, no un contrato confirmado. El panel muestra un aviso visible de
+  integración pendiente.
 - Los tipos y las llamadas viven en `src/types/moderacion.ts` y
-  `src/services/api.ts`; el detalle del contrato y las limitaciones están en
+  `src/services/api.ts`; el detalle de la brecha y los pendientes está en
   `docs/moderacion-resenas.md`.
+- También queda pendiente alinear los estados del enum Java
+  (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`) con el contrato
+  objetivo de `api.md` (`PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO`, `CERRADO`).
 
 **Verificación**
 
 - Pruebas en `producto.test.ts`, `api.test.ts`,
   `PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
-- Suite focalizada: 84 pruebas en 4 archivos, todas en verde.
+- Suite focalizada: 85 pruebas en 4 archivos, todas en verde.
+- Las pruebas de moderación usan mocks y no sustituyen una prueba de
+  integración con backend.
 
 ### 12.9 Revisión TEC-148 — reporte de precio o enlace incorrecto (bloqueada)
 

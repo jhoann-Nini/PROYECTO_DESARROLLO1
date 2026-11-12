@@ -1,6 +1,8 @@
 /**
- * Tipos del contrato de moderación de reseñas y reportes.
- * Documentados en la sección 28 del API del backend (S2-42/S2-43).
+ * Tipos de la propuesta de contrato de moderación de reseñas y reportes.
+ * El backend actual solo implementa el registro y la consulta de reportes
+ * propios (`proyectos/docs/api.md` §26); las rutas administrativas todavía no
+ * existen. Estos tipos deben alinearse cuando se acuerde el contrato final.
  */
 
 export type EstadoReporte =

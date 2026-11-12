@@ -251,6 +251,15 @@ export default function PanelModeracionModal({
           </p>
         )}
 
+        <p
+          role="note"
+          className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800"
+        >
+          Vista preparada: la API administrativa de moderación todavía no está
+          implementada en el backend. La consulta y las acciones fallarán hasta
+          que se publique el contrato.
+        </p>
+
         <div
           role="group"
           aria-label="Filtros de moderación"

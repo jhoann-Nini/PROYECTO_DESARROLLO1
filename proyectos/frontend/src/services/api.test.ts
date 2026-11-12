@@ -1226,6 +1226,9 @@ describe("api.ts - Cliente API del frontend", () => {
   });
 
   describe("Moderación de reseñas reportadas (TEC-108)", () => {
+    // Rutas preparadas: el backend actual aún no las implementa
+    // (proyectos/docs/api.md §26). Estas pruebas verifican el cliente, no
+    // una integración real.
     const resenaReportada = {
       idResena: 15,
       idProducto: 10,
@@ -1351,7 +1354,7 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(init.body).toBeUndefined();
     });
 
-    it("rechaza los reportes en lote usando la ruta canónica", async () => {
+    it("rechaza los reportes en lote usando la ruta propuesta", async () => {
       const { rechazarReportesResenaReportada } = await loadApi(DEFAULT_API_URL);
       mockGetSession.mockResolvedValue({
         data: { session: { access_token: "token-admin" } },

@@ -1,48 +1,49 @@
 # TEC-108 — Panel de moderación de reseñas reportadas
 
-**Estado:** Implementado en frontend contra el contrato documentado del backend.
+**Estado:** Pantalla preparada en frontend; **integración bloqueada** porque el
+backend actual no implementa la API administrativa de moderación.
 **Rama de trabajo:** `adrian` (cambios locales, sin push).
-**Dependencia de backend:** contrato de las secciones 28–29 del API
-(S2-42/S2-43), verificado en `origin/main`; el código del backend no está
-presente en este árbol de trabajo.
 
 ---
 
-## 1. Alcance
+## 1. Evidencia del contrato actual
+
+La revisión se hizo contra la documentación y los controladores del backend
+presentes en el repositorio:
+
+- `proyectos/docs/api.md` §26, «Contrato objetivo de moderación de reportes»:
+  el backend implementa únicamente el registro de reportes
+  (`POST /api/resenas/{idResena}/reportes`) y la consulta de los reportes
+  propios (`GET /api/reportes/mis-reportes`). El propio documento indica que
+  la API de asignación, revisión, transición de estados, resolución,
+  escalamiento y consulta administrativa **todavía debe definirse y
+  construirse**, y que no debe presentarse como existente.
+- `proyectos/backend/src/main/java/com/example/backend/controller/ReporteResenaController.java`:
+  solo expone `POST /api/resenas/{idResena}/reportes` y
+  `GET /api/reportes/mis-reportes`.
+- El resto de controladores (`ResenaController`, `ProductoController`,
+  `UsuarioController`, etc.) no declara rutas `/api/moderacion/...` ni
+  `/api/admin/resenas/...` para listar, ocultar, publicar o rechazar reportes.
+
+Por lo tanto, las rutas que consume el frontend son una **propuesta de
+contrato**, no endpoints operativos. Contra el backend actual las peticiones
+fallarán (por ejemplo, con `404`), y el panel mostrará su estado de error.
+
+También existe una diferencia de estados pendiente de alinear:
+
+- Enum Java actual: `PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`.
+- Contrato objetivo de `proyectos/docs/api.md` §26: `PENDIENTE`,
+  `EN_REVISION`, `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO`, `CERRADO`.
+
+El frontend usa por ahora los valores del enum Java actual. Deberán ajustarse
+cuando se acuerde el contrato definitivo.
+
+## 2. Alcance preparado en frontend
 
 La tarea pedía una pantalla de moderación con carga, error, vacío, acciones de
-administrador y pruebas. El panel se implementó como modal accesible dentro de
-`/perfil`, visible solo para sesiones con rol **Moderador** o **Administrador**.
+administrador y pruebas. Lo implementado es una **vista preparada**:
 
-No se inventaron endpoints, campos ni permisos. Todo lo que la interfaz muestra
-proviene del contrato documentado; cuando el backend responda distinto, los
-tipos y mensajes se ajustan en un cambio posterior.
-
-## 2. Contrato consumido
-
-| Método | Ruta | Rol | Uso |
-|---|---|---|---|
-| `GET` | `/api/moderacion/resenas/reportadas` | Moderador o Administrador activo | Lista la cola de reseñas reportadas |
-| `PUT` | `/api/admin/resenas/{id}/ocultar` | Administrador activo | Oculta la reseña reportada |
-| `PUT` | `/api/admin/resenas/{id}/publicar` | Administrador activo | Restaura la visibilidad |
-| `PUT` | `/api/admin/resenas/{id}/rechazar-reportes` | Administrador activo | Rechaza los reportes pendientes |
-
-Filtros opcionales documentados para la consulta: `estado` (`PENDIENTE`,
-`EN_REVISION`, `ACEPTADO`, `RECHAZADO`), `oculta` (`true`/`false`) e
-`idProducto` (numérico). La UI expone `estado` y `oculta=true`; el servicio
-acepta también `idProducto` para futuros enlaces directos, pero el contrato no
-documenta paginación y por eso no se agregó.
-
-Campos de la reseña reportada usados: `idResena`, `idProducto`,
-`nombreProducto`, `idAutor`, `nombreAutor`, `comentario`, `puntuacion`,
-`fechaCreacion`, `estado`, `ocultaPorReportes`, `totalReportes`,
-`reportesPendientes` y `reportes[]`. Cada reporte aporta `idReporte`,
-`idUsuarioReportante`, `nombreReportante`, `motivo`, `descripcion`, `estado` y
-`fechaCreacion`.
-
-## 3. Implementación
-
-- `src/types/moderacion.ts`: tipos del contrato y filtros.
+- `src/types/moderacion.ts`: tipos y filtros de la propuesta de contrato.
 - `src/types/producto.ts`: rol `Moderador`, `esModerador()` y `puedeModerar()`
   (Moderador o Administrador).
 - `src/services/api.ts`: `obtenerResenasReportadas()`,
@@ -54,35 +55,42 @@ Campos de la reseña reportada usados: `idResena`, `idProducto`,
 - `src/app/perfil/PerfilCliente.tsx`: botón **Panel de moderación** para
   Moderador/Administrador y montaje del modal.
 
-Comportamiento relevante:
+El panel muestra un aviso visible de que la API administrativa aún no está
+disponible. Las pruebas de UI y de servicios usan mocks: verifican la lógica
+preparada, **no** una integración real con el backend.
 
-- Un Moderador puede consultar la cola; las acciones se muestran solo a un
-  Administrador. El propio panel lo explica en texto.
-- Las acciones se deshabilitan mientras hay una petición en curso y actualizan
-  la reseña en la lista con la respuesta del servidor.
-- Los errores de acción se muestran junto a la lista sin cerrar el modal.
-- El botón de rechazar reportes se deshabilita cuando no hay pendientes.
+### Rutas propuestas por el frontend (no confirmadas)
 
-## 4. Pruebas
+| Método | Ruta | Rol previsto | Estado |
+|---|---|---|---|
+| `GET` | `/api/moderacion/resenas/reportadas` | Moderador o Administrador activo | No implementada en backend |
+| `PUT` | `/api/admin/resenas/{id}/ocultar` | Administrador activo | No implementada en backend |
+| `PUT` | `/api/admin/resenas/{id}/publicar` | Administrador activo | No implementada en backend |
+| `PUT` | `/api/admin/resenas/{id}/rechazar-reportes` | Administrador activo | No implementada en backend |
+
+Filtros propuestos: `estado`, `oculta` e `idProducto`. La UI expone `estado` y
+`oculta=true`; no hay paginación porque tampoco está definida.
+
+## 3. Pruebas existentes
 
 - `src/types/producto.test.ts`: normalización y permisos de rol.
 - `src/services/api.test.ts`: rutas, query string, cuerpo opcional y validación
-  de respuesta.
+  de respuesta del cliente preparado.
 - `src/components/moderacion/PanelModeracionModal.test.tsx`: carga, error y
-  reintento, vacío, filtros, detalle, gating de rol, acciones y fallos.
+  reintento, vacío, filtros, detalle, gating de rol, acciones y fallos, y aviso
+  de integración pendiente.
 - `src/app/perfil/PerfilCliente.test.tsx`: visibilidad del punto de entrada y
   apertura del modal.
 
-## 5. Limitaciones y pendientes
+## 4. Pendientes para cerrar TEC-108
 
-- El backend de moderación no está en este árbol; la verificación de
-  integración real queda pendiente cuando backend y frontend convivan en el
-  mismo entorno.
-- `403` y `401` se muestran con el mensaje del `ApiError`; no hay redirección
-  automática ni refresco de sesión.
-- No hay paginación ni búsqueda textual porque el contrato no las documenta.
-- El filtro por producto existe en el servicio pero aún no tiene control en la
-  UI.
-- TEC-148 (reporte de precio/enlace) no depende de este panel y sigue bloqueada
-  por la ausencia del endpoint de TEC-147; ver
-  `docs/reportes-precio-enlace.md`.
+1. Backend implementa y documenta las rutas administrativas.
+2. Acordar los estados definitivos y alinear el enum Java, `api.md` y los tipos
+   del frontend.
+3. Confirmar permisos y reglas de conflicto de interés (Moderador vs.
+   Administrador).
+4. Sustituir los mocks por pruebas de integración reales.
+5. Retirar el aviso de integración pendiente y cerrar la tarea.
+
+TEC-148 (reporte de precio/enlace) no depende de este panel y sigue bloqueada
+por la ausencia del contrato de TEC-147; ver `docs/reportes-precio-enlace.md`.

@@ -19,8 +19,14 @@ public record ReporteResenaRequest(
         String motivo,
 
         @Size(max = 2000, message = "La descripción no puede superar los 2000 caracteres.")
-        String descripcion
+        String descripcion,
+
+        Long idResena
 ) {
+    public ReporteResenaRequest(String motivo, String descripcion) {
+        this(motivo, descripcion, null);
+    }
+
     @AssertTrue(message = "La descripción es obligatoria cuando el motivo es 'otro'.")
     public boolean isDescripcionValida() {
         if ("otro".equalsIgnoreCase(motivo)) {

@@ -478,5 +478,48 @@ class ReporteResenaIntegrationTest {
         assertEquals(usuarioReportante1.getIdUsuario(), guardado.getUsuario().getIdUsuario());
         assertEquals(EstadoReporte.PENDIENTE, guardado.getEstado());
     }
+
+    @Test
+    @DisplayName("13. [S2-39] Usuario puede reportar mediante POST /api/reportes con idResena en el cuerpo (201 Created)")
+    void usuarioPuedeReportarMedianteEndpointPlano() throws Exception {
+        mockMvc.perform(post("/api/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.format("""
+                                {
+                                    "idResena": %d,
+                                    "motivo": "spam",
+                                    "descripcion": "Reporte enviado a endpoint plano"
+                                }
+                                """, resenaActiva.getIdResena())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idReporte").isNumber())
+                .andExpect(jsonPath("$.idResena").value(resenaActiva.getIdResena()))
+                .andExpect(jsonPath("$.motivo").value("spam"))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+
+        assertEquals(1, reporteResenaRepository.count());
+    }
+
+    @Test
+    @DisplayName("14. [S2-39] POST /api/reportes sin idResena devuelve 400 Bad Request")
+    void reporteSinIdResenaDevuelve400BadRequest() throws Exception {
+        mockMvc.perform(post("/api/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "motivo": "spam",
+                                    "descripcion": "Sin id de reseña"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(0, reporteResenaRepository.count());
+    }
 }
 

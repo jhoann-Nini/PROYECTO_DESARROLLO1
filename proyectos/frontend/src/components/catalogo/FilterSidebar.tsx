@@ -344,12 +344,20 @@ export default function FilterSidebar({
                     <input
                       type="checkbox"
                       checked={filtros.marcas.includes(marca.nombre)}
-                      onChange={() =>
-                        onCambiar({
+                      onChange={() => {
+                        const marcas = alternar(
+                          filtros.marcas,
+                          marca.nombre
+                        );
+                        const cambios: FiltrosCatalogo = {
                           ...filtros,
-                          marcas: alternar(filtros.marcas, marca.nombre),
-                        })
-                      }
+                          marcas,
+                        };
+                        if (marcas.length === 0 && filtros.excluirMarcas) {
+                          cambios.excluirMarcas = false;
+                        }
+                        onCambiar(cambios);
+                      }}
                       className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                     />
                     <span className="flex-1">

@@ -68,6 +68,61 @@ function configurarExito(productos: Producto[]) {
   mockMarcas.mockResolvedValue(marcas);
 }
 
+const productosFiltros: Producto[] = [
+  crearProducto(1, {
+    nombre: "Samsung Galaxy A55",
+    precioReferencia: 1_500_000,
+    caracteristicas: {
+      pantalla: "6.6'' AMOLED",
+      procesador: "Exynos 1480",
+      ram: "8 GB",
+      almacenamiento: "128 GB",
+      camaras: "50 MP",
+      bateria: "5000 mAh",
+      conectividad: "5G",
+    },
+  }),
+  crearProducto(2, {
+    nombre: "Samsung Galaxy S25",
+    precioReferencia: 3_500_000,
+    caracteristicas: {
+      pantalla: "6.2'' AMOLED",
+      procesador: "Snapdragon 8 Gen 3",
+      ram: "12 GB",
+      almacenamiento: "256 GB",
+      camaras: "50 MP",
+      bateria: "4000 mAh",
+      conectividad: "5G",
+    },
+  }),
+  crearProducto(3, {
+    nombre: "Dell XPS 13",
+    idCategoria: 2,
+    idMarca: 2,
+    precioReferencia: 4_500_000,
+    caracteristicas: {
+      pantalla: "13.4''",
+      procesador: "Intel Core Ultra 7",
+      ram: "16 GB",
+      almacenamiento: "512 GB",
+      bateria: "55 Wh",
+    },
+  }),
+  crearProducto(4, {
+    nombre: "Dell Inspiron 14",
+    idCategoria: 2,
+    idMarca: 2,
+    precioReferencia: 2_500_000,
+    caracteristicas: {
+      pantalla: "14''",
+      procesador: "Intel Core i5",
+      ram: "8 GB",
+      almacenamiento: "512 GB",
+      bateria: "54 Wh",
+    },
+  }),
+];
+
 describe("CatalogoCliente", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -458,6 +513,177 @@ describe("CatalogoCliente", () => {
 
     expect(screen.getByRole("checkbox", { name: /Dell/i })).toBeDefined();
     expect(screen.queryByRole("checkbox", { name: /Samsung/i })).toBeNull();
+  });
+
+  it("combina búsqueda, categoría y marca y actualiza el contador de filtros", async () => {
+    configurarExito(productosFiltros);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/4 productos/)).toBeDefined();
+    });
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: /Buscar dispositivos tecnológicos/i,
+      }),
+      { target: { value: "galaxy" } }
+    );
+    fireEvent.click(screen.getByRole("checkbox", { name: /Móviles/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+
+    expect(screen.getByText("Filtros activos (3)")).toBeDefined();
+    expect(screen.getByText(/2 productos/)).toBeDefined();
+    expect(screen.getByText("Samsung Galaxy A55")).toBeDefined();
+    expect(screen.getByText("Samsung Galaxy S25")).toBeDefined();
+    expect(screen.queryByText("Dell XPS 13")).toBeNull();
+  });
+
+  it("quita un filtro individual desde su chip y conserva los demás", async () => {
+    configurarExito(productosFiltros);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/4 productos/)).toBeDefined();
+    });
+
+    fireEvent.change(
+      screen.getByRole("searchbox", {
+        name: /Buscar dispositivos tecnológicos/i,
+      }),
+      { target: { value: "Dell" } }
+    );
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+
+    expect(screen.getByText("Filtros activos (2)")).toBeDefined();
+    expect(
+      screen.getByRole("status").textContent
+    ).toContain("No encontramos productos con esos filtros");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Quitar filtro Samsung" })
+    );
+
+    expect(screen.getByText("Filtros activos (1)")).toBeDefined();
+    expect(screen.getByText(/2 productos/)).toBeDefined();
+    expect(screen.getByText("Dell XPS 13")).toBeDefined();
+    expect(screen.getByText("Dell Inspiron 14")).toBeDefined();
+    expect(screen.queryByText("Samsung Galaxy A55")).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro Búsqueda: Dell" })
+    ).toBeDefined();
+  });
+
+  it("borra todos los filtros desde los chips", async () => {
+    configurarExito(productosFiltros);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/4 productos/)).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Móviles/i }));
+
+    expect(screen.getByText("Filtros activos (2)")).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Borrar filtros" }));
+
+    expect(screen.getByText(/4 productos/)).toBeDefined();
+    expect(screen.queryByText(/Filtros activos/)).toBeNull();
+    expect(screen.getByText("Samsung Galaxy A55")).toBeDefined();
+    expect(screen.getByText("Dell XPS 13")).toBeDefined();
+    expect(
+      (
+        screen.getByRole("checkbox", {
+          name: /Samsung/i,
+        }) as HTMLInputElement
+      ).checked
+    ).toBe(false);
+  });
+
+  it("muestra el estado vacío con filtros combinados sin coincidencias", async () => {
+    configurarExito(productosFiltros);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/4 productos/)).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: /Laptops \/ PCs/i })
+    );
+
+    expect(screen.getByText("Filtros activos (2)")).toBeDefined();
+
+    const vacio = screen.getByRole("status");
+    expect(vacio.getAttribute("data-estado")).toBe("vacio");
+    expect(vacio.textContent).toContain(
+      "No encontramos productos con esos filtros"
+    );
+
+    fireEvent.click(
+      within(vacio).getByRole("button", { name: "Limpiar filtros" })
+    );
+
+    expect(screen.getByText(/4 productos/)).toBeDefined();
+    expect(screen.queryByText(/Filtros activos/)).toBeNull();
+  });
+
+  it("restablece 'Excluir marcas' al quitar la última marca y permite volver a incluirla", async () => {
+    configurarExito(productosFiltros);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/4 productos/)).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+
+    expect(screen.getByText(/2 productos/)).toBeDefined();
+    expect(screen.getByText("Samsung Galaxy A55")).toBeDefined();
+    expect(screen.queryByText("Dell XPS 13")).toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: /Excluir marcas/i })
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Quitar filtro Excluir: Samsung" })
+    ).toBeDefined();
+    expect(screen.getByText("Dell XPS 13")).toBeDefined();
+    expect(screen.getByText("Dell Inspiron 14")).toBeDefined();
+    expect(screen.queryByText("Samsung Galaxy A55")).toBeNull();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+
+    expect(screen.getByText(/4 productos/)).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Borrar filtros/i })).toBeNull();
+
+    const excluirTrasQuitar = screen.getByRole("checkbox", {
+      name: /Excluir marcas/i,
+    }) as HTMLInputElement;
+    expect(excluirTrasQuitar.checked).toBe(false);
+    expect(excluirTrasQuitar.disabled).toBe(true);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Samsung/i }));
+
+    expect(screen.getByText("Samsung Galaxy A55")).toBeDefined();
+    expect(screen.getByText("Samsung Galaxy S25")).toBeDefined();
+    expect(screen.queryByText("Dell XPS 13")).toBeNull();
+    expect(
+      (
+        screen.getByRole("checkbox", {
+          name: /Excluir marcas/i,
+        }) as HTMLInputElement
+      ).checked
+    ).toBe(false);
   });
 
   it("navega al detalle real al pulsar Ver detalle", async () => {

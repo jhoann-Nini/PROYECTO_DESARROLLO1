@@ -150,6 +150,25 @@ describe("FilterSidebar", () => {
     expect(onCambiar).toHaveBeenLastCalledWith({ ...filtros, marcas: [] });
   });
 
+  it("desactiva la exclusión al quitar la última marca seleccionada", () => {
+    const onCambiar = vi.fn();
+    const filtros = {
+      ...filtrosVacios(),
+      marcas: ["Apple"],
+      excluirMarcas: true,
+    };
+
+    renderSidebar({ filtros, onCambiar, hayFiltros: true });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: /Apple/i }));
+
+    expect(onCambiar).toHaveBeenCalledWith({
+      ...filtros,
+      marcas: [],
+      excluirMarcas: false,
+    });
+  });
+
   it("mueve el rango de precio", () => {
     const onCambiar = vi.fn();
     const filtros = filtrosVacios();

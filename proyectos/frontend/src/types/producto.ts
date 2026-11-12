@@ -147,6 +147,8 @@ export interface TiendaPrecio {
   precio: number;
   envioGratis: boolean;
   url?: string;
+  /** La API debe enviar true solo cuando el establecimiento fue verificado. */
+  verificada?: boolean;
 }
 
 export interface EspecificacionesDetalladas {

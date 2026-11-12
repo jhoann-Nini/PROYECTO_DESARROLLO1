@@ -207,13 +207,35 @@ export interface UsuarioSesion {
   fechaRegistro?: string;
 }
 
-export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento";
+export type RolSistema =
+  | "Usuario registrado"
+  | "Moderador"
+  | "Administrador"
+  | "Representante de establecimiento";
 
 export const ROLES_SISTEMA = {
   USUARIO_REGISTRADO: "Usuario registrado",
+  MODERADOR: "Moderador",
   ADMINISTRADOR: "Administrador",
   REPRESENTANTE: "Representante de establecimiento",
 } as const;
+
+/**
+ * Valida si la sesión tiene rol de Moderador confirmado por el backend.
+ * Compara de forma estricta e insensible a mayúsculas/minúsculas.
+ */
+export function esModerador(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "moderador";
+}
+
+/**
+ * Valida si la sesión puede consultar la cola de moderación: Moderador o
+ * Administrador activo. El backend sigue siendo la autoridad final.
+ */
+export function puedeModerar(usuario?: UsuarioSesion | null): boolean {
+  return esModerador(usuario) || esAdministrador(usuario);
+}
 
 /**
  * Valida si la sesión tiene rol de Administrador confirmado por el backend.

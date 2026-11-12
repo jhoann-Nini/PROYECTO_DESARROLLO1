@@ -1184,4 +1184,31 @@ el historial antiguo y el reescrito.
 - `npx tsc --noEmit`, `npm run lint` y `npm run build` exitosos.
 - Commit: `fd3eef7 feat(comparador): recordar los productos comparados recientemente`.
 
+### 12.8 Revisión TEC-108 — panel de moderación de reseñas reportadas
+
+**Criterios**
+
+- La cola de reseñas reportadas se consulta contra el contrato documentado y
+  solo se ofrece a sesiones con rol Moderador o Administrador activo.
+- La pantalla cubre carga, error con reintento, vacío, filtros por estado y
+  visibilidad, detalle de reportes y acciones de administrador.
+- Un Moderador puede consultar; ocultar, publicar y rechazar reportes queda
+  reservado a Administrador según el contrato.
+
+**Decisiones**
+
+- El panel se monta como modal accesible desde `/perfil` y reutiliza
+  `EstadoVacio` y `CLASE_FOCO`.
+- No se inventaron endpoints, campos ni permisos; el backend de moderación no
+  está en este árbol y la integración real queda pendiente.
+- Los tipos y las llamadas viven en `src/types/moderacion.ts` y
+  `src/services/api.ts`; el detalle del contrato y las limitaciones están en
+  `docs/moderacion-resenas.md`.
+
+**Verificación**
+
+- Pruebas en `producto.test.ts`, `api.test.ts`,
+  `PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
+- Suite focalizada: 84 pruebas en 4 archivos, todas en verde.
+
 

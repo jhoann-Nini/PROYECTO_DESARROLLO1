@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   esAdministrador,
+  esModerador,
   esRepresentante,
   esUsuarioRegistrado,
+  puedeModerar,
   type UsuarioSesion,
 } from "./producto";
 
@@ -35,5 +37,23 @@ describe("Validadores de roles del sistema (Hallazgo 2 - Fase 2)", () => {
     expect(esUsuarioRegistrado({ rol: "Administrador" } as UsuarioSesion)).toBe(false);
     expect(esUsuarioRegistrado({ rol: "Representante de establecimiento" } as UsuarioSesion)).toBe(false);
     expect(esUsuarioRegistrado(null)).toBe(false);
+  });
+
+  it("esModerador valida únicamente el rol Moderador", () => {
+    expect(esModerador({ rol: "Moderador" } as UsuarioSesion)).toBe(true);
+    expect(esModerador({ rol: " moderador " } as UsuarioSesion)).toBe(true);
+
+    expect(esModerador({ rol: "Administrador" } as UsuarioSesion)).toBe(false);
+    expect(esModerador({ rol: "Usuario registrado" } as UsuarioSesion)).toBe(false);
+    expect(esModerador(null)).toBe(false);
+  });
+
+  it("puedeModerar admite Moderador y Administrador, no otros roles", () => {
+    expect(puedeModerar({ rol: "Moderador" } as UsuarioSesion)).toBe(true);
+    expect(puedeModerar({ rol: "Administrador" } as UsuarioSesion)).toBe(true);
+
+    expect(puedeModerar({ rol: "Usuario registrado" } as UsuarioSesion)).toBe(false);
+    expect(puedeModerar({ rol: "Representante de establecimiento" } as UsuarioSesion)).toBe(false);
+    expect(puedeModerar(null)).toBe(false);
   });
 });

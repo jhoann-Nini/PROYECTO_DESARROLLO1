@@ -56,6 +56,11 @@ vi.mock("@/components/AdminPanelModal", () => ({
     isOpen ? <div role="dialog" aria-label="Administración" /> : null,
 }));
 
+vi.mock("@/components/moderacion/PanelModeracionModal", () => ({
+  default: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div role="dialog" aria-label="Moderación" /> : null,
+}));
+
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
   return {
@@ -176,6 +181,51 @@ describe("PerfilCliente", () => {
     expect(
       screen.getByRole("button", { name: "Panel de administración" }),
     ).toBeDefined();
+  });
+
+  it("muestra el panel de moderación a moderadores y administradores", () => {
+    sesionMock.usuario = { ...USUARIO, rol: "Moderador" };
+
+    const { unmount } = render(<PerfilCliente />);
+
+    expect(
+      screen.getByRole("button", { name: "Panel de moderación" }),
+    ).toBeDefined();
+    expect(
+      screen.queryByRole("button", { name: "Panel de administración" }),
+    ).toBeNull();
+
+    unmount();
+
+    sesionMock.usuario = { ...USUARIO, rol: "Administrador" };
+
+    render(<PerfilCliente />);
+
+    expect(
+      screen.getByRole("button", { name: "Panel de moderación" }),
+    ).toBeDefined();
+  });
+
+  it("no muestra el panel de moderación a usuarios regulares", () => {
+    sesionMock.usuario = USUARIO;
+
+    render(<PerfilCliente />);
+
+    expect(
+      screen.queryByRole("button", { name: "Panel de moderación" }),
+    ).toBeNull();
+  });
+
+  it("abre el panel de moderación desde el perfil", () => {
+    sesionMock.usuario = { ...USUARIO, rol: "Moderador" };
+
+    render(<PerfilCliente />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Panel de moderación" }),
+    );
+
+    expect(screen.getByRole("dialog", { name: "Moderación" })).toBeDefined();
   });
 
   it("cierra la sesión desde el perfil", () => {

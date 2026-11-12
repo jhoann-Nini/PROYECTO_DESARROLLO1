@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -98,8 +99,63 @@ class ProductoControllerValidationTest {
         mockMvc.perform(post("/api/productos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(node)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("El precio no puede ser negativo")));
         verify(productoService, never()).crear(any(ProductoRequest.class));
+    }
+
+    @Test
+    void precioCeroEsValidoYPermiteCrear() throws Exception {
+        ObjectNode node = baseNode();
+        node.put("precioReferencia", 0);
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isCreated());
+        verify(productoService, times(1)).crear(any(ProductoRequest.class));
+    }
+
+    @Test
+    void imagenNoEmpiezaPorHttpOHttpsDebeFallar() throws Exception {
+        ObjectNode node = baseNode();
+        node.put("imagen", "ftp://ejemplo.com/foto.jpg");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Los enlaces deben empezar por http o https")));
+        verify(productoService, never()).crear(any(ProductoRequest.class));
+    }
+
+    @Test
+    void imagenSinProtocoloDebeFallar() throws Exception {
+        ObjectNode node = baseNode();
+        node.put("imagen", "foto.png");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(node)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("Los enlaces deben empezar por http o https")));
+        verify(productoService, never()).crear(any(ProductoRequest.class));
+    }
+
+    @Test
+    void imagenEmpiezaPorHttpOHttpsEsValida() throws Exception {
+        ObjectNode nodeHttp = baseNode();
+        nodeHttp.put("imagen", "http://ejemplo.com/foto.jpg");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(nodeHttp)))
+                .andExpect(status().isCreated());
+
+        ObjectNode nodeHttps = baseNode();
+        nodeHttps.put("imagen", "https://ejemplo.com/foto.png");
+        mockMvc.perform(post("/api/productos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(nodeHttps)))
+                .andExpect(status().isCreated());
+
+        verify(productoService, times(2)).crear(any(ProductoRequest.class));
     }
 
     @Test

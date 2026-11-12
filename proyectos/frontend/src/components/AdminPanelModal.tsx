@@ -515,12 +515,17 @@ export default function AdminPanelModal({
 
     if (formImagen.trim().length > 1000) {
       errores.imagen = "La URL de la imagen no puede superar 1000 caracteres.";
+    } else if (
+      formImagen.trim() !== "" &&
+      !/^https?:\/\//i.test(formImagen.trim())
+    ) {
+      errores.imagen = "Los enlaces deben empezar por http o https.";
     }
 
     if (formPrecioReferencia.trim() !== "") {
       const precioNum = Number(formPrecioReferencia);
       if (isNaN(precioNum) || precioNum < 0) {
-        errores.precioReferencia = "El precio de referencia no puede ser negativo.";
+        errores.precioReferencia = "El precio no puede ser negativo.";
       }
     }
 

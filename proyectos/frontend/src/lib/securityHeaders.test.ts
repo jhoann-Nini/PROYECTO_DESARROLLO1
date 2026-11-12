@@ -35,9 +35,19 @@ describe("construirHeadersSeguridad", () => {
       "strict-origin-when-cross-origin"
     );
     expect(valorHeader(headers, "Permissions-Policy")).toContain("camera=()");
-    expect(valorHeader(headers, "Strict-Transport-Security")).toContain(
-      "max-age="
+    expect(valorHeader(headers, "Strict-Transport-Security")).toBe(
+      "max-age=63072000"
     );
+  });
+
+  it("no compromete includeSubDomains ni preload sin confirmar el dominio", () => {
+    const hsts = valorHeader(
+      construirHeadersSeguridad(PRODUCCION),
+      "Strict-Transport-Security"
+    );
+
+    expect(hsts).not.toContain("includeSubDomains");
+    expect(hsts).not.toContain("preload");
   });
 
   it("no anuncia HSTS fuera de producción", () => {
@@ -87,15 +97,26 @@ describe("construirCsp", () => {
     );
   });
 
-  it("aplica un fallback https/wss cuando faltan los orígenes configurables", () => {
+  it("no amplía connect-src en producción cuando faltan los orígenes", () => {
     const csp = construirCsp({
       produccion: true,
       apiUrl: null,
       supabaseUrl: undefined,
     });
 
+    expect(directiva(csp, "connect-src")).toBe("connect-src 'self'");
+    expect(directiva(csp, "connect-src")).not.toContain("wss:");
+  });
+
+  it("mantiene el fallback amplio solo en desarrollo", () => {
+    const csp = construirCsp({
+      produccion: false,
+      apiUrl: null,
+      supabaseUrl: undefined,
+    });
+
     expect(directiva(csp, "connect-src")).toBe(
-      "connect-src 'self' https: wss:"
+      "connect-src 'self' https: wss: ws:"
     );
   });
 
@@ -112,15 +133,13 @@ describe("construirCsp", () => {
     expect(directiva(csp, "img-src")).toContain("http://127.0.0.1:54321");
   });
 
-  it("ignora orígenes inválidos y usa el fallback seguro", () => {
+  it("ignora orígenes inválidos y no abre connect-src en producción", () => {
     const csp = construirCsp({
       produccion: true,
       apiUrl: "no-es-una-url",
       supabaseUrl: "javascript:alert(1)",
     });
 
-    expect(directiva(csp, "connect-src")).toBe(
-      "connect-src 'self' https: wss:"
-    );
+    expect(directiva(csp, "connect-src")).toBe("connect-src 'self'");
   });
 });

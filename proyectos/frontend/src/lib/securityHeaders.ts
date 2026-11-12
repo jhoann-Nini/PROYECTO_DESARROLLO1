@@ -47,8 +47,11 @@ export function construirCsp({
     for (const origen of origenes) {
       connectSrc.push(origen, origenWebSocket(origen));
     }
-  } else {
-    // Fallback amplio para builds sin las variables públicas disponibles.
+  } else if (!produccion) {
+    // En desarrollo se permite un fallback amplio para no bloquear pruebas
+    // contra servicios externos. En producción no se amplía a todo https:
+    // porque, sin las variables públicas, la app tampoco puede autenticarse
+    // ni consultar la API; es preferible fallar cerrado.
     connectSrc.push("https:", "wss:");
   }
   if (!produccion) {
@@ -97,9 +100,13 @@ export function construirHeadersSeguridad(
   ];
 
   if (opciones.produccion) {
+    // includeSubDomains y preload son compromisos difíciles de revertir y
+    // dependen del dominio real y de si comparte subdominios con otros
+    // servicios. Se mantienen fuera hasta que el equipo confirme el dominio
+    // de despliegue.
     headers.push({
       key: "Strict-Transport-Security",
-      value: "max-age=63072000; includeSubDomains; preload",
+      value: "max-age=63072000",
     });
   }
 

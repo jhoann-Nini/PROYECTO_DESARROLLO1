@@ -42,9 +42,11 @@ Los orígenes configurables se toman de `NEXT_PUBLIC_API_URL` y
 
 - `connect-src` limita las peticiones a `'self'`, la API y Supabase, incluidos
   sus equivalentes `ws://`/`wss://` para Realtime.
-- Si alguna variable no está disponible durante el build, se usa el fallback
-  `https:`/`wss:` para no romper el despliegue. En ese caso la política es más
-  amplia de lo deseable y conviene configurar las variables en Vercel.
+- Si faltan las variables en producción, `connect-src` queda en `'self'`: no se
+  abre a todo `https:`/`wss:`. La aplicación ya no podría autenticarse ni
+  consultar la API sin esas variables, así que la política falla cerrado. En
+  desarrollo se conserva un fallback amplio para no bloquear pruebas locales.
+  Conviene configurar las variables en Vercel antes de desplegar.
 - `img-src` permite `'self'`, `blob:`, `data:` y cualquier origen `https:`
   porque las imágenes de producto pueden alojarse en tiendas o CDN externos.
   Los orígenes HTTP configurados se añaden para el desarrollo local.
@@ -52,6 +54,17 @@ Los orígenes configurables se toman de `NEXT_PUBLIC_API_URL` y
   sirve las fuentes desde el propio dominio en tiempo de build.
 - `frame-ancestors 'none'` y `X-Frame-Options: DENY` bloquean el embebido en
   iframes. No hay iframes propios ni integraciones que los necesiten.
+
+## HSTS y dominio de despliegue
+
+En producción se anuncia `Strict-Transport-Security: max-age=63072000`, sin
+`includeSubDomains` ni `preload`. Esos dos modificadores son compromisos
+difíciles de revertir: afectan a todos los subdominios y pueden impedir que
+servicios HTTP del mismo dominio sigan funcionando. El dominio real de
+despliegue y el uso de subdominios aún no están confirmados, así que se
+mantienen fuera hasta que el equipo los valide. Una vez confirmado el dominio,
+se puede añadir `includeSubDomains` y, si se cumplen los requisitos del
+programa, `preload`.
 
 ## Limitaciones de despliegue
 
@@ -66,9 +79,9 @@ Los orígenes configurables se toman de `NEXT_PUBLIC_API_URL` y
   que los orígenes deben ser HTTPS.
 - La CSP no sustituye la validación en backend ni la sanitización de datos.
   Tampoco protege contra XSS almacenado que se renderice como texto por React.
-- HSTS se anuncia con `includeSubDomains` y `preload`. Si el dominio se usa
-  también para servicios HTTP ajenos al frontend, revisar esa decisión antes
-  de publicarlo.
+- HSTS se anuncia con `max-age` y sin `includeSubDomains`/`preload` hasta
+  confirmar el dominio real y los servicios que comparten subdominios. Esa
+  decisión queda pendiente con el equipo de despliegue.
 - Al cambiar de dominio de API o de proyecto de Supabase hay que reconstruir la
   aplicación: las variables `NEXT_PUBLIC_*` se fijan en tiempo de build.
 

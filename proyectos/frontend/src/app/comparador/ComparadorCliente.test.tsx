@@ -31,6 +31,7 @@ import {
   obtenerProductos,
 } from "@/services/api";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
+import { CLAVE_COMPARADOS_RECIENTES } from "@/data/comparadosRecientes";
 import ComparadorCliente from "./ComparadorCliente";
 
 const mockProductos = vi.mocked(obtenerProductos);
@@ -193,6 +194,84 @@ describe("ComparadorCliente", () => {
     ]);
   });
 
+  it("descarta ids persistidos que ya no están en el catálogo y permite seguir comparando", async () => {
+    configurarExito([crearProducto(5), crearProducto(6)]);
+    seleccionarEnStorage([1, 2, 3, 4]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+      ).toEqual([]);
+    });
+
+    const boton = screen.getByRole("button", {
+      name: "Agregar Producto 5 al comparador",
+    }) as HTMLButtonElement;
+    expect(boton.disabled).toBe(false);
+
+    fireEvent.click(boton);
+
+    await waitFor(() => {
+      const tabla = screen.getByRole("table", {
+        name: "Comparación de productos",
+      });
+      expect(
+        within(tabla).getByRole("link", { name: "Producto 5" }),
+      ).toBeDefined();
+    });
+    expect(
+      JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+    ).toEqual([5]);
+  });
+
+  it("descarta la selección persistida si el catálogo carga vacío", async () => {
+    configurarExito([]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+      ).toEqual([]);
+    });
+
+    expect(
+      screen.getByText("No hay productos registrados en el catálogo."),
+    ).toBeDefined();
+    expect(
+      screen.getByText("Aún no has agregado productos al comparador."),
+    ).toBeDefined();
+  });
+
+  it("vacía la selección desde la tabla y persiste el comparador vacío", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Vaciar comparador" }),
+      ).toBeDefined();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Vaciar comparador" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Aún no has agregado productos al comparador."),
+      ).toBeDefined();
+    });
+    expect(
+      JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]"),
+    ).toEqual([]);
+  });
+
   it("quita un producto de la tabla", async () => {
     configurarExito([crearProducto(1), crearProducto(2)]);
     seleccionarEnStorage([1, 2]);
@@ -307,5 +386,38 @@ describe("ComparadorCliente", () => {
         }),
       ).toBeDefined();
     });
+  });
+
+  it("muestra los comparados recientemente con acceso directo a cada producto", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+    localStorage.setItem(CLAVE_COMPARADOS_RECIENTES, JSON.stringify([2, 1]));
+
+    render(<ComparadorCliente />);
+
+    const region = await screen.findByRole("region", {
+      name: "Comparados recientemente",
+    });
+    const enlaces = within(region).getAllByRole("link");
+
+    expect(enlaces).toHaveLength(2);
+    expect(enlaces[0].getAttribute("href")).toBe("/productos/2");
+    expect(enlaces[0].textContent).toContain("Producto 2");
+    expect(enlaces[1].getAttribute("href")).toBe("/productos/1");
+  });
+
+  it("no muestra la sección de recientes si no hay historial", async () => {
+    configurarExito([crearProducto(1)]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: "Comparador de productos" }),
+      ).toBeDefined();
+    });
+
+    expect(
+      screen.queryByRole("region", { name: "Comparados recientemente" }),
+    ).toBeNull();
   });
 });

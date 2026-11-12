@@ -172,7 +172,7 @@ function propsDestacados(
     estadoBackend: "online",
     busqueda: "",
     filtroPresupuesto: false,
-    presupuestoMax: 1000,
+    presupuestoMax: 4_000_000,
     limitePresupuestoCOP: 4_000_000,
     onVerDetalle: vi.fn(),
     onLimpiarBusqueda: vi.fn(),
@@ -227,7 +227,7 @@ describe("PresupuestoHome", () => {
     const onAlternarFiltro = vi.fn();
     const { rerender } = render(
       <PresupuestoHome
-        presupuestoMax={1000}
+        presupuestoMax={4_000_000}
         onCambiarPresupuesto={onCambiarPresupuesto}
         totalEnPresupuesto={4}
         totalProductos={10}
@@ -239,12 +239,12 @@ describe("PresupuestoHome", () => {
     const slider = screen.getByLabelText(
       "Ajustar presupuesto máximo en pesos colombianos",
     );
-    expect(slider.getAttribute("min")).toBe("50");
-    expect(slider.getAttribute("max")).toBe("1500");
-    expect(slider.getAttribute("step")).toBe("25");
+    expect(slider.getAttribute("min")).toBe("200000");
+    expect(slider.getAttribute("max")).toBe("6000000");
+    expect(slider.getAttribute("step")).toBe("100000");
 
-    fireEvent.change(slider, { target: { value: "250" } });
-    expect(onCambiarPresupuesto).toHaveBeenCalledWith(250);
+    fireEvent.change(slider, { target: { value: "250000" } });
+    expect(onCambiarPresupuesto).toHaveBeenCalledWith(250_000);
 
     expect(screen.getByText(/de 10 dentro del presupuesto/)).toBeDefined();
 
@@ -257,7 +257,7 @@ describe("PresupuestoHome", () => {
 
     rerender(
       <PresupuestoHome
-        presupuestoMax={1000}
+        presupuestoMax={4_000_000}
         onCambiarPresupuesto={onCambiarPresupuesto}
         totalEnPresupuesto={4}
         totalProductos={10}
@@ -275,7 +275,7 @@ describe("PresupuestoHome", () => {
     const onFinalizarAjuste = vi.fn();
     const { rerender } = render(
       <PresupuestoHome
-        presupuestoMax={1000}
+        presupuestoMax={4_000_000}
         onCambiarPresupuesto={onCambiarPresupuesto}
         onFinalizarAjuste={onFinalizarAjuste}
         totalEnPresupuesto={4}
@@ -288,11 +288,11 @@ describe("PresupuestoHome", () => {
     const slider = screen.getByLabelText(
       "Ajustar presupuesto máximo en pesos colombianos",
     );
-    fireEvent.change(slider, { target: { value: "250" } });
+    fireEvent.change(slider, { target: { value: "250000" } });
 
     rerender(
       <PresupuestoHome
-        presupuestoMax={250}
+        presupuestoMax={250_000}
         onCambiarPresupuesto={onCambiarPresupuesto}
         onFinalizarAjuste={onFinalizarAjuste}
         totalEnPresupuesto={4}
@@ -308,7 +308,7 @@ describe("PresupuestoHome", () => {
       onFinalizarAjuste.mockClear();
       fireEvent[evento](slider);
       expect(onFinalizarAjuste).toHaveBeenCalledTimes(1);
-      expect(onFinalizarAjuste).toHaveBeenCalledWith(250);
+      expect(onFinalizarAjuste).toHaveBeenCalledWith(250_000);
     }
   });
 });
@@ -619,6 +619,8 @@ describe("OpinionesHome", () => {
       evento.preventDefault(),
     ),
     onPedirLogin: vi.fn(),
+    onResenaEditada: vi.fn(),
+    onResenaEliminada: vi.fn(),
   };
 
   it("muestra el aviso de login y el formulario", () => {
@@ -702,6 +704,29 @@ describe("OpinionesHome", () => {
     expect(onCambiarFiltro).toHaveBeenCalledWith("batería");
 
     expect(screen.queryByText("Identificarse para opinar")).toBeNull();
+  });
+
+  it("muestra el aviso de revisión con términos bloqueados y no con falsos positivos", () => {
+    const { rerender } = render(
+      <OpinionesHome {...propsBase} comentario="esto es un timo" />,
+    );
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+
+    rerender(
+      <OpinionesHome
+        {...propsBase}
+        comentario="la computadora y el último pedido funcionan bien"
+      />,
+    );
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
   });
 });
 

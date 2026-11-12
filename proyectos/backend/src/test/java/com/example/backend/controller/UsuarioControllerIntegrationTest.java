@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.backend.config.SecurityConfig;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import com.nimbusds.jose.JOSEObjectType;
@@ -138,6 +139,14 @@ class UsuarioControllerIntegrationTest {
         });
     }
 
+    private void asignarRolActivo(Usuario usuario, Rol rol) {
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(LocalDateTime.now());
+        usuario.agregarRol(asignacion);
+    }
+
     private String generarToken(String sub, String email, Boolean emailVerified,
                                 Map<String, Object> userMetadata, ECPrivateKey signingKey) throws Exception {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
@@ -219,6 +228,7 @@ class UsuarioControllerIntegrationTest {
                 .andExpect(jsonPath("$.nombre", is("Juan Pérez")))
                 .andExpect(jsonPath("$.correo", is(email)))
                 .andExpect(jsonPath("$.rol", is("Usuario registrado")))
+                .andExpect(jsonPath("$.roles[0]", is("Usuario registrado")))
                 .andExpect(jsonPath("$.activo", is(true)))
                 .andExpect(jsonPath("$.idUsuario").isNumber())
                 .andExpect(jsonPath("$.fechaRegistro").isNotEmpty());
@@ -245,6 +255,7 @@ class UsuarioControllerIntegrationTest {
         existente.setCorreo(email);
         existente.setSupabaseUid(sub);
         existente.setRol(rolDefault);
+        asignarRolActivo(existente, rolDefault);
         existente.setEstado(true);
         existente.setFechaRegistro(LocalDateTime.now().minusDays(10));
         usuarioRepository.save(existente);

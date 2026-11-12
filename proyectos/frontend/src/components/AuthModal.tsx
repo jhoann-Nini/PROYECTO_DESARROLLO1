@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { UsuarioSesion } from "@/types/producto";
 import { createClient } from "@/lib/supabase/client";
 import { obtenerMiPerfil, mapearPerfilABusinessSession } from "@/services/api";
@@ -11,8 +11,35 @@ interface AuthModalProps {
   onLoginSuccess: (user: UsuarioSesion) => void;
 }
 
+const AUTH_REQUEST_TIMEOUT_MS = 20_000;
+
+/**
+ * Evita que la interfaz quede bloqueada si Supabase o el backend no responden.
+ * La petición original puede continuar en red, pero la UI recupera el control.
+ */
+async function esperarRespuestaAuth<T>(
+  peticion: Promise<T>,
+  mensaje: string,
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      peticion,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(
+          () => reject(new Error(mensaje)),
+          AUTH_REQUEST_TIMEOUT_MS,
+        );
+      }),
+    ]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
-  const [modo, setModo] = useState<"login" | "registro">("login");
+  const [modo, setModo] = useState<"login" | "registro" | "recuperar">("login");
 
   // Formulario Login
   const [loginEmail, setLoginEmail] = useState("");
@@ -31,15 +58,31 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  const manejarCierre = useCallback(() => {
+    setModo("login");
+    setLoginEmail("");
+    setLoginPassword("");
+    setRegNombre("");
+    setRegEmail("");
+    setRegUsuario("");
+    setRegPassword("");
+    setRegConfirmPassword("");
+    setRegTerminos(false);
+    setError("");
+    setExito("");
+    setCargando(false);
+    onClose();
+  }, [onClose]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !cargando) onClose();
+      if (e.key === "Escape" && !cargando) manejarCierre();
     };
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose, cargando]);
+  }, [isOpen, manejarCierre, cargando]);
 
   if (!isOpen) return null;
 
@@ -57,10 +100,13 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setCargando(true);
     try {
       const supabase = createClient();
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signInWithPassword({
         email: loginEmail.trim(),
         password: loginPassword,
-      });
+      }),
+      "El inicio de sesión está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("Invalid login credentials")) {
@@ -79,15 +125,16 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       }
 
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La autenticación respondió, pero el servidor de TecReview no confirmó tu perfil. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         loginExitoso = true;
         setExito("¡Inicio de sesión exitoso! Bienvenido a TecReview.");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 600);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error
@@ -143,19 +190,22 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           ? `${window.location.origin}/auth/callback`
           : undefined;
 
-      const { data, error: authError } = await supabase.auth.signUp({
-        email: regEmail.trim(),
-        password: regPassword,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            name: regNombre.trim(),
-            full_name: regNombre.trim(),
-            user_name: regUsuario.trim(),
-            usuario: regUsuario.trim(),
+      const { data, error: authError } = await esperarRespuestaAuth(
+        supabase.auth.signUp({
+          email: regEmail.trim(),
+          password: regPassword,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              name: regNombre.trim(),
+              full_name: regNombre.trim(),
+              user_name: regUsuario.trim(),
+              usuario: regUsuario.trim(),
+            },
           },
-        },
-      });
+        }),
+        "El registro está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+      );
 
       if (authError) {
         if (authError.message.includes("User already registered")) {
@@ -177,23 +227,25 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       if (!data.session?.access_token) {
         registroExitoso = true;
         setExito("¡Registro exitoso! Hemos enviado un enlace de confirmación a tu correo. Por favor revisa tu bandeja de entrada antes de iniciar sesión.");
-        setTimeout(() => {
-          onClose();
-        }, 3500);
+        // El registro terminó: salir del formulario de creación para que nunca
+        // permanezca visible el estado «Creando cuenta...».
+        setCargando(false);
+        setModo("login");
         return;
       }
 
       // Si Supabase devuelve la sesión activa de inmediato
       try {
-        const perfilBackend = await obtenerMiPerfil(data.session.access_token);
+        const perfilBackend = await esperarRespuestaAuth(
+          obtenerMiPerfil(data.session.access_token),
+          "La cuenta se creó, pero TecReview no confirmó tu perfil a tiempo. Inténtalo nuevamente.",
+        );
         const usuarioSesion = mapearPerfilABusinessSession(perfilBackend, data.user);
 
         registroExitoso = true;
         setExito("¡Cuenta creada correctamente! Iniciando tu sesión...");
-        setTimeout(() => {
-          onLoginSuccess(usuarioSesion);
-          onClose();
-        }, 800);
+        onLoginSuccess(usuarioSesion);
+        onClose();
       } catch (errPerfil) {
         const mensaje =
           errPerfil instanceof Error
@@ -215,13 +267,47 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     }
   };
 
+  const manejarRecuperacion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setExito("");
+
+    const correo = loginEmail.trim();
+    if (!correo) {
+      setError("Escribe el correo electrónico asociado a tu cuenta.");
+      return;
+    }
+
+    setCargando(true);
+    try {
+      const supabase = createClient();
+      const { error: recoveryError } = await esperarRespuestaAuth(
+        supabase.auth.resetPasswordForEmail(correo, {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+        }),
+        "La solicitud está tardando demasiado. Inténtalo nuevamente.",
+      );
+
+      if (recoveryError) {
+        setError("No fue posible solicitar la recuperación. Verifica el correo e inténtalo nuevamente.");
+        return;
+      }
+
+      setExito("Si existe una cuenta asociada a ese correo, recibirás instrucciones para restablecer tu contraseña.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No fue posible solicitar la recuperación.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
   const claseInput =
     "w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]";
 
   return (
     <div
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) manejarCierre();
       }}
       className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
       role="dialog"
@@ -239,7 +325,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={manejarCierre}
             className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
             aria-label="Cerrar modal de autenticación"
           >
@@ -253,6 +339,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             type="button"
             onClick={() => {
               setModo("login");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
@@ -268,6 +362,14 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             type="button"
             onClick={() => {
               setModo("registro");
+              setLoginEmail("");
+              setLoginPassword("");
+              setRegNombre("");
+              setRegEmail("");
+              setRegUsuario("");
+              setRegPassword("");
+              setRegConfirmPassword("");
+              setRegTerminos(false);
               setError("");
               setExito("");
             }}
@@ -337,9 +439,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
                 />
                 <span>Recordar sesión</span>
               </label>
-              <a href="#" className="transition-colors hover:text-[var(--color-brand-blue)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setModo("recuperar");
+                  setError("");
+                  setExito("");
+                }}
+                className="transition-colors hover:text-[var(--color-brand-blue)]"
+              >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </button>
             </div>
 
             <button
@@ -350,6 +460,50 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               }`}
             >
               {cargando ? "Iniciando sesión..." : "Entrar a TecReview"}
+            </button>
+          </form>
+        )}
+
+
+        {/* FORMULARIO DE RECUPERACIÓN DE CONTRASEÑA */}
+        {modo === "recuperar" && (
+          <form onSubmit={manejarRecuperacion} className="space-y-4 text-xs">
+            <p className="text-sm text-[var(--color-subtle)]">
+              Escribe tu correo y te enviaremos un enlace para crear una nueva contraseña.
+            </p>
+            <div>
+              <label htmlFor="recovery-email" className="mb-1 block font-medium text-[var(--color-ink)]">
+                Correo electrónico
+              </label>
+              <input
+                id="recovery-email"
+                type="email"
+                autoComplete="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="ejemplo@tecreview.com"
+                className={claseInput}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={cargando}
+              className="w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-xs font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {cargando ? "Enviando..." : "Enviar enlace de recuperación"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setModo("login");
+                setLoginEmail("");
+                setError("");
+                setExito("");
+              }}
+              className="w-full text-center text-xs font-semibold text-[var(--color-brand-blue)] hover:underline"
+            >
+              Volver a iniciar sesión
             </button>
           </form>
         )}

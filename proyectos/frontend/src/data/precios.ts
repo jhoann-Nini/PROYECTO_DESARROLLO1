@@ -1,17 +1,14 @@
 /**
- * Regla temporal de normalización de precios.
+ * Saneamiento de precios.
  *
- * Los datos reales de la API ya vienen en COP. Los mocks legados conservan
- * precios en dólares y se convierten con una tasa fija para no romper la
- * compatibilidad. Cuando todos los datos estén normalizados, esta regla se
- * puede retirar sin tocar los consumidores.
+ * Contrato del proyecto: todos los precios que maneja la aplicación —API,
+ * base de datos y datos locales— están expresados en COP. Esta función NO
+ * convierte moneda: solo descarta valores ausentes o inválidos y redondea.
+ *
+ * Si en el futuro el catálogo admite varias monedas, la unidad debe viajar
+ * como un campo explícito (`moneda`) y no inferirse por la magnitud del valor.
  */
-export const TASA_CAMBIO_LEGADO = 4000;
-export const UMBRAL_PRECIO_COP = 10000;
-
-export function normalizarPrecioCOP(
-  valor: number | null | undefined
-): number {
+export function sanearPrecioCOP(valor: number | null | undefined): number {
   if (
     valor === null ||
     valor === undefined ||
@@ -21,7 +18,5 @@ export function normalizarPrecioCOP(
     return 0;
   }
 
-  return valor < UMBRAL_PRECIO_COP
-    ? Math.round(valor * TASA_CAMBIO_LEGADO)
-    : Math.round(valor);
+  return Math.round(valor);
 }

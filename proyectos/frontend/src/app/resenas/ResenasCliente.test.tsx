@@ -14,6 +14,7 @@ import type {
   UsuarioSesion,
 } from "@/types/producto";
 import type { ResenaResponse } from "@/services/api";
+import { REGLAS_RESENAS } from "@/data/resenas";
 
 const usuarioMock: UsuarioSesion = {
   id: "auth-1",
@@ -47,12 +48,14 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerProductos: vi.fn(),
     obtenerMejorValorados: vi.fn(),
     crearResena: vi.fn(),
+    crearReporteResena: vi.fn(),
   };
 });
 
 import {
   ApiError,
   crearResena,
+  crearReporteResena,
   obtenerMejorValorados,
   obtenerProductos,
   obtenerResenas,
@@ -63,6 +66,7 @@ const mockResenas = vi.mocked(obtenerResenas);
 const mockProductos = vi.mocked(obtenerProductos);
 const mockRanking = vi.mocked(obtenerMejorValorados);
 const mockCrear = vi.mocked(crearResena);
+const mockCrearReporte = vi.mocked(crearReporteResena);
 
 const PRODUCTOS: Producto[] = [
   {
@@ -269,6 +273,66 @@ describe("ResenasCliente", () => {
     expect(screen.getByText("Mi nueva reseña.")).toBeDefined();
   });
 
+  it("muestra el mensaje oficial cuando la reseña ya existe (409)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.duplicada, 409),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Ya has valorado este producto. Puedes editar tu reseña existente.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
+  });
+
+  it("muestra el mensaje oficial al superar el límite por hora (429)", async () => {
+    sesionMock.usuario = usuarioMock;
+    mockCrear.mockRejectedValueOnce(
+      new ApiError(REGLAS_RESENAS.mensajes.limite, 429),
+    );
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByLabelText("Tu reseña"), {
+      target: { value: "Mi experiencia con este producto." },
+    });
+    const botonEnviar = screen.getByRole("button", {
+      name: "Publicar reseña",
+    }) as HTMLButtonElement;
+    fireEvent.click(botonEnviar);
+
+    const alerta = await screen.findByRole("alert");
+    expect(alerta.textContent).toBe(
+      "Has alcanzado el límite de 5 reseñas por hora. Intenta de nuevo más tarde.",
+    );
+    await waitFor(() => expect(botonEnviar.disabled).toBe(false));
+  });
+
   it("muestra el error de carga y permite reintentar", async () => {
     mockResenas.mockRejectedValueOnce(
       new ApiError("No fue posible conectarse con el servidor.", 500),
@@ -343,6 +407,61 @@ describe("ResenasCliente", () => {
         .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
         .length,
     ).toBe(0);
+  });
+
+  it("no avisa con falsos positivos por subcadena y sí con términos reales", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+
+    fireEvent.change(area, {
+      target: { value: "la computadora y el último pedido funcionan bien" },
+    });
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+    ).toBeNull();
+
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("no borra el texto al rechazar una reseña con términos bloqueados", async () => {
+    sesionMock.usuario = usuarioMock;
+
+    render(<ResenasCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("La batería me dura todo el día.")).toBeDefined();
+    });
+
+    fireEvent.change(screen.getByLabelText("Producto de la reseña"), {
+      target: { value: "1" },
+    });
+
+    const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
+    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/El comentario contiene palabras no permitidas/i),
+      ).toBeDefined();
+    });
+
+    expect(area.value).toBe("esto es una estafa");
+    expect(mockCrear).not.toHaveBeenCalled();
   });
 
   it("muestra editar y eliminar solo en las reseñas propias", async () => {
@@ -428,8 +547,9 @@ describe("ResenasCliente", () => {
     ).toBeDefined();
   });
 
-  it("marca la reseña como reportada tras enviar el reporte", async () => {
+  it("marca la reseña como reportada solo después de persistir el reporte", async () => {
     sesionMock.usuario = usuarioMock;
+    mockCrearReporte.mockResolvedValue(undefined);
 
     render(<ResenasCliente />);
 
@@ -447,8 +567,11 @@ describe("ResenasCliente", () => {
       within(dialogo).getByRole("button", { name: "Enviar reporte" })
     );
 
-    expect(screen.queryByRole("dialog")).toBeNull();
-    expect(screen.getByText("Reporte enviado")).toBeDefined();
+    await waitFor(() => {
+      expect(mockCrearReporte).toHaveBeenCalledWith(2, { motivo: "spam" });
+      expect(screen.queryByRole("dialog")).toBeNull();
+      expect(screen.getByText("Reporte enviado")).toBeDefined();
+    });
     expect(
       screen.queryByRole("button", { name: "Reportar reseña" })
     ).toBeNull();

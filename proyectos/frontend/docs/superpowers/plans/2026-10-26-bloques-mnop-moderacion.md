@@ -121,10 +121,18 @@
   - botón `aria-label="Reportar reseña"` (bandera) en la tarjeta de una reseña ajena, no en la propia.
   - abrir modal: diálogo con título `Reportar reseña`, radios demandados por motivo + campo justificación para `Otro`, botón `Enviar reporte` y separado `Cancelar`.
   - obligatorio: no enviar sin motivo elegido.
-  - al confirmar: llamada simulada resuelta → diálogo se cierra, `onReportado` y la tarjeta muestra estado enviado y el botón se deshabilita con `aria-disabled` y estética/etiqueta `Reporte enviado`.
+  - al confirmar: llamada simulada resuelta → diálogo se cierra, `onReportado` y la tarjeta sustituye el botón por el texto “Reporte enviado”, sin permitir reenviar.
   - accesibilidad: foco inicial, Tab cíclico, Escape, backdrop, bloqueo de scroll.
 - [ ] **Step 2:** confirmar RED.
-- [ ] **Step 3:** implementar: `ReportarResenaModal.tsx` con radios + textarea para `Otro`; el envío es **solo de estado local** (no se invoca red): documento en JSDoc y en `docs/tecreview-redesign.md` que la persistencia queda pendiente del backend (sin TEC asignado aún); integrar en `ResenasCliente.tsx` con un `Set<number> de ids ya reportados`.
+- [ ] **Step 3:** implementar: `ReportarResenaModal.tsx` con radios + textarea para `Otro`; integrar en `ResenasCliente.tsx` con un `Set<number>` de ids ya reportados.
+
+> **Actualización 2026-11-09:** el endpoint de reportes ya existe en backend.
+> `ReportarResenaModal` usa `crearReporteResena` (`POST /api/resenas/{idResena}/reportes`)
+> en lugar de resolver el envío solo en estado local. El `Set` local se conserva
+> para la confirmación inmediata; el backend rechaza duplicados con 409 y toma
+> la identidad del reportante del JWT. La guía actualizada vive en
+> `docs/tecreview-redesign.md` §8.14.
+
 - [ ] **Step 4:** GREEN dirigido + suite completa.
 - [ ] **Step 5:** commit `feat(resenas): agregar reporte accesible de reseñas (TEC-103)`.
 
@@ -141,5 +149,6 @@
 ## Pendiente de backend (no bloquea)
 
 - TEC-76/77/78 (MG): endpoints de listar/editar/eliminar reseñas para que O consuma datos reales.
-- Reporte de reseñas: sin TEC asignada aún; persistencia pendiente.
+- Reporte de reseñas: **resuelto en backend** con `POST /api/resenas/{idResena}/reportes`
+  y `GET /api/reportes/mis-reportes`; el frontend ya persiste y muestra el error 409.
 - TEC-90/91/92 (NM): aplican `REGLAS_RESENAS` en el servidor.

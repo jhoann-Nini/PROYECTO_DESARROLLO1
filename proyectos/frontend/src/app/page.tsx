@@ -28,8 +28,9 @@ import {
 import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
-import { normalizarPrecioCOP } from "@/data/precios";
+import { sanearPrecioCOP } from "@/data/precios";
 import { seleccionarDestacados } from "@/data/destacados";
+import { contieneLenguajeNoPermitido } from "@/data/resenas";
 import {
   normalizarTexto,
   type ProductoViewModel,
@@ -94,7 +95,7 @@ function filtrarRanking<T extends ItemRankingFiltrable>(
       return true;
     }
 
-    return normalizarPrecioCOP(item.precioReferencia) <= limitePresupuestoCOP;
+    return sanearPrecioCOP(item.precioReferencia) <= limitePresupuestoCOP;
   });
 }
 
@@ -116,7 +117,7 @@ function filtrarOfertas(
 
     if (!filtrarPorPresupuesto) return true;
 
-    return normalizarPrecioCOP(oferta.precioActual) <= limitePresupuestoCOP;
+    return sanearPrecioCOP(oferta.precioActual) <= limitePresupuestoCOP;
   });
 }
 
@@ -153,7 +154,8 @@ export default function Home() {
 
   // Búsqueda y presupuesto
   const [busqueda, setBusqueda] = useState("");
-  const [presupuestoMax, setPresupuestoMax] = useState<number>(1000);
+  // El presupuesto vive en COP: 4.000.000 equivale al antiguo valor 1000.
+  const [presupuestoMax, setPresupuestoMax] = useState<number>(4_000_000);
   const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] =
     useState(false);
 
@@ -220,43 +222,47 @@ export default function Home() {
     }
   }, []);
 
-  // Carga inicial: productos, categorías y marcas
+  // Cargar productos sin esperar los metadatos del catálogo.
+  // Categorías y marcas se consultan en paralelo y enriquecen las tarjetas al llegar.
   useEffect(() => {
     let activo = true;
 
-    async function consultarApi() {
-      const [resultadoProductos, resultadoCategorias, resultadoMarcas] =
-        await Promise.allSettled([
-          obtenerProductos<Producto>(),
-          obtenerCategorias(),
-          obtenerMarcas(),
-        ]);
+    obtenerProductos<Producto>()
+      .then((datos) => {
+        if (!activo) return;
 
-      if (!activo) return;
-
-      if (resultadoCategorias.status === "fulfilled") {
-        setCategoriasApi(resultadoCategorias.value);
-      }
-      if (resultadoMarcas.status === "fulfilled") {
-        setMarcasApi(resultadoMarcas.value);
-      }
-
-      if (
-        resultadoProductos.status === "fulfilled" &&
-        resultadoProductos.value &&
-        resultadoProductos.value.length > 0
-      ) {
-        setProductosBackend(resultadoProductos.value);
-        setEstadoBackend("online");
-      } else {
+        if (datos.length > 0) {
+          setProductosBackend(datos);
+          setEstadoBackend("online");
+        } else {
+          setProductosBackend(PRODUCTOS_MOCK);
+          setEstadoBackend("offline");
+        }
+      })
+      .catch(() => {
+        if (!activo) return;
         setProductosBackend(PRODUCTOS_MOCK);
         setEstadoBackend("offline");
-      }
+      })
+      .finally(() => {
+        if (activo) setCargandoApi(false);
+      });
 
-      setCargandoApi(false);
-    }
+    obtenerCategorias()
+      .then((datos) => {
+        if (activo) setCategoriasApi(datos);
+      })
+      .catch(() => {
+        // Los productos pueden mostrarse aunque falle la carga de categorías.
+      });
 
-    consultarApi();
+    obtenerMarcas()
+      .then((datos) => {
+        if (activo) setMarcasApi(datos);
+      })
+      .catch(() => {
+        // Los productos pueden mostrarse aunque falle la carga de marcas.
+      });
 
     return () => {
       activo = false;
@@ -468,10 +474,8 @@ export default function Home() {
     };
   }, []);
 
-  const limitePresupuestoCOP = useMemo(
-    () => normalizarPrecioCOP(presupuestoMax),
-    [presupuestoMax],
-  );
+  // El slider ya entrega el límite en COP: no hay nada que convertir.
+  const limitePresupuestoCOP = presupuestoMax;
 
   const vistas = useMemo(
     () =>
@@ -610,18 +614,6 @@ export default function Home() {
         ? productosBackend[0].idProducto
         : "";
 
-  const palabrasMaliciosas = [
-    "spam",
-    "insulto",
-    "estafa",
-    "odio",
-    "tonto",
-    "idiota",
-    "fraude",
-    "mierda",
-    "puta",
-  ];
-
   const manejarEnvioComentario = async (
     evento: React.FormEvent<HTMLFormElement>,
   ) => {
@@ -645,15 +637,10 @@ export default function Home() {
       return;
     }
 
-    const esMalicioso = palabrasMaliciosas.some((palabra) =>
-      comentario.toLowerCase().includes(palabra),
-    );
-
-    if (esMalicioso) {
+    if (contieneLenguajeNoPermitido(comentario)) {
       setErrorComentario(
         "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso.",
       );
-      setComentario("");
       return;
     }
 
@@ -858,6 +845,18 @@ export default function Home() {
           error={errorComentario || null}
           onPublicar={manejarEnvioComentario}
           onPedirLogin={() => setModalAuthAbierto(true)}
+          onResenaEditada={(actualizada) =>
+            setResenas((previas) =>
+              previas.map((previa) =>
+                previa.idResena === actualizada.idResena ? actualizada : previa,
+              ),
+            )
+          }
+          onResenaEliminada={(idResena) =>
+            setResenas((previas) =>
+              previas.filter((previa) => previa.idResena !== idResena),
+            )
+          }
         />
 
         <CtaComparador />

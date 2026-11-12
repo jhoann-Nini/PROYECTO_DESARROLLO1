@@ -10,12 +10,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    @EntityGraph(attributePaths = {"rol"})
+
+    @EntityGraph(attributePaths = {"rol", "roles", "roles.rol"})
     Optional<Usuario> findByCorreo(String correo);
 
     boolean existsByCorreo(String correo);
 
-    @EntityGraph(attributePaths = {"rol"})
+    @EntityGraph(attributePaths = {"rol", "roles", "roles.rol"})
     Optional<Usuario> findBySupabaseUid(String supabaseUid);
 
     boolean existsBySupabaseUid(String supabaseUid);

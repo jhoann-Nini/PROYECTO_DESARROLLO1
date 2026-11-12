@@ -673,6 +673,101 @@ describe("Página principal / (Home)", () => {
       expect(screen.getByText("Batería dura dos días enteros.")).toBeDefined();
       expect(screen.queryByText("La pantalla AMOLED es brillante.")).toBeNull();
     });
+
+    it("muestra el aviso de revisión mientras se escribe y conserva el texto", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      const inputComentario = screen.getByLabelText(
+        /Escribe tu opinión/i,
+      ) as HTMLInputElement;
+
+      fireEvent.change(inputComentario, {
+        target: { value: "esto es un timo" },
+      });
+
+      expect(inputComentario.value).toBe("esto es un timo");
+      expect(
+        screen.getByText(
+          "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+        ),
+      ).toBeDefined();
+
+      fireEvent.change(inputComentario, {
+        target: { value: "la computadora y el último pedido" },
+      });
+
+      expect(inputComentario.value).toBe("la computadora y el último pedido");
+      expect(
+        screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+      ).toBeNull();
+    });
+
+    it("no borra el comentario al rechazar términos bloqueados", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        {
+          idProducto: 45,
+          nombre: "Nothing Phone (2a)",
+          descripcion: "Gama media transparente",
+          precioReferencia: 350,
+          idCategoria: 1,
+          idMarca: 2,
+          nombreCategoria: "Celulares",
+          nombreMarca: "Nothing",
+          imagen: null,
+          estado: true,
+        },
+      ]);
+
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "token.valido.opiniones",
+            user: { id: "user-op-1", email: "opina@tecreview.com" },
+          },
+        },
+        error: null,
+      });
+
+      mockObtenerMiPerfil.mockResolvedValue({
+        idUsuario: 77,
+        nombre: "Reviewer Pro",
+        correo: "opina@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-15T12:00:00",
+      });
+
+      mockObtenerResenas.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Reviewer Pro")).toBeDefined();
+      });
+
+      const inputComentario = screen.getByLabelText(
+        /Escribe tu opinión/i,
+      ) as HTMLInputElement;
+
+      fireEvent.change(inputComentario, {
+        target: { value: "esto es una estafa" },
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: /Publicar opinión/i }),
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/El comentario contiene palabras no permitidas/i),
+        ).toBeDefined();
+      });
+
+      expect(inputComentario.value).toBe("esto es una estafa");
+      expect(mockCrearResena).not.toHaveBeenCalled();
+    });
   });
 
   describe("9. Control de acceso y navegación por roles (Hallazgo 2 - Fase 2)", () => {
@@ -1115,7 +1210,7 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
-      // El presupuesto por defecto es 1000 ($4.000.000 COP).
+      // El presupuesto por defecto es $4.000.000 COP.
       // El producto más caro ($5.209.900) sigue visible y muestra su badge 'Supera presupuesto'
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       expect(screen.getAllByText("Supera presupuesto").length).toBeGreaterThanOrEqual(1);
@@ -1308,7 +1403,7 @@ describe("Página principal / (Home)", () => {
       const slider = screen.getByLabelText(
         "Ajustar presupuesto máximo en pesos colombianos",
       );
-      fireEvent.change(slider, { target: { value: "100" } });
+      fireEvent.change(slider, { target: { value: "400000" } });
       fireEvent.pointerUp(slider);
 
       expect(

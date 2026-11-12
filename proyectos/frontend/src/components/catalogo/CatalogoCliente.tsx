@@ -65,17 +65,12 @@ export default function CatalogoCliente() {
   useEffect(() => {
     let activo = true;
 
-    Promise.all([
-      obtenerProductos<Producto>(),
-      obtenerCategorias(),
-      obtenerMarcas(),
-    ])
-      .then(([productos, categorias, marcas]) => {
+    // Los productos son el contenido principal: no bloquearlos por los metadatos.
+    obtenerProductos<Producto>()
+      .then((productos) => {
         if (!activo) return;
         setProductosApi(productos);
-        setCategoriasApi(categorias);
-        setMarcasApi(marcas);
-        setFiltros(filtrosBase());
+        setError("");
       })
       .catch((err: unknown) => {
         if (!activo) return;
@@ -87,6 +82,22 @@ export default function CatalogoCliente() {
       })
       .finally(() => {
         if (activo) setCargando(false);
+      });
+
+    obtenerCategorias()
+      .then((categorias) => {
+        if (activo) setCategoriasApi(categorias);
+      })
+      .catch(() => {
+        // Los filtros siguen disponibles con los productos aunque falle este metadato.
+      });
+
+    obtenerMarcas()
+      .then((marcas) => {
+        if (activo) setMarcasApi(marcas);
+      })
+      .catch(() => {
+        // Los filtros siguen disponibles con los productos aunque falle este metadato.
       });
 
     return () => {

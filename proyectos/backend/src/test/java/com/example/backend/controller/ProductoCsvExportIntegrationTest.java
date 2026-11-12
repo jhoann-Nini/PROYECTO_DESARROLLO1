@@ -15,6 +15,7 @@ import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
@@ -124,6 +125,14 @@ class ProductoCsvExportIntegrationTest {
         }
     }
 
+    private void asignarRolActivo(Usuario usuario, Rol rol) {
+        UsuarioRol asignacion = new UsuarioRol();
+        asignacion.setRol(rol);
+        asignacion.setEstado(true);
+        asignacion.setFechaAsignacion(java.time.LocalDateTime.now());
+        usuario.agregarRol(asignacion);
+    }
+
     private String generarToken(String sub) throws Exception {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.ES256)
                 .keyID(testJwk.getKeyID())
@@ -168,6 +177,7 @@ class ProductoCsvExportIntegrationTest {
         admin.setCorreo("admin.csv@tecreview.com");
         admin.setSupabaseUid(ADMIN_SUB);
         admin.setRol(rolAdmin);
+        asignarRolActivo(admin, rolAdmin);
         admin.setEstado(true);
         usuarioRepository.save(admin);
 
@@ -184,6 +194,7 @@ class ProductoCsvExportIntegrationTest {
         inactiveAdmin.setCorreo("admin.inactivo@tecreview.com");
         inactiveAdmin.setSupabaseUid(INACTIVE_ADMIN_SUB);
         inactiveAdmin.setRol(rolAdmin);
+        asignarRolActivo(inactiveAdmin, rolAdmin);
         inactiveAdmin.setEstado(false);
         usuarioRepository.save(inactiveAdmin);
     }

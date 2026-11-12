@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   MAX_RESENAS_POR_HORA,
   REGLAS_RESENAS,
+  contieneLenguajeNoPermitido,
   obtenerPalabrasDetectadas,
   type ReglaResenas,
 } from "./resenas";
@@ -55,11 +56,51 @@ describe("obtenerPalabrasDetectadas", () => {
     expect(obtenerPalabrasDetectadas("operación bien hecha")).toEqual([]);
     expect(obtenerPalabrasDetectadas("excelente producto")).toEqual([]);
     expect(obtenerPalabrasDetectadas("buen rendimiento y batería")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("computadora")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("computadoras")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("último")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("últimos")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("sodio")).toEqual([]);
+    expect(obtenerPalabrasDetectadas("estimulante")).toEqual([]);
   });
 
-  it("detecta plurales simples", () => {
+  it("detecta palabras bloqueadas dentro de texto válido sin marcar el resto", () => {
+    expect(
+      obtenerPalabrasDetectadas("La computadora es una estafa, no compren ahí")
+    ).toEqual(["estafa"]);
+    expect(obtenerPalabrasDetectadas("El último pedido fue un timo")).toEqual([
+      "timo",
+    ]);
+  });
+
+  it("detecta evasiones con leet, símbolos y espacios", () => {
+    expect(obtenerPalabrasDetectadas("es un sp4m")).toEqual(["spam"]);
+    expect(obtenerPalabrasDetectadas("qué t1mo de tienda")).toEqual(["timo"]);
+    expect(obtenerPalabrasDetectadas("p.u.t.a experiencia")).toEqual(["puta"]);
+    expect(obtenerPalabrasDetectadas("m13rda de servicio")).toEqual(["mierda"]);
+    expect(obtenerPalabrasDetectadas("e s t a f a")).toEqual(["estafa"]);
+  });
+
+  it("detecta plurales simples, incluidos los que llevan tilde", () => {
     expect(
       obtenerPalabrasDetectadas("no quiero estafas ni timos")
     ).toEqual(["estafa", "timo"]);
+    expect(obtenerPalabrasDetectadas("son unos idiotas")).toEqual(["idiota"]);
+    expect(obtenerPalabrasDetectadas("comentarios inútiles")).toEqual([
+      "inutil",
+    ]);
+    expect(obtenerPalabrasDetectadas("varias estafas")).toEqual(["estafa"]);
+  });
+
+  it("devuelve cada término canónico una sola vez", () => {
+    expect(obtenerPalabrasDetectadas("estafa estafa ESTAFA")).toEqual([
+      "estafa",
+    ]);
+  });
+
+  it("mantiene contieneLenguajeNoPermitido alineado con el detector", () => {
+    expect(contieneLenguajeNoPermitido("computadora")).toBe(false);
+    expect(contieneLenguajeNoPermitido("último")).toBe(false);
+    expect(contieneLenguajeNoPermitido("esto es una estafa")).toBe(true);
   });
 });

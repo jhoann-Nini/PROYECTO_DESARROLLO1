@@ -1,7 +1,11 @@
 "use client";
 
-import type { FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import type { ResenaResponse } from "@/services/api";
+import { obtenerPalabrasDetectadas } from "@/data/resenas";
+import EditarResena from "@/app/resenas/EditarResena";
+import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
+import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 import type { Producto, UsuarioSesion } from "@/types/producto";
 
 export interface OpinionesHomeProps {
@@ -21,6 +25,8 @@ export interface OpinionesHomeProps {
   error: string | null;
   onPublicar: (evento: FormEvent<HTMLFormElement>) => void;
   onPedirLogin: () => void;
+  onResenaEditada: (resena: ResenaResponse) => void;
+  onResenaEliminada: (idResena: number) => void;
 }
 
 export default function OpinionesHome({
@@ -40,7 +46,19 @@ export default function OpinionesHome({
   error,
   onPublicar,
   onPedirLogin,
+  onResenaEditada,
+  onResenaEliminada,
 }: OpinionesHomeProps) {
+  const [resenaAReportar, setResenaAReportar] = useState<number | null>(null);
+  const [resenasReportadas, setResenasReportadas] = useState<Set<number>>(
+    () => new Set(),
+  );
+  // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
+  const terminosDetectados = useMemo(
+    () => obtenerPalabrasDetectadas(comentario),
+    [comentario],
+  );
+
   return (
     <section
       aria-labelledby="seccion-opiniones"
@@ -152,6 +170,9 @@ export default function OpinionesHome({
               </button>
             </div>
           </div>
+          {terminosDetectados.length > 0 && (
+            <AvisoTerminosResena className="mt-2" />
+          )}
           {error && (
             <p className="mt-2 text-xs text-[var(--color-ink)]" role="alert">
               ⚠️ {error}
@@ -196,6 +217,34 @@ export default function OpinionesHome({
                 <p className="text-sm leading-relaxed text-[var(--color-ink)]">
                   {resena.comentario}
                 </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-hairline)] pt-2">
+                  {usuario && resena.idUsuario === usuario.idUsuario ? (
+                    <EditarResena
+                      resena={resena}
+                      onEditada={onResenaEditada}
+                      onEliminada={onResenaEliminada}
+                    />
+                  ) : resenasReportadas.has(resena.idResena) ? (
+                    <span className="text-[11px] text-[var(--color-subtle)]">
+                      Reporte enviado
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!usuario) {
+                          onPedirLogin();
+                          return;
+                        }
+                        setResenaAReportar(resena.idResena);
+                      }}
+                      aria-label="Reportar reseña"
+                      className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-500"
+                    >
+                      Reportar
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -207,6 +256,20 @@ export default function OpinionesHome({
           </div>
         )}
       </div>
+      {resenaAReportar !== null && (
+        <ReportarResenaModal
+          resenaId={resenaAReportar}
+          abierto
+          onCerrar={() => setResenaAReportar(null)}
+          onReportado={(idResena) =>
+            setResenasReportadas((previas) => {
+              const siguientes = new Set(previas);
+              siguientes.add(idResena);
+              return siguientes;
+            })
+          }
+        />
+      )}
     </section>
   );
 }

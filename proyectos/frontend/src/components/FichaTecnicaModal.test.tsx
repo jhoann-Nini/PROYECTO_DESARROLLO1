@@ -705,4 +705,54 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
     // Reseñas comunitarias
     expect(screen.getByText(/Opiniones de la comunidad:/i)).toBeDefined();
   });
+
+  it("muestra el aviso de revisión y conserva el texto al detectar términos bloqueados", async () => {
+    mockObtenerResenas.mockResolvedValueOnce([]);
+
+    render(
+      <FichaTecnicaModal
+        producto={productoTablet}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioSesionTest}
+      />
+    );
+
+    const tabOpiniones = await screen.findByRole("tab", {
+      name: /Opiniones \(0\)/i,
+    });
+    fireEvent.click(tabOpiniones);
+
+    const textarea = (await screen.findByPlaceholderText(
+      /Comparte tu experiencia con Samsung Galaxy Tab S10\+/i
+    )) as HTMLTextAreaElement;
+
+    fireEvent.change(textarea, { target: { value: "esto es una estafa" } });
+
+    expect(
+      screen.getByText(
+        "Tu reseña contiene términos que requieren revisión antes de publicarse."
+      )
+    ).toBeDefined();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Publicar opinión/i })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/El comentario contiene palabras no permitidas/i)
+      ).toBeDefined();
+    });
+
+    expect(textarea.value).toBe("esto es una estafa");
+    expect(mockCrearResena).not.toHaveBeenCalled();
+
+    fireEvent.change(textarea, {
+      target: { value: "la computadora y el último pedido" },
+    });
+
+    expect(
+      screen.queryByText(/Tu reseña contiene términos que requieren revisión/)
+    ).toBeNull();
+  });
 });

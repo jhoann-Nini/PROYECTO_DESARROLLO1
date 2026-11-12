@@ -1211,4 +1211,20 @@ el historial antiguo y el reescrito.
   `PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
 - Suite focalizada: 84 pruebas en 4 archivos, todas en verde.
 
+### 12.9 Revisión TEC-148 — reporte de precio o enlace incorrecto (bloqueada)
+
+**Criterios**
+
+- Solo se implementa contra un endpoint real de TEC-147.
+- No se simula persistencia ni se inventan rutas, campos o permisos.
+
+**Decisiones**
+
+- Se revisó `src/services/api.ts` y el contrato de moderación disponible: solo
+  existen reportes de reseñas, no de precio o enlace.
+- La tarea queda bloqueada y documentada en
+  `docs/reportes-precio-enlace.md`, con el contrato mínimo que TEC-147 debe
+  entregar antes de implementar la UI.
+- No se agregaron cambios de código para esta tarea.
+
 

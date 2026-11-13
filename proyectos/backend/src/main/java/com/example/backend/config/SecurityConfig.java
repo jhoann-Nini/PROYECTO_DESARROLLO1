@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -64,7 +66,8 @@ public class SecurityConfig {
             HttpSecurity http,
             AdminAuthorizationManager adminAuthorizationManager,
             ModeratorAuthorizationManager moderatorAuthorizationManager,
-            RepresentativeAuthorizationManager representativeAuthorizationManager) throws Exception {
+            RepresentativeAuthorizationManager representativeAuthorizationManager,
+            GeneralRateLimitingFilter generalRateLimitingFilter) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
@@ -73,6 +76,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
             )
+            .addFilterAfter(generalRateLimitingFilter, BearerTokenAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
@@ -97,6 +101,13 @@ public class SecurityConfig {
             );
 
         return http.build();
+    }
+
+    @Bean
+    public FilterRegistrationBean<GeneralRateLimitingFilter> generalRateLimitingFilterRegistration(GeneralRateLimitingFilter filter) {
+        FilterRegistrationBean<GeneralRateLimitingFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean

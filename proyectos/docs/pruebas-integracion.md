@@ -190,3 +190,83 @@ Validar de forma automatizada e integral el control de acceso, propiedad y roles
 ### 3. Cobertura en suites de prueba
 - **Backend:** com.example.backend.controller.ResenaPropiedadIntegrationTest (20 pruebas aprobadas con MockMvc y H2 en memoria).
 - **Frontend:** proyectos/frontend/src/app/resenas/EditarResena.test.tsx (cobertura de respuestas y captura de errores controlados).
+
+---
+
+## S2-39: Pruebas del endpoint para reportar reseñas
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral los endpoints para reportar reseñas (`POST /api/resenas/{idResena}/reportes`, `POST /api/reportes/resenas/{idResena}` y `POST /api/reportes`):
+- **Registro exitoso:** Usuario autenticado registra reporte con estado inicial `PENDIENTE` (`201 Created`).
+- **Autenticación obligatoria:** Solicitudes sin token reciben `401 Unauthorized`.
+- **Prevención de autorreporte:** Un usuario no puede reportar su propia reseña (`403 Forbidden`).
+- **Integridad de reseñas:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+- **Validación de motivos y descripción:** Motivos válidos (`spam`, `lenguaje-ofensivo`, `falso`, `otro`). Si el motivo es `otro`, se exige descripción no vacía (`400 Bad Request`).
+- **Prevención de reportes duplicados:** Un usuario no puede emitir múltiples reportes sobre la misma reseña (`409 Conflict`).
+- **Múltiples reportantes:** Distintos usuarios pueden reportar una misma reseña de forma independiente.
+- **Consulta privada:** El endpoint `/api/reportes/mis-reportes` solo expone los reportes propios del usuario autenticado.
+- **Principio Zero-Trust:** El backend ignora campos de identidad o estado inyectados en el cuerpo de la petición.
+- **Compatibilidad de rutas y cuerpo:** Validación de las tres rutas soportadas (`POST /api/resenas/{idResena}/reportes`, alias `/api/reportes/resenas/{idResena}`, y ruta plana `/api/reportes` con validación de `idResena` obligatorio).
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Operación / Endpoint | Condición / Escenario | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-39-01** | `POST /api/resenas/{id}/reportes` | Usuario autenticado, datos válidos | `201 Created`, estado `PENDIENTE` | `201 Created` | **APROBADO** |
+| **S2-39-02** | `POST /api/resenas/{id}/reportes` | Sin autenticación (anónimo) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-39-03** | `POST /api/resenas/{id}/reportes` | Intento de autorreporte | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-39-04** | `POST /api/resenas/{id}/reportes` | Reseña inexistente (id no existe) | `404 Not Found` | `404 Not Found` | **APROBADO** |
+| **S2-39-05** | `POST /api/resenas/{id}/reportes` | Reseña eliminada lógicamente | `404 Not Found` | `404 Not Found` | **APROBADO** |
+| **S2-39-06** | `POST /api/resenas/{id}/reportes` | Motivo 'otro' sin descripción | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+| **S2-39-07** | `POST /api/resenas/{id}/reportes` | Motivo inválido no permitido | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+| **S2-39-08** | `POST /api/resenas/{id}/reportes` | Segundo reporte del mismo usuario | `409 Conflict` | `409 Conflict` | **APROBADO** |
+| **S2-39-09** | `POST /api/resenas/{id}/reportes` | Dos usuarios diferentes reportan | `201 Created` para ambos | `201 Created` | **APROBADO** |
+| **S2-39-10** | `GET /api/reportes/mis-reportes` | Usuario consulta sus reportes | `200 OK`, solo reportes propios | `200 OK` | **APROBADO** |
+| **S2-39-11** | `POST /api/resenas/{id}/reportes` | Verificación de estado inicial | Estado estrictamente `PENDIENTE` | `PENDIENTE` | **APROBADO** |
+| **S2-39-12** | `POST /api/resenas/{id}/reportes` | Intento de inyectar idUsuario/estado | Campos ignorados por backend | Ignorados | **APROBADO** |
+| **S2-39-13** | `POST /api/reportes/resenas/{id}` | Creación mediante alias de ruta | `201 Created`, reporte persistido | `201 Created` | **APROBADO** |
+| **S2-39-14** | `POST /api/reportes` | `idResena` en cuerpo JSON | `201 Created`, reporte persistido | `201 Created` | **APROBADO** |
+| **S2-39-15** | `POST /api/reportes` | Ausencia de `idResena` en cuerpo | `400 Bad Request` | `400 Bad Request` | **APROBADO** |
+
+### 3. Cobertura en suites de prueba
+- **Backend:** `com.example.backend.controller.ReporteResenaIntegrationTest` (15 pruebas aprobadas al 100% con MockMvc y H2 en memoria).
+
+---
+
+## S2-42: Pruebas del endpoint para listar reseñas pendientes y reportadas
+
+### 1. Alcance y objetivo
+Validar de forma automatizada e integral los endpoints de moderación para consultar reseñas reportadas y pendientes (`GET /api/moderacion/resenas/reportadas`, `GET /api/moderacion/resenas/pendientes` y `GET /api/moderacion/reportes`):
+- **Moderador y Administrador:** Acceso autorizado (`200 OK`) con agrupación de reseñas, métricas de reportes (`totalReportes`, `reportesPendientes`) y detalle individual de cada reporte.
+- **Usuario registrado / Tienda:** Rechazo inmediato con `403 Forbidden`.
+- **Usuario inactivo / suspendido:** Rechazo con `403 Forbidden`.
+- **Sin autenticación:** Rechazo con `401 Unauthorized`.
+- **Filtros funcionales:** Filtrado por `estado` del reporte, `oculta` (filtrando exclusivamente por `ocultaPorReportes` sin mezclar con `ocultaPorModeracion`) e `idProducto`.
+- **Aislamiento:** Reseñas sin reportes no aparecen en la cola de moderación.
+- **Autorización multirrol estricta:** Un usuario con rol moderador revocado en la tabla multirrol (`usuario_rol.estado = false`) recibe `403 Forbidden`, sin recurrir al campo legado `usuario.id_rol`.
+- **Inmutabilidad en lectura:** Las consultas no modifican estados de reseñas, estados de reportes ni insertan registros en las tablas de auditoría.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Endpoint / Operación | Rol / Condición | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-42-01** | `GET /api/moderacion/resenas/reportadas` | Administrador activo | `200 OK` con reseñas reportadas | `200 OK` | **APROBADO** |
+| **S2-42-02** | `GET /api/moderacion/resenas/reportadas` | Moderador activo | `200 OK` con reseñas reportadas | `200 OK` | **APROBADO** |
+| **S2-42-03** | `GET /api/moderacion/resenas/reportadas` | Usuario regular | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-42-04** | `GET /api/moderacion/resenas/reportadas` | Representante tienda (sin mod) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-42-05** | `GET /api/moderacion/resenas/reportadas` | Moderador suspendido (`estado=false`) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-42-06** | `GET /api/moderacion/resenas/reportadas` | Sin autenticación | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-42-07** | `GET /api/moderacion/resenas/reportadas?estado=PENDIENTE` | Moderador activo | `200 OK` solo reportes con estado PENDIENTE | `200 OK` | **APROBADO** |
+| **S2-42-08** | `GET /api/moderacion/resenas/reportadas?idProducto=X` | Moderador activo | `200 OK` filtrado por producto específico | `200 OK` | **APROBADO** |
+| **S2-42-09** | `GET /api/moderacion/resenas/reportadas?oculta=true` | Moderador activo | `200 OK` solo reseñas con `ocultaPorReportes=true` | `200 OK` | **APROBADO** |
+| **S2-42-10** | `GET /api/moderacion/resenas/reportadas` | Reseñas limpias (sin reportes) | Excluidas de la respuesta | Excluidas | **APROBADO** |
+| **S2-42-11** | `GET /api/moderacion/resenas/reportadas` | Moderador activo | Agrupación correcta con datos de producto y autor | Datos correctos | **APROBADO** |
+| **S2-42-12** | `GET /api/moderacion/resenas/reportadas` | Moderador activo | Conteos `totalReportes` y `reportesPendientes` | Conteos exactos | **APROBADO** |
+| **S2-42-13** | `GET /api/moderacion/resenas/reportadas` | Moderador revocado (`usuario_rol.estado=false`) | `403 Forbidden` (no usa rol legado) | `403 Forbidden` | **APROBADO** |
+| **S2-42-14** | `GET /api/moderacion/resenas/reportadas` | Moderador activo | Inmutabilidad: sin cambios en estados ni auditoría | 0 alteraciones | **APROBADO** |
+| **S2-42-15** | `GET /api/moderacion/resenas/pendientes` | Moderador activo | `200 OK` atajo a reportes pendientes | `200 OK` | **APROBADO** |
+| **S2-42-16** | `GET /api/moderacion/reportes` | Moderador activo | `200 OK` (filtro PENDIENTE por defecto y filtrado explícito por estado) | `200 OK` | **APROBADO** |
+| **S2-42-17** | `GET /api/moderacion/resenas/pendientes` y `?estado=PENDIENTE` | Reportes mixtos (2 PENDIENTE, 1 ACEPTADO) | `totalReportes=3`, `reportesPendientes=2`, 3 reportes en historial | `totalReportes=3`, `reportesPendientes=2` | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Suite:** `com.example.backend.controller.ModeracionResenasIntegrationTest` (17 pruebas ejecutadas y aprobadas al 100%).

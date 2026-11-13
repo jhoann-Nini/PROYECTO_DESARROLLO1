@@ -3,6 +3,8 @@ package com.example.backend.service;
 import com.example.backend.dto.ReporteResenaRequest;
 import com.example.backend.dto.ReporteResenaResponse;
 import com.example.backend.dto.ReporteResenaDecisionAuditoriaResponse;
+import com.example.backend.dto.ReporteResenaItemResponse;
+import com.example.backend.dto.ResenaReportadaResponse;
 import com.example.backend.entity.EstadoReporte;
 import com.example.backend.entity.ReporteResena;
 import com.example.backend.entity.ReporteResenaDecisionAuditoria;
@@ -14,8 +16,12 @@ import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.ReporteResenaDecisionAuditoriaRepository;
 import com.example.backend.repository.ResenaRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -259,6 +265,123 @@ public class ReporteResenaService {
                         evento.getEstadoNuevo(),
                         evento.getObservacion(),
                         evento.getFechaEvento()))
+                .toList();
+    }
+
+    /**
+     * S2-42: Lista las reseñas reportadas con sus métricas y detalle de reportes asociados.
+     * Admite filtrado opcional por estado de reporte (ej. PENDIENTE), ocultaPorReportes y producto.
+     */
+    @Transactional(readOnly = true)
+    public List<ResenaReportadaResponse> listarResenasReportadas(
+            EstadoReporte estadoFiltro,
+            Boolean ocultaFiltro,
+            Long idProductoFiltro,
+            Jwt jwt) {
+
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarPermisoModeracion(usuario);
+
+        List<ReporteResena> todos = reporteResenaRepository.findAllConDetalles();
+
+        Map<Long, List<ReporteResena>> porResena = todos.stream()
+                .collect(Collectors.groupingBy(
+                        r -> r.getResena().getIdResena(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        List<ResenaReportadaResponse> resultado = new ArrayList<>();
+
+        for (Map.Entry<Long, List<ReporteResena>> entry : porResena.entrySet()) {
+            List<ReporteResena> grupoReportes = entry.getValue();
+            Resena resena = grupoReportes.get(0).getResena();
+
+            if (idProductoFiltro != null) {
+                if (resena.getProducto() == null
+                        || !idProductoFiltro.equals(resena.getProducto().getIdProducto())) {
+                    continue;
+                }
+            }
+
+            if (ocultaFiltro != null) {
+                boolean esOculta = Boolean.TRUE.equals(resena.getOcultaPorReportes());
+                if (ocultaFiltro != esOculta) {
+                    continue;
+                }
+            }
+
+            // Filtrado por estado del reporte: la reseña debe contener al menos un reporte con dicho estado
+            if (estadoFiltro != null && grupoReportes.stream().noneMatch(r -> r.getEstado() == estadoFiltro)) {
+                continue;
+            }
+
+            long totalReportes = grupoReportes.size();
+            long reportesPendientes = grupoReportes.stream()
+                    .filter(r -> EstadoReporte.PENDIENTE.equals(r.getEstado()))
+                    .count();
+
+            List<ReporteResenaItemResponse> itemsReporte = grupoReportes.stream()
+                    .map(r -> new ReporteResenaItemResponse(
+                            r.getIdReporte(),
+                            r.getUsuario() != null ? r.getUsuario().getIdUsuario() : null,
+                            r.getUsuario() != null ? r.getUsuario().getNombre() : "Usuario anónimo",
+                            r.getMotivo(),
+                            r.getDescripcion(),
+                            r.getEstado(),
+                            r.getFechaCreacion()
+                    ))
+                    .toList();
+
+            resultado.add(new ResenaReportadaResponse(
+                    resena.getIdResena(),
+                    resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,
+                    resena.getProducto() != null ? resena.getProducto().getNombre() : null,
+                    resena.getUsuario() != null ? resena.getUsuario().getIdUsuario() : null,
+                    resena.getUsuario() != null ? resena.getUsuario().getNombre() : null,
+                    resena.getComentario(),
+                    resena.getPuntuacion(),
+                    resena.getFechaCreacion(),
+                    resena.getEstado(),
+                    resena.getOcultaPorReportes(),
+                    totalReportes,
+                    reportesPendientes,
+                    itemsReporte
+            ));
+        }
+
+        resultado.sort((a, b) -> {
+            int compPendientes = Long.compare(b.reportesPendientes(), a.reportesPendientes());
+            if (compPendientes != 0) {
+                return compPendientes;
+            }
+            int compTotal = Long.compare(b.totalReportes(), a.totalReportes());
+            if (compTotal != 0) {
+                return compTotal;
+            }
+            return Long.compare(
+                    b.idResena() != null ? b.idResena() : 0L,
+                    a.idResena() != null ? a.idResena() : 0L
+            );
+        });
+
+        return resultado;
+    }
+
+    /**
+     * S2-42: Consulta plana de la cola de reportes de moderación.
+     * Conserva compatibilidad con Fase 2: si no se especifica estado, filtra por PENDIENTE.
+     */
+    @Transactional(readOnly = true)
+    public List<ReporteResenaResponse> listarReportesModeracion(EstadoReporte estadoFiltro, Jwt jwt) {
+        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarPermisoModeracion(usuario);
+
+        EstadoReporte estado = estadoFiltro != null ? estadoFiltro : EstadoReporte.PENDIENTE;
+        List<ReporteResena> reportes = reporteResenaRepository.findByEstadoConDetalles(estado);
+
+        return reportes.stream()
+                .map(this::toResponse)
                 .toList();
     }
 

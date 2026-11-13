@@ -1049,6 +1049,56 @@ El backend actual documenta e implementa el registro de reportes en `POST /api/r
 
 En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.
 
+---
+
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes` o su alias `POST /api/reportes/resenas/{idResena}`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, motivo 'otro' sin descripción requerida, o ausencia de `idResena` al consumir `POST /api/reportes`.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
+
 
 ---
 
@@ -1112,3 +1162,73 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 - `201 Created` / `204 No Content`: operación exitosa.
 
 **Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
+
+---
+
+# 28. Moderación de reseñas y consulta de reportes (S2-42)
+
+Esta sección describe los endpoints del módulo de moderación para listar reseñas pendientes y reportadas, así como la consulta plana de reportes de moderación.
+
+## 28.1 Listar reseñas reportadas
+
+Permite a moderadores y administradores activos consultar la cola de reseñas que han acumulado reportes, ordenadas prioritariamente por cantidad de reportes pendientes y, en empate, por total de reportes.
+
+- **Método y ruta:** `GET /api/moderacion/resenas/reportadas`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para usuarios activos con rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
+- **Parámetros de consulta (Query Params):**
+  - `estado` (opcional, `EstadoReporte`): Criterio de selección de reseñas. Filtra la cola para incluir únicamente reseñas que posean al menos un reporte en el estado especificado (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`), sin falsear las métricas globales de la reseña.
+  - `oculta` (opcional, `Boolean`): Filtra por `ocultaPorReportes` (`true` o `false`).
+  - `idProducto` (opcional, `Long`): Filtra reseñas asociadas al producto especificado.
+- **Criterio de ordenamiento determinista:**
+  Las reseñas se ordenan priorizando: 1) Mayor cantidad de reportes pendientes (`reportesPendientes` DESC); 2) En empate, mayor cantidad de reportes totales (`totalReportes` DESC); 3) En persistencia de empate, desempate determinista por identificador de reseña (`idResena` DESC).
+- **Semántica de campos en la respuesta:**
+  - `totalReportes`: Cantidad total de reportes asociados a la reseña, independientemente del filtro aplicado.
+  - `reportesPendientes`: Cantidad real de reportes en estado `PENDIENTE` asociados a la reseña.
+  - `reportes`: Historial completo de reportes asociados a la reseña, proporcionando el contexto íntegro de moderación para la toma de decisiones.
+- **Códigos de respuesta:**
+  - `200 OK`: Lista JSON con objetos `ResenaReportadaResponse`:
+    ```json
+    [
+      {
+        "idResena": 1,
+        "idProducto": 10,
+        "nombreProducto": "Smartphone Pro",
+        "idAutor": 5,
+        "nombreAutor": "Usuario Autor",
+        "comentario": "Texto de la reseña reportada...",
+        "puntuacion": 1,
+        "fechaCreacion": "2026-11-10T20:00:00",
+        "estado": true,
+        "ocultaPorReportes": false,
+        "totalReportes": 2,
+        "reportesPendientes": 2,
+        "reportes": [
+          {
+            "idReporte": 101,
+            "idUsuarioReportante": 8,
+            "nombreReportante": "Usuario Reportante",
+            "motivo": "spam",
+            "descripcion": "Publicidad encubierta",
+            "estado": "PENDIENTE",
+            "fechaCreacion": "2026-11-10T21:00:00"
+          }
+        ]
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo, suspendido o sin rol activo de `Moderador` o `Administrador` (por ejemplo, `Usuario registrado`, `Representante de establecimiento` o rol revocado).
+
+## 28.2 Listar reseñas con reportes pendientes (atajo)
+
+- **Método y ruta:** `GET /api/moderacion/resenas/pendientes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `oculta` (opcional), `idProducto` (opcional).
+- **Comportamiento:** Retorna las reseñas con al menos un reporte en estado `PENDIENTE`.
+
+## 28.3 Consulta plana de reportes de moderación
+
+- **Método y ruta:** `GET /api/moderacion/reportes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `estado` (opcional, `EstadoReporte`, valor por defecto: `PENDIENTE`). Si no se envía el parámetro, conserva la compatibilidad con la bandeja de moderación base de Fase 2 filtrando por reportes pendientes.
+- **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).

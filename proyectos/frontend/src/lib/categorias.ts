@@ -34,10 +34,10 @@ export const CATEGORIAS_NAVEGABLES = [
   },
   {
     slug: "portatiles",
-    etiqueta: "Portátiles / PC",
+    etiqueta: "Portátiles",
     icono: "💻",
     descripcion:
-      "Computadores portátiles, equipos de escritorio y notebooks del catálogo.",
+      "Computadores portátiles y notebooks registrados en el catálogo.",
     palabrasClave: [
       "laptop",
       "portatil",

@@ -25,7 +25,7 @@ import {
   type ProductoMejorValorado,
   type ProductoOferta,
 } from "@/types/producto";
-import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "@/data/mockProductos";
+import { DISPOSITIVOS_VENDIDOS } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { sanearPrecioCOP } from "@/data/precios";
@@ -132,6 +132,7 @@ export default function Home() {
   const [estadoBackend, setEstadoBackend] = useState<"online" | "offline">(
     "offline",
   );
+  const [errorProductos, setErrorProductos] = useState<string | null>(null);
 
   // Sesión y roles confirmados por el backend
   const {
@@ -207,18 +208,29 @@ export default function Home() {
   const [filtroComentarios, setFiltroComentarios] = useState("");
 
   const recargarProductosCatalogo = useCallback(async () => {
+    setCargandoApi(true);
+    setErrorProductos(null);
     try {
       const datos = await obtenerProductos<Producto>();
       if (datos && datos.length > 0) {
         setProductosBackend(datos);
         setEstadoBackend("online");
+        setErrorProductos(null);
       } else {
-        setProductosBackend(PRODUCTOS_MOCK);
-        setEstadoBackend("offline");
+        setProductosBackend([]);
+        setEstadoBackend("online");
+        setErrorProductos(null);
       }
-    } catch {
-      setProductosBackend(PRODUCTOS_MOCK);
+    } catch (err) {
+      setProductosBackend([]);
       setEstadoBackend("offline");
+      setErrorProductos(
+        err instanceof Error
+          ? err.message
+          : "No fue posible conectarse con el servidor.",
+      );
+    } finally {
+      setCargandoApi(false);
     }
   }, []);
 
@@ -234,15 +246,22 @@ export default function Home() {
         if (datos.length > 0) {
           setProductosBackend(datos);
           setEstadoBackend("online");
+          setErrorProductos(null);
         } else {
-          setProductosBackend(PRODUCTOS_MOCK);
-          setEstadoBackend("offline");
+          setProductosBackend([]);
+          setEstadoBackend("online");
+          setErrorProductos(null);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if (!activo) return;
-        setProductosBackend(PRODUCTOS_MOCK);
+        setProductosBackend([]);
         setEstadoBackend("offline");
+        setErrorProductos(
+          err instanceof Error
+            ? err.message
+            : "No fue posible conectarse con el servidor.",
+        );
       })
       .finally(() => {
         if (activo) setCargandoApi(false);
@@ -792,6 +811,8 @@ export default function Home() {
           totalMostrados={productosDestacados.length}
           cargando={cargandoApi}
           estadoBackend={estadoBackend}
+          error={errorProductos}
+          onReintentar={recargarProductosCatalogo}
           busqueda={busqueda}
           filtroPresupuesto={filtrarSoloEnPresupuesto}
           presupuestoMax={presupuestoMax}

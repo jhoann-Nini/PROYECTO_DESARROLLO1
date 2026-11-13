@@ -89,7 +89,7 @@ describe("Página principal / (Home)", () => {
   });
 
   describe("1. Carga inicial", () => {
-    it("debe mostrar el indicador de carga y el estado inicial 'Modo local' mientras la consulta está en curso", () => {
+    it("debe mostrar el indicador de carga y el estado inicial 'Servidor no disponible' mientras la consulta está en curso", () => {
       mockObtenerProductos.mockImplementation(() => new Promise(() => {}));
 
       render(<Home />);
@@ -99,7 +99,7 @@ describe("Página principal / (Home)", () => {
       expect(
         screen.getByText("Cargando catálogo de dispositivos..."),
       ).toBeDefined();
-      expect(screen.getByText("Modo local")).toBeDefined();
+      expect(screen.getByText("Servidor no disponible")).toBeDefined();
       expect(screen.queryByText("Servidor conectado")).toBeNull();
     });
   });
@@ -134,12 +134,12 @@ describe("Página principal / (Home)", () => {
       expect(
         screen.queryByText("Cargando catálogo de dispositivos..."),
       ).toBeNull();
-      expect(screen.queryByText("Modo local")).toBeNull();
+      expect(screen.queryByText("Servidor no disponible")).toBeNull();
     });
   });
 
   describe("3. API con lista vacía ([])", () => {
-    it("debe activar PRODUCTOS_MOCK y mostrar la insignia 'Modo local' ante un arreglo vacío", async () => {
+    it("debe mostrar el estado vacío sin recurrir a datos ficticios ante un arreglo vacío", async () => {
       mockObtenerProductos.mockResolvedValueOnce([]);
 
       render(<Home />);
@@ -151,16 +151,21 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      expect(screen.getByText("Modo local")).toBeDefined();
-      expect(screen.queryByText("Servidor conectado")).toBeNull();
+      expect(screen.getByText("Servidor conectado")).toBeDefined();
+      expect(screen.queryByText("Servidor no disponible")).toBeNull();
       expect(
-        screen.getByText("Nothing Phone (2a) Special Edition"),
+        screen.queryByText("Nothing Phone (2a) Special Edition"),
+      ).toBeNull();
+      expect(
+        screen.getByText(
+          "No hay productos registrados en el catálogo en este momento.",
+        ),
       ).toBeDefined();
     });
   });
 
   describe("4. Error HTTP 500", () => {
-    it("debe recurrir a datos simulados y no bloquear la interfaz ante error 500", async () => {
+    it("debe mostrar mensaje de error y botón de reintento ante error 500 sin datos simulados", async () => {
       mockObtenerProductos.mockRejectedValueOnce(
         new ApiError(
           "El servidor respondió con un error (500). Inténtalo de nuevo más tarde.",
@@ -177,16 +182,20 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      expect(screen.getByText("Modo local")).toBeDefined();
+      expect(screen.getByText("Servidor no disponible")).toBeDefined();
       expect(screen.queryByText("Servidor conectado")).toBeNull();
       expect(
-        screen.getByText("Nothing Phone (2a) Special Edition"),
+        screen.getByText("No pudimos cargar los productos destacados"),
       ).toBeDefined();
+      expect(screen.getByRole("button", { name: "Reintentar" })).toBeDefined();
+      expect(
+        screen.queryByText("Nothing Phone (2a) Special Edition"),
+      ).toBeNull();
     });
   });
 
   describe("5. Fallo de red", () => {
-    it("debe recurrir a datos simulados cuando no es posible conectar con el servidor", async () => {
+    it("debe mostrar mensaje de error y botón de reintento cuando no es posible conectar con el servidor", async () => {
       mockObtenerProductos.mockRejectedValueOnce(
         new ApiError(
           "No fue posible conectarse con el servidor. Verifica que el backend esté activo e inténtalo de nuevo.",
@@ -202,16 +211,20 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      expect(screen.getByText("Modo local")).toBeDefined();
+      expect(screen.getByText("Servidor no disponible")).toBeDefined();
       expect(screen.queryByText("Servidor conectado")).toBeNull();
       expect(
-        screen.getByText("Nothing Phone (2a) Special Edition"),
+        screen.getByText("No pudimos cargar los productos destacados"),
       ).toBeDefined();
+      expect(screen.getByRole("button", { name: "Reintentar" })).toBeDefined();
+      expect(
+        screen.queryByText("Nothing Phone (2a) Special Edition"),
+      ).toBeNull();
     });
   });
 
   describe("6. JSON malformado", () => {
-    it("debe recurrir a datos simulados cuando la respuesta no es JSON válido", async () => {
+    it("debe mostrar mensaje de error y botón de reintento cuando la respuesta no es JSON válido", async () => {
       mockObtenerProductos.mockRejectedValueOnce(
         new ApiError(
           "El servidor respondió, pero los datos recibidos no son JSON válido.",
@@ -227,16 +240,20 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      expect(screen.getByText("Modo local")).toBeDefined();
+      expect(screen.getByText("Servidor no disponible")).toBeDefined();
       expect(screen.queryByText("Servidor conectado")).toBeNull();
       expect(
-        screen.getByText("Nothing Phone (2a) Special Edition"),
+        screen.getByText("No pudimos cargar los productos destacados"),
       ).toBeDefined();
+      expect(screen.getByRole("button", { name: "Reintentar" })).toBeDefined();
+      expect(
+        screen.queryByText("Nothing Phone (2a) Special Edition"),
+      ).toBeNull();
     });
   });
 
   describe("7. Estructura inesperada", () => {
-    it("debe recurrir a datos simulados cuando la respuesta no tiene formato de lista", async () => {
+    it("debe mostrar mensaje de error y botón de reintento cuando la respuesta no tiene formato de lista", async () => {
       mockObtenerProductos.mockRejectedValueOnce(
         new ApiError(
           "La respuesta del servidor no tiene el formato esperado (lista de productos).",
@@ -252,11 +269,15 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      expect(screen.getByText("Modo local")).toBeDefined();
+      expect(screen.getByText("Servidor no disponible")).toBeDefined();
       expect(screen.queryByText("Servidor conectado")).toBeNull();
       expect(
-        screen.getByText("Nothing Phone (2a) Special Edition"),
+        screen.getByText("No pudimos cargar los productos destacados"),
       ).toBeDefined();
+      expect(screen.getByRole("button", { name: "Reintentar" })).toBeDefined();
+      expect(
+        screen.queryByText("Nothing Phone (2a) Special Edition"),
+      ).toBeNull();
     });
   });
 
@@ -1132,7 +1153,7 @@ describe("Página principal / (Home)", () => {
       const enlacesEsperados: Array<[RegExp, string]> = [
         [/Teléfonos/i, "/categorias/celulares"],
         [/Tablets/i, "/categorias/tablets"],
-        [/Portátiles \/ PC/i, "/categorias/portatiles"],
+        [/Portátiles/i, "/categorias/portatiles"],
         [/Auriculares/i, "/categorias/auriculares"],
       ];
 

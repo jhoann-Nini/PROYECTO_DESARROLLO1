@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
+import EstadoVacio from "@/components/ui/EstadoVacio";
 import { formatearCOP } from "@/data/specsHelper";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 
@@ -18,6 +19,8 @@ export interface DestacadosHomeProps {
   onVerDetalle: (producto: ProductoViewModel) => void;
   onLimpiarBusqueda: () => void;
   onMostrarTodos: () => void;
+  error?: string | null;
+  onReintentar?: () => void;
 }
 
 export default function DestacadosHome({
@@ -33,6 +36,8 @@ export default function DestacadosHome({
   onVerDetalle,
   onLimpiarBusqueda,
   onMostrarTodos,
+  error = null,
+  onReintentar,
 }: DestacadosHomeProps) {
   return (
     <section
@@ -79,7 +84,7 @@ export default function DestacadosHome({
                 className="h-2 w-2 rounded-full bg-[var(--color-star)]"
                 aria-hidden="true"
               />
-              Modo local
+              Servidor no disponible
             </span>
           )}
 
@@ -118,6 +123,20 @@ export default function DestacadosHome({
             Cargando catálogo de dispositivos...
           </p>
         </div>
+      ) : error ? (
+        <EstadoVacio
+          tipo="error"
+          titulo="No pudimos cargar los productos destacados"
+          descripcion={error}
+          accion={
+            onReintentar
+              ? {
+                  etiqueta: "Reintentar",
+                  onClick: onReintentar,
+                }
+              : undefined
+          }
+        />
       ) : productos.length > 0 ? (
         <div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">

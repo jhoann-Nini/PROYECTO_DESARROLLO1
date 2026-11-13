@@ -8,6 +8,7 @@ import type {
   CategoriaResponse,
   MarcaResponse,
 } from "@/types/producto";
+import type { ResenaReportadaResponse } from "@/types/moderacion";
 import * as api from "@/services/api";
 
 vi.mock("@/services/api", async () => {
@@ -28,6 +29,10 @@ vi.mock("@/services/api", async () => {
     eliminarMarca: vi.fn(),
     descargarCatalogoCsv: vi.fn(),
     dispararDescargaArchivo: vi.fn(),
+    obtenerResenasReportadas: vi.fn(),
+    ocultarResenaReportada: vi.fn(),
+    publicarResenaReportada: vi.fn(),
+    rechazarReportesResenaReportada: vi.fn(),
   };
 });
 
@@ -80,6 +85,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
     vi.mocked(api.obtenerProductos).mockResolvedValue(mockProductos);
     vi.mocked(api.obtenerCategorias).mockResolvedValue(mockCategorias);
     vi.mocked(api.obtenerMarcas).mockResolvedValue(mockMarcas);
+    vi.mocked(api.obtenerResenasReportadas).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -1270,6 +1276,283 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
           }),
         );
       });
+    });
+  });
+
+  describe("S2-72 / TEC-149: Integración de la Cola de Reportes del Administrador", () => {
+    const mockResenasReportadas: ResenaReportadaResponse[] = [
+      {
+        idResena: 501,
+        idProducto: 101,
+        nombreProducto: "Nothing Phone (2)",
+        idAutor: 5,
+        nombreAutor: "Carlos Reviewer",
+        comentario: "Excelente diseño pero precio algo elevado",
+        puntuacion: 4,
+        fechaCreacion: "2026-11-01T10:00:00Z",
+        estado: true,
+        ocultaPorReportes: false,
+        ocultaPorModeracion: false,
+        totalReportes: 2,
+        reportesPendientes: 2,
+        reportes: [
+          {
+            idReporte: 1001,
+            idUsuarioReportante: 8,
+            nombreReportante: "Usuario Reportante 1",
+            motivo: "SPAM",
+            descripcion: "Enlace no relevante",
+            estado: "PENDIENTE",
+            fechaCreacion: "2026-11-02T12:00:00Z",
+          },
+          {
+            idReporte: 1002,
+            idUsuarioReportante: 9,
+            nombreReportante: "Usuario Reportante 2",
+            motivo: "LENGUAJE_INAPROPIADO",
+            descripcion: null,
+            estado: "PENDIENTE",
+            fechaCreacion: "2026-11-03T15:00:00Z",
+          },
+        ],
+      },
+      {
+        idResena: 502,
+        idProducto: 101,
+        nombreProducto: "Nothing Phone (2)",
+        idAutor: 6,
+        nombreAutor: "Spammer Account",
+        comentario: "Visiten mi sitio web para descuentos falsos",
+        puntuacion: 1,
+        fechaCreacion: "2026-11-04T08:00:00Z",
+        estado: false,
+        ocultaPorReportes: true,
+        ocultaPorModeracion: true,
+        totalReportes: 3,
+        reportesPendientes: 0,
+        reportes: [
+          {
+            idReporte: 1003,
+            idUsuarioReportante: 7,
+            nombreReportante: "Usuario Atento",
+            motivo: "SPAM",
+            descripcion: "Publicidad engañosa",
+            estado: "ACEPTADO",
+            fechaCreacion: "2026-11-04T09:00:00Z",
+          },
+        ],
+      },
+    ];
+
+    it("renderiza la pestaña de Cola de Reportes con badge de reportes pendientes", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      const tabReportes = await screen.findByRole("tab", { name: /Cola de Reportes/i });
+      expect(tabReportes).toBeDefined();
+      expect(screen.getByText("2")).toBeDefined();
+    });
+
+    it("muestra las métricas y las reseñas reportadas al navegar a la pestaña", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      const tabReportes = await screen.findByRole("tab", { name: /Cola de Reportes/i });
+      fireEvent.click(tabReportes);
+
+      expect(await screen.findByText(/Cola de Moderación y Reportes/i)).toBeDefined();
+      expect(screen.getByText("Excelente diseño pero precio algo elevado")).toBeDefined();
+      expect(screen.getByText("Visiten mi sitio web para descuentos falsos")).toBeDefined();
+      expect(screen.getByText(/Oculta por moderador/i)).toBeDefined();
+      expect(screen.getByText(/Visible al público/i)).toBeDefined();
+    });
+
+    it("permite filtrar por estado de reporte y reseñas ocultas", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+      await screen.findByText("Excelente diseño pero precio algo elevado");
+
+      const checkboxOcultas = screen.getByLabelText(/Solo reseñas actualmente ocultas/i);
+      fireEvent.click(checkboxOcultas);
+
+      expect(screen.queryByText("Excelente diseño pero precio algo elevado")).toBeNull();
+      expect(screen.getByText("Visiten mi sitio web para descuentos falsos")).toBeDefined();
+
+      fireEvent.click(checkboxOcultas);
+      expect(screen.getByText("Excelente diseño pero precio algo elevado")).toBeDefined();
+
+      const selectEstado = screen.getByLabelText(/Estado de Reporte:/i);
+      fireEvent.change(selectEstado, { target: { value: "ACEPTADO" } });
+
+      expect(screen.queryByText("Excelente diseño pero precio algo elevado")).toBeNull();
+      expect(screen.getByText("Visiten mi sitio web para descuentos falsos")).toBeDefined();
+    });
+
+    it("permite desplegar el detalle de reportes de una reseña", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+      await screen.findByText("Excelente diseño pero precio algo elevado");
+
+      const botonVerMotivos = screen.getByRole("button", { name: /Ver motivos de reportes \(2\)/i });
+      fireEvent.click(botonVerMotivos);
+
+      expect(screen.getByText("Usuario Reportante 1")).toBeDefined();
+      expect(screen.getByText("Enlace no relevante")).toBeDefined();
+      expect(screen.getByText("LENGUAJE_INAPROPIADO")).toBeDefined();
+    });
+
+    it("ejecuta la acción de ocultar reseña con modal de confirmación y motivo", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+      const resenaOcultadaMock: ResenaReportadaResponse = {
+        ...mockResenasReportadas[0],
+        ocultaPorModeracion: true,
+      };
+      vi.mocked(api.ocultarResenaReportada).mockResolvedValue(resenaOcultadaMock);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+      await screen.findByText("Excelente diseño pero precio algo elevado");
+
+      const botonOcultar = screen.getByRole("button", { name: /Ocultar reseña/i });
+      fireEvent.click(botonOcultar);
+
+      const dialogo = await screen.findByRole("alertdialog");
+      expect(dialogo).toBeDefined();
+      expect(screen.getByText(/Ocultar Reseña por Moderación/i)).toBeDefined();
+
+      const textareaMotivo = screen.getByPlaceholderText(/Explica la razón de esta acción de moderación/i);
+      fireEvent.change(textareaMotivo, { target: { value: "Comentario sospechoso" } });
+
+      const botonConfirmar = screen.getByRole("button", { name: /Confirmar Acción/i });
+      fireEvent.click(botonConfirmar);
+
+      await waitFor(() => {
+        expect(api.ocultarResenaReportada).toHaveBeenCalledWith(501, "Comentario sospechoso");
+      });
+    });
+
+    it("ejecuta la acción de publicar/restaurar reseña oculta", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+      const resenaRestauradaMock: ResenaReportadaResponse = {
+        ...mockResenasReportadas[1],
+        ocultaPorModeracion: false,
+        ocultaPorReportes: false,
+      };
+      vi.mocked(api.publicarResenaReportada).mockResolvedValue(resenaRestauradaMock);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+      await screen.findByText("Visiten mi sitio web para descuentos falsos");
+
+      const botonPublicar = screen.getByRole("button", { name: /Publicar \/ Restaurar/i });
+      fireEvent.click(botonPublicar);
+
+      expect(await screen.findByText(/Publicar \/ Restaurar Reseña/i)).toBeDefined();
+      fireEvent.click(screen.getByRole("button", { name: /Confirmar Acción/i }));
+
+      await waitFor(() => {
+        expect(api.publicarResenaReportada).toHaveBeenCalledWith(502, undefined);
+      });
+    });
+
+    it("ejecuta la acción de rechazar reportes pendientes", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValue(mockResenasReportadas);
+      const resenaRechazadaMock: ResenaReportadaResponse = {
+        ...mockResenasReportadas[0],
+        reportesPendientes: 0,
+        reportes: mockResenasReportadas[0].reportes.map((r) => ({ ...r, estado: "RECHAZADO" })),
+      };
+      vi.mocked(api.rechazarReportesResenaReportada).mockResolvedValue(resenaRechazadaMock);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+      await screen.findByText("Excelente diseño pero precio algo elevado");
+
+      const botonRechazar = screen.getByRole("button", { name: /Rechazar reportes/i });
+      fireEvent.click(botonRechazar);
+
+      expect(await screen.findByText(/Desestimar y Rechazar Reportes/i)).toBeDefined();
+      fireEvent.click(screen.getByRole("button", { name: /Confirmar Acción/i }));
+
+      await waitFor(() => {
+        expect(api.rechazarReportesResenaReportada).toHaveBeenCalledWith(501, undefined);
+      });
+    });
+
+    it("muestra mensaje de error cuando falla la carga y permite reintentar", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockRejectedValueOnce(
+        new api.ApiError("Error de conexión al servidor de moderación", 500),
+      );
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      fireEvent.click(await screen.findByRole("tab", { name: /Cola de Reportes/i }));
+
+      expect(await screen.findByText("Error de conexión al servidor de moderación")).toBeDefined();
+
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValueOnce(mockResenasReportadas);
+      fireEvent.click(screen.getByRole("button", { name: /Reintentar/i }));
+
+      expect(await screen.findByText("Excelente diseño pero precio algo elevado")).toBeDefined();
     });
   });
 });

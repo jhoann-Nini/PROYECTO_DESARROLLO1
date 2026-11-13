@@ -60,7 +60,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AdminAuthorizationManager adminAuthorizationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AdminAuthorizationManager adminAuthorizationManager,
+            ModeratorAuthorizationManager moderatorAuthorizationManager,
+            RepresentativeAuthorizationManager representativeAuthorizationManager) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
@@ -81,6 +85,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                 .requestMatchers("/api/admin/**").access(adminAuthorizationManager)
+                .requestMatchers("/api/moderacion/**").access(moderatorAuthorizationManager)
+                .requestMatchers("/api/representante/**").access(representativeAuthorizationManager)
                 .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
                 .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
                 .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
@@ -97,7 +103,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendUrl));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -134,4 +140,3 @@ public class SecurityConfig {
         return new DelegatingOAuth2TokenValidator<>(validators);
     }
 }
-

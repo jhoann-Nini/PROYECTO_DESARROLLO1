@@ -1071,6 +1071,56 @@ El backend actual documenta e implementa el registro de reportes en `POST /api/r
 
 En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.
 
+---
+
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes` o su alias `POST /api/reportes/resenas/{idResena}`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, motivo 'otro' sin descripción requerida, o ausencia de `idResena` al consumir `POST /api/reportes`.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
+
 
 ---
 
@@ -1185,30 +1235,28 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 
 **Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
 
-
 ---
 
 # 28. Moderación de reseñas y consulta de reportes (S2-42)
 
 Esta sección describe los endpoints del módulo de moderación para listar reseñas pendientes y reportadas, así como la consulta plana de reportes de moderación.
 
-## 28.1 Listar reseñas pendientes y reportadas
+## 28.1 Listar reseñas reportadas
 
-Permite a los operadores de moderación consultar la cola de reseñas que han acumulado reportes, ordenadas prioritariamente por cantidad de reportes pendientes y total de reportes.
+Permite a moderadores y administradores activos consultar la cola de reseñas que han acumulado reportes, ordenadas prioritariamente por cantidad de reportes pendientes y, en empate, por total de reportes.
 
-- **Método y ruta canónica:** `GET /api/moderacion/resenas/reportadas`
-- **Rutas compatibles (aliases):**
-  - `GET /api/resenas/reportadas`
-  - `GET /api/admin/resenas/reportadas`
-- **Atajo para reportes en estado PENDIENTE:**
-  - `GET /api/moderacion/resenas/pendientes`
-  - `GET /api/resenas/pendientes`
-  - `GET /api/admin/resenas/pendientes`
-- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para usuarios activos con rol `Moderador` o `Administrador`.
+- **Método y ruta:** `GET /api/moderacion/resenas/reportadas`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para usuarios activos con rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
 - **Parámetros de consulta (Query Params):**
-  - `estado` (opcional, `EstadoReporte`): Filtra para que la reseña contenga al menos un reporte con dicho estado (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`).
+  - `estado` (opcional, `EstadoReporte`): Criterio de selección de reseñas. Filtra la cola para incluir únicamente reseñas que posean al menos un reporte en el estado especificado (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`), sin falsear las métricas globales de la reseña.
   - `oculta` (opcional, `Boolean`): Filtra por `ocultaPorReportes` (`true` o `false`).
   - `idProducto` (opcional, `Long`): Filtra reseñas asociadas al producto especificado.
+- **Criterio de ordenamiento determinista:**
+  Las reseñas se ordenan priorizando: 1) Mayor cantidad de reportes pendientes (`reportesPendientes` DESC); 2) En empate, mayor cantidad de reportes totales (`totalReportes` DESC); 3) En persistencia de empate, desempate determinista por identificador de reseña (`idResena` DESC).
+- **Semántica de campos en la respuesta:**
+  - `totalReportes`: Cantidad total de reportes asociados a la reseña, independientemente del filtro aplicado.
+  - `reportesPendientes`: Cantidad real de reportes en estado `PENDIENTE` asociados a la reseña.
+  - `reportes`: Historial completo de reportes asociados a la reseña, proporcionando el contexto íntegro de moderación para la toma de decisiones.
 - **Códigos de respuesta:**
   - `200 OK`: Lista JSON con objetos `ResenaReportadaResponse`:
     ```json
@@ -1241,45 +1289,61 @@ Permite a los operadores de moderación consultar la cola de reseñas que han ac
     ]
     ```
   - `401 Unauthorized`: Token ausente o inválido.
-  - `403 Forbidden`: Usuario inactivo o sin permisos de moderación (`Usuario registrado` o `Tienda`).
+  - `403 Forbidden`: Usuario inactivo, suspendido o sin rol activo de `Moderador` o `Administrador` (por ejemplo, `Usuario registrado`, `Representante de establecimiento` o rol revocado).
 
-## 28.2 Consulta plana de reportes de moderación
+## 28.2 Listar reseñas con reportes pendientes (atajo)
 
-- **Método y rutas:** `GET /api/moderacion/reportes` (alias: `GET /api/admin/reportes`)
+- **Método y ruta:** `GET /api/moderacion/resenas/pendientes`
 - **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
-- **Parámetros:** `estado` (opcional).
+- **Parámetros:** `oculta` (opcional), `idProducto` (opcional).
+- **Comportamiento:** Retorna las reseñas con al menos un reporte en estado `PENDIENTE`.
+
+## 28.3 Consulta plana de reportes de moderación
+
+- **Método y ruta:** `GET /api/moderacion/reportes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `estado` (opcional, `EstadoReporte`, valor por defecto: `PENDIENTE`). Si no se envía el parámetro, conserva la compatibilidad con la bandeja de moderación base de Fase 2 filtrando por reportes pendientes.
 - **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).
+
 
 ---
 
-# 29. Acciones de moderación de reseñas (S2-43)
+# 29. Acciones operativas de moderación de reseñas (S2-43)
 
 Esta sección describe las acciones operativas de moderación sobre reseñas y reportes: **Ocultar**, **Publicar** y **Rechazar**.
-**Regla de autorización:** Estas tres operaciones están reservadas **exclusivamente para usuarios con rol `Administrador` activo**. Los roles `Moderador`, `Usuario registrado` y `Tienda` reciben `403 Forbidden`.
+Todos los endpoints operan exclusivamente bajo la raíz `/api/moderacion/**`.
+
+**Reglas de autorización:**
+- Accesibles para usuarios con cuenta activa y asignación activa de rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
+- Denegadas (`403 Forbidden`) para `Usuario registrado`, `Representante de establecimiento` y usuarios inactivos o suspendidos.
+- Prohibición estricta de conflicto de interés: un moderador o administrador no puede moderar sus propias reseñas ni resolver reportes propios (`403 Forbidden`).
+- Máquina de estados estricta (Migraciones 007, 010 y 011): un reporte debe encontrarse en estado `EN_REVISION` para ser resuelto (`RECHAZADO` o `ACEPTADO`). Los reportes en estado `PENDIENTE` no pueden ser rechazados directamente (`409 Conflict`).
+- Independencia de flags: las acciones manuales operan exclusivamente sobre `ocultaPorModeracion`. El ocultamiento automático por reportes (`ocultaPorReportes`) y el borrado lógico del autor permanecen independientes.
 
 ## 29.1 Ocultar reseña
-Establece `ocultaPorReportes = true` en la reseña y actualiza automáticamente los reportes con estado `PENDIENTE` o `EN_REVISION` asociados a la reseña a `ACEPTADO`.
+Establece `ocultaPorModeracion = true`, `moderadaPor = actor`, `fechaModeracion = ahora` y `motivoModeracion = motivo`. Registra de manera transaccional un evento de auditoría inmutable en `resena_moderacion_auditoria` (`accion = 'OCULTAR'`).
 
-- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/ocultar` (alias: `POST /api/admin/resenas/{idResena}/ocultar`, `/api/moderacion/resenas/{idResena}/ocultar`)
-- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/ocultar` (alias: `POST /api/moderacion/resenas/{idResena}/ocultar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
 - **Cuerpo (opcional):**
   ```json
   {
-    "motivo": "Contenido ofensivo verificado"
+    "motivo": "Contenido ofensivo verificado por moderación"
   }
   ```
 - **Códigos de respuesta:**
-  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorReportes: true` y reportes en `ACEPTADO`.
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: true`.
+  - `400 Bad Request`: Identificador inválido o motivo mayor a 2000 caracteres.
   - `401 Unauthorized`: Token ausente o inválido.
-  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `403 Forbidden`: Sin rol activo de moderación, cuenta suspendida o intento de automoderación.
   - `404 Not Found`: Reseña inexistente.
-  - `409 Conflict`: Si la reseña fue eliminada lógicamente por su autor.
+  - `409 Conflict`: Reseña ya oculta manualmente o reseña eliminada previamente por su autor.
 
-## 29.2 Publicar reseña (restaurar visibilidad)
-Restaura la visibilidad de la reseña (`ocultaPorReportes = false`) y actualiza los reportes pendientes/en revisión a `RECHAZADO`.
+## 29.2 Publicar reseña (restaurar visibilidad manual)
+Restaura la visibilidad manual (`ocultaPorModeracion = false`, `moderadaPor = null`, `fechaModeracion = null`, `motivoModeracion = null`). Registra transaccionalmente un evento en `resena_moderacion_auditoria` (`accion = 'RESTAURAR'`). No altera `ocultaPorReportes`.
 
-- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/publicar` (alias: `POST /api/admin/resenas/{idResena}/publicar`, `/api/moderacion/resenas/{idResena}/publicar`)
-- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/publicar` (alias: `POST /api/moderacion/resenas/{idResena}/publicar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
 - **Cuerpo (opcional):**
   ```json
   {
@@ -1287,31 +1351,38 @@ Restaura la visibilidad de la reseña (`ocultaPorReportes = false`) y actualiza 
   }
   ```
 - **Códigos de respuesta:**
-  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorReportes: false` y reportes en `RECHAZADO`.
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: false`.
   - `401 Unauthorized`: Token ausente o inválido.
-  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o automoderación.
   - `404 Not Found`: Reseña inexistente.
-  - `409 Conflict`: Si la reseña fue eliminada por su autor (`resena.estado == false`), impidiendo su republicación forzada.
+  - `409 Conflict`: La reseña no estaba oculta manualmente, o fue eliminada por su autor impidiendo su republicación.
 
-## 29.3 Rechazar reportes de una reseña en lote
-Marca los reportes pendientes/en revisión de una reseña como `RECHAZADO`. Si los reportes no rechazados quedan por debajo del umbral de 3 y la reseña sigue activa, se restablece automáticamente la visibilidad (`ocultaPorReportes = false`).
+## 29.3 Rechazar reporte individual
+Actualiza el estado de un reporte específico en `EN_REVISION` a `RECHAZADO`. Registra transaccionalmente la decisión en `reporte_resena_decision_auditoria`. Recalcula los reportes activos no rechazados de la reseña: si bajan de 3, restablece automáticamente `ocultaPorReportes = false`.
 
-- **Métodos y rutas:** `PUT /api/admin/resenas/{idResena}/rechazar-reportes` (alias: `/api/admin/resenas/{idResena}/rechazar`, `/api/moderacion/resenas/{idResena}/rechazar-reportes`)
-- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
-- **Códigos de respuesta:**
-  - `200 OK`: Retorna `ResenaReportadaResponse` actualizado.
-  - `401 Unauthorized`: Token ausente o inválido.
-  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
-  - `404 Not Found`: Reseña inexistente.
-
-## 29.4 Rechazar reporte individual
-Actualiza el estado de un reporte específico a `RECHAZADO`. Recalcula los reportes activos restantes de la reseña: si bajan de 3, restablece automáticamente `ocultaPorReportes = false` (Regla 8 de moderación).
-
-- **Métodos y rutas:** `PUT /api/admin/reportes/{idReporte}/rechazar` (alias: `/api/moderacion/reportes/{idReporte}/rechazar`)
-- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Administrador` activo.
+- **Métodos y ruta:** `PUT /api/moderacion/reportes/{idReporte}/rechazar` (alias: `POST /api/moderacion/reportes/{idReporte}/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` responsable o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reporte infundado tras verificar el producto"
+  }
+  ```
 - **Códigos de respuesta:**
   - `200 OK`: Retorna `ReporteResenaResponse` con `estado: "RECHAZADO"`.
   - `401 Unauthorized`: Token ausente o inválido.
-  - `403 Forbidden`: Usuario inactivo o sin rol Administrador.
+  - `403 Forbidden`: Moderador no responsable asignado, cuenta suspendida o conflicto de interés (actor reportante o autor).
   - `404 Not Found`: Reporte inexistente.
+  - `409 Conflict`: Reporte en estado `PENDIENTE` (debe pasar a `EN_REVISION` primero) o reporte ya finalizado.
 
+## 29.4 Rechazar reportes de una reseña en lote
+Marca los reportes en estado `EN_REVISION` de una reseña como `RECHAZADO`, registrando su evento de decisión individual para cada reporte en `reporte_resena_decision_auditoria`. Si los reportes no rechazados quedan por debajo del umbral de 3 y la reseña sigue activa, restablece `ocultaPorReportes = false`.
+
+- **Métodos y rutas:** `PUT /api/moderacion/resenas/{idResena}/rechazar-reportes` (alias: `/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` actualizado con los reportes en `RECHAZADO`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o autor de la reseña.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Si existen reportes todavía en estado `PENDIENTE` que requieren revisión previa.

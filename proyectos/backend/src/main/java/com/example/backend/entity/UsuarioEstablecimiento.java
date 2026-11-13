@@ -40,6 +40,20 @@ public class UsuarioEstablecimiento {
     @Column(name = "fecha_asignacion", nullable = false)
     private LocalDateTime fechaAsignacion = LocalDateTime.now();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asignado_por")
+    private Usuario asignadoPor;
+
+    @Column(name = "fecha_revocacion")
+    private LocalDateTime fechaRevocacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "revocado_por")
+    private Usuario revocadoPor;
+
+    @Column(name = "motivo_revocacion", columnDefinition = "TEXT")
+    private String motivoRevocacion;
+
     public Long getIdUsuarioEstablecimiento() { return idUsuarioEstablecimiento; }
     public void setIdUsuarioEstablecimiento(Long idUsuarioEstablecimiento) { this.idUsuarioEstablecimiento = idUsuarioEstablecimiento; }
     public Usuario getUsuario() { return usuario; }
@@ -50,4 +64,12 @@ public class UsuarioEstablecimiento {
     public void setEstado(Boolean estado) { this.estado = estado; }
     public LocalDateTime getFechaAsignacion() { return fechaAsignacion; }
     public void setFechaAsignacion(LocalDateTime fechaAsignacion) { this.fechaAsignacion = fechaAsignacion; }
+    public Usuario getAsignadoPor() { return asignadoPor; }
+    public void setAsignadoPor(Usuario asignadoPor) { this.asignadoPor = asignadoPor; }
+    public LocalDateTime getFechaRevocacion() { return fechaRevocacion; }
+    public void setFechaRevocacion(LocalDateTime fechaRevocacion) { this.fechaRevocacion = fechaRevocacion; }
+    public Usuario getRevocadoPor() { return revocadoPor; }
+    public void setRevocadoPor(Usuario revocadoPor) { this.revocadoPor = revocadoPor; }
+    public String getMotivoRevocacion() { return motivoRevocacion; }
+    public void setMotivoRevocacion(String motivoRevocacion) { this.motivoRevocacion = motivoRevocacion; }
 }

@@ -402,5 +402,33 @@ class ResenaOcultamientoIntegrationTest {
         assertEquals(3, resenaEnBd.getPuntuacion());
         assertTrue(resenaEnBd.getOcultaPorReportes());
     }
-}
 
+    @Test
+    @DisplayName("Las reseñas ocultas manualmente se excluyen de listados, estadísticas y rankings")
+    void ocultamientoManualExcluyeResenaDeConsultasPublicas() throws Exception {
+        Resena resena = crearResena(
+                productoA, usuario1, "Reseña ocultada manualmente", 5, true, false);
+        resena.setOcultaPorModeracion(true);
+        resena.setModeradaPor(usuario2);
+        resena.setFechaModeracion(LocalDateTime.now());
+        resena.setMotivoModeracion("Incumple las normas de la comunidad");
+        resenaRepository.saveAndFlush(resena);
+
+        mockMvc.perform(get("/api/resenas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        mockMvc.perform(get("/api/productos/{id}/valoracion-stats", productoA.getIdProducto()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cantidadValoraciones").value(0));
+
+        mockMvc.perform(get("/api/productos/rankings/mejor-valorados"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        mockMvc.perform(get("/api/productos/rankings/mas-comentados"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+}

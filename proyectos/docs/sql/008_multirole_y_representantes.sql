@@ -84,7 +84,7 @@ WHERE e.id_usuario IS NOT NULL
 
 INSERT INTO public.schema_version (version, descripcion)
 VALUES (
-    '005_multirole_y_representantes',
+    '008_multirole_y_representantes',
     'Relaciones muchos-a-muchos Usuario-Rol y Usuario-Establecimiento con migracion de asignaciones existentes'
 )
 ON CONFLICT (version) DO NOTHING;

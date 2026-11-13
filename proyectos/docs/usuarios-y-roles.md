@@ -1,10 +1,10 @@
 # Roles, perfiles y permisos de TecReview
 
 **Documento:** Especificación funcional y de autorización  
-**Versión:** 5.6 (Fase 1)  
-**Estado:** Propuesta para validación  
-**Alcance:** Definición de perfiles, responsabilidades, permisos y reglas de acceso.  
-**Importante:** Este documento no implementa todavía cambios en backend, frontend ni base de datos.
+**Versión:** 5.7 (Fase 1 implementada: asignaciones y auditoría)  
+**Estado:** Especificación funcional aprobada; implementación inicial de asignaciones y auditoría integrada en backend.  
+**Alcance:** Define perfiles, responsabilidades, permisos y reglas de acceso. La sección 12 diferencia las capacidades implementadas de las que siguen siendo objetivos de fases posteriores.  
+**Importante:** La implementación inicial de múltiples roles, representantes y auditoría está incorporada en backend. Esto no significa que todas las capacidades descritas en la matriz y el flujo de moderación estén implementadas.
 
 ---
 
@@ -636,4 +636,54 @@ El rol `Moderador`, su matriz de permisos y su flujo completo quedan definidos c
 - v5.3: aprobación de la aplicación global e inmediata de la suspensión del rol Administrador en todas las sesiones y dispositivos, con validación en cada solicitud, sin cierre de sesión ni renovación de token y conservando los permisos de otros roles vigentes.
 - v5.4: aprobación de la cancelación de operaciones administrativas aún no confirmadas cuando la suspensión del rol Administrador se hace efectiva, con revalidación al confirmar, ausencia de escrituras parciales y auditoría; no se revierten operaciones ya confirmadas.
 - v5.5: aprobación del rechazo HTTP `403` de intentos no autorizados de suspender el rol Administrador, sin modificar roles ni sesiones y con registro de auditoría.
-- v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.
+- v5.6: cierre documental de la política de moderación y alineación de los documentos de API y modelo de datos con los perfiles, múltiples roles, vínculos de establecimientos y reglas aprobadas; se mantienen explícitas las brechas entre especificación y código actual.\n- v5.7: actualización del estado real de la implementación técnica de asignaciones y auditoría, confirmación de migraciones 008/009 aplicadas y documentación del bloqueo común para revocaciones concurrentes del rol Administrador.
+
+
+---
+
+## 12. Implementación técnica de Fase 1: asignaciones y auditoría
+
+**Estado:** endpoints iniciales implementados en backend. Las migraciones `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` están aplicadas en la base de datos según la validación confirmada por el equipo. No deben volver a ejecutarse.
+
+### 12.1 Modelo de asignaciones
+
+- `usuario_rol` conserva una fila por pareja usuario/rol y usa `estado` para indicar si la asignación está vigente.
+- `usuario_establecimiento` conserva una fila por pareja usuario/establecimiento y usa `estado` para indicar si la representación está vigente.
+- Las revocaciones registran fecha, actor y motivo en la asignación actual.
+- Las reactivaciones actualizan el estado de la asignación y generan un nuevo evento de auditoría; los eventos anteriores permanecen en las tablas de auditoría.
+- `auditoria_usuario_rol` y `auditoria_usuario_establecimiento` registran `ASIGNADO`, `REVOCADO` y `REACTIVADO`, junto con actor, fecha, recurso y motivo.
+- Para las asignaciones históricas migradas, el actor queda nulo cuando no existe evidencia fiable del responsable original.
+
+### 12.2 Endpoints administrativos implementados
+
+Todas las rutas siguientes requieren JWT válido y rol **Administrador** activo, verificado en backend:
+
+| Método | Ruta | Acción |
+|---|---|---|
+| POST | `/api/admin/usuarios/{usuarioId}/roles/{rolId}` | Asignar o reactivar un rol |
+| DELETE | `/api/admin/usuarios/{usuarioId}/roles/{rolId}` | Revocar un rol |
+| POST | `/api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion` | Asignar o reactivar representante |
+| DELETE | `/api/admin/usuarios/{usuarioId}/establecimientos/{establecimientoId}/representacion` | Revocar representante |
+
+El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API obtiene al actor desde el `sub` del JWT; no acepta el identificador del administrador desde el cliente.
+
+### 12.3 Reglas de protección
+
+- No se asignan roles a cuentas inactivas ni representantes a cuentas o establecimientos inactivos.
+- No se permiten asignaciones duplicadas activas.
+- Revocar una asignación ya revocada produce conflicto.
+- No se puede revocar el último rol activo de Administrador.
+- La autorización de `/api/admin/**` se realiza mediante el gestor administrativo existente y falla cerrada.
+- Las operaciones de escritura y su evento de auditoría se guardan dentro de la misma transacción.
+
+### 12.4 Validación completada y notas de despliegue
+
+- **Pruebas Maven:** la última ejecución reportada por el equipo fue de 281 pruebas pasando (`BUILD SUCCESS`). Los cambios de concurrencia descritos aquí requieren una nueva ejecución antes de considerar cerrada la validación.
+- **Pruebas de integración de endpoints (`AdministracionAsignacionesIntegrationTest`):** cobertura de los cuatro endpoints (`POST`/`DELETE` roles y `POST`/`DELETE` representación) con matriz de roles: 401 Unauthorized sin token, 403 Forbidden para roles no admin (Usuario registrado, Moderador, Representante, Admin inactivo/revocado), 201 Created y 204 No Content para Administrador activo, y 409 Conflict ante duplicados o revocaciones sobre recursos ya revocados.
+- **Validación de concurrencia y protección del último administrador (`AdministracionAsignacionesConcurrencyTest`):** utiliza PostgreSQL real mediante Testcontainers. La revocación de administradores se serializa ahora mediante bloqueo pesimista de la fila del rol Administrador, adquirido antes de bloquear al usuario objetivo y las asignaciones activas. La prueba verifica que ambas transacciones terminan, exactamente una revocación tiene éxito y la otra se rechaza por protección del último administrador.
+- **Serialización de revocación de representantes:** verificada bajo concurrencia sobre el mismo establecimiento; el bloqueo pesimista en `findByUsuarioAndEstablecimientoForUpdate` serializa las solicitudes, completando una y rechazando la segunda con HTTP 409.
+- **Integridad de migraciones y orden de ejecución:**
+  - La migración `008_multirole_y_representantes.sql` debe ejecutarse antes que `009_auditoria_asignaciones.sql`.
+  - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
+  - Las migraciones 008 y 009 ya fueron aplicadas y su registro en `schema_version` fue corregido y validado por el equipo. No repetir su ejecución.
+- **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.

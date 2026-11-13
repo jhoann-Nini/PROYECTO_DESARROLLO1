@@ -478,5 +478,70 @@ class ReporteResenaIntegrationTest {
         assertEquals(usuarioReportante1.getIdUsuario(), guardado.getUsuario().getIdUsuario());
         assertEquals(EstadoReporte.PENDIENTE, guardado.getEstado());
     }
-}
 
+
+    @Test
+    @DisplayName("13. El alias de ruta permite crear un reporte")
+    void aliasDeRutaCreaReporteExitosamente() throws Exception {
+        mockMvc.perform(post("/api/reportes/resenas/{idResena}", resenaActiva.getIdResena())
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "motivo": "spam",
+                                    "descripcion": "Reporte mediante alias"
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").value(resenaActiva.getIdResena()))
+                .andExpect(jsonPath("$.motivo").value("spam"))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+
+        assertEquals(1, reporteResenaRepository.count());
+    }
+
+    @Test
+    @DisplayName("14. El endpoint /api/reportes crea un reporte con idResena en el cuerpo")
+    void crearReporteDesdeBodyExitosamente() throws Exception {
+        mockMvc.perform(post("/api/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "idResena": %d,
+                                    "motivo": "falso",
+                                    "descripcion": "Reporte con identificador en el cuerpo"
+                                }
+                                """.formatted(resenaActiva.getIdResena())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").value(resenaActiva.getIdResena()))
+                .andExpect(jsonPath("$.motivo").value("falso"))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+
+        assertEquals(1, reporteResenaRepository.count());
+    }
+
+    @Test
+    @DisplayName("15. El endpoint /api/reportes rechaza solicitudes sin idResena")
+    void crearReporteDesdeBodySinIdResenaEsRechazado() throws Exception {
+        mockMvc.perform(post("/api/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "motivo": "spam",
+                                    "descripcion": "Falta el identificador de la reseña"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+
+        assertTrue(reporteResenaRepository.findAll().isEmpty());
+    }
+
+}

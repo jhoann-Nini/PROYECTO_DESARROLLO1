@@ -44,6 +44,16 @@ public class UsuarioRol {
     @JoinColumn(name = "asignado_por")
     private Usuario asignadoPor;
 
+    @Column(name = "fecha_revocacion")
+    private LocalDateTime fechaRevocacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "revocado_por")
+    private Usuario revocadoPor;
+
+    @Column(name = "motivo_revocacion", columnDefinition = "TEXT")
+    private String motivoRevocacion;
+
     public Long getIdUsuarioRol() { return idUsuarioRol; }
     public void setIdUsuarioRol(Long idUsuarioRol) { this.idUsuarioRol = idUsuarioRol; }
     public Usuario getUsuario() { return usuario; }
@@ -56,4 +66,10 @@ public class UsuarioRol {
     public void setFechaAsignacion(LocalDateTime fechaAsignacion) { this.fechaAsignacion = fechaAsignacion; }
     public Usuario getAsignadoPor() { return asignadoPor; }
     public void setAsignadoPor(Usuario asignadoPor) { this.asignadoPor = asignadoPor; }
+    public LocalDateTime getFechaRevocacion() { return fechaRevocacion; }
+    public void setFechaRevocacion(LocalDateTime fechaRevocacion) { this.fechaRevocacion = fechaRevocacion; }
+    public Usuario getRevocadoPor() { return revocadoPor; }
+    public void setRevocadoPor(Usuario revocadoPor) { this.revocadoPor = revocadoPor; }
+    public String getMotivoRevocacion() { return motivoRevocacion; }
+    public void setMotivoRevocacion(String motivoRevocacion) { this.motivoRevocacion = motivoRevocacion; }
 }

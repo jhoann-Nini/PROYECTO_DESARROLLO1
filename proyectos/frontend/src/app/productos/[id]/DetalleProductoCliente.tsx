@@ -382,7 +382,14 @@ export default function DetalleProductoCliente({
                     >
                       <div>
                         <p className="font-semibold text-[var(--color-ink)]">
-                          {tienda.nombre}
+                          {tienda.nombre}{tienda.verificada === true && (
+                            <span
+                              aria-label={`${tienda.nombre} verificada por TecReview`}
+                              className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800"
+                            >
+                              <span aria-hidden="true">✓</span> Verificada
+                            </span>
+                          )}
                         </p>
                         <p className="mt-1 text-sm text-[var(--color-subtle)]">
                           {tienda.envioGratis

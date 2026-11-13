@@ -361,4 +361,37 @@ Verificar de extremo a extremo los tres criterios clave establecidos en la histo
   - `src/components/AdminPanelModal.test.tsx` (Suite "TEC-117: Criterios de validación de productos" con 4 casos de prueba de validación y control de acceso).
 - **Regresión total del backend:** 310 pruebas ejecutadas, 0 fallos, 0 errores.
 
+---
+
+## S2-72: Integración de la cola de reportes en el panel del administrador (TEC-149)
+
+### 1. Alcance y objetivo
+Integrar la cola de moderación y reportes de la comunidad en el panel de administración central (`AdminPanelModal`), permitiendo al administrador:
+1. **Acceso y navegación unificada:** Pestaña accesible `"🚩 Cola de Reportes"` con indicador badge del total de reportes pendientes acumulados.
+2. **Visualización y métricas:** Consulta de métricas clave (Total reseñas reportadas, Reportes pendientes, Reseñas ocultas) e información de contexto para reportes de ofertas/precios y reseñas (`TEC-127 / TEC-149`).
+3. **Filtros dinámicos:** Filtrado por estado del reporte (`TODOS`, `PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`) y por visibilidad actual (solo reseñas ocultas).
+4. **Detalle desplegable de reportes:** Inspección de motivo, descripción, reportante, fecha y estado de cada reporte recibido.
+5. **Acciones de moderación con auditoría:**
+   - `🛑 Ocultar reseña`: Deshabilita la visibilidad pública de la reseña con captura opcional de motivo de auditoría (`PUT /api/moderacion/resenas/{id}/ocultar`).
+   - `✅ Publicar / Restaurar`: Restablece la visibilidad de reseñas ocultadas por moderación (`PUT /api/moderacion/resenas/{id}/publicar`).
+   - `⚠️ Rechazar reportes`: Desestima los reportes pendientes de una reseña y restaura la visibilidad si estaba oculta por acumulación de reportes (`PUT /api/moderacion/resenas/{id}/rechazar-reportes`).
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Componente / Flujo | Condición / Acción | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-72-01** | `AdminPanelModal` | Renderizado con rol Administrador | Pestaña "Cola de Reportes" visible con badge numérico de pendientes | Badge visible con valor `2` | **APROBADO** |
+| **S2-72-02** | `AdminPanelModal` | Clic en pestaña "Cola de Reportes" | Carga y renderiza lista de reseñas reportadas, tarjetas y métricas | Tarjetas con comentarios y datos visibles | **APROBADO** |
+| **S2-72-03** | `AdminPanelModal` | Filtro "Solo reseñas actualmente ocultas" | Oculta reseñas visibles y preserva solo las ocultas por moderador o reportes | Reseñas filtradas correctamente | **APROBADO** |
+| **S2-72-04** | `AdminPanelModal` | Filtro por estado `ACEPTADO` | Muestra solo reseñas que contienen reportes en dicho estado | Filtrado reactivo exitoso | **APROBADO** |
+| **S2-72-05** | `AdminPanelModal` | Clic en "Ver motivos de reportes" | Expande tabla de detalle con motivo, descripción, autor y estado | Detalle desplegado correctamente | **APROBADO** |
+| **S2-72-06** | `AdminPanelModal` | Acción "Ocultar reseña" con motivo | Abre diálogo accesible, captura justificación e invoca `ocultarResenaReportada` | Modal ejecutado y estado actualizado | **APROBADO** |
+| **S2-72-07** | `AdminPanelModal` | Acción "Publicar / Restaurar" | Abre diálogo de confirmación e invoca `publicarResenaReportada` | Reseña restaurada exitosamente | **APROBADO** |
+| **S2-72-08** | `AdminPanelModal` | Acción "Rechazar reportes" | Abre diálogo de confirmación e invoca `rechazarReportesResenaReportada` | Reportes rechazados exitosamente | **APROBADO** |
+| **S2-72-09** | `AdminPanelModal` | Error de comunicación con la API | Muestra mensaje de error amigable y botón "Reintentar" funcional | Recuperación ante fallos validada | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Frontend:** `src/components/AdminPanelModal.test.tsx` (Suite "S2-72 / TEC-149: Integración de la Cola de Reportes del Administrador" con 8 casos de prueba exhaustivos).
+- **Backend:** `com.example.backend.controller.ModeracionAccionesIntegrationTest` y endpoints bajo `/api/moderacion/**` (352 pruebas ejecutadas y aprobadas al 100%).
+
 

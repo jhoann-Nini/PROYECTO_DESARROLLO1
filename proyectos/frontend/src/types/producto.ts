@@ -208,12 +208,13 @@ export interface UsuarioSesion {
   fechaRegistro?: string;
 }
 
-export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento";
+export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento" | "Moderador";
 
 export const ROLES_SISTEMA = {
   USUARIO_REGISTRADO: "Usuario registrado",
   ADMINISTRADOR: "Administrador",
   REPRESENTANTE: "Representante de establecimiento",
+  MODERADOR: "Moderador",
 } as const;
 
 /**
@@ -239,4 +240,19 @@ export function esRepresentante(usuario?: UsuarioSesion | null): boolean {
 export function esUsuarioRegistrado(usuario?: UsuarioSesion | null): boolean {
   if (!usuario?.rol) return false;
   return usuario.rol.trim().toLowerCase() === "usuario registrado";
+}
+
+/**
+ * Valida si la sesión tiene rol de Moderador.
+ */
+export function esModerador(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "moderador";
+}
+
+/**
+ * Valida si la sesión puede moderar reseñas (Administrador o Moderador).
+ */
+export function puedeModerar(usuario?: UsuarioSesion | null): boolean {
+  return esAdministrador(usuario) || esModerador(usuario);
 }

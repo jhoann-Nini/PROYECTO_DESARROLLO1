@@ -37,6 +37,10 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
     @Query("SELECT r FROM Resena r JOIN FETCH r.usuario WHERE r.idResena = :idResena")
     Optional<Resena> findByIdForModeration(@Param("idResena") Long idResena);
 
+    @EntityGraph(attributePaths = {"usuario", "producto"})
+    @Query("SELECT r FROM Resena r WHERE r.idResena = :idResena")
+    Optional<Resena> findByIdConDetalles(@Param("idResena") Long idResena);
+
     @Query("SELECT new com.example.backend.dto.ResenaStats(r.producto.idProducto, COUNT(r.idResena)) " +
            "FROM Resena r " +
            "WHERE r.estado = true AND r.ocultaPorReportes = false AND r.ocultaPorModeracion = false AND r.producto.estado = true " +
@@ -60,4 +64,3 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
     @Query("SELECT COUNT(r) FROM Resena r WHERE r.usuario.idUsuario = :idUsuario AND r.fechaCreacion >= :fechaInicio")
     long countNuevasResenasEnVentana(@Param("idUsuario") Long idUsuario, @Param("fechaInicio") LocalDateTime fechaInicio);
 }
-

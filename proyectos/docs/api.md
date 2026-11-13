@@ -1232,3 +1232,85 @@ Permite a moderadores y administradores activos consultar la cola de reseñas qu
 - **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
 - **Parámetros:** `estado` (opcional, `EstadoReporte`, valor por defecto: `PENDIENTE`). Si no se envía el parámetro, conserva la compatibilidad con la bandeja de moderación base de Fase 2 filtrando por reportes pendientes.
 - **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).
+
+
+---
+
+# 29. Acciones operativas de moderación de reseñas (S2-43)
+
+Esta sección describe las acciones operativas de moderación sobre reseñas y reportes: **Ocultar**, **Publicar** y **Rechazar**.
+Todos los endpoints operan exclusivamente bajo la raíz `/api/moderacion/**`.
+
+**Reglas de autorización:**
+- Accesibles para usuarios con cuenta activa y asignación activa de rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
+- Denegadas (`403 Forbidden`) para `Usuario registrado`, `Representante de establecimiento` y usuarios inactivos o suspendidos.
+- Prohibición estricta de conflicto de interés: un moderador o administrador no puede moderar sus propias reseñas ni resolver reportes propios (`403 Forbidden`).
+- Máquina de estados estricta (Migraciones 007, 010 y 011): un reporte debe encontrarse en estado `EN_REVISION` para ser resuelto (`RECHAZADO` o `ACEPTADO`). Los reportes en estado `PENDIENTE` no pueden ser rechazados directamente (`409 Conflict`).
+- Independencia de flags: las acciones manuales operan exclusivamente sobre `ocultaPorModeracion`. El ocultamiento automático por reportes (`ocultaPorReportes`) y el borrado lógico del autor permanecen independientes.
+
+## 29.1 Ocultar reseña
+Establece `ocultaPorModeracion = true`, `moderadaPor = actor`, `fechaModeracion = ahora` y `motivoModeracion = motivo`. Registra de manera transaccional un evento de auditoría inmutable en `resena_moderacion_auditoria` (`accion = 'OCULTAR'`).
+
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/ocultar` (alias: `POST /api/moderacion/resenas/{idResena}/ocultar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Contenido ofensivo verificado por moderación"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: true`.
+  - `400 Bad Request`: Identificador inválido o motivo mayor a 2000 caracteres.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin rol activo de moderación, cuenta suspendida o intento de automoderación.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Reseña ya oculta manualmente o reseña eliminada previamente por su autor.
+
+## 29.2 Publicar reseña (restaurar visibilidad manual)
+Restaura la visibilidad manual (`ocultaPorModeracion = false`, `moderadaPor = null`, `fechaModeracion = null`, `motivoModeracion = null`). Registra transaccionalmente un evento en `resena_moderacion_auditoria` (`accion = 'RESTAURAR'`). No altera `ocultaPorReportes`.
+
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/publicar` (alias: `POST /api/moderacion/resenas/{idResena}/publicar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reseña verificada y legítima tras revisión"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: false`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o automoderación.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: La reseña no estaba oculta manualmente, o fue eliminada por su autor impidiendo su republicación.
+
+## 29.3 Rechazar reporte individual
+Actualiza el estado de un reporte específico en `EN_REVISION` a `RECHAZADO`. Registra transaccionalmente la decisión en `reporte_resena_decision_auditoria`. Recalcula los reportes activos no rechazados de la reseña: si bajan de 3, restablece automáticamente `ocultaPorReportes = false`.
+
+- **Métodos y ruta:** `PUT /api/moderacion/reportes/{idReporte}/rechazar` (alias: `POST /api/moderacion/reportes/{idReporte}/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` responsable o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reporte infundado tras verificar el producto"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ReporteResenaResponse` con `estado: "RECHAZADO"`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Moderador no responsable asignado, cuenta suspendida o conflicto de interés (actor reportante o autor).
+  - `404 Not Found`: Reporte inexistente.
+  - `409 Conflict`: Reporte en estado `PENDIENTE` (debe pasar a `EN_REVISION` primero) o reporte ya finalizado.
+
+## 29.4 Rechazar reportes de una reseña en lote
+Marca los reportes en estado `EN_REVISION` de una reseña como `RECHAZADO`, registrando su evento de decisión individual para cada reporte en `reporte_resena_decision_auditoria`. Si los reportes no rechazados quedan por debajo del umbral de 3 y la reseña sigue activa, restablece `ocultaPorReportes = false`.
+
+- **Métodos y rutas:** `PUT /api/moderacion/resenas/{idResena}/rechazar-reportes` (alias: `/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` actualizado con los reportes en `RECHAZADO`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o autor de la reseña.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Si existen reportes todavía en estado `PENDIENTE` que requieren revisión previa.

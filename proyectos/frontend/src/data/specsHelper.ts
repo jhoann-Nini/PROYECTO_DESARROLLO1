@@ -6,7 +6,6 @@ import {
   MetricaPuntuacion,
   TiendaPrecio,
 } from "@/types/producto";
-import { normalizarPrecioCOP } from "./precios";
 import { normalizarDatosFichaTecnica } from "./fichaTecnica";
 import type { DatosFichaTecnica } from "./fichaTecnica";
 import { sanearPrecioCOP } from "./precios";

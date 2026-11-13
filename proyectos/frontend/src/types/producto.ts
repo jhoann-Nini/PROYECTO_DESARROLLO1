@@ -147,6 +147,7 @@ export interface TiendaPrecio {
   precio: number;
   envioGratis: boolean;
   url?: string;
+  verificada?: boolean;
 }
 
 export interface EspecificacionesDetalladas {

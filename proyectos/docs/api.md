@@ -242,35 +242,57 @@ Permite consultar la información detallada de un producto.
 
 POST /api/productos
 
-Este endpoint será utilizado por los usuarios autorizados para registrar productos.
+Este endpoint es de uso exclusivo para usuarios autorizados con el rol **Administrador**.
 
-Ejemplo:
+### Requisitos y Criterios de Validación (TEC-117):
+1. **Solo un administrador escribe:** Requiere token Bearer de Supabase Auth correspondiente a un usuario activo con rol activo `Administrador`.
+   - Solicitudes no autenticadas retornan `401 Unauthorized`.
+   - Solicitudes de usuarios con cualquier otro rol (ej. `Usuario registrado`, `Moderador`, `Tienda`) retornan `403 Forbidden`.
+2. **Los enlaces deben empezar por http o https:** El campo `imagen`, si no es nulo o vacío, debe iniciar con `http://` o `https://`. Protocolos ajenos (ej. `ftp://`, `javascript:`) o rutas de texto plano retornan `400 Bad Request` con el mensaje:
+   `"Los enlaces deben empezar por http o https"`
+3. **El precio no puede ser negativo:** El campo `precioReferencia` debe ser un número decimal mayor o igual a `0.0`. Valores negativos retornan `400 Bad Request` con el mensaje:
+   `"El precio no puede ser negativo"`
 
+Ejemplo de solicitud válida:
+
+```json
 {
   "nombre": "Samsung Galaxy A55",
   "descripcion": "Teléfono inteligente",
   "idMarca": 2,
   "idCategoria": 1,
-  "imagen": null,
+  "imagen": "https://images.unsplash.com/photo-example.jpg",
   "precioReferencia": 1500000
 }
+```
 
-El backend deberá validar los datos antes de almacenarlos.
+El backend valida los datos mediante Bean Validation antes de persistirlos.
 
 ## 7.4 Actualizar producto
 
 PUT /api/productos/{id}
 
+Permite modificar la información de un producto existente.
+
+### Requisitos y Criterios de Validación (TEC-117):
+- **Solo un administrador escribe:** Requiere rol activo `Administrador` (`401` si no autenticado, `403` si no es administrador).
+- **Validaciones:** Aplican los mismos criterios que en la creación:
+  - Enlaces de imagen deben iniciar con `http://` o `https://` (`400 Bad Request`).
+  - `precioReferencia` no puede ser negativo (`400 Bad Request`).
+
 Ejemplo:
 
 PUT /api/productos/1
 
-Permite modificar la información de un producto.
+## 7.5 Eliminar producto
 
-7.5 Eliminar producto
 DELETE /api/productos/{id}
 
-Permite eliminar un producto cuando el usuario tenga los permisos correspondientes.
+Permite realizar la eliminación lógica (`estado=false`) de un producto existente.
+
+### Requisitos de Seguridad (TEC-117):
+- Requiere rol activo `Administrador`. Usuarios sin este rol son rechazados con `403 Forbidden` y usuarios anónimos con `401 Unauthorized`.
+- Responde `204 No Content` al completarse exitosamente.
 
 ---
 

@@ -361,4 +361,42 @@ Verificar de extremo a extremo los tres criterios clave establecidos en la histo
   - `src/components/AdminPanelModal.test.tsx` (Suite "TEC-117: Criterios de validación de productos" con 4 casos de prueba de validación y control de acceso).
 - **Regresión total del backend:** 310 pruebas ejecutadas, 0 fallos, 0 errores.
 
+---
+
+## HU-S2-14: Límite de peticiones general (TEC-121)
+
+### 1. Alcance y objetivo
+Implementar y verificar el mecanismo de rate limiting general para la API REST (`/api/**`), asegurando la resiliencia y estabilidad de la plataforma contra abusos, scraping no autorizado y ataques de denegación de servicio (DoS).
+
+Criterios validados:
+1. **Límite general por ventana temporal:** Se admiten hasta 100 peticiones en una ventana fija de 60 segundos por cliente (configurable mediante `ratelimit.general.limit` y `ratelimit.general.window-seconds`).
+2. **Cabeceras HTTP informativas:** Toda solicitud evaluada incluye `X-RateLimit-Limit`, `X-RateLimit-Remaining` y `X-RateLimit-Reset`.
+3. **Respuesta HTTP 429:** Al exceder el límite, el servidor interrumpe la ejecución devolviendo `429 Too Many Requests`, la cabecera `Retry-After: <segundos>` y el cuerpo estándar `ErrorResponse` en formato JSON.
+4. **Exclusiones:** Solicitudes preflight `OPTIONS` y endpoint de salud `/api/health` quedan excluidos de la limitación y no consumen cuota.
+5. **Aislamiento por cliente:** Clientes con diferentes IPs o usuarios autenticados disponen de contadores independientes.
+6. **Recuperación automática:** Una vez transcurrida la ventana de tiempo, la cuota del cliente se restablece automáticamente.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Componente / Flujo | Condición / Escenario | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-14-01** | `GeneralRateLimiterService` | Peticiones consecutivas 1 a 5 (límite 5) | Permite todas las solicitudes, decrementando `remaining` de 4 a 0 | Cuota consumida secuencialmente | **APROBADO** |
+| **S2-14-02** | `GeneralRateLimiterService` | Petición 6 (límite superado) | `allowed = false`, `remaining = 0`, `retryAfterSeconds > 0` | Bloqueado con retryAfter | **APROBADO** |
+| **S2-14-03** | `GeneralRateLimiterService` | Clientes A e IP B independientes | Bloqueo de cliente A no afecta la cuota disponible de cliente B | Aislamiento verificado | **APROBADO** |
+| **S2-14-04** | `GeneralRateLimiterService` | Expiración de ventana temporal | Tras transcurrir la ventana, la siguiente petición se autoriza (`allowed = true`) | Cuota restablecida | **APROBADO** |
+| **S2-14-05** | `GeneralRateLimiterService` | Servicio deshabilitado (`enabled = false`) | Permite solicitudes ilimitadas sin bloqueo | Solicitudes permitidas | **APROBADO** |
+| **S2-14-06** | `GeneralRateLimiterService` | Limpieza de buckets expirados | Elimina buckets inactivos liberando memoria del servidor | Buckets eliminados | **APROBADO** |
+| **S2-14-07** | `GeneralRateLimiterService` | Reinicio manual (`reset()`) | Vacía el mapa concurrente de clientes activos | Mapa restablecido | **APROBADO** |
+| **S2-14-08** | `GeneralRateLimitingFilter` | Petición a `/api/categorias` dentro de cuota | Retorna `200 OK` con cabeceras `X-RateLimit-Limit`, `Remaining`, `Reset` | Cabeceras presentes | **APROBADO** |
+| **S2-14-09** | `GeneralRateLimitingFilter` | Peticiones sucesivas a la API | Decrementa secuencialmente `X-RateLimit-Remaining` en la respuesta | Decremento verificado | **APROBADO** |
+| **S2-14-10** | `GeneralRateLimitingFilter` | Petición que excede el límite (101 en ventana) | Retorna `429 Too Many Requests`, cabecera `Retry-After` y JSON de `ErrorResponse` | HTTP 429 con mensaje oficial | **APROBADO** |
+| **S2-14-11** | `GeneralRateLimitingFilter` | Petición a `/api/health` | Excluida de rate limit; no genera bucket ni decrementa cuota | Retorna `200 OK` sin headers de límite | **APROBADO** |
+| **S2-14-12** | `GeneralRateLimitingFilter` | Preflight `OPTIONS /api/productos` | Excluida de rate limit; no consume cuota | Retorna `200 OK` sin headers de límite | **APROBADO** |
+| **S2-14-13** | `GeneralRateLimitingFilter` | Peticiones con IPs distintas en `X-Forwarded-For` | Bloqueo de IP 1 conserva cuota íntegra para IP 2 | Aislamiento por IP verificado | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Pruebas unitarias de servicio:** `com.example.backend.service.GeneralRateLimiterServiceTest` (7 pruebas aprobadas al 100%).
+- **Pruebas de integración web y seguridad:** `com.example.backend.controller.GeneralRateLimitingIntegrationTest` (6 pruebas aprobadas al 100%).
+- **Regresión total del backend:** 365 pruebas ejecutadas, 0 fallos, 0 errores (`BUILD SUCCESS`).
+
 

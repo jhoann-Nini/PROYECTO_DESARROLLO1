@@ -63,8 +63,4 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
 
     @Query("SELECT COUNT(r) FROM Resena r WHERE r.usuario.idUsuario = :idUsuario AND r.fechaCreacion >= :fechaInicio")
     long countNuevasResenasEnVentana(@Param("idUsuario") Long idUsuario, @Param("fechaInicio") LocalDateTime fechaInicio);
-
-    @EntityGraph(attributePaths = {"usuario", "producto"})
-    @Query("SELECT r FROM Resena r WHERE r.idResena = :idResena")
-    Optional<Resena> findByIdConDetalles(@Param("idResena") Long idResena);
 }

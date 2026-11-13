@@ -242,35 +242,57 @@ Permite consultar la información detallada de un producto.
 
 POST /api/productos
 
-Este endpoint será utilizado por los usuarios autorizados para registrar productos.
+Este endpoint es de uso exclusivo para usuarios autorizados con el rol **Administrador**.
 
-Ejemplo:
+### Requisitos y Criterios de Validación (TEC-117):
+1. **Solo un administrador escribe:** Requiere token Bearer de Supabase Auth correspondiente a un usuario activo con rol activo `Administrador`.
+   - Solicitudes no autenticadas retornan `401 Unauthorized`.
+   - Solicitudes de usuarios con cualquier otro rol (ej. `Usuario registrado`, `Moderador`, `Tienda`) retornan `403 Forbidden`.
+2. **Los enlaces deben empezar por http o https:** El campo `imagen`, si no es nulo o vacío, debe iniciar con `http://` o `https://`. Protocolos ajenos (ej. `ftp://`, `javascript:`) o rutas de texto plano retornan `400 Bad Request` con el mensaje:
+   `"Los enlaces deben empezar por http o https"`
+3. **El precio no puede ser negativo:** El campo `precioReferencia` debe ser un número decimal mayor o igual a `0.0`. Valores negativos retornan `400 Bad Request` con el mensaje:
+   `"El precio no puede ser negativo"`
 
+Ejemplo de solicitud válida:
+
+```json
 {
   "nombre": "Samsung Galaxy A55",
   "descripcion": "Teléfono inteligente",
   "idMarca": 2,
   "idCategoria": 1,
-  "imagen": null,
+  "imagen": "https://images.unsplash.com/photo-example.jpg",
   "precioReferencia": 1500000
 }
+```
 
-El backend deberá validar los datos antes de almacenarlos.
+El backend valida los datos mediante Bean Validation antes de persistirlos.
 
 ## 7.4 Actualizar producto
 
 PUT /api/productos/{id}
 
+Permite modificar la información de un producto existente.
+
+### Requisitos y Criterios de Validación (TEC-117):
+- **Solo un administrador escribe:** Requiere rol activo `Administrador` (`401` si no autenticado, `403` si no es administrador).
+- **Validaciones:** Aplican los mismos criterios que en la creación:
+  - Enlaces de imagen deben iniciar con `http://` o `https://` (`400 Bad Request`).
+  - `precioReferencia` no puede ser negativo (`400 Bad Request`).
+
 Ejemplo:
 
 PUT /api/productos/1
 
-Permite modificar la información de un producto.
+## 7.5 Eliminar producto
 
-7.5 Eliminar producto
 DELETE /api/productos/{id}
 
-Permite eliminar un producto cuando el usuario tenga los permisos correspondientes.
+Permite realizar la eliminación lógica (`estado=false`) de un producto existente.
+
+### Requisitos de Seguridad (TEC-117):
+- Requiere rol activo `Administrador`. Usuarios sin este rol son rechazados con `403 Forbidden` y usuarios anónimos con `401 Unauthorized`.
+- Responde `204 No Content` al completarse exitosamente.
 
 ---
 
@@ -1099,6 +1121,56 @@ Permite a los usuarios autenticados reportar una reseña que consideren inapropi
 - `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
 - `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
 
+
+---
+
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, o motivo 'otro' sin descripción requerida.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
 
 ---
 

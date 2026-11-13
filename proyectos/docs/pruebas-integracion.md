@@ -321,3 +321,44 @@ Validar de forma automatizada las operaciones de moderación sobre reseñas y re
 ### 3. Cobertura de suites
 - **Suite focalizada:** `com.example.backend.controller.ModeracionAccionesIntegrationTest` (25 pruebas ejecutadas y aprobadas al 100%).
 - **Suite completa del backend:** 351 pruebas ejecutadas, 0 fallos, 0 errores, 0 omitidas (`BUILD SUCCESS`).
+
+---
+
+## TEC-117: Pruebas de criterios de validación de productos (Admin, Enlaces y Precio)
+
+### 1. Alcance y objetivo
+Verificar de extremo a extremo los tres criterios clave establecidos en la historia de usuario para la administración de productos:
+1. **Solo un administrador escribe:** Únicamente usuarios autenticados con rol activo `Administrador` pueden invocar `POST /api/productos`, `PUT /api/productos/{id}` y `DELETE /api/productos/{id}`. Solicitudes anónimas devuelven `401 Unauthorized`; usuarios autenticados con roles no administrativos (ej. `Usuario registrado`) devuelven `403 Forbidden`. En el frontend, el panel de administración valida el rol con `esAdministrador(usuarioSesion)`.
+2. **Los enlaces deben empezar por http o https:** Si se proporciona el campo `imagen`, este debe comenzar por `http://` o `https://`. Protocolos ajenos (ej. `ftp://`, `javascript:`) o texto plano sin esquema son rechazados con código `400 Bad Request` y mensaje `"Los enlaces deben empezar por http o https"`.
+3. **El precio no puede ser negativo:** El campo `precioReferencia` debe ser un valor decimal `>= 0.0`. Valores negativos son rechazados con código `400 Bad Request` y mensaje `"El precio no puede ser negativo"`.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Operación / Endpoint | Rol / Condición | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **TEC-117-01** | `POST /api/productos` | Sin token (anónimo) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **TEC-117-02** | `POST /api/productos` | Rol `Usuario registrado` | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **TEC-117-03** | `PUT /api/productos/{id}` | Rol `Usuario registrado` | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **TEC-117-04** | `DELETE /api/productos/{id}` | Rol `Usuario registrado` | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **TEC-117-05** | `POST /api/productos` | Rol `Administrador` | `201 Created`, producto creado con ID generado | `201 Created` | **APROBADO** |
+| **TEC-117-06** | `PUT /api/productos/{id}` | Rol `Administrador` | `200 OK`, producto actualizado | `200 OK` | **APROBADO** |
+| **TEC-117-07** | `DELETE /api/productos/{id}` | Rol `Administrador` | `204 No Content`, borrado lógico exitoso | `204 No Content` | **APROBADO** |
+| **TEC-117-08** | `POST /api/productos` | Enlace con protocolo `ftp://` | `400 Bad Request` ("Los enlaces deben empezar por http o https") | `400 Bad Request` | **APROBADO** |
+| **TEC-117-09** | `POST /api/productos` | Enlace sin protocolo (`foto.png`) | `400 Bad Request` ("Los enlaces deben empezar por http o https") | `400 Bad Request` | **APROBADO** |
+| **TEC-117-10** | `POST /api/productos` | Enlace con `http://` y `https://` | `201 Created` | `201 Created` | **APROBADO** |
+| **TEC-117-11** | `POST /api/productos` | Enlace nulo o vacío (opcional) | `201 Created` | `201 Created` | **APROBADO** |
+| **TEC-117-12** | `POST /api/productos` | Precio negativo (`precioReferencia = -25.50`) | `400 Bad Request` ("El precio no puede ser negativo") | `400 Bad Request` | **APROBADO** |
+| **TEC-117-13** | `POST /api/productos` | Precio cero (`precioReferencia = 0.0`) | `201 Created` | `201 Created` | **APROBADO** |
+| **TEC-117-14** | `POST /api/productos` | Precio positivo (`precioReferencia = 129.99`) | `201 Created` | `201 Created` | **APROBADO** |
+| **TEC-117-15** | `PUT /api/productos/{id}` | Actualización con precio negativo o url inválida | `400 Bad Request` con mensaje descriptivo | `400 Bad Request` | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Backend (Suite de Integración con Spring Security y Base de Datos):**
+  - `com.example.backend.controller.ProductoCriteriosValidacionIntegrationTest` (11 pruebas aprobadas al 100%).
+- **Backend (Suite de Validación DTO y Bean Validation):**
+  - `com.example.backend.controller.ProductoControllerValidationTest` (12 pruebas aprobadas al 100%).
+- **Frontend (Componente y Formulario Modal):**
+  - `src/components/AdminPanelModal.test.tsx` (Suite "TEC-117: Criterios de validación de productos" con 4 casos de prueba de validación y control de acceso).
+- **Regresión total del backend:** 310 pruebas ejecutadas, 0 fallos, 0 errores.
+
+

@@ -224,6 +224,7 @@ export const ROLES_SISTEMA = {
   MODERADOR: "Moderador",
   ADMINISTRADOR: "Administrador",
   REPRESENTANTE: "Representante de establecimiento",
+  MODERADOR: "Moderador",
 } as const;
 
 /**
@@ -276,4 +277,19 @@ export function esRepresentante(usuario?: UsuarioSesion | null): boolean {
  */
 export function esUsuarioRegistrado(usuario?: UsuarioSesion | null): boolean {
   return tieneRol(usuario, "Usuario registrado");
+}
+
+/**
+ * Valida si la sesión tiene rol de Moderador.
+ */
+export function esModerador(usuario?: UsuarioSesion | null): boolean {
+  if (!usuario?.rol) return false;
+  return usuario.rol.trim().toLowerCase() === "moderador";
+}
+
+/**
+ * Valida si la sesión puede moderar reseñas (Administrador o Moderador).
+ */
+export function puedeModerar(usuario?: UsuarioSesion | null): boolean {
+  return esAdministrador(usuario) || esModerador(usuario);
 }

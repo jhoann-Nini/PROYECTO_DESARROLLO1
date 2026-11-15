@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { UsuarioSesion } from "@/types/producto";
-import { esAdministrador, puedeModerar } from "@/types/producto";
+import { puedeModerar } from "@/types/producto";
 import type {
   EstadoReporte,
   ResenaReportadaResponse,
@@ -41,6 +41,9 @@ const ETIQUETAS_MOTIVO: Record<string, string> = {
   otro: "Otro",
 };
 
+const MENSAJE_JUSTIFICACION_OBLIGATORIA =
+  "La justificación es obligatoria para ocultar o publicar esta reseña.";
+
 function etiquetaEstado(estado: EstadoReporte): string {
   return (
     OPCIONES_ESTADO.find((opcion) => opcion.valor === estado)?.etiqueta ??
@@ -68,7 +71,6 @@ export default function PanelModeracionModal({
   usuarioSesion,
 }: PanelModeracionModalProps) {
   const autorizado = puedeModerar(usuarioSesion);
-  const esAdmin = esAdministrador(usuarioSesion);
   const abierto = isOpen && autorizado;
 
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
@@ -76,6 +78,12 @@ export default function PanelModeracionModal({
   const [intento, setIntento] = useState(0);
   const [filtroEstado, setFiltroEstado] = useState<EstadoReporte | "">("");
   const [soloOcultas, setSoloOcultas] = useState(false);
+  const [justificaciones, setJustificaciones] = useState<
+    Record<number, string>
+  >({});
+  const [errorJustificacion, setErrorJustificacion] = useState<number | null>(
+    null,
+  );
   const [accionEnCurso, setAccionEnCurso] = useState<{
     idResena: number;
     tipo: AccionModeracion;
@@ -107,6 +115,8 @@ export default function PanelModeracionModal({
     setErrorConsulta(null);
     setErrorAccion(null);
     setMensajeExito(null);
+    setJustificaciones({});
+    setErrorJustificacion(null);
     onClose();
   }, [onClose]);
 
@@ -165,8 +175,17 @@ export default function PanelModeracionModal({
     resena: ResenaReportadaResponse,
     tipo: AccionModeracion,
   ) {
-    if (!esAdmin || accionEnCurso) return;
+    if (accionEnCurso) return;
 
+    const motivo = (justificaciones[resena.idResena] ?? "").trim();
+    if (tipo !== "rechazar-reportes" && motivo === "") {
+      setErrorJustificacion(resena.idResena);
+      setErrorAccion(null);
+      setMensajeExito(null);
+      return;
+    }
+
+    setErrorJustificacion(null);
     setAccionEnCurso({ idResena: resena.idResena, tipo });
     setErrorAccion(null);
     setMensajeExito(null);
@@ -174,10 +193,13 @@ export default function PanelModeracionModal({
     try {
       const actualizada =
         tipo === "ocultar"
-          ? await ocultarResenaReportada(resena.idResena)
+          ? await ocultarResenaReportada(resena.idResena, motivo || undefined)
           : tipo === "publicar"
-            ? await publicarResenaReportada(resena.idResena)
-            : await rechazarReportesResenaReportada(resena.idResena);
+            ? await publicarResenaReportada(resena.idResena, motivo || undefined)
+            : await rechazarReportesResenaReportada(
+                resena.idResena,
+                motivo || undefined,
+              );
 
       setResultado((previo) =>
         previo && previo.clave === claveConsulta
@@ -189,6 +211,10 @@ export default function PanelModeracionModal({
             }
           : previo,
       );
+      setJustificaciones((previas) => ({
+        ...previas,
+        [resena.idResena]: "",
+      }));
       setMensajeExito(
         tipo === "ocultar"
           ? `Reseña de ${resena.nombreAutor} ocultada.`
@@ -244,26 +270,10 @@ export default function PanelModeracionModal({
           </button>
         </div>
 
-        {!esAdmin && (
-          <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
-            Puedes consultar los reportes. Solo un administrador puede ocultar,
-            publicar o rechazar reseñas.
-          </p>
-        )}
-
-        <p
-          role="note"
-          className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800"
-        >
-          Vista preparada: la API administrativa de moderación todavía no está
-          implementada en el backend. La consulta y las acciones fallarán hasta
-          que se publique el contrato.
-        </p>
-
         <div
           role="group"
           aria-label="Filtros de moderación"
-          className="mt-3 flex flex-wrap items-end gap-4 border-b border-[var(--color-hairline)] pb-3"
+          className="mt-4 flex flex-wrap items-end gap-4 border-b border-[var(--color-hairline)] pb-3"
         >
           <label className="text-xs font-medium text-[var(--color-subtle)]">
             Estado del reporte
@@ -369,14 +379,18 @@ export default function PanelModeracionModal({
                     </div>
                     <span
                       className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        resena.ocultaPorReportes
-                          ? "bg-red-100 text-red-800"
-                          : "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
+                        resena.ocultaPorModeracion
+                          ? "bg-amber-100 text-amber-800"
+                          : resena.ocultaPorReportes
+                            ? "bg-red-100 text-red-800"
+                            : "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
                       }`}
                     >
-                      {resena.ocultaPorReportes
-                        ? "Oculta por reportes"
-                        : "Visible"}
+                      {resena.ocultaPorModeracion
+                        ? "Oculta por moderación"
+                        : resena.ocultaPorReportes
+                          ? "Oculta por reportes"
+                          : "Visible"}
                     </span>
                   </div>
 
@@ -422,9 +436,49 @@ export default function PanelModeracionModal({
                     </details>
                   )}
 
-                  {esAdmin && (
-                    <div className="mt-3 flex flex-wrap gap-2 border-t border-[var(--color-hairline)] pt-3">
-                      {resena.ocultaPorReportes ? (
+                  <div className="mt-3 border-t border-[var(--color-hairline)] pt-3">
+                    <label
+                      htmlFor={`justificacion-${resena.idResena}`}
+                      className="block text-xs font-medium text-[var(--color-subtle)]"
+                    >
+                      Justificación
+                      <textarea
+                        id={`justificacion-${resena.idResena}`}
+                        value={justificaciones[resena.idResena] ?? ""}
+                        onChange={(evento) => {
+                          const valor = evento.target.value;
+                          setJustificaciones((previas) => ({
+                            ...previas,
+                            [resena.idResena]: valor,
+                          }));
+                          if (
+                            errorJustificacion === resena.idResena &&
+                            valor.trim() !== ""
+                          ) {
+                            setErrorJustificacion(null);
+                          }
+                        }}
+                        rows={2}
+                        maxLength={2000}
+                        className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      />
+                    </label>
+                    <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                      Obligatoria para ocultar o publicar; opcional para
+                      rechazar reportes.
+                    </p>
+
+                    {errorJustificacion === resena.idResena && (
+                      <p
+                        role="alert"
+                        className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"
+                      >
+                        {MENSAJE_JUSTIFICACION_OBLIGATORIA}
+                      </p>
+                    )}
+
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {resena.ocultaPorModeracion ? (
                         <button
                           type="button"
                           onClick={() => ejecutarAccion(resena, "publicar")}
@@ -467,7 +521,7 @@ export default function PanelModeracionModal({
                           : "Rechazar reportes"}
                       </button>
                     </div>
-                  )}
+                  </div>
                 </li>
               ))}
             </ul>

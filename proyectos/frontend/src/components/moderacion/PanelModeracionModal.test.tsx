@@ -76,6 +76,7 @@ const RESENA_REPORTADA: ResenaReportadaResponse = {
   fechaCreacion: "2026-11-10T20:00:00",
   estado: true,
   ocultaPorReportes: false,
+  ocultaPorModeracion: false,
   totalReportes: 2,
   reportesPendientes: 2,
   reportes: [
@@ -100,9 +101,14 @@ const RESENA_REPORTADA: ResenaReportadaResponse = {
   ],
 };
 
-const RESENA_OCULTA: ResenaReportadaResponse = {
+const RESENA_OCULTA_REPORTES: ResenaReportadaResponse = {
   ...RESENA_REPORTADA,
   ocultaPorReportes: true,
+};
+
+const RESENA_OCULTA_MODERACION: ResenaReportadaResponse = {
+  ...RESENA_REPORTADA,
+  ocultaPorModeracion: true,
 };
 
 describe("PanelModeracionModal", () => {
@@ -111,20 +117,15 @@ describe("PanelModeracionModal", () => {
     mockObtener.mockResolvedValue([RESENA_REPORTADA]);
     mockOcultar.mockResolvedValue({
       ...RESENA_REPORTADA,
-      ocultaPorReportes: true,
+      ocultaPorModeracion: true,
       reportes: RESENA_REPORTADA.reportes.map((reporte) => ({
         ...reporte,
         estado: "ACEPTADO",
       })),
     });
     mockPublicar.mockResolvedValue({
-      ...RESENA_OCULTA,
-      ocultaPorReportes: false,
-      reportesPendientes: 0,
-      reportes: RESENA_REPORTADA.reportes.map((reporte) => ({
-        ...reporte,
-        estado: "RECHAZADO",
-      })),
+      ...RESENA_OCULTA_MODERACION,
+      ocultaPorModeracion: false,
     });
     mockRechazar.mockResolvedValue({
       ...RESENA_REPORTADA,
@@ -160,16 +161,17 @@ describe("PanelModeracionModal", () => {
     expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("advierte que la API administrativa aún no está implementada", () => {
-    mockObtener.mockReturnValue(new Promise(() => {}));
-
+  it("ya no advierte que la API de moderación no está implementada", async () => {
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );
 
-    expect(screen.getByRole("note").textContent).toContain(
-      "todavía no está implementada en el backend",
-    );
+    await screen.findByText("Smartphone Pro");
+
+    expect(
+      screen.queryByText(/todavía no está implementada en el backend/i),
+    ).toBeNull();
+    expect(screen.queryByRole("note")).toBeNull();
   });
 
   it("muestra el estado de carga al consultar la cola", () => {
@@ -236,7 +238,7 @@ describe("PanelModeracionModal", () => {
     expect(screen.getByText("Información falsa · En revisión")).toBeDefined();
   });
 
-  it("permite consultar a un moderador pero no muestra acciones de administrador", async () => {
+  it("permite a un moderador ocultar una reseña con justificación", async () => {
     render(
       <PanelModeracionModal
         isOpen
@@ -245,62 +247,99 @@ describe("PanelModeracionModal", () => {
       />,
     );
 
-    expect(await screen.findByText("Smartphone Pro")).toBeDefined();
+    await screen.findByText("Smartphone Pro");
     expect(
-      screen.getByText(/Solo un administrador puede ocultar/),
-    ).toBeDefined();
-    expect(
-      screen.queryByRole("button", {
-        name: "Ocultar reseña de Usuario Autor",
-      }),
+      screen.queryByText(/Solo un administrador puede ocultar/i),
     ).toBeNull();
-    expect(
-      screen.queryByRole("button", {
-        name: "Rechazar reportes de Usuario Autor",
-      }),
-    ).toBeNull();
-  });
 
-  it("oculta una reseña y actualiza su estado local", async () => {
-    render(
-      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
-    );
-
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "Incumple las normas de la comunidad." },
+    });
     fireEvent.click(
-      await screen.findByRole("button", {
+      screen.getByRole("button", {
         name: "Ocultar reseña de Usuario Autor",
       }),
     );
 
     await waitFor(() => {
-      expect(mockOcultar).toHaveBeenCalledWith(15);
+      expect(mockOcultar).toHaveBeenCalledWith(
+        15,
+        "Incumple las normas de la comunidad.",
+      );
     });
     expect(
       await screen.findByText("Reseña de Usuario Autor ocultada."),
     ).toBeDefined();
-    expect(screen.getByText("Oculta por reportes")).toBeDefined();
-    expect(
-      screen.getByRole("button", {
-        name: "Publicar reseña de Usuario Autor",
-      }),
-    ).toBeDefined();
+    expect(screen.getByText("Oculta por moderación")).toBeDefined();
   });
 
-  it("publica de nuevo una reseña oculta", async () => {
-    mockObtener.mockResolvedValue([RESENA_OCULTA]);
+  it("exige justificación no vacía antes de ocultar una reseña", async () => {
+    render(
+      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
+    );
+
+    await screen.findByText("Smartphone Pro");
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Ocultar reseña de Usuario Autor",
+      }),
+    );
+
+    expect(
+      screen.getByText(
+        "La justificación es obligatoria para ocultar o publicar esta reseña.",
+      ),
+    ).toBeDefined();
+    expect(mockOcultar).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "   " },
+    });
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Ocultar reseña de Usuario Autor",
+      }),
+    );
+    expect(mockOcultar).not.toHaveBeenCalled();
+  });
+
+  it("exige justificación no vacía antes de publicar una reseña", async () => {
+    mockObtener.mockResolvedValue([RESENA_OCULTA_MODERACION]);
 
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );
 
+    await screen.findByText("Smartphone Pro");
+    expect(screen.getByText("Oculta por moderación")).toBeDefined();
+
     fireEvent.click(
-      await screen.findByRole("button", {
+      screen.getByRole("button", {
+        name: "Publicar reseña de Usuario Autor",
+      }),
+    );
+
+    expect(
+      screen.getByText(
+        "La justificación es obligatoria para ocultar o publicar esta reseña.",
+      ),
+    ).toBeDefined();
+    expect(mockPublicar).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "Revisada y conforme a las normas." },
+    });
+    fireEvent.click(
+      screen.getByRole("button", {
         name: "Publicar reseña de Usuario Autor",
       }),
     );
 
     await waitFor(() => {
-      expect(mockPublicar).toHaveBeenCalledWith(15);
+      expect(mockPublicar).toHaveBeenCalledWith(
+        15,
+        "Revisada y conforme a las normas.",
+      );
     });
     expect(
       await screen.findByText("Reseña de Usuario Autor publicada de nuevo."),
@@ -308,7 +347,29 @@ describe("PanelModeracionModal", () => {
     expect(screen.getByText("Visible")).toBeDefined();
   });
 
-  it("rechaza los reportes pendientes de una reseña", async () => {
+  it("mantiene la acción de ocultar cuando la reseña solo está oculta por reportes", async () => {
+    mockObtener.mockResolvedValue([RESENA_OCULTA_REPORTES]);
+
+    render(
+      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
+    );
+
+    await screen.findByText("Smartphone Pro");
+
+    expect(screen.getByText("Oculta por reportes")).toBeDefined();
+    expect(
+      screen.getByRole("button", {
+        name: "Ocultar reseña de Usuario Autor",
+      }),
+    ).toBeDefined();
+    expect(
+      screen.queryByRole("button", {
+        name: "Publicar reseña de Usuario Autor",
+      }),
+    ).toBeNull();
+  });
+
+  it("rechaza los reportes pendientes sin exigir motivo", async () => {
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );
@@ -320,7 +381,7 @@ describe("PanelModeracionModal", () => {
     );
 
     await waitFor(() => {
-      expect(mockRechazar).toHaveBeenCalledWith(15);
+      expect(mockRechazar).toHaveBeenCalledWith(15, undefined);
     });
     expect(
       await screen.findByText("Reportes de Usuario Autor rechazados."),
@@ -335,25 +396,50 @@ describe("PanelModeracionModal", () => {
     ).toBe(true);
   });
 
+  it("envía el motivo opcional al rechazar reportes", async () => {
+    render(
+      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
+    );
+
+    await screen.findByText("Smartphone Pro");
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "Los reportes no tienen sustento." },
+    });
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Rechazar reportes de Usuario Autor",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockRechazar).toHaveBeenCalledWith(
+        15,
+        "Los reportes no tienen sustento.",
+      );
+    });
+  });
+
   it("muestra el error de una acción sin perder la lista", async () => {
     mockOcultar.mockRejectedValue(
-      new ApiError("Solo un administrador puede ocultar reseñas.", 403),
+      new ApiError("No puedes moderar tu propia reseña.", 403),
     );
 
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );
 
+    await screen.findByText("Smartphone Pro");
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "Intento de moderación." },
+    });
     fireEvent.click(
-      await screen.findByRole("button", {
+      screen.getByRole("button", {
         name: "Ocultar reseña de Usuario Autor",
       }),
     );
 
     const alerta = await screen.findByRole("alert");
-    expect(alerta.textContent).toContain(
-      "Solo un administrador puede ocultar reseñas.",
-    );
+    expect(alerta.textContent).toContain("No puedes moderar tu propia reseña.");
     expect(screen.getByText("Smartphone Pro")).toBeDefined();
   });
 

@@ -321,6 +321,22 @@ describe("CatalogoCliente", () => {
     );
   });
 
+  it("distingue un catálogo vacío de una búsqueda sin resultados", async () => {
+    configurarExito([]);
+
+    render(<CatalogoCliente />);
+
+    const vacio = await screen.findByRole("status");
+    expect(vacio.getAttribute("data-estado")).toBe("vacio");
+    expect(vacio.textContent).toContain("El catálogo está vacío");
+    expect(vacio.textContent).toContain(
+      "Aún no hay productos registrados en la plataforma."
+    );
+    expect(
+      within(vacio).queryByRole("button", { name: /Limpiar filtros/i })
+    ).toBeNull();
+  });
+
   it("pagina los resultados de 12 en 12", async () => {
     configurarExito(
       Array.from({ length: 13 }, (_, indice) => crearProducto(indice + 1))

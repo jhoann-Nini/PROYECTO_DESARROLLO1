@@ -1,10 +1,14 @@
 "use client";
 
+import type { FocusEvent } from "react";
+
 interface SearchBarProps {
   value?: string;
   onChange?: (val: string) => void;
   placeholder?: string;
   ariaLabel?: string;
+  onFocus?: () => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }
 
 export default function SearchBar({
@@ -12,6 +16,8 @@ export default function SearchBar({
   onChange,
   placeholder = "Buscar por marca, modelo o categoría (ej. iPhone, Lenovo)...",
   ariaLabel = "Buscar dispositivos tecnológicos por marca o modelo",
+  onFocus,
+  onBlur,
 }: SearchBarProps) {
   return (
     <div className="relative flex items-center w-full">
@@ -42,6 +48,8 @@ export default function SearchBar({
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
         aria-label={ariaLabel}
+        onFocus={onFocus}
+        onBlur={onBlur}
         className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-3.5 pl-11 pr-12 text-sm text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-colors placeholder:text-[var(--color-subtle)] hover:border-[var(--color-subtle)]/40 focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
       />
 

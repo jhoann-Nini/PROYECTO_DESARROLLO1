@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import Home from "./page";
 import { ApiError } from "@/services/api";
 import type {
@@ -1442,6 +1442,104 @@ describe("Página principal / (Home)", () => {
       expect(
         vi.mocked(Element.prototype.scrollIntoView),
       ).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  describe("11. Sugerencias de búsqueda con productos reales", () => {
+    const productoReal: Producto = {
+      idProducto: 501,
+      nombre: "Laptop Profesional 4K HDR",
+      descripcion: "Portátil IPS de precisión para creadores",
+      precioReferencia: 6_500_000,
+      idCategoria: 3,
+      idMarca: 1,
+      nombreCategoria: "Laptops / PCs",
+      nombreMarca: "Asus",
+      imagen: null,
+      estado: true,
+    };
+
+    function buscarCajaBusqueda() {
+      return screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca, modelo o características/i,
+      });
+    }
+
+    it("muestra sugerencias con productos del backend sin ranking, notas ni ventas inventadas", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([productoReal]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Servidor conectado")).toBeDefined();
+      });
+
+      fireEvent.focus(buscarCajaBusqueda());
+
+      const sugerencias = await screen.findByRole("region", {
+        name: /Sugerencias del catálogo/i,
+      });
+
+      expect(
+        within(sugerencias).getByText("Laptop Profesional 4K HDR"),
+      ).toBeDefined();
+      expect(within(sugerencias).queryByText(/Nota/i)).toBeNull();
+      expect(within(sugerencias).queryByText(/^#\d+/)).toBeNull();
+      expect(within(sugerencias).queryByText(/vendido/i)).toBeNull();
+      expect(screen.queryByText("Más vendidos")).toBeNull();
+      expect(screen.queryByText("Redmi Note 13 Pro+ 5G")).toBeNull();
+    });
+
+    it("no muestra sugerencias ficticias cuando el backend no devuelve productos", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Cargando catálogo de dispositivos..."),
+        ).toBeNull();
+      });
+
+      fireEvent.focus(buscarCajaBusqueda());
+
+      expect(
+        screen.queryByRole("region", {
+          name: /Sugerencias del catálogo/i,
+        }),
+      ).toBeNull();
+      expect(screen.queryByText("Más vendidos")).toBeNull();
+      expect(screen.queryByText("Redmi Note 13 Pro+ 5G")).toBeNull();
+    });
+
+    it("al elegir una sugerencia aplica el nombre real del producto a la búsqueda", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([productoReal]);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Servidor conectado")).toBeDefined();
+      });
+
+      const buscador = buscarCajaBusqueda() as HTMLInputElement;
+      fireEvent.focus(buscador);
+
+      const sugerencias = await screen.findByRole("region", {
+        name: /Sugerencias del catálogo/i,
+      });
+
+      fireEvent.click(
+        within(sugerencias).getByRole("button", {
+          name: /Buscar Laptop Profesional 4K HDR/i,
+        }),
+      );
+
+      expect(buscador.value).toBe("Laptop Profesional 4K HDR");
+      expect(
+        screen.queryByRole("region", {
+          name: /Sugerencias del catálogo/i,
+        }),
+      ).toBeNull();
     });
   });
 });

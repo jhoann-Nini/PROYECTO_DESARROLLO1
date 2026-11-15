@@ -232,7 +232,10 @@ export const ROLES_SISTEMA = {
  * autoridad final de autorización.
  */
 function tieneRol(usuario: UsuarioSesion | null | undefined, rol: string): boolean {
-  if (!usuario) return false;
+  // El estado debe estar confirmado por /api/usuarios/me. Si falta o es false,
+  // no mostramos capacidades asociadas a roles potencialmente obsoletos.
+  if (!usuario || usuario.activo !== true) return false;
+
   const objetivo = rol.trim().toLowerCase();
   const roles = [usuario.rol, ...(usuario.roles ?? [])].filter(
     (valor): valor is string => typeof valor === "string",

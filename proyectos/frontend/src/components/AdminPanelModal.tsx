@@ -28,8 +28,16 @@ import {
   eliminarMarca,
   descargarCatalogoCsv,
   dispararDescargaArchivo,
+  obtenerResenasReportadas,
+  ocultarResenaReportada,
+  publicarResenaReportada,
+  rechazarReportesResenaReportada,
   ApiError,
 } from "@/services/api";
+import type {
+  EstadoReporte,
+  ResenaReportadaResponse,
+} from "@/types/moderacion";
 
 export interface AdminPanelModalProps {
   isOpen: boolean;
@@ -38,7 +46,7 @@ export interface AdminPanelModalProps {
   onProductoCambiado?: () => void;
 }
 
-type TabAdministracion = "productos" | "categorias" | "marcas";
+type TabAdministracion = "productos" | "categorias" | "marcas" | "reportes";
 type ModoFormulario = "ninguno" | "crear" | "editar";
 
 interface ErroresFormularioProducto {
@@ -171,6 +179,22 @@ export default function AdminPanelModal({
   const [formMarcaDescripcion, setFormMarcaDescripcion] = useState("");
   const [erroresFormMarca, setErroresFormMarca] = useState<ErroresFormularioMarca>({});
 
+  // Estados para Cola de Reportes y Moderación (S2-72 / TEC-149)
+  const [resenasReportadas, setResenasReportadas] = useState<ResenaReportadaResponse[]>([]);
+  const [cargandoReportes, setCargandoReportes] = useState(false);
+  const [errorReportes, setErrorReportes] = useState<string | null>(null);
+  const [filtroEstadoReporte, setFiltroEstadoReporte] = useState<EstadoReporte | "TODOS">("TODOS");
+  const [filtroSoloOcultas, setFiltroSoloOcultas] = useState(false);
+  const [modalMotivoAccion, setModalMotivoAccion] = useState<{
+    idResena: number;
+    accion: "ocultar" | "publicar" | "rechazar-reportes";
+    titulo: string;
+    descripcion: string;
+  } | null>(null);
+  const [motivoAccionTexto, setMotivoAccionTexto] = useState("");
+  const [ejecutandoAccion, setEjecutandoAccion] = useState(false);
+  const [reportesExpandidos, setReportesExpandidos] = useState<Record<number, boolean>>({});
+
   // IDs accesibles
   const baseId = useId();
   const idNombreInput = `${baseId}-nombre`;
@@ -236,6 +260,75 @@ export default function AdminPanelModal({
     }
   };
 
+  const cargarReportes = useCallback(async () => {
+    setCargandoReportes(true);
+    setErrorReportes(null);
+    try {
+      const datos = await obtenerResenasReportadas();
+      setResenasReportadas(datos || []);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setErrorReportes(err.message);
+      } else {
+        setErrorReportes("No fue posible comunicarse con el backend para cargar la cola de moderación.");
+      }
+    } finally {
+      setCargandoReportes(false);
+    }
+  }, []);
+
+  const ejecutarAccionModeracion = async () => {
+    if (!modalMotivoAccion) return;
+    setEjecutandoAccion(true);
+    setError(null);
+    setMensajeExito(null);
+    try {
+      const { idResena, accion } = modalMotivoAccion;
+      const motivo = motivoAccionTexto.trim() || undefined;
+      let resultado: ResenaReportadaResponse;
+      if (accion === "ocultar") {
+        resultado = await ocultarResenaReportada(idResena, motivo);
+        setMensajeExito(`Reseña #${idResena} ocultada exitosamente por moderación.`);
+      } else if (accion === "publicar") {
+        resultado = await publicarResenaReportada(idResena, motivo);
+        setMensajeExito(`Reseña #${idResena} restaurada y publicada exitosamente.`);
+      } else {
+        resultado = await rechazarReportesResenaReportada(idResena, motivo);
+        setMensajeExito(`Reportes de la reseña #${idResena} rechazados exitosamente.`);
+      }
+      setResenasReportadas((prev) =>
+        prev.map((r) => (r.idResena === idResena ? resultado : r)),
+      );
+      setModalMotivoAccion(null);
+      setMotivoAccionTexto("");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Ocurrió un error inesperado al procesar la acción de moderación.");
+      }
+    } finally {
+      setEjecutandoAccion(false);
+    }
+  };
+
+  const toggleReportesExpandidos = (idResena: number) => {
+    setReportesExpandidos((prev) => ({
+      ...prev,
+      [idResena]: !prev[idResena],
+    }));
+  };
+
+  const abrirModalAccion = (
+    idResena: number,
+    accion: "ocultar" | "publicar" | "rechazar-reportes",
+    titulo: string,
+    descripcion: string,
+  ) => {
+    setMotivoAccionTexto("");
+    setModalMotivoAccion({ idResena, accion, titulo, descripcion });
+  };
+
   // Cargar datos cuando el modal se abre
   useEffect(() => {
     let activo = true;
@@ -243,13 +336,14 @@ export default function AdminPanelModal({
       Promise.resolve().then(() => {
         if (activo) {
           cargarDatos();
+          cargarReportes();
         }
       });
     }
     return () => {
       activo = false;
     };
-  }, [isOpen, usuarioSesion, cargarDatos]);
+  }, [isOpen, usuarioSesion, cargarDatos, cargarReportes]);
 
   // Categoría actual inferida para campos dinámicos
   const categoriaActualTipo = useMemo<CategoriaDispositivo>(() => {
@@ -268,6 +362,25 @@ export default function AdminPanelModal({
   const camposCategoriaActual = useMemo<CampoEspecificacion[]>(() => {
     return CAMPOS_POR_CATEGORIA[categoriaActualTipo] || CAMPOS_POR_CATEGORIA.moviles;
   }, [categoriaActualTipo]);
+
+  const resenasReportadasFiltradas = useMemo(() => {
+    return resenasReportadas.filter((resena) => {
+      if (filtroSoloOcultas && !resena.ocultaPorReportes && !resena.ocultaPorModeracion) {
+        return false;
+      }
+      if (filtroEstadoReporte !== "TODOS") {
+        const tieneReporteConEstado = (resena.reportes || []).some(
+          (rep) => rep.estado === filtroEstadoReporte,
+        );
+        if (!tieneReporteConEstado) return false;
+      }
+      return true;
+    });
+  }, [resenasReportadas, filtroEstadoReporte, filtroSoloOcultas]);
+
+  const totalReportesPendientes = useMemo(() => {
+    return resenasReportadas.reduce((acc, r) => acc + (r.reportesPendientes || 0), 0);
+  }, [resenasReportadas]);
 
   // Principio de seguridad Zero-Trust:
   // El modal no se renderiza bajo ninguna circunstancia si el usuario
@@ -1031,6 +1144,29 @@ export default function AdminPanelModal({
             }`}
           >
             🏢 Marcas
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActiva === "reportes"}
+            onClick={() => {
+              setTabActiva("reportes");
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
+              tabActiva === "reportes"
+                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
+                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+            }`}
+          >
+            <span>🚩</span> Cola de Reportes
+            {totalReportesPendientes > 0 && (
+              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-red-600 text-[10px] text-white font-bold">
+                {totalReportesPendientes}
+              </span>
+            )}
           </button>
         </div>
 
@@ -1934,6 +2070,348 @@ export default function AdminPanelModal({
               )}
             </div>
           )}
+
+          {/* ========================================================= */}
+          {/* PESTAÑA 4: COLA DE REPORTES Y MODERACIÓN (S2-72 / TEC-149) */}
+          {/* ========================================================= */}
+          {tabActiva === "reportes" && (
+            <div className="space-y-4">
+              {/* Encabezado y acciones principales */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--color-hairline)]">
+                <div>
+                  <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider flex items-center gap-2">
+                    <span>🚩</span> Cola de Moderación y Reportes
+                  </h3>
+                  <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
+                    Revisión centralizada de reportes de usuarios y moderación de contenido (S2-72 / TEC-149).
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={cargarReportes}
+                  disabled={cargandoReportes}
+                  className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  aria-label="Actualizar cola de reportes"
+                >
+                  <span className={cargandoReportes ? "animate-spin" : ""}>🔄</span>
+                  {cargandoReportes ? "Actualizando..." : "Actualizar"}
+                </button>
+              </div>
+
+              {/* Métricas resumidas */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
+                    Total Reseñas Reportadas
+                  </span>
+                  <p className="text-xl font-extrabold text-[var(--color-ink)] mt-1">
+                    {resenasReportadas.length}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+                  <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
+                    Reportes Pendientes
+                  </span>
+                  <p className="text-xl font-extrabold text-amber-700 mt-1">
+                    {totalReportesPendientes}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-red-200 bg-red-50/60 p-3">
+                  <span className="text-[10px] uppercase font-bold text-red-800 tracking-wider">
+                    Reseñas Ocultas
+                  </span>
+                  <p className="text-xl font-extrabold text-red-700 mt-1">
+                    {resenasReportadas.filter((r) => r.ocultaPorReportes || r.ocultaPorModeracion).length}
+                  </p>
+                </div>
+              </div>
+
+              {/* Tarjeta de contexto TEC-127 / S2-72 */}
+              <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 flex items-start gap-2 text-[11px] text-blue-900 leading-relaxed">
+                <span className="text-base select-none shrink-0">ℹ️</span>
+                <div>
+                  <strong className="font-bold">Integración de Moderación (TEC-127 / S2-72):</strong>
+                  {" "}Esta cola consolida las reseñas reportadas por la comunidad y los reportes de anomalías de precios o enlaces. Como Administrador, puedes ocultar contenido inapropiado, restaurar reseñas publicadas o desestimar reportes pendientes con registro de auditoría.
+                </div>
+              </div>
+
+              {/* Filtros de la cola */}
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-xs">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="filtro-estado-reporte" className="font-semibold text-[var(--color-subtle)] text-[11px]">
+                      Estado de Reporte:
+                    </label>
+                    <select
+                      id="filtro-estado-reporte"
+                      value={filtroEstadoReporte}
+                      onChange={(e) => setFiltroEstadoReporte(e.target.value as EstadoReporte | "TODOS")}
+                      className="px-2.5 py-1 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)]"
+                    >
+                      <option value="TODOS">Todos los estados</option>
+                      <option value="PENDIENTE">PENDIENTE</option>
+                      <option value="EN_REVISION">EN REVISIÓN</option>
+                      <option value="ACEPTADO">ACEPTADO</option>
+                      <option value="RECHAZADO">RECHAZADO</option>
+                    </select>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={filtroSoloOcultas}
+                      onChange={(e) => setFiltroSoloOcultas(e.target.checked)}
+                      className="rounded border-[var(--color-hairline)] text-[var(--color-brand-solid)] focus:ring-0"
+                    />
+                    <span className="text-[11px] text-[var(--color-ink)]">
+                      Solo reseñas actualmente ocultas
+                    </span>
+                  </label>
+                </div>
+
+                <span className="text-[11px] text-[var(--color-subtle)]">
+                  Mostrando <strong className="text-[var(--color-ink)]">{resenasReportadasFiltradas.length}</strong> de {resenasReportadas.length} reseñas
+                </span>
+              </div>
+
+              {/* Estado de Carga */}
+              {cargandoReportes && (
+                <div className="py-12 text-center text-xs text-[var(--color-subtle)] flex flex-col items-center justify-center gap-2">
+                  <div className="h-6 w-6 border-2 border-[var(--color-brand-solid)] border-t-transparent rounded-full animate-spin"></div>
+                  <span>Cargando cola de moderación...</span>
+                </div>
+              )}
+
+              {/* Estado de Error */}
+              {!cargandoReportes && errorReportes && (
+                <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-xs flex items-center justify-between">
+                  <span>{errorReportes}</span>
+                  <button
+                    type="button"
+                    onClick={cargarReportes}
+                    className="font-bold underline cursor-pointer ml-3"
+                  >
+                    Reintentar
+                  </button>
+                </div>
+              )}
+
+              {/* Lista vacía */}
+              {!cargandoReportes && !errorReportes && resenasReportadasFiltradas.length === 0 && (
+                <div className="py-12 text-center rounded-xl border border-dashed border-[var(--color-hairline)] p-8">
+                  <span className="text-3xl">🎉</span>
+                  <h4 className="font-bold text-sm text-[var(--color-ink)] mt-2">
+                    {resenasReportadas.length === 0
+                      ? "No hay reportes pendientes en la cola"
+                      : "Ninguna reseña coincide con los filtros aplicados"}
+                  </h4>
+                  <p className="text-xs text-[var(--color-subtle)] mt-1 max-w-sm mx-auto">
+                    {resenasReportadas.length === 0
+                      ? "Todas las reseñas reportadas han sido revisadas o no se han emitido reportes en este momento."
+                      : "Intenta modificar el filtro de estado o la casilla de reseñas ocultas para ver más resultados."}
+                  </p>
+                </div>
+              )}
+
+              {/* Tarjetas de Reseñas Reportadas */}
+              {!cargandoReportes && !errorReportes && resenasReportadasFiltradas.length > 0 && (
+                <div className="space-y-3">
+                  {resenasReportadasFiltradas.map((resena) => {
+                    const estaOculta = resena.ocultaPorReportes || resena.ocultaPorModeracion;
+                    const expandido = Boolean(reportesExpandidos[resena.idResena]);
+                    const tienePendientes = (resena.reportes || []).some(
+                      (r) => r.estado === "PENDIENTE"
+                    );
+
+                    return (
+                      <div
+                        key={resena.idResena}
+                        className={`rounded-xl border transition-all p-4 space-y-3 ${
+                          estaOculta
+                            ? "border-red-200 bg-red-50/20"
+                            : "border-[var(--color-hairline)] bg-[var(--color-canvas)]"
+                        }`}
+                      >
+                        {/* Cabecera de la reseña reportada */}
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-xs text-[var(--color-ink)]">
+                                {resena.nombreProducto || `Producto #${resena.idProducto}`}
+                              </span>
+                              <span className="text-[10px] text-[var(--color-subtle)]">
+                                • ID Reseña #{resena.idResena}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] text-[var(--color-subtle)]">
+                              <span>Autor: <strong className="text-[var(--color-ink)]">{resena.nombreAutor || "Usuario"}</strong></span>
+                              {resena.puntuacion != null && (
+                                <span className="text-amber-500 font-semibold">
+                                  ★ {resena.puntuacion}/5
+                                </span>
+                              )}
+                              <span>• {new Date(resena.fechaCreacion).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+
+                          {/* Insignias de visibilidad y estado */}
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {resena.ocultaPorModeracion && (
+                              <span className="px-2 py-0.5 rounded-full border border-red-300 bg-red-100 text-red-800 text-[10px] font-bold">
+                                🛑 Oculta por moderador
+                              </span>
+                            )}
+                            {resena.ocultaPorReportes && !resena.ocultaPorModeracion && (
+                              <span className="px-2 py-0.5 rounded-full border border-amber-300 bg-amber-100 text-amber-800 text-[10px] font-bold">
+                                ⚠️ Oculta por reportes
+                              </span>
+                            )}
+                            {!estaOculta && (
+                              <span className="px-2 py-0.5 rounded-full border border-emerald-300 bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                                ✅ Visible al público
+                              </span>
+                            )}
+                            <span className="px-2 py-0.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] text-[10px] font-semibold">
+                              {resena.totalReportes} {resena.totalReportes === 1 ? "reporte" : "reportes"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Comentario de la reseña */}
+                        <div className="p-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] text-xs text-[var(--color-ink)] leading-relaxed italic">
+                          &ldquo;{resena.comentario}&rdquo;
+                        </div>
+
+                        {/* Detalle desplegable de los reportes recibidos */}
+                        <div className="space-y-2">
+                          <button
+                            type="button"
+                            onClick={() => toggleReportesExpandidos(resena.idResena)}
+                            className="text-[11px] font-semibold text-[var(--color-brand-blue)] hover:underline flex items-center gap-1 cursor-pointer"
+                            aria-expanded={expandido}
+                          >
+                            <span>{expandido ? "▼ Ocultar" : "▶ Ver"} motivos de reportes ({resena.reportes?.length || 0})</span>
+                          </button>
+
+                          {expandido && (
+                            <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] overflow-hidden">
+                              <table className="w-full text-[11px] border-collapse">
+                                <thead>
+                                  <tr className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px] font-bold text-[var(--color-subtle)] uppercase">
+                                    <th className="py-2 px-3 text-left">Motivo</th>
+                                    <th className="py-2 px-3 text-left">Detalle / Descripción</th>
+                                    <th className="py-2 px-3 text-left">Reportante</th>
+                                    <th className="py-2 px-3 text-center">Fecha</th>
+                                    <th className="py-2 px-3 text-center">Estado</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {(resena.reportes || []).map((rep) => (
+                                    <tr key={rep.idReporte} className="border-b border-[var(--color-hairline)] last:border-0 hover:bg-[var(--color-canvas)]/50">
+                                      <td className="py-2 px-3 font-semibold text-[var(--color-ink)]">
+                                        {rep.motivo}
+                                      </td>
+                                      <td className="py-2 px-3 text-[var(--color-subtle)]">
+                                        {rep.descripcion || "—"}
+                                      </td>
+                                      <td className="py-2 px-3 text-[var(--color-ink)]">
+                                        {rep.nombreReportante || `Usuario #${rep.idUsuarioReportante}`}
+                                      </td>
+                                      <td className="py-2 px-3 text-center text-[var(--color-subtle)]">
+                                        {new Date(rep.fechaCreacion).toLocaleDateString()}
+                                      </td>
+                                      <td className="py-2 px-3 text-center">
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                          rep.estado === "PENDIENTE"
+                                            ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                            : rep.estado === "ACEPTADO"
+                                            ? "bg-red-100 text-red-800 border border-red-300"
+                                            : rep.estado === "RECHAZADO"
+                                            ? "bg-slate-100 text-slate-700 border border-slate-300"
+                                            : "bg-blue-100 text-blue-800 border border-blue-300"
+                                        }`}>
+                                          {rep.estado}
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Barra de acciones de moderación (S2-72) */}
+                        <div className="pt-2 border-t border-[var(--color-hairline)] flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-[10px] text-[var(--color-subtle)]">
+                            Acciones de Administrador con auditoría
+                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Ocultar reseña */}
+                            {!resena.ocultaPorModeracion && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  abrirModalAccion(
+                                    resena.idResena,
+                                    "ocultar",
+                                    "Ocultar Reseña por Moderación",
+                                    `La reseña #${resena.idResena} será ocultada inmediatamente de la vista pública de los usuarios.`,
+                                  )
+                                }
+                                disabled={ejecutandoAccion}
+                                className="px-2.5 py-1 rounded text-[11px] font-bold text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                              >
+                                <span>🛑</span> Ocultar reseña
+                              </button>
+                            )}
+
+                            {/* Publicar / Restaurar reseña */}
+                            {estaOculta && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  abrirModalAccion(
+                                    resena.idResena,
+                                    "publicar",
+                                    "Publicar / Restaurar Reseña",
+                                    `La reseña #${resena.idResena} volverá a ser visible para todos los usuarios en la plataforma.`,
+                                  )
+                                }
+                                disabled={ejecutandoAccion}
+                                className="px-2.5 py-1 rounded text-[11px] font-bold text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                              >
+                                <span>✅</span> Publicar / Restaurar
+                              </button>
+                            )}
+
+                            {/* Rechazar reportes pendientes */}
+                            {tienePendientes && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  abrirModalAccion(
+                                    resena.idResena,
+                                    "rechazar-reportes",
+                                    "Desestimar y Rechazar Reportes",
+                                    `Los reportes pendientes para la reseña #${resena.idResena} serán marcados como RECHAZADOS. Si la reseña fue ocultada automáticamente por reportes, será restaurada.`,
+                                  )
+                                }
+                                disabled={ejecutandoAccion}
+                                className="px-2.5 py-1 rounded text-[11px] font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                              >
+                                <span>⚠️</span> Rechazar reportes
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE PRODUCTO */}
@@ -2085,6 +2563,88 @@ export default function AdminPanelModal({
                     </>
                   ) : (
                     "Eliminar Marca"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ACCIÓN DE MODERACIÓN (S2-72 / TEC-149) */}
+        {modalMotivoAccion && (
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="titulo-confirmar-moderacion"
+            aria-describedby="desc-confirmar-moderacion"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+          >
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">
+                  {modalMotivoAccion.accion === "ocultar"
+                    ? "🛑"
+                    : modalMotivoAccion.accion === "publicar"
+                    ? "✅"
+                    : "⚠️"}
+                </span>
+                <h4 id="titulo-confirmar-moderacion" className="font-bold text-sm uppercase text-[var(--color-ink)]">
+                  {modalMotivoAccion.titulo}
+                </h4>
+              </div>
+
+              <p id="desc-confirmar-moderacion" className="text-xs text-[var(--color-ink)] leading-relaxed">
+                {modalMotivoAccion.descripcion}
+              </p>
+
+              <div>
+                <label
+                  htmlFor="motivo-accion-moderacion"
+                  className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1"
+                >
+                  Motivo o justificación de auditoría (opcional):
+                </label>
+                <textarea
+                  id="motivo-accion-moderacion"
+                  value={motivoAccionTexto}
+                  onChange={(e) => setMotivoAccionTexto(e.target.value)}
+                  placeholder="Explica la razón de esta acción de moderación..."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setModalMotivoAccion(null);
+                    setMotivoAccionTexto("");
+                  }}
+                  disabled={ejecutandoAccion}
+                  className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={ejecutarAccionModeracion}
+                  disabled={ejecutandoAccion}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold text-white uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm ${
+                    modalMotivoAccion.accion === "ocultar"
+                      ? "bg-red-600 hover:bg-red-500"
+                      : modalMotivoAccion.accion === "publicar"
+                      ? "bg-emerald-600 hover:bg-emerald-500"
+                      : "bg-slate-700 hover:bg-slate-600"
+                  }`}
+                >
+                  {ejecutandoAccion ? (
+                    <>
+                      <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                      Procesando...
+                    </>
+                  ) : (
+                    "Confirmar Acción"
                   )}
                 </button>
               </div>

@@ -12,6 +12,10 @@ import type {
   ProductoMasComentado,
   ProductoOferta,
 } from "@/types/producto";
+import type {
+  FiltrosResenasReportadas,
+  ResenaReportadaResponse,
+} from "@/types/moderacion";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -374,6 +378,84 @@ export async function crearReporteResena(
     method: "POST",
     body: JSON.stringify(request),
   });
+}
+
+/**
+ * Consulta la lista de reseñas reportadas con sus métricas y reportes asociados.
+ * Requiere autenticación con rol Moderador o Administrador activo.
+ */
+export async function obtenerResenasReportadas(
+  filtros: FiltrosResenasReportadas = {},
+): Promise<ResenaReportadaResponse[]> {
+  const parametros = new URLSearchParams();
+  if (filtros.estado) parametros.set("estado", filtros.estado);
+  if (filtros.oculta !== undefined) {
+    parametros.set("oculta", String(filtros.oculta));
+  }
+  if (filtros.idProducto !== undefined) {
+    parametros.set("idProducto", String(filtros.idProducto));
+  }
+
+  const query = parametros.toString();
+  const datos = await apiFetchAutenticado<unknown>(
+    `/api/moderacion/resenas/reportadas${query ? `?${query}` : ""}`,
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de reseñas reportadas).",
+    );
+  }
+
+  return datos as ResenaReportadaResponse[];
+}
+
+async function accionModeracionResena(
+  idResena: number,
+  accion: "ocultar" | "publicar" | "rechazar-reportes",
+  motivo?: string,
+): Promise<ResenaReportadaResponse> {
+  const body = motivo ? JSON.stringify({ motivo }) : undefined;
+  return apiFetchAutenticado<ResenaReportadaResponse>(
+    `/api/moderacion/resenas/${idResena}/${accion}`,
+    {
+      method: "PUT",
+      ...(body ? { body } : {}),
+    },
+  );
+}
+
+/**
+ * Oculta manualmente una reseña por incumplimiento de normas.
+ * Requiere rol Administrador activo.
+ */
+export async function ocultarResenaReportada(
+  idResena: number,
+  motivo?: string,
+): Promise<ResenaReportadaResponse> {
+  return accionModeracionResena(idResena, "ocultar", motivo);
+}
+
+/**
+ * Restaura la visibilidad de una reseña oculta por moderación.
+ * Requiere rol Administrador activo.
+ */
+export async function publicarResenaReportada(
+  idResena: number,
+  motivo?: string,
+): Promise<ResenaReportadaResponse> {
+  return accionModeracionResena(idResena, "publicar", motivo);
+}
+
+/**
+ * Rechaza en lote los reportes pendientes/en revisión de una reseña.
+ * Requiere rol Administrador activo.
+ */
+export async function rechazarReportesResenaReportada(
+  idResena: number,
+  motivo?: string,
+): Promise<ResenaReportadaResponse> {
+  return accionModeracionResena(idResena, "rechazar-reportes", motivo);
 }
 
 /**

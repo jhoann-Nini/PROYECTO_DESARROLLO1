@@ -74,6 +74,17 @@ describe("api.ts - Cliente API del frontend", () => {
   });
 
   describe("Respuesta HTTP exitosa", () => {
+    it("acepta respuestas 201 sin cuerpo", async () => {
+      const { asignarRolUsuario } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce(new Response(null, { status: 201 }));
+
+      await expect(asignarRolUsuario(12, 3)).resolves.toBeUndefined();
+    });
+
     it("debe retornar la lista de productos cuando la respuesta HTTP es 200 y es un arreglo", async () => {
       const { obtenerProductos } = await loadApi(DEFAULT_API_URL);
       const listaEsperada = [
@@ -1627,10 +1638,12 @@ describe("api.ts - Cliente API del frontend", () => {
         status: 204,
         json: async () => undefined,
       } as unknown as Response);
-      await revocarRolUsuario(12, 3);
+      await revocarRolUsuario(12, 3, "Cambio de responsabilidades");
       const init = fetchMock.mock.calls[1][1] as RequestInit;
       expect(init.method).toBe("DELETE");
-      expect(init.body).toBeUndefined();
+      expect(init.body).toBe(
+        JSON.stringify({ motivo: "Cambio de responsabilidades" }),
+      );
     });
 
     it("asigna y revoca representaciones con motivo opcional", async () => {
@@ -1661,10 +1674,13 @@ describe("api.ts - Cliente API del frontend", () => {
         status: 204,
         json: async () => undefined,
       } as unknown as Response);
-      await revocarRepresentante(12, 7);
+      await revocarRepresentante(12, 7, "Fin de la asignación");
       expect(fetchMock).toHaveBeenCalledWith(
         "http://localhost:8080/api/admin/usuarios/12/establecimientos/7/representacion",
-        expect.objectContaining({ method: "DELETE" }),
+        expect.objectContaining({
+          method: "DELETE",
+          body: JSON.stringify({ motivo: "Fin de la asignación" }),
+        }),
       );
     });
   });

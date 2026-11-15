@@ -136,6 +136,13 @@ export async function apiFetch<T>(
   }
 
   try {
+    if (typeof respuesta.text === "function") {
+      const texto = await respuesta.text();
+      if (texto.trim() === "") {
+        return undefined as unknown as T;
+      }
+      return JSON.parse(texto) as T;
+    }
     return (await respuesta.json()) as T;
   } catch {
     throw new ApiError(
@@ -1042,10 +1049,12 @@ export async function asignarRolUsuario(
 export async function revocarRolUsuario(
   usuarioId: number,
   rolId: number,
+  motivo?: string,
 ): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
   return apiFetchAutenticado<void>(
     `/api/admin/usuarios/${usuarioId}/roles/${rolId}`,
-    { method: "DELETE" },
+    { method: "DELETE", ...(body ? { body } : {}) },
   );
 }
 
@@ -1074,9 +1083,11 @@ export async function asignarRepresentante(
 export async function revocarRepresentante(
   usuarioId: number,
   establecimientoId: number,
+  motivo?: string,
 ): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
   return apiFetchAutenticado<void>(
     `/api/admin/usuarios/${usuarioId}/establecimientos/${establecimientoId}/representacion`,
-    { method: "DELETE" },
+    { method: "DELETE", ...(body ? { body } : {}) },
   );
 }

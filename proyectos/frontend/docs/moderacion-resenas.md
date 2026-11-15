@@ -16,10 +16,10 @@ Administrador con cuenta activa:
 |---|---|---|
 | `GET` | `/api/moderacion/resenas/reportadas` | Reseñas con reportes para revisión |
 | `GET` | `/api/moderacion/resenas/pendientes` | Reseñas pendientes de moderación |
-| `GET` | `/api/moderacion/reportes` | Reportes asociados a una reseña |
+| `GET` | `/api/moderacion/reportes?estado={estado}` | Cola plana de reportes para un estado (por defecto `PENDIENTE`) |
 | `PUT` | `/api/moderacion/resenas/{idResena}/ocultar` | Oculta manualmente la reseña |
 | `PUT` | `/api/moderacion/resenas/{idResena}/publicar` | Revierte la ocultación manual |
-| `PUT` | `/api/moderacion/resenas/{idResena}/rechazar-reportes` | Rechaza los reportes pendientes |
+| `PUT` | `/api/moderacion/resenas/{idResena}/rechazar-reportes` | Rechaza en lote los reportes que ya están en revisión |
 
 El cuerpo de las tres acciones es `AccionModeracionRequest`:
 
@@ -30,6 +30,18 @@ El cuerpo de las tres acciones es `AccionModeracionRequest`:
 `motivo` es opcional para el backend y admite hasta 2000 caracteres. La UI lo
 exige para **ocultar** y **publicar**, y lo mantiene opcional al **rechazar
 reportes**.
+
+El detalle de los reportes de una reseña viene incluido en cada
+`ResenaReportadaResponse` de `/api/moderacion/resenas/reportadas`; no se obtiene
+con `/api/moderacion/reportes`, que es una cola plana filtrada por estado.
+
+### Rechazo por lote
+
+El servicio rechaza la acción con `409` si hay algún reporte `PENDIENTE` que
+todavía debe iniciar revisión. Solo procesa reportes en `EN_REVISION`, y el
+moderador debe ser su responsable asignado (o Administrador activo). La UI
+habilita el rechazo si hay al menos un reporte `EN_REVISION` y ninguno
+`PENDIENTE`; si el moderador no está asignado, muestra el `403` del backend.
 
 ### Ocultación manual y reportes
 
@@ -60,18 +72,19 @@ reportes. Por eso el panel decide entre “Ocultar” y “Publicar” usando
 ### Reglas de interfaz
 
 - Solo Moderador y Administrador ven y ejecutan las acciones.
-- Ocultar y publicar exigen una justificación no vacía; el botón permanece
-  deshabilitado hasta que el texto sea válido.
+- Ocultar y publicar exigen una justificación no vacía; la validación se
+  presenta al intentar la acción si el texto está vacío.
 - Rechazar reportes permite enviar un motivo opcional.
 - El estado “Oculta por moderación” se muestra a partir de
   `ocultaPorModeracion`.
-- Tras una acción exitosa se recarga la lista real; los errores del backend se
-  muestran sin inventar un resultado.
+- Tras una acción exitosa se reemplaza localmente la reseña con la respuesta del
+  backend. Los errores del backend se muestran sin inventar un resultado.
 
 ### Filtros
 
-La UI conserva los filtros disponibles (`estado`, `oculta=true` e
-`idProducto`) y no ofrece paginación porque el contrato actual no la define.
+La UI expone los filtros `estado` y `oculta=true`. El cliente API y el backend
+también admiten `idProducto`, pero el panel no presenta ese filtro. No hay
+paginación en el contrato actual.
 
 ## 3. Pruebas
 
@@ -99,6 +112,10 @@ integración del backend.
    pruebas de backend y del cliente API.
 5. `publicar` no limpia los reportes: si la reseña sigue oculta por reportes,
    la UI debe seguir reflejando esa condición.
+6. Después de una acción, el elemento se actualiza localmente y no se vuelve a
+   filtrar contra los filtros activos. Si la mutación hace que deje de
+   coincidir, puede permanecer visible en esa sesión hasta cambiar el filtro o
+   volver a abrir el panel.
 
 TEC-148 (reporte de precio/enlace) no depende de este panel y sigue bloqueada
 por la ausencia del contrato de TEC-147; ver `docs/reportes-precio-enlace.md`.

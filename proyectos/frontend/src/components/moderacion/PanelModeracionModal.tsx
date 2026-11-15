@@ -26,6 +26,13 @@ interface PanelModeracionModalProps {
 
 type AccionModeracion = "ocultar" | "publicar" | "rechazar-reportes";
 
+function puedeRechazarReportes(resena: ResenaReportadaResponse): boolean {
+  return (
+    resena.reportesPendientes === 0 &&
+    resena.reportes.some((reporte) => reporte.estado === "EN_REVISION")
+  );
+}
+
 const OPCIONES_ESTADO: { valor: EstadoReporte | ""; etiqueta: string }[] = [
   { valor: "", etiqueta: "Todos los estados" },
   { valor: "PENDIENTE", etiqueta: "Pendiente" },
@@ -511,7 +518,7 @@ export default function PanelModeracionModal({
                         }
                         disabled={
                           accionEnCurso !== null ||
-                          resena.reportesPendientes === 0
+                          !puedeRechazarReportes(resena)
                         }
                         aria-label={`Rechazar reportes de ${resena.nombreAutor}`}
                         className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}

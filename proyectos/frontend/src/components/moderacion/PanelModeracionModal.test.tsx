@@ -369,7 +369,16 @@ describe("PanelModeracionModal", () => {
     ).toBeNull();
   });
 
-  it("rechaza los reportes pendientes sin exigir motivo", async () => {
+  it("rechaza reportes en revisión sin exigir motivo", async () => {
+    const reportesEnRevision: ResenaReportadaResponse = {
+      ...RESENA_REPORTADA,
+      reportesPendientes: 0,
+      reportes: RESENA_REPORTADA.reportes.map((reporte) => ({
+        ...reporte,
+        estado: "EN_REVISION",
+      })),
+    };
+    mockObtener.mockResolvedValue([reportesEnRevision]);
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );
@@ -392,11 +401,43 @@ describe("PanelModeracionModal", () => {
         screen.getByRole("button", {
           name: "Rechazar reportes de Usuario Autor",
         }) as HTMLButtonElement
-      ).disabled,
+    ).disabled,
     ).toBe(true);
   });
 
+  it("deshabilita rechazar cuando hay reportes pendientes de iniciar revisión", async () => {
+    const soloPendientes: ResenaReportadaResponse = {
+      ...RESENA_REPORTADA,
+      reportesPendientes: 2,
+      reportes: RESENA_REPORTADA.reportes.map((reporte) => ({
+        ...reporte,
+        estado: "PENDIENTE",
+      })),
+    };
+    mockObtener.mockResolvedValue([soloPendientes]);
+
+    render(
+      <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
+    );
+
+    const button = await screen.findByRole("button", {
+      name: "Rechazar reportes de Usuario Autor",
+    });
+    expect((button as HTMLButtonElement).disabled).toBe(true);
+    expect(mockRechazar).not.toHaveBeenCalled();
+  });
+
   it("envía el motivo opcional al rechazar reportes", async () => {
+    mockObtener.mockResolvedValue([
+      {
+        ...RESENA_REPORTADA,
+        reportesPendientes: 0,
+        reportes: RESENA_REPORTADA.reportes.map((reporte) => ({
+          ...reporte,
+          estado: "EN_REVISION",
+        })),
+      },
+    ]);
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,
     );

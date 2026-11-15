@@ -203,7 +203,7 @@ describe("AdminUsuariosRoles", () => {
     );
 
     await waitFor(() => {
-      expect(mockRevocarRol).toHaveBeenCalledWith(12, 4);
+      expect(mockRevocarRol).toHaveBeenCalledWith(12, 4, undefined);
     });
     await waitFor(() => {
       expect(mockUsuarios).toHaveBeenCalledTimes(2);
@@ -211,6 +211,21 @@ describe("AdminUsuariosRoles", () => {
     expect(
       await screen.findByText("Rol revocado correctamente."),
     ).toBeDefined();
+  });
+
+  it("envía el motivo del formulario al revocar un rol", async () => {
+    await renderizarYSeleccionar();
+    fireEvent.change(screen.getByLabelText("Motivo (opcional)"), {
+      target: { value: "Retiro autorizado" },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Revocar rol Usuario registrado" }),
+    );
+
+    await waitFor(() => {
+      expect(mockRevocarRol).toHaveBeenCalledWith(12, 4, "Retiro autorizado");
+    });
   });
 
   it("asigna representación sobre un establecimiento activo", async () => {
@@ -242,7 +257,29 @@ describe("AdminUsuariosRoles", () => {
     );
 
     await waitFor(() => {
-      expect(mockRevocarRepresentante).toHaveBeenCalledWith(12, 7);
+      expect(mockRevocarRepresentante).toHaveBeenCalledWith(12, 7, undefined);
+    });
+  });
+
+  it("envía el motivo del formulario al revocar una representación", async () => {
+    await renderizarYSeleccionar();
+    fireEvent.change(screen.getByLabelText("Establecimiento"), {
+      target: { value: "7" },
+    });
+    fireEvent.change(screen.getByLabelText("Motivo (opcional)"), {
+      target: { value: "Finalizó la representación" },
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Revocar representación" }),
+    );
+
+    await waitFor(() => {
+      expect(mockRevocarRepresentante).toHaveBeenCalledWith(
+        12,
+        7,
+        "Finalizó la representación",
+      );
     });
   });
 

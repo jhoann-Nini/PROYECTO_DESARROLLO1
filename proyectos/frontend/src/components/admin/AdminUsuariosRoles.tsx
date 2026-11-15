@@ -207,7 +207,12 @@ export default function AdminUsuariosRoles() {
       return;
     }
     void ejecutarAccion(
-      () => revocarRolUsuario(seleccionado.idUsuario, rol.idRol),
+      () =>
+        revocarRolUsuario(
+          seleccionado.idUsuario,
+          rol.idRol,
+          motivoOpcional(motivo),
+        ),
       "Rol revocado correctamente.",
     );
   }
@@ -237,7 +242,11 @@ export default function AdminUsuariosRoles() {
     const establecimientoId = Number(establecimientoSeleccionado);
     void ejecutarAccion(
       () =>
-        revocarRepresentante(seleccionado.idUsuario, establecimientoId),
+        revocarRepresentante(
+          seleccionado.idUsuario,
+          establecimientoId,
+          motivoOpcional(motivo),
+        ),
       "Representación revocada correctamente.",
     );
   }

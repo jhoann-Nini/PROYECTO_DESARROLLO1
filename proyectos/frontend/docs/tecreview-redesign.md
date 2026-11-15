@@ -848,8 +848,10 @@ aplicación rota.
 
 ### Límites y decisiones de la auditoría
 
-1. No se añadieron columnas, migraciones ni endpoints; el frontend consume los
-   contratos existentes.
+1. No se añadieron columnas ni migraciones. Para hacer posible esta auditoría
+   se añadieron contratos backend para lecturas públicas de establecimientos
+   activos, CRUD administrativo de establecimientos, consultas administrativas
+   de usuarios/roles y asignaciones/revocaciones de roles y representaciones.
 2. No existe un listado administrativo de establecimientos inactivos ni
    endpoints de asignaciones activas o auditoría; la UI lo advierte en lugar de
    inventarlos.
@@ -994,9 +996,15 @@ aplicación rota.
   `npm test`: 650 pruebas en 59 archivos; `npx tsc --noEmit`, `npm run lint` y
   `npm run build` exitosos. Se completaron las siete tareas del plan
   `docs/superpowers/plans/2026-11-13-auditoria-por-roles-frontend.md`. El
-  backend queda solo con los cambios de contrato acordados (establecimientos
-  públicos/administrativos, consultas de usuarios/roles y asignaciones); no se
-  añadieron columnas ni migraciones, y `.env` no se modificó.
+  backend incluye contratos de establecimientos públicos/administrativos,
+  consultas de usuarios/roles y asignaciones; no se añadieron columnas ni
+  migraciones, y `.env` no se modificó.
+- **2026-11-15:** Correcciones posteriores a la revisión final de la auditoría.
+  `npm test`: 654 pruebas en 59 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. Se corrigió el manejo de `201 Created` vacío, el
+  estado elegible para rechazar reportes y el envío del motivo en revocaciones.
+  La documentación de moderación se alineó con el contrato y la transición
+  reales.
 
 ---
 

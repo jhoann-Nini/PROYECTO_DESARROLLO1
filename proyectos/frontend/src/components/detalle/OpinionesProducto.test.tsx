@@ -35,6 +35,7 @@ const usuarioAutor: UsuarioSesion = {
   usuario: "anatorres",
   email: "ana@example.com",
   rol: "Usuario registrado",
+  activo: true,
 };
 
 const usuarioOtro: UsuarioSesion = {
@@ -44,6 +45,7 @@ const usuarioOtro: UsuarioSesion = {
   usuario: "carlosp",
   email: "carlos@example.com",
   rol: "Usuario registrado",
+  activo: true,
 };
 
 const usuarioAdmin: UsuarioSesion = {
@@ -53,6 +55,7 @@ const usuarioAdmin: UsuarioSesion = {
   usuario: "admin",
   email: "admin@example.com",
   rol: "Administrador",
+  activo: true,
 };
 
 const resenaAna: ResenaResponse = {
@@ -153,6 +156,17 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
     expect(botonEliminar).toBeDefined();
     // Pero el administrador no puede editar la reseña ajena
     expect(screen.queryByRole("button", { name: "Editar reseña" })).toBeNull();
+  });
+
+  it("no permite al administrador con cuenta inactiva ver el botón de eliminar en reseñas ajenas", () => {
+    renderComponente({
+      usuario: { ...usuarioAdmin, activo: false },
+      resenas: [resenaAna],
+    });
+
+    expect(
+      screen.queryByRole("button", { name: "Eliminar reseña" }),
+    ).toBeNull();
   });
 
   // 5. Un usuario normal no puede ver "Eliminar" en la reseña de otro usuario

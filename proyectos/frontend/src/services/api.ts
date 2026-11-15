@@ -395,9 +395,8 @@ export async function crearReporteResena(
 }
 
 /**
- * Consulta la cola de reseñas reportadas. Requiere una sesión con rol
- * Moderador o Administrador activo; el backend valida el JWT y aplica las
- * reglas de visibilidad y conflicto de interés.
+ * Consulta la lista de reseñas reportadas con sus métricas y reportes asociados.
+ * Requiere autenticación con rol Moderador o Administrador activo.
  */
 export async function obtenerResenasReportadas(
   filtros: FiltrosResenasReportadas = {},
@@ -440,7 +439,10 @@ async function accionModeracionResena(
   );
 }
 
-/** Oculta una reseña reportada. Requiere Moderador o Administrador. */
+/**
+ * Oculta manualmente una reseña por incumplimiento de normas.
+ * Requiere rol Administrador activo.
+ */
 export async function ocultarResenaReportada(
   idResena: number,
   motivo?: string,
@@ -448,7 +450,10 @@ export async function ocultarResenaReportada(
   return accionModeracionResena(idResena, "ocultar", motivo);
 }
 
-/** Restaura la visibilidad de una reseña reportada. Requiere Moderador o Administrador. */
+/**
+ * Restaura la visibilidad de una reseña oculta por moderación.
+ * Requiere rol Administrador activo.
+ */
 export async function publicarResenaReportada(
   idResena: number,
   motivo?: string,
@@ -456,7 +461,10 @@ export async function publicarResenaReportada(
   return accionModeracionResena(idResena, "publicar", motivo);
 }
 
-/** Rechaza en lote los reportes pendientes de una reseña. Requiere Moderador o Administrador. */
+/**
+ * Rechaza en lote los reportes pendientes/en revisión de una reseña.
+ * Requiere rol Administrador activo.
+ */
 export async function rechazarReportesResenaReportada(
   idResena: number,
   motivo?: string,

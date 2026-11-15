@@ -30,10 +30,16 @@ export interface ResenaReportadaResponse {
   fechaCreacion: string;
   estado: boolean;
   ocultaPorReportes: boolean;
-  ocultaPorModeracion: boolean;
+  ocultaPorModeracion?: boolean;
   totalReportes: number;
   reportesPendientes: number;
   reportes: ReporteResenaResponse[];
+}
+
+export type ReporteResenaItem = ReporteResenaResponse;
+
+export interface AccionModeracionRequest {
+  motivo?: string;
 }
 
 export interface FiltrosResenasReportadas {

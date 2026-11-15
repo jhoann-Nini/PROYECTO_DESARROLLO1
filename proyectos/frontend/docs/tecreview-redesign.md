@@ -4,10 +4,14 @@
 se unificaron en el Bloque K (TEC-62/TEC-69), los filtros del catálogo con
 cajón móvil, precios manuales, buscador de marcas y ordenamiento en el Bloque L
 (TEC-60), y la moderación y gestión de reseñas en los Bloques M–P
-(TEC-89, TEC-96, TEC-98, TEC-75 y TEC-103).
+(TEC-89, TEC-96, TEC-98, TEC-75 y TEC-103). En `adrian` se completó además la
+auditoría por roles: administración real de usuarios/roles y establecimientos,
+panel de representante, moderación contra `/api/moderacion/...` y Home/Catálogo
+sin datos inventados.
 **Marca:** TecReview (marca única del proyecto).
 **Tagline:** Compara · Analiza · Decide.
-**Rama:** `feat/tecreview-redesign` (creada desde `adrian`).
+**Rama:** `adrian` (auditoría por roles). El rediseño histórico se desarrolló
+en `feat/tecreview-redesign`.
 
 ---
 
@@ -146,11 +150,18 @@ navegación principal.
 
 - **Shell:** `AppShell`, `SiteHeader`, `SiteFooter`, `BottomNav`, `SearchBar`.
 - **Home:** `CategoriasHome`, `DestacadosHome`, `RankingsHome`, `OfertasHome`,
-  `PresupuestoHome`, `OpinionesHome`, `ResumenSesion`, `CtaComparador`.
+  `PresupuestoHome`, `OpinionesHome`, `ResumenSesion`, `CtaComparador`,
+  `SugerenciasBusqueda`.
 - **Catálogo:** `CatalogoCliente`, `FilterSidebar` (panel estático en escritorio
   y cajón accesible en móvil), `FilterChips`, `Pagination`, `TarjetaProducto`,
   `FichaTecnicaModal` (conservado como ficha secundaria), `ProductCard`
   (categorías heredadas).
+- **Administración:** `AdminPanelModal` (contenedor de pestañas),
+  `AdminUsuariosRoles`, `AdminEstablecimientos`, `CamposEstablecimiento`.
+- **Representante:** `PanelRepresentanteModal` para consultar y actualizar los
+  establecimientos del usuario.
+- **Moderación:** `PanelModeracionModal`, `ReportarResenaModal` y los tipos de
+  moderación.
 - **Detalle:** `DetalleProductoCliente`, `EspecificacionesProducto`,
   `ValoracionProducto`, `OpinionesProducto`, `BotonComparador`.
 - **Comparador:** `ComparadorCliente` con selector, tabla, diferencias y
@@ -232,6 +243,28 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   después y antes de `paginar`. “Mejor valorados” usa `rating` y
   `cantidadResenas` del view model, que hoy llegan en `null` desde
   `construirCatalogo`; sin ratings agregados conserva el orden de relevancia.
+- Home reemplazó el ranking ficticio de “Más vendidos” por
+  `SugerenciasBusqueda`, alimentado con productos reales del backend. La lista
+  aparece al enfocar el buscador, muestra nombre, marca y categoría, y no
+  presenta ranking, notas ni ventas inventadas.
+- El catálogo distingue un catálogo realmente vacío (“El catálogo está vacío”)
+  de una combinación de filtros sin resultados (“No encontramos productos con
+  esos filtros”). Solo el segundo caso ofrece “Limpiar filtros”.
+- Los establecimientos se leen del catálogo público de activos y se escriben
+  con `POST`/`PUT`/`DELETE` exclusivamente como Administrador. No existen
+  columnas de logo, sitio web, precios ni disponibilidad.
+- El panel de representante consume
+  `GET /api/representante/establecimientos` y
+  `PUT /api/representante/establecimientos/{id}`; no gestiona precios ni
+  disponibilidad porque el backend no expone esa regla.
+- La administración de cuentas usa `GET /api/admin/usuarios`,
+  `GET /api/admin/roles`, las asignaciones/revocaciones de roles y
+  representaciones. El backend aún no expone listados de asignaciones activas
+  ni lectura de auditoría; la UI lo advierte y no inventa ese historial.
+- La moderación usa `/api/moderacion/...`; el detalle del contrato vive en
+  `docs/moderacion-resenas.md`.
+- La sesión admite cuentas multirrol: `UsuarioSesion.roles` contiene todos los
+  roles activos y los validadores de permisos los consideran en conjunto.
 
 ---
 
@@ -792,6 +825,44 @@ aplicación rota.
 
 ---
 
+## 8.15 Auditoría por roles — cierre en `adrian` (2026-11-15)
+
+- [x] Los establecimientos públicos se leen solo si están activos; la creación,
+      edición y desactivación exigen Administrador.
+- [x] La administración de cuentas permite buscar por correo, consultar el
+      catálogo de roles y asignar/revocar roles y representaciones con motivo
+      opcional.
+- [x] Las cuentas multirrol conservan todos sus roles activos en
+      `UsuarioSesion.roles`; los permisos se validan contra el conjunto.
+- [x] El panel de representante carga sus establecimientos, permite editarlos y
+      muestra error, vacío y reintento.
+- [x] El panel de moderación usa las rutas reales `/api/moderacion/...`, exige
+      justificación al ocultar/publicar y distingue la ocultación manual de la
+      ocultación por reportes.
+- [x] Home usa sugerencias de productos reales, sin ranking, notas ni ventas
+      inventadas.
+- [x] El catálogo distingue “catálogo vacío” de “filtros sin resultados”.
+- [x] Se conservaron el tema oscuro por defecto, la paleta kiwi, Inter, el
+      contraste AA y `CLASE_FOCO`.
+- [x] `npm test`, `npx tsc --noEmit`, `npm run lint` y `npm run build` pasan.
+
+### Límites y decisiones de la auditoría
+
+1. No se añadieron columnas, migraciones ni endpoints; el frontend consume los
+   contratos existentes.
+2. No existe un listado administrativo de establecimientos inactivos ni
+   endpoints de asignaciones activas o auditoría; la UI lo advierte en lugar de
+   inventarlos.
+3. Logo, sitio web, precios y disponibilidad por establecimiento no forman parte
+   del modelo actual y no se simulan.
+4. El representante solo actualiza los datos existentes de su establecimiento;
+   la gestión de precios y disponibilidad requiere una regla de negocio y un
+   contrato que aún no existen.
+5. La moderación no incluye historial de auditoría ni paginación en el panel;
+   el detalle del contrato y sus límites está en `docs/moderacion-resenas.md`.
+
+---
+
 ## 9. Criterios de aceptación del Bloque A
 
 - [x] Los ocho tokens oficiales existen en `globals.css` con los valores exactos.
@@ -919,6 +990,13 @@ aplicación rota.
   catálogo se descartan al cargar el catálogo. Se añadieron pruebas para la poda
   de ids obsoletos y para vaciar la selección desde la UI.
 - Sin cambios en backend, `.env` ni base de datos.
+- **2026-11-15:** Auditoría por roles cerrada en `adrian`.
+  `npm test`: 650 pruebas en 59 archivos; `npx tsc --noEmit`, `npm run lint` y
+  `npm run build` exitosos. Se completaron las siete tareas del plan
+  `docs/superpowers/plans/2026-11-13-auditoria-por-roles-frontend.md`. El
+  backend queda solo con los cambios de contrato acordados (establecimientos
+  públicos/administrativos, consultas de usuarios/roles y asignaciones); no se
+  añadieron columnas ni migraciones, y `.env` no se modificó.
 
 ---
 

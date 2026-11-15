@@ -61,6 +61,11 @@ vi.mock("@/components/moderacion/PanelModeracionModal", () => ({
     isOpen ? <div role="dialog" aria-label="Moderación" /> : null,
 }));
 
+vi.mock("@/components/representante/PanelRepresentanteModal", () => ({
+  default: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div role="dialog" aria-label="Representante" /> : null,
+}));
+
 vi.mock("@/services/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/services/api")>();
   return {
@@ -226,6 +231,47 @@ describe("PerfilCliente", () => {
     );
 
     expect(screen.getByRole("dialog", { name: "Moderación" })).toBeDefined();
+  });
+
+  it("muestra el panel de representante a administradores y representantes", () => {
+    sesionMock.usuario = { ...USUARIO, rol: "Representante de establecimiento" };
+
+    const { unmount } = render(<PerfilCliente />);
+
+    expect(
+      screen.getByRole("button", { name: "Panel de representante" }),
+    ).toBeDefined();
+
+    unmount();
+
+    sesionMock.usuario = { ...USUARIO, rol: "Administrador" };
+    render(<PerfilCliente />);
+
+    expect(
+      screen.getByRole("button", { name: "Panel de representante" }),
+    ).toBeDefined();
+  });
+
+  it("no muestra el panel de representante a usuarios regulares", () => {
+    sesionMock.usuario = USUARIO;
+
+    render(<PerfilCliente />);
+
+    expect(
+      screen.queryByRole("button", { name: "Panel de representante" }),
+    ).toBeNull();
+  });
+
+  it("abre el panel de representante desde el perfil", () => {
+    sesionMock.usuario = { ...USUARIO, rol: "Representante de establecimiento" };
+
+    render(<PerfilCliente />);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Panel de representante" }),
+    );
+
+    expect(screen.getByRole("dialog", { name: "Representante" })).toBeDefined();
   });
 
   it("cierra la sesión desde el perfil", () => {

@@ -16,6 +16,11 @@ import type {
   FiltrosResenasReportadas,
   ResenaReportadaResponse,
 } from "@/types/moderacion";
+import type {
+  Establecimiento,
+  EstablecimientoRequest,
+} from "@/types/establecimiento";
+import type { RolAdmin, UsuarioAdmin } from "@/types/administracion";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -131,6 +136,13 @@ export async function apiFetch<T>(
   }
 
   try {
+    if (typeof respuesta.text === "function") {
+      const texto = await respuesta.text();
+      if (texto.trim() === "") {
+        return undefined as unknown as T;
+      }
+      return JSON.parse(texto) as T;
+    }
     return (await respuesta.json()) as T;
   } catch {
     throw new ApiError(
@@ -199,6 +211,7 @@ export interface UsuarioMeResponse {
   rol: string;
   activo: boolean;
   fechaRegistro: string;
+  roles?: string[];
 }
 
 /**
@@ -260,6 +273,7 @@ export function mapearPerfilABusinessSession(
     usuario: String(metadata.usuario || metadata.user_name || fallbackUsername),
     email: perfil.correo,
     rol: perfil.rol,
+    roles: perfil.roles ?? [perfil.rol],
     idUsuario: perfil.idUsuario,
     activo: perfil.activo,
     fechaRegistro: perfil.fechaRegistro,
@@ -859,4 +873,229 @@ export function dispararDescargaArchivo(blob: Blob, nombreArchivo: string): void
   a.click();
   document.body.removeChild(a);
   window.URL.revokeObjectURL(url);
+}
+
+// ============================================================================
+// SERVICIOS DE ESTABLECIMIENTOS (catálogo público y CRUD administrativo)
+// ============================================================================
+
+/**
+ * Consulta el catálogo público de establecimientos activos, ordenados por
+ * nombre. No requiere autenticación y no incluye inactivos.
+ */
+export async function obtenerEstablecimientos(): Promise<Establecimiento[]> {
+  const datos = await apiFetch<unknown>("/api/establecimientos");
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de establecimientos).",
+    );
+  }
+
+  return datos as Establecimiento[];
+}
+
+/**
+ * Consulta un establecimiento activo por su identificador.
+ */
+export async function obtenerEstablecimientoPorId(
+  id: number,
+): Promise<Establecimiento> {
+  return apiFetch<Establecimiento>(`/api/establecimientos/${id}`);
+}
+
+/**
+ * Crea un establecimiento. Requiere rol Administrador activo.
+ */
+export async function crearEstablecimiento(
+  request: EstablecimientoRequest,
+): Promise<Establecimiento> {
+  return apiFetchAutenticado<Establecimiento>("/api/establecimientos", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Actualiza los datos básicos de un establecimiento. Requiere rol Administrador.
+ */
+export async function actualizarEstablecimiento(
+  id: number,
+  request: EstablecimientoRequest,
+): Promise<Establecimiento> {
+  return apiFetchAutenticado<Establecimiento>(`/api/establecimientos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(request),
+  });
+}
+
+/**
+ * Ejecuta el borrado lógico (desactivación) de un establecimiento.
+ * Requiere rol Administrador.
+ */
+export async function eliminarEstablecimiento(id: number): Promise<void> {
+  return apiFetchAutenticado<void>(`/api/establecimientos/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ============================================================================
+// SERVICIOS DEL REPRESENTANTE DE ESTABLECIMIENTO
+// ============================================================================
+
+/**
+ * Lista los establecimientos activos asignados a la cuenta autenticada.
+ * Un Administrador recibe el alcance global que permite el backend.
+ */
+export async function obtenerMisEstablecimientos(): Promise<Establecimiento[]> {
+  const datos = await apiFetchAutenticado<unknown>(
+    "/api/representante/establecimientos",
+    { method: "GET" },
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de establecimientos asignados).",
+    );
+  }
+
+  return datos as Establecimiento[];
+}
+
+/**
+ * Actualiza un establecimiento dentro del alcance autorizado del representante.
+ */
+export async function actualizarMiEstablecimiento(
+  id: number,
+  request: EstablecimientoRequest,
+): Promise<Establecimiento> {
+  return apiFetchAutenticado<Establecimiento>(
+    `/api/representante/establecimientos/${id}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(request),
+    },
+  );
+}
+
+// ============================================================================
+// CONSULTAS Y ASIGNACIONES ADMINISTRATIVAS
+// ============================================================================
+
+/**
+ * Consulta las cuentas registradas. El filtro por correo es una coincidencia
+ * parcial calculada por el backend. Requiere rol Administrador.
+ */
+export async function obtenerUsuariosAdmin(
+  correo?: string,
+): Promise<UsuarioAdmin[]> {
+  const parametros = new URLSearchParams();
+  if (correo !== undefined && correo.trim() !== "") {
+    parametros.set("correo", correo.trim());
+  }
+  const query = parametros.toString();
+  const datos = await apiFetchAutenticado<unknown>(
+    `/api/admin/usuarios${query ? `?${query}` : ""}`,
+    { method: "GET" },
+  );
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de usuarios).",
+    );
+  }
+
+  return datos as UsuarioAdmin[];
+}
+
+/**
+ * Consulta el catálogo de roles disponibles para asignar.
+ * Requiere rol Administrador.
+ */
+export async function obtenerRolesAdmin(): Promise<RolAdmin[]> {
+  const datos = await apiFetchAutenticado<unknown>("/api/admin/roles", {
+    method: "GET",
+  });
+
+  if (!Array.isArray(datos)) {
+    throw new ApiError(
+      "La respuesta del servidor no tiene el formato esperado (lista de roles).",
+    );
+  }
+
+  return datos as RolAdmin[];
+}
+
+function cuerpoMotivoOpcional(motivo?: string): string | undefined {
+  if (motivo === undefined || motivo.trim() === "") {
+    return undefined;
+  }
+  return JSON.stringify({ motivo });
+}
+
+/**
+ * Asigna o reactiva un rol a una cuenta. Requiere rol Administrador.
+ */
+export async function asignarRolUsuario(
+  usuarioId: number,
+  rolId: number,
+  motivo?: string,
+): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
+  return apiFetchAutenticado<void>(
+    `/api/admin/usuarios/${usuarioId}/roles/${rolId}`,
+    {
+      method: "POST",
+      ...(body ? { body } : {}),
+    },
+  );
+}
+
+/**
+ * Revoca un rol de una cuenta conservando sus demás roles. Requiere Administrador.
+ */
+export async function revocarRolUsuario(
+  usuarioId: number,
+  rolId: number,
+  motivo?: string,
+): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
+  return apiFetchAutenticado<void>(
+    `/api/admin/usuarios/${usuarioId}/roles/${rolId}`,
+    { method: "DELETE", ...(body ? { body } : {}) },
+  );
+}
+
+/**
+ * Asigna o reactiva la representación de un establecimiento a una cuenta.
+ * Requiere rol Administrador.
+ */
+export async function asignarRepresentante(
+  usuarioId: number,
+  establecimientoId: number,
+  motivo?: string,
+): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
+  return apiFetchAutenticado<void>(
+    `/api/admin/usuarios/${usuarioId}/establecimientos/${establecimientoId}/representacion`,
+    {
+      method: "POST",
+      ...(body ? { body } : {}),
+    },
+  );
+}
+
+/**
+ * Revoca la representación de un establecimiento. Requiere rol Administrador.
+ */
+export async function revocarRepresentante(
+  usuarioId: number,
+  establecimientoId: number,
+  motivo?: string,
+): Promise<void> {
+  const body = cuerpoMotivoOpcional(motivo);
+  return apiFetchAutenticado<void>(
+    `/api/admin/usuarios/${usuarioId}/establecimientos/${establecimientoId}/representacion`,
+    { method: "DELETE", ...(body ? { body } : {}) },
+  );
 }

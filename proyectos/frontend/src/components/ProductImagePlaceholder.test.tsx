@@ -57,6 +57,15 @@ describe("Componente ProductImagePlaceholder", () => {
     expect(screen.getByText("Tablets & Pantallas")).toBeDefined();
   });
 
+  it("mantiene el icono de categoría fuera del árbol accesible", () => {
+    const { container } = render(
+      <ProductImagePlaceholder categoria="moviles" marca="Samsung" />
+    );
+
+    const icono = container.querySelector("svg");
+    expect(icono?.getAttribute("aria-hidden")).toBe("true");
+  });
+
   it("funciona correctamente sin marca (marca null o indefinida)", () => {
     render(<ProductImagePlaceholder categoria="auriculares" marca={null} />);
 

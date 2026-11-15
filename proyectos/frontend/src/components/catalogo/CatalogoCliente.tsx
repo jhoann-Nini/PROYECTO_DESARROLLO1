@@ -318,11 +318,18 @@ export default function CatalogoCliente() {
             )}
 
             {paginaActual.total === 0 ? (
-              <EstadoVacio
-                titulo="No encontramos productos con esos filtros"
-                descripcion="Ajusta la búsqueda o limpia los filtros para ver más resultados."
-                accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
-              />
+              productosApi.length === 0 ? (
+                <EstadoVacio
+                  titulo="El catálogo está vacío"
+                  descripcion="Aún no hay productos registrados en la plataforma."
+                />
+              ) : (
+                <EstadoVacio
+                  titulo="No encontramos productos con esos filtros"
+                  descripcion="Ajusta la búsqueda o limpia los filtros para ver más resultados."
+                  accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
+                />
+              )
             ) : (
               <>
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

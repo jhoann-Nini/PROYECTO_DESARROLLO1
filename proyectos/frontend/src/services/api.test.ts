@@ -74,6 +74,17 @@ describe("api.ts - Cliente API del frontend", () => {
   });
 
   describe("Respuesta HTTP exitosa", () => {
+    it("acepta respuestas 201 sin cuerpo", async () => {
+      const { asignarRolUsuario } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce(new Response(null, { status: 201 }));
+
+      await expect(asignarRolUsuario(12, 3)).resolves.toBeUndefined();
+    });
+
     it("debe retornar la lista de productos cuando la respuesta HTTP es 200 y es un arreglo", async () => {
       const { obtenerProductos } = await loadApi(DEFAULT_API_URL);
       const listaEsperada = [
@@ -409,6 +420,7 @@ describe("api.ts - Cliente API del frontend", () => {
         rol: "Usuario registrado",
         activo: true,
         fechaRegistro: "2026-10-14T20:00:00",
+        roles: ["Usuario registrado", "Moderador"],
       };
 
       const userSupabase = {
@@ -426,6 +438,7 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(sesion.nombre).toBe("Nombre Oficial Backend");
       expect(sesion.email).toBe("oficial@tecreview.com");
       expect(sesion.rol).toBe("Usuario registrado"); // Rol inmutable del backend
+      expect(sesion.roles).toEqual(["Usuario registrado", "Moderador"]);
       expect(sesion.idUsuario).toBe(42);
       expect(sesion.activo).toBe(true);
       expect(sesion.usuario).toBe("oficial_user");
@@ -1222,6 +1235,453 @@ describe("api.ts - Cliente API del frontend", () => {
       } as unknown as Response);
 
       await expect(obtenerProductosPorCategoria(3)).rejects.toBeInstanceOf(ApiError);
+    });
+  });
+
+  describe("Moderación de reseñas reportadas (TEC-108)", () => {
+    // Contrato real de `ModeracionResenasController`: requiere rol Moderador o
+    // Administrador activo y valida el JWT en el backend.
+    const resenaReportada = {
+      idResena: 15,
+      idProducto: 10,
+      nombreProducto: "Smartphone Pro",
+      idAutor: 5,
+      nombreAutor: "Usuario Autor",
+      comentario: "Texto de la reseña reportada...",
+      puntuacion: 1,
+      fechaCreacion: "2026-11-10T20:00:00",
+      estado: true,
+      ocultaPorReportes: false,
+      ocultaPorModeracion: false,
+      totalReportes: 2,
+      reportesPendientes: 2,
+      reportes: [],
+    };
+
+    it("consulta la cola con filtros y token Bearer", async () => {
+      const { obtenerResenasReportadas } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-moderador" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [resenaReportada],
+      } as unknown as Response);
+
+      const resultado = await obtenerResenasReportadas({
+        estado: "PENDIENTE",
+        oculta: false,
+        idProducto: 10,
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/moderacion/resenas/reportadas?estado=PENDIENTE&oculta=false&idProducto=10",
+        expect.any(Object),
+      );
+      const headers = fetchMock.mock.calls[0][1]?.headers as Headers;
+      expect(headers.get("Authorization")).toBe("Bearer token-moderador");
+      expect(resultado).toEqual([resenaReportada]);
+    });
+
+    it("consulta la cola sin query cuando no hay filtros", async () => {
+      const { obtenerResenasReportadas } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-moderador" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [],
+      } as unknown as Response);
+
+      await obtenerResenasReportadas();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/moderacion/resenas/reportadas",
+        expect.any(Object),
+      );
+    });
+
+    it("rechaza respuestas que no son una lista", async () => {
+      const { obtenerResenasReportadas, ApiError } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-moderador" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ contenido: [] }),
+      } as unknown as Response);
+
+      await expect(obtenerResenasReportadas()).rejects.toBeInstanceOf(ApiError);
+    });
+
+    it("oculta una reseña con justificación", async () => {
+      const { ocultarResenaReportada } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ...resenaReportada, ocultaPorModeracion: true }),
+      } as unknown as Response);
+
+      const resultado = await ocultarResenaReportada(
+        15,
+        "Contenido ofensivo verificado",
+      );
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/moderacion/resenas/15/ocultar",
+        expect.objectContaining({
+          method: "PUT",
+          headers: expect.any(Headers),
+          body: JSON.stringify({ motivo: "Contenido ofensivo verificado" }),
+        }),
+      );
+      expect(resultado.ocultaPorModeracion).toBe(true);
+    });
+
+    it("publica una reseña sin enviar cuerpo si no hay motivo", async () => {
+      const { publicarResenaReportada } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => resenaReportada,
+      } as unknown as Response);
+
+      await publicarResenaReportada(15);
+
+      const init = fetchMock.mock.calls[0][1] as RequestInit;
+      expect(init.method).toBe("PUT");
+      expect(init.body).toBeUndefined();
+    });
+
+    it("rechaza los reportes en lote usando la ruta real de moderación", async () => {
+      const { rechazarReportesResenaReportada } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          ...resenaReportada,
+          reportesPendientes: 0,
+        }),
+      } as unknown as Response);
+
+      await rechazarReportesResenaReportada(15);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/moderacion/resenas/15/rechazar-reportes",
+        expect.objectContaining({ method: "PUT" }),
+      );
+    });
+  });
+
+  describe("Establecimientos públicos y administrativos", () => {
+    const establecimiento = {
+      idEstablecimiento: 7,
+      nombre: "Tienda Tecnológica",
+      direccion: "Carrera 10 # 20-30",
+      telefono: "3001234567",
+      correo: "tienda@ejemplo.com",
+      descripcion: "Tienda de tecnología",
+      latitud: 4.08,
+      longitud: -76.19,
+      estado: true,
+    };
+
+    const request = {
+      nombre: "Tienda Tecnológica",
+      direccion: "Carrera 10 # 20-30",
+      telefono: "3001234567",
+      correo: "tienda@ejemplo.com",
+      descripcion: "Tienda de tecnología",
+      latitud: 4.08,
+      longitud: -76.19,
+    };
+
+    it("lista los establecimientos activos sin autenticación", async () => {
+      const { obtenerEstablecimientos } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [establecimiento],
+      } as unknown as Response);
+
+      const resultado = await obtenerEstablecimientos();
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/establecimientos",
+      );
+      expect(resultado).toEqual([establecimiento]);
+    });
+
+    it("consulta un establecimiento por id y valida la lista", async () => {
+      const { obtenerEstablecimientoPorId, obtenerEstablecimientos, ApiError } =
+        await loadApi(DEFAULT_API_URL);
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => establecimiento,
+      } as unknown as Response);
+      await expect(obtenerEstablecimientoPorId(7)).resolves.toEqual(
+        establecimiento,
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/establecimientos/7",
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ contenido: [] }),
+      } as unknown as Response);
+      await expect(obtenerEstablecimientos()).rejects.toBeInstanceOf(ApiError);
+    });
+
+    it("crea un establecimiento con token Bearer y cuerpo JSON", async () => {
+      const { crearEstablecimiento } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => establecimiento,
+      } as unknown as Response);
+
+      const resultado = await crearEstablecimiento(request);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/establecimientos",
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.any(Headers),
+          body: JSON.stringify(request),
+        }),
+      );
+      expect(resultado.idEstablecimiento).toBe(7);
+    });
+
+    it("actualiza y desactiva un establecimiento con token Bearer", async () => {
+      const { actualizarEstablecimiento, eliminarEstablecimiento } =
+        await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ...establecimiento, nombre: "Nuevo nombre" }),
+      } as unknown as Response);
+
+      await actualizarEstablecimiento(7, { ...request, nombre: "Nuevo nombre" });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/establecimientos/7",
+        expect.objectContaining({
+          method: "PUT",
+          body: JSON.stringify({ ...request, nombre: "Nuevo nombre" }),
+        }),
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: async () => undefined,
+      } as unknown as Response);
+      await expect(eliminarEstablecimiento(7)).resolves.toBeUndefined();
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/establecimientos/7",
+        expect.objectContaining({ method: "DELETE" }),
+      );
+    });
+
+    it("lista y actualiza los establecimientos asignados al representante", async () => {
+      const { obtenerMisEstablecimientos, actualizarMiEstablecimiento } =
+        await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-representante" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [establecimiento],
+      } as unknown as Response);
+
+      await expect(obtenerMisEstablecimientos()).resolves.toEqual([
+        establecimiento,
+      ]);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/representante/establecimientos",
+        expect.objectContaining({ method: "GET" }),
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => establecimiento,
+      } as unknown as Response);
+      await actualizarMiEstablecimiento(7, request);
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/representante/establecimientos/7",
+        expect.objectContaining({
+          method: "PUT",
+          body: JSON.stringify(request),
+        }),
+      );
+    });
+  });
+
+  describe("Consultas y asignaciones administrativas", () => {
+    const usuario = {
+      idUsuario: 12,
+      nombre: "María López",
+      correo: "maria@ejemplo.com",
+      rol: "Usuario registrado",
+      activo: true,
+      fechaRegistro: "2026-11-13T10:15:00",
+      roles: ["Usuario registrado"],
+    };
+
+    it("lista usuarios sin filtro y con correo codificado", async () => {
+      const { obtenerUsuariosAdmin } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [usuario],
+      } as unknown as Response);
+
+      await obtenerUsuariosAdmin();
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/admin/usuarios",
+        expect.objectContaining({ method: "GET" }),
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [usuario],
+      } as unknown as Response);
+      await obtenerUsuariosAdmin("maria+lopez@ejemplo.com");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/admin/usuarios?correo=maria%2Blopez%40ejemplo.com",
+        expect.objectContaining({ method: "GET" }),
+      );
+    });
+
+    it("lista el catálogo de roles", async () => {
+      const { obtenerRolesAdmin } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => [
+          { idRol: 1, nombre: "Administrador", descripcion: "Global" },
+        ],
+      } as unknown as Response);
+
+      await expect(obtenerRolesAdmin()).resolves.toEqual([
+        { idRol: 1, nombre: "Administrador", descripcion: "Global" },
+      ]);
+    });
+
+    it("asigna y revoca roles con motivo opcional", async () => {
+      const { asignarRolUsuario, revocarRolUsuario } = await loadApi(
+        DEFAULT_API_URL,
+      );
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => undefined,
+      } as unknown as Response);
+
+      await asignarRolUsuario(12, 3, "Asignación autorizada");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/admin/usuarios/12/roles/3",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ motivo: "Asignación autorizada" }),
+        }),
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: async () => undefined,
+      } as unknown as Response);
+      await revocarRolUsuario(12, 3, "Cambio de responsabilidades");
+      const init = fetchMock.mock.calls[1][1] as RequestInit;
+      expect(init.method).toBe("DELETE");
+      expect(init.body).toBe(
+        JSON.stringify({ motivo: "Cambio de responsabilidades" }),
+      );
+    });
+
+    it("asigna y revoca representaciones con motivo opcional", async () => {
+      const { asignarRepresentante, revocarRepresentante } = await loadApi(
+        DEFAULT_API_URL,
+      );
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin" } },
+        error: null,
+      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => undefined,
+      } as unknown as Response);
+
+      await asignarRepresentante(12, 7, "Representante autorizado");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/admin/usuarios/12/establecimientos/7/representacion",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ motivo: "Representante autorizado" }),
+        }),
+      );
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: async () => undefined,
+      } as unknown as Response);
+      await revocarRepresentante(12, 7, "Fin de la asignación");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/admin/usuarios/12/establecimientos/7/representacion",
+        expect.objectContaining({
+          method: "DELETE",
+          body: JSON.stringify({ motivo: "Fin de la asignación" }),
+        }),
+      );
     });
   });
 });

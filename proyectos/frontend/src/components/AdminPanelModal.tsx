@@ -13,6 +13,8 @@ import type {
 } from "@/types/producto";
 import { esAdministrador } from "@/types/producto";
 import { detectarCategoria, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
+import AdminUsuariosRoles from "@/components/admin/AdminUsuariosRoles";
+import AdminEstablecimientos from "@/components/admin/AdminEstablecimientos";
 import {
   obtenerProductos,
   obtenerCategorias,
@@ -46,7 +48,7 @@ export interface AdminPanelModalProps {
   onProductoCambiado?: () => void;
 }
 
-type TabAdministracion = "productos" | "categorias" | "marcas" | "reportes";
+type TabAdministracion = "productos" | "categorias" | "marcas" | "reportes" | "usuarios" | "establecimientos";
 type ModoFormulario = "ninguno" | "crear" | "editar";
 
 interface ErroresFormularioProducto {
@@ -1167,6 +1169,42 @@ export default function AdminPanelModal({
                 {totalReportesPendientes}
               </span>
             )}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActiva === "usuarios"}
+            onClick={() => {
+              setTabActiva("usuarios");
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+              tabActiva === "usuarios"
+                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
+                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+            }`}
+          >
+            👥 Usuarios y roles
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActiva === "establecimientos"}
+            onClick={() => {
+              setTabActiva("establecimientos");
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+              tabActiva === "establecimientos"
+                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
+                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+            }`}
+          >
+            🏪 Establecimientos
           </button>
         </div>
 
@@ -2412,6 +2450,12 @@ export default function AdminPanelModal({
               )}
             </div>
           )}
+
+          {/* PESTAÑA 4: USUARIOS Y ROLES */}
+          {tabActiva === "usuarios" && <AdminUsuariosRoles />}
+
+          {/* PESTAÑA 5: ESTABLECIMIENTOS */}
+          {tabActiva === "establecimientos" && <AdminEstablecimientos />}
         </div>
 
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE PRODUCTO */}

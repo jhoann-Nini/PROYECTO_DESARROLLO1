@@ -1,6 +1,6 @@
 /**
- * Tipos para la moderación de reseñas y cola de reportes de TecReview.
- * Correspondiente a las tareas S2-42, S2-43 y S2-72 (TEC-149).
+ * Tipos de moderación de reseñas y reportes, alineados con los DTO del backend:
+ * `ModeracionResenasController` y `ResenaReportadaResponse`.
  */
 
 export type EstadoReporte =
@@ -9,7 +9,7 @@ export type EstadoReporte =
   | "ACEPTADO"
   | "RECHAZADO";
 
-export interface ReporteResenaItem {
+export interface ReporteResenaResponse {
   idReporte: number;
   idUsuarioReportante: number;
   nombreReportante: string;
@@ -33,7 +33,13 @@ export interface ResenaReportadaResponse {
   ocultaPorModeracion?: boolean;
   totalReportes: number;
   reportesPendientes: number;
-  reportes: ReporteResenaItem[];
+  reportes: ReporteResenaResponse[];
+}
+
+export type ReporteResenaItem = ReporteResenaResponse;
+
+export interface AccionModeracionRequest {
+  motivo?: string;
 }
 
 export interface FiltrosResenasReportadas {
@@ -41,8 +47,3 @@ export interface FiltrosResenasReportadas {
   oculta?: boolean;
   idProducto?: number;
 }
-
-export interface AccionModeracionRequest {
-  motivo?: string;
-}
-

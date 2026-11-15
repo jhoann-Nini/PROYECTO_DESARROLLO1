@@ -52,7 +52,7 @@ const ETIQUETAS_CATEGORIA = [
   "Todos",
   "Celulares",
   "Tablets",
-  "Portátiles / PC",
+  "Portátiles",
   "Auriculares",
 ];
 

@@ -2,7 +2,21 @@
 
 **Fecha:** 2026-11-09  
 **Rama:** `adrian`  
-**Estado:** criterio frontend redactado; sujeto a aprobación del equipo. No implementa backend.
+**Estado:** propuesta abierta. El criterio frontend está redactado, pero **no
+está aprobado, no está implementado y no se considera una tarea cerrada**. No
+modifica backend, esquema ni contrato.
+
+## 0. Estado de la propuesta
+
+- [x] Criterio funcional redactado y revisado contra el modelo actual.
+- [ ] Aprobación del equipo sobre la vigencia (7 días propuestos).
+- [ ] Definición del tratamiento de promociones, variantes y condiciones.
+- [ ] Acuerdo con backend sobre estado, fecha y evidencia expuesta.
+- [ ] Implementación de TEC-151/152 en frontend.
+- [ ] Pruebas de integración con el contrato real.
+
+Mientras los puntos anteriores sigan sin marcar, TEC-153 debe presentarse como
+propuesta y no como funcionalidad disponible.
 
 ## 1. Alcance correcto
 
@@ -75,11 +89,29 @@ La implementación coordinada con backend debería cubrir:
 
 ## 7. Decisiones pendientes del equipo
 
-1. Aprobar o ajustar la vigencia propuesta de 7 días.
-2. Confirmar cómo se manejarán promociones, variantes y precios con condiciones (por ejemplo, precio con membresía o medio de pago).
-3. Definir si un reporte suspende automáticamente la marca o solo abre una revisión.
-4. Acordar con backend el estado y fecha que se expondrán para cada oferta.
+Ninguna de estas decisiones está cerrada. La propuesta no debe usarse como
+especificación definitiva hasta que el equipo y backend las resuelvan.
+
+| # | Decisión | Estado | Criterio de cierre |
+|---|----------|--------|--------------------|
+| 1 | Vigencia de la verificación (7 días propuestos) | Pendiente | El equipo aprueba un plazo o define otro; backend calcula y expone `vigente`/`fechaVerificacion`. |
+| 2 | Promociones, variantes y precios condicionados | Pendiente | Se acuerda qué precio se compara y cómo se representa la variante. |
+| 3 | Efecto de un reporte justificado | Pendiente | Se define si suspende automáticamente la marca o solo abre revisión. |
+| 4 | Contrato de estado y fecha por oferta | Pendiente | Backend documenta campos, tipos y permisos; frontend no los inventa. |
 
 ## 8. Límite de esta entrega
 
-Esta tarea documenta el criterio frontend recomendado. No altera entidades, endpoints, permisos, migraciones ni datos y no marca una oferta como verificada. La implementación de TEC-151/152 depende de la aprobación del criterio y del contrato del backend.
+Esta tarea documenta el criterio frontend recomendado. No altera entidades,
+endpoints, permisos, migraciones ni datos y no marca una oferta como
+verificada. La implementación de TEC-151/152 depende de la aprobación del
+criterio y del contrato del backend.
+
+Evidencia técnica actual:
+
+- `src/types/producto.ts` define `TiendaPrecio` solo con `nombre`, `precio`,
+  `envioGratis` y `url`; no existe estado, fecha ni identificador de oferta.
+- `src/services/api.ts` no expone un endpoint de verificación de ofertas.
+- `src/app/productos/[id]/DetalleProductoCliente.tsx` muestra las tiendas y sus
+  enlaces, pero no pinta ninguna marca de verificación.
+- Por tanto, no se añadió UI, estado local ni persistencia simulada para esta
+  tarea.

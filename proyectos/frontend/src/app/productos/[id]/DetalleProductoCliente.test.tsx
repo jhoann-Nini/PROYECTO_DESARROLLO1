@@ -228,6 +228,48 @@ describe("DetalleProductoCliente", () => {
     expect(migas.textContent).toContain("Productos");
   });
 
+  it("muestra la fotografía del producto con texto alternativo informativo", async () => {
+    mockProducto.mockResolvedValue({
+      ...PRODUCTO,
+      imagen: "https://cdn.example.com/s25-ultra.jpg",
+    });
+
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const imagen = await screen.findByRole("img", {
+      name: "Fotografía de Samsung Galaxy S25 Ultra",
+    });
+
+    expect(imagen.getAttribute("src")).toBe(
+      "https://cdn.example.com/s25-ultra.jpg",
+    );
+  });
+
+  it("sustituye la imagen rota por el marcador accesible", async () => {
+    mockProducto.mockResolvedValue({
+      ...PRODUCTO,
+      imagen: "https://cdn.example.com/rota.jpg",
+    });
+
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const imagen = await screen.findByRole("img", {
+      name: "Fotografía de Samsung Galaxy S25 Ultra",
+    });
+    fireEvent.error(imagen);
+
+    expect(
+      await screen.findByRole("img", {
+        name: "Imagen pendiente de Samsung (Móviles & Smartphones)",
+      }),
+    ).toBeDefined();
+    expect(
+      screen.queryByRole("img", {
+        name: "Fotografía de Samsung Galaxy S25 Ultra",
+      }),
+    ).toBeNull();
+  });
+
   it("muestra las especificaciones normalizadas", async () => {
     render(<DetalleProductoCliente idProducto={204} />);
 

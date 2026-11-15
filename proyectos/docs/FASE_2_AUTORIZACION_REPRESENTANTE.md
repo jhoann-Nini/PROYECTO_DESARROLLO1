@@ -16,6 +16,8 @@ El **Administrador** activo conserva acceso global a los establecimientos activo
 
 Todas las rutas requieren un JWT válido de Supabase.
 
+Estas rutas son independientes del catálogo público y del CRUD administrativo expuesto en `/api/establecimientos`. El representante no crea ni desactiva establecimientos desde esta fase.
+
 ## Reglas de autorización
 
 - La cuenta debe estar activa.
@@ -39,7 +41,7 @@ El nombre es obligatorio. Se validan longitudes de texto, formato de correo y ra
 ## Fuera de alcance
 
 - Asignar o revocar representantes: se conserva en los endpoints administrativos existentes.
-- Cambiar el estado de un establecimiento.
+- Cambiar el estado de un establecimiento desde las rutas del representante. El ciclo administrativo (crear, actualizar y desactivar lógicamente) vive en `/api/establecimientos`.
 - Administrar el catálogo global de productos, categorías o marcas.
 - Editar precios o disponibilidad de productos en establecimientos.
 

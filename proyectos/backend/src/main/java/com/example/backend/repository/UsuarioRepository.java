@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
@@ -18,6 +19,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @EntityGraph(attributePaths = {"rol", "roles", "roles.rol"})
     Optional<Usuario> findBySupabaseUid(String supabaseUid);
+
+    @EntityGraph(attributePaths = {"roles", "roles.rol"})
+    List<Usuario> findAllByOrderByNombreAsc();
+
+    @EntityGraph(attributePaths = {"roles", "roles.rol"})
+    List<Usuario> findByCorreoContainingIgnoreCaseOrderByNombreAsc(String correo);
 
     boolean existsBySupabaseUid(String supabaseUid);
 

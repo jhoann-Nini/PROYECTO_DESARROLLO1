@@ -85,15 +85,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/rankings/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/marcas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/establecimientos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/reportadas", "/api/resenas/pendientes").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                 .requestMatchers("/api/admin/**").access(adminAuthorizationManager)
                 .requestMatchers("/api/moderacion/**").access(moderatorAuthorizationManager)
                 .requestMatchers("/api/representante/**").access(representativeAuthorizationManager)
-                .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
-                .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
-                .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -104,7 +105,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<GeneralRateLimitingFilter> generalRateLimitingFilterRegistration(GeneralRateLimitingFilter filter) {
+    public FilterRegistrationBean<GeneralRateLimitingFilter> generalRateLimitingFilterRegistration(
+            GeneralRateLimitingFilter filter) {
         FilterRegistrationBean<GeneralRateLimitingFilter> registration = new FilterRegistrationBean<>(filter);
         registration.setEnabled(false);
         return registration;

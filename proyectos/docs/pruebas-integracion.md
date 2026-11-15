@@ -361,4 +361,72 @@ Verificar de extremo a extremo los tres criterios clave establecidos en la histo
   - `src/components/AdminPanelModal.test.tsx` (Suite "TEC-117: Criterios de validación de productos" con 4 casos de prueba de validación y control de acceso).
 - **Regresión total del backend:** 310 pruebas ejecutadas, 0 fallos, 0 errores.
 
+---
+
+## S2-72: Integración de la cola de reportes en el panel del administrador (TEC-149)
+
+### 1. Alcance y objetivo
+Integrar la cola de moderación y reportes de la comunidad en el panel de administración central (`AdminPanelModal`), permitiendo al administrador:
+1. **Acceso y navegación unificada:** Pestaña accesible `"🚩 Cola de Reportes"` con indicador badge del total de reportes pendientes acumulados.
+2. **Visualización y métricas:** Consulta de métricas clave (Total reseñas reportadas, Reportes pendientes, Reseñas ocultas) e información de contexto para reportes de ofertas/precios y reseñas (`TEC-127 / TEC-149`).
+3. **Filtros dinámicos:** Filtrado por estado del reporte (`TODOS`, `PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`) y por visibilidad actual (solo reseñas ocultas).
+4. **Detalle desplegable de reportes:** Inspección de motivo, descripción, reportante, fecha y estado de cada reporte recibido.
+5. **Acciones de moderación con auditoría:**
+   - `🛑 Ocultar reseña`: Deshabilita la visibilidad pública de la reseña con captura opcional de motivo de auditoría (`PUT /api/moderacion/resenas/{id}/ocultar`).
+   - `✅ Publicar / Restaurar`: Restablece la visibilidad de reseñas ocultadas por moderación (`PUT /api/moderacion/resenas/{id}/publicar`).
+   - `⚠️ Rechazar reportes`: Desestima los reportes pendientes de una reseña y restaura la visibilidad si estaba oculta por acumulación de reportes (`PUT /api/moderacion/resenas/{id}/rechazar-reportes`).
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Componente / Flujo | Condición / Acción | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-72-01** | `AdminPanelModal` | Renderizado con rol Administrador | Pestaña "Cola de Reportes" visible con badge numérico de pendientes | Badge visible con valor `2` | **APROBADO** |
+| **S2-72-02** | `AdminPanelModal` | Clic en pestaña "Cola de Reportes" | Carga y renderiza lista de reseñas reportadas, tarjetas y métricas | Tarjetas con comentarios y datos visibles | **APROBADO** |
+| **S2-72-03** | `AdminPanelModal` | Filtro "Solo reseñas actualmente ocultas" | Oculta reseñas visibles y preserva solo las ocultas por moderador o reportes | Reseñas filtradas correctamente | **APROBADO** |
+| **S2-72-04** | `AdminPanelModal` | Filtro por estado `ACEPTADO` | Muestra solo reseñas que contienen reportes en dicho estado | Filtrado reactivo exitoso | **APROBADO** |
+| **S2-72-05** | `AdminPanelModal` | Clic en "Ver motivos de reportes" | Expande tabla de detalle con motivo, descripción, autor y estado | Detalle desplegado correctamente | **APROBADO** |
+| **S2-72-06** | `AdminPanelModal` | Acción "Ocultar reseña" con motivo | Abre diálogo accesible, captura justificación e invoca `ocultarResenaReportada` | Modal ejecutado y estado actualizado | **APROBADO** |
+| **S2-72-07** | `AdminPanelModal` | Acción "Publicar / Restaurar" | Abre diálogo de confirmación e invoca `publicarResenaReportada` | Reseña restaurada exitosamente | **APROBADO** |
+| **S2-72-08** | `AdminPanelModal` | Acción "Rechazar reportes" | Abre diálogo de confirmación e invoca `rechazarReportesResenaReportada` | Reportes rechazados exitosamente | **APROBADO** |
+| **S2-72-09** | `AdminPanelModal` | Error de comunicación con la API | Muestra mensaje de error amigable y botón "Reintentar" funcional | Recuperación ante fallos validada | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Frontend:** `src/components/AdminPanelModal.test.tsx` (Suite "S2-72 / TEC-149: Integración de la Cola de Reportes del Administrador" con 8 casos de prueba exhaustivos).
+- **Backend:** `com.example.backend.controller.ModeracionAccionesIntegrationTest` y endpoints bajo `/api/moderacion/**` (352 pruebas ejecutadas y aprobadas al 100%).
+## HU-S2-14: Límite de peticiones general (TEC-121)
+
+### 1. Alcance y objetivo
+Implementar y verificar el mecanismo de rate limiting general para la API REST (`/api/**`), asegurando la resiliencia y estabilidad de la plataforma contra abusos, scraping no autorizado y ataques de denegación de servicio (DoS).
+
+Criterios validados:
+1. **Límite general por ventana temporal:** Se admiten hasta 100 peticiones en una ventana fija de 60 segundos por cliente (configurable mediante `ratelimit.general.limit` y `ratelimit.general.window-seconds`).
+2. **Cabeceras HTTP informativas:** Toda solicitud evaluada incluye `X-RateLimit-Limit`, `X-RateLimit-Remaining` y `X-RateLimit-Reset`.
+3. **Respuesta HTTP 429:** Al exceder el límite, el servidor interrumpe la ejecución devolviendo `429 Too Many Requests`, la cabecera `Retry-After: <segundos>` y el cuerpo estándar `ErrorResponse` en formato JSON.
+4. **Exclusiones:** Solicitudes preflight `OPTIONS` y endpoint de salud `/api/health` quedan excluidos de la limitación y no consumen cuota.
+5. **Aislamiento por cliente:** Clientes con diferentes IPs o usuarios autenticados disponen de contadores independientes.
+6. **Recuperación automática:** Una vez transcurrida la ventana de tiempo, la cuota del cliente se restablece automáticamente.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Componente / Flujo | Condición / Escenario | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-14-01** | `GeneralRateLimiterService` | Peticiones consecutivas 1 a 5 (límite 5) | Permite todas las solicitudes, decrementando `remaining` de 4 a 0 | Cuota consumida secuencialmente | **APROBADO** |
+| **S2-14-02** | `GeneralRateLimiterService` | Petición 6 (límite superado) | `allowed = false`, `remaining = 0`, `retryAfterSeconds > 0` | Bloqueado con retryAfter | **APROBADO** |
+| **S2-14-03** | `GeneralRateLimiterService` | Clientes A e IP B independientes | Bloqueo de cliente A no afecta la cuota disponible de cliente B | Aislamiento verificado | **APROBADO** |
+| **S2-14-04** | `GeneralRateLimiterService` | Expiración de ventana temporal | Tras transcurrir la ventana, la siguiente petición se autoriza (`allowed = true`) | Cuota restablecida | **APROBADO** |
+| **S2-14-05** | `GeneralRateLimiterService` | Servicio deshabilitado (`enabled = false`) | Permite solicitudes ilimitadas sin bloqueo | Solicitudes permitidas | **APROBADO** |
+| **S2-14-06** | `GeneralRateLimiterService` | Limpieza de buckets expirados | Elimina buckets inactivos liberando memoria del servidor | Buckets eliminados | **APROBADO** |
+| **S2-14-07** | `GeneralRateLimiterService` | Reinicio manual (`reset()`) | Vacía el mapa concurrente de clientes activos | Mapa restablecido | **APROBADO** |
+| **S2-14-08** | `GeneralRateLimitingFilter` | Petición a `/api/categorias` dentro de cuota | Retorna `200 OK` con cabeceras `X-RateLimit-Limit`, `Remaining`, `Reset` | Cabeceras presentes | **APROBADO** |
+| **S2-14-09** | `GeneralRateLimitingFilter` | Peticiones sucesivas a la API | Decrementa secuencialmente `X-RateLimit-Remaining` en la respuesta | Decremento verificado | **APROBADO** |
+| **S2-14-10** | `GeneralRateLimitingFilter` | Petición que excede el límite (101 en ventana) | Retorna `429 Too Many Requests`, cabecera `Retry-After` y JSON de `ErrorResponse` | HTTP 429 con mensaje oficial | **APROBADO** |
+| **S2-14-11** | `GeneralRateLimitingFilter` | Petición a `/api/health` | Excluida de rate limit; no genera bucket ni decrementa cuota | Retorna `200 OK` sin headers de límite | **APROBADO** |
+| **S2-14-12** | `GeneralRateLimitingFilter` | Preflight `OPTIONS /api/productos` | Excluida de rate limit; no consume cuota | Retorna `200 OK` sin headers de límite | **APROBADO** |
+| **S2-14-13** | `GeneralRateLimitingFilter` | Peticiones con IPs distintas en `X-Forwarded-For` | Bloqueo de IP 1 conserva cuota íntegra para IP 2 | Aislamiento por IP verificado | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Pruebas unitarias de servicio:** `com.example.backend.service.GeneralRateLimiterServiceTest` (7 pruebas aprobadas al 100%).
+- **Pruebas de integración web y seguridad:** `com.example.backend.controller.GeneralRateLimitingIntegrationTest` (6 pruebas aprobadas al 100%).
+- **Regresión total del backend:** 365 pruebas ejecutadas, 0 fallos, 0 errores (`BUILD SUCCESS`).
+
 

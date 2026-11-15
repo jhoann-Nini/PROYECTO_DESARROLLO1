@@ -7,6 +7,7 @@ import com.example.backend.entity.Rol;
 import com.example.backend.entity.Usuario;
 import com.example.backend.entity.UsuarioEstablecimiento;
 import com.example.backend.entity.UsuarioRol;
+import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.EstablecimientoRepository;
 import com.example.backend.repository.UsuarioEstablecimientoRepository;
@@ -38,6 +39,52 @@ public class EstablecimientoService {
         this.usuarioService = usuarioService;
         this.establecimientoRepository = establecimientoRepository;
         this.usuarioEstablecimientoRepository = usuarioEstablecimientoRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<EstablecimientoResponse> listarPublicos() {
+        return establecimientoRepository.findByEstadoTrueOrderByNombreAsc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public EstablecimientoResponse obtenerPublico(Long idEstablecimiento) {
+        return establecimientoRepository.findById(idEstablecimiento)
+                .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
+                .map(this::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+    }
+
+    @Transactional
+    public EstablecimientoResponse crear(EstablecimientoUpdateRequest request) {
+        Establecimiento establecimiento = new Establecimiento();
+        aplicarDatos(establecimiento, request);
+        establecimiento.setEstado(true);
+        return toResponse(establecimientoRepository.save(establecimiento));
+    }
+
+    @Transactional
+    public EstablecimientoResponse actualizarAdministrativo(
+            Long idEstablecimiento,
+            EstablecimientoUpdateRequest request) {
+        Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
+                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+        aplicarDatos(establecimiento, request);
+        return toResponse(establecimientoRepository.save(establecimiento));
+    }
+
+    @Transactional
+    public void eliminar(Long idEstablecimiento) {
+        Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
+                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+        if (Boolean.FALSE.equals(establecimiento.getEstado())) {
+            throw new ConflictException("El establecimiento ya está inactivo.");
+        }
+        // Eliminación lógica: conserva el registro y sus asignaciones históricas.
+        establecimiento.setEstado(false);
+        establecimientoRepository.save(establecimiento);
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +123,11 @@ public class EstablecimientoService {
         validarRolRepresentanteOAdministrador(usuario);
 
         Establecimiento establecimiento = buscarEstablecimientoPermitido(usuario, idEstablecimiento);
+        aplicarDatos(establecimiento, request);
+        return toResponse(establecimientoRepository.save(establecimiento));
+    }
+
+    private void aplicarDatos(Establecimiento establecimiento, EstablecimientoUpdateRequest request) {
         establecimiento.setNombre(request.nombre().trim());
         establecimiento.setDireccion(request.direccion());
         establecimiento.setTelefono(request.telefono());
@@ -83,8 +135,6 @@ public class EstablecimientoService {
         establecimiento.setDescripcion(request.descripcion());
         establecimiento.setLatitud(request.latitud());
         establecimiento.setLongitud(request.longitud());
-
-        return toResponse(establecimientoRepository.save(establecimiento));
     }
 
     private Usuario obtenerUsuarioActivo(Jwt jwt) {

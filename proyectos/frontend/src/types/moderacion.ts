@@ -1,8 +1,6 @@
 /**
- * Tipos de la propuesta de contrato de moderación de reseñas y reportes.
- * El backend actual solo implementa el registro y la consulta de reportes
- * propios (`proyectos/docs/api.md` §26); las rutas administrativas todavía no
- * existen. Estos tipos deben alinearse cuando se acuerde el contrato final.
+ * Tipos de moderación de reseñas y reportes, alineados con los DTO del backend:
+ * `ModeracionResenasController` y `ResenaReportadaResponse`.
  */
 
 export type EstadoReporte =
@@ -32,6 +30,7 @@ export interface ResenaReportadaResponse {
   fechaCreacion: string;
   estado: boolean;
   ocultaPorReportes: boolean;
+  ocultaPorModeracion: boolean;
   totalReportes: number;
   reportesPendientes: number;
   reportes: ReporteResenaResponse[];

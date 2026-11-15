@@ -56,4 +56,27 @@ describe("Validadores de roles del sistema (Hallazgo 2 - Fase 2)", () => {
     expect(puedeModerar({ rol: "Representante de establecimiento" } as UsuarioSesion)).toBe(false);
     expect(puedeModerar(null)).toBe(false);
   });
+
+  it("los validadores consideran todos los roles activos de una cuenta multirrol", () => {
+    const adminSecundario = {
+      rol: "Usuario registrado",
+      roles: ["Usuario registrado", "Administrador"],
+    } as UsuarioSesion;
+
+    expect(esAdministrador(adminSecundario)).toBe(true);
+    expect(puedeModerar(adminSecundario)).toBe(true);
+    expect(
+      esRepresentante({
+        rol: "Usuario registrado",
+        roles: ["Usuario registrado", "Representante de establecimiento"],
+      } as UsuarioSesion),
+    ).toBe(true);
+    expect(
+      esModerador({
+        rol: "Usuario registrado",
+        roles: ["Moderador", "Usuario registrado"],
+      } as UsuarioSesion),
+    ).toBe(true);
+    expect(esUsuarioRegistrado(adminSecundario)).toBe(true);
+  });
 });

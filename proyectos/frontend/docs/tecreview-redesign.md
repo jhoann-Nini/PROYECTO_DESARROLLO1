@@ -1274,34 +1274,31 @@ el historial antiguo y el reescrito.
 
 **Criterios**
 
-- La pantalla está preparada para consultar la cola de reseñas reportadas y
-  solo se ofrece a sesiones con rol Moderador o Administrador activo.
+- La pantalla consulta la cola real de reseñas reportadas y solo se ofrece a
+  sesiones con rol Moderador o Administrador.
 - La pantalla cubre carga, error con reintento, vacío, filtros por estado y
-  visibilidad, detalle de reportes y acciones de administrador.
-- La integración real queda bloqueada: `proyectos/docs/api.md` §26 y
-  `ReporteResenaController` confirman que la API administrativa aún no existe.
+  visibilidad, detalle de reportes y acciones de moderación.
+- La integración usa los endpoints implementados por
+  `ModeracionResenasController` y documentados en `proyectos/docs/api.md` §28.
 
 **Decisiones**
 
 - El panel se monta como modal accesible desde `/perfil` y reutiliza
   `EstadoVacio` y `CLASE_FOCO`.
-- Las rutas `/api/moderacion/...` y `/api/admin/resenas/...` son una propuesta
-  del frontend, no un contrato confirmado. El panel muestra un aviso visible de
-  integración pendiente.
-- Los tipos y las llamadas viven en `src/types/moderacion.ts` y
-  `src/services/api.ts`; el detalle de la brecha y los pendientes está en
-  `docs/moderacion-resenas.md`.
-- También queda pendiente alinear los estados del enum Java
-  (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`) con el contrato
-  objetivo de `api.md` (`PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO`, `CERRADO`).
+- Las acciones de ocultar/publicar requieren justificación en la UI; rechazar
+  reportes permite motivo opcional y se habilita cuando el backend admite la
+  transición de reportes en revisión.
+- Los tipos, llamadas y reglas de interfaz se describen en
+  `docs/moderacion-resenas.md`; los permisos y transiciones definitivos se
+  validan siempre en backend.
 
 **Verificación**
 
-- Pruebas en `producto.test.ts`, `api.test.ts`,
-  `PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
-- Suite focalizada: 85 pruebas en 4 archivos, todas en verde.
-- Las pruebas de moderación usan mocks y no sustituyen una prueba de
-  integración con backend.
+- `npm test -- --run src/components/moderacion/PanelModeracionModal.test.tsx
+  src/services/api.test.ts src/app/perfil/PerfilCliente.test.tsx`: 96 pruebas
+  aprobadas en 3 archivos.
+- El backend cubre las reglas de autorización y persistencia con sus pruebas de
+  integración; el frontend valida la presentación y el contrato del cliente.
 
 ### 12.9 Revisión TEC-148 — reporte de precio o enlace incorrecto (bloqueada)
 

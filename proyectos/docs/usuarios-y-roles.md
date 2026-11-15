@@ -667,6 +667,13 @@ Todas las rutas siguientes requieren JWT válido y rol **Administrador** activo,
 
 El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API obtiene al actor desde el `sub` del JWT; no acepta el identificador del administrador desde el cliente.
 
+Consultas de solo lectura implementadas para apoyar estas operaciones:
+
+| Método | Ruta | Acción |
+|---|---|---|
+| GET | `/api/admin/usuarios` | Lista cuentas y sus roles activos; admite filtro opcional `correo` por coincidencia parcial |
+| GET | `/api/admin/roles` | Lista el catálogo de roles con `idRol`, `nombre` y `descripcion` |
+
 ### 12.3 Reglas de protección
 
 - No se asignan roles a cuentas inactivas ni representantes a cuentas o establecimientos inactivos.
@@ -686,4 +693,4 @@ El cuerpo puede omitirse o enviar `{"motivo":"Motivo de la operación"}`. La API
   - La migración `008_multirole_y_representantes.sql` debe ejecutarse antes que `009_auditoria_asignaciones.sql`.
   - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
   - Las migraciones 008 y 009 ya fueron aplicadas y su registro en `schema_version` fue corregido y validado por el equipo. No repetir su ejecución.
-- **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento.
+- **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento. Las consultas de cuentas y catálogo de roles (`GET /api/admin/usuarios` y `GET /api/admin/roles`) ya están implementadas y no sustituyen esos listados de asignaciones.

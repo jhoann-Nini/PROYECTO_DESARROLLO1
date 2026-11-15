@@ -96,9 +96,9 @@ backend/
 | Comparación      | GET    | `/api/comparador`                  | Público            |
 | Establecimientos | GET    | `/api/establecimientos`            | Público            |
 | Establecimiento  | GET    | `/api/establecimientos/{id}`       | Público            |
-| Establecimiento  | POST   | `/api/establecimientos`            | Autorizado         |
-| Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Autorizado         |
-| Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Autorizado         |
+| Establecimiento  | POST   | `/api/establecimientos`            | Administrador      |
+| Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Administrador      |
+| Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Administrador      |
 
 # 3. Arquitectura de la API
 
@@ -622,33 +622,94 @@ La estructura definitiva dependerá de las características que se definan para 
 
 La comparación no requiere necesariamente una tabla COMPARACION en la base de datos, ya que puede generarse mediante consultas sobre los productos.
 
- 1. Establecimientos
+## 18. Establecimientos
 
 TecnoReview también contempla información sobre establecimientos relacionados con productos tecnológicos.
 
-18.1 Consultar establecimientos
-GET /api/establecimientos
-18.2 Consultar un establecimiento
-GET /api/establecimientos/{id}
-18.3 Crear establecimiento
-POST /api/establecimientos
+### 18.1 Consultar establecimientos
 
-Ejemplo:
+`GET /api/establecimientos`
 
+- **Acceso:** público, sin JWT.
+- **Respuesta `200 OK`:** arreglo de `EstablecimientoResponse` con los establecimientos activos, ordenados por nombre.
+- No incluye establecimientos inactivos.
+
+### 18.2 Consultar un establecimiento
+
+`GET /api/establecimientos/{id}`
+
+- **Acceso:** público, sin JWT.
+- **`200 OK`:** `EstablecimientoResponse` si el establecimiento está activo.
+- **`404 Not Found`:** si no existe o está inactivo.
+
+### 18.3 Crear establecimiento
+
+`POST /api/establecimientos`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- **Cuerpo (`EstablecimientoUpdateRequest`):**
+
+```json
 {
   "nombre": "Tienda Tecnológica",
-  "direccion": "Dirección del establecimiento",
-  "telefono": "0000000000"
+  "direccion": "Carrera 10 # 20-30",
+  "telefono": "3001234567",
+  "correo": "tienda@ejemplo.com",
+  "descripcion": "Tienda de tecnología",
+  "latitud": 4.08,
+  "longitud": -76.19
 }
+```
 
-Los campos definitivos se establecerán durante la implementación.
+- `nombre` es obligatorio y admite hasta 150 caracteres.
+- `direccion` admite hasta 255 caracteres; `telefono`, hasta 30.
+- `correo` debe tener formato válido y hasta 150 caracteres.
+- `latitud` debe estar entre -90 y 90; `longitud`, entre -180 y 180.
+- El establecimiento se crea activo (`estado = true`).
+- **`201 Created`:** `EstablecimientoResponse` del recurso creado.
+- **`400 Bad Request`:** errores de validación.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+- Las asignaciones de representantes se gestionan con los endpoints administrativos existentes.
 
-18.4 Actualizar establecimiento
-PUT /api/establecimientos/{id}
-18.5 Eliminar establecimiento
-DELETE /api/establecimientos/{id}
+### 18.4 Actualizar establecimiento
 
-La operación deberá estar protegida mediante autorización.
+`PUT /api/establecimientos/{id}`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- Usa el mismo cuerpo y validaciones que la creación.
+- No modifica `estado` ni las asignaciones de representantes.
+- **`200 OK`:** `EstablecimientoResponse` actualizado.
+- **`404 Not Found`:** establecimiento inexistente.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+### 18.5 Eliminar establecimiento
+
+`DELETE /api/establecimientos/{id}`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- La eliminación es lógica: marca `estado = false` y conserva el registro y las asignaciones históricas.
+- **`204 No Content`:** establecimiento desactivado.
+- **`409 Conflict`:** el establecimiento ya está inactivo.
+- **`404 Not Found`:** establecimiento inexistente.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+### Respuesta de establecimiento
+
+```json
+{
+  "idEstablecimiento": 1,
+  "nombre": "Tienda Tecnológica",
+  "direccion": "Carrera 10 # 20-30",
+  "telefono": "3001234567",
+  "correo": "tienda@ejemplo.com",
+  "descripcion": "Tienda de tecnología",
+  "latitud": 4.08,
+  "longitud": -76.19,
+  "estado": true
+}
+```
+
+**Nota:** las rutas `/api/representante/establecimientos` siguen siendo el mecanismo para que una cuenta con rol Representante consulte y actualice únicamente sus establecimientos asignados. El Administrador conserva alcance global en esas rutas.
 
  1. Productos y establecimientos
 
@@ -1233,7 +1294,56 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 - `409 Conflict`: operación duplicada, recurso inactivo o intento de retirar el último administrador.
 - `201 Created` / `204 No Content`: operación exitosa.
 
-**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
+**Migraciones:** `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` ya fueron aplicadas y validadas por el equipo según `usuarios-y-roles.md`. No deben volver a ejecutarse.
+
+---
+
+# Consultas administrativas de apoyo (Fase 1)
+
+Estas consultas son de solo lectura y permiten localizar cuentas y conocer el catálogo de roles antes de usar los endpoints de asignación. Todas requieren un JWT de Supabase válido y una asignación activa del rol `Administrador`.
+
+## Listar o buscar usuarios
+
+`GET /api/admin/usuarios`
+
+- **Parámetro opcional:** `correo`. Si se envía, filtra por coincidencia parcial sin distinguir mayúsculas.
+- **Respuesta `200 OK`:** arreglo de `UsuarioAdminResponse`, ordenado por nombre:
+
+```json
+[
+  {
+    "idUsuario": 12,
+    "nombre": "María López",
+    "correo": "maria@ejemplo.com",
+    "rol": "Usuario registrado",
+    "activo": true,
+    "fechaRegistro": "2026-11-13T10:15:00",
+    "roles": ["Usuario registrado"]
+  }
+]
+```
+
+- `roles` contiene únicamente las asignaciones activas, ordenadas alfabéticamente.
+- `rol` conserva el rol principal por compatibilidad y toma el primer elemento de `roles`; si no hay roles activos, vale `"Sin roles activos"`.
+- No expone contraseña, `password` ni `supabaseUid`.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+## Listar roles
+
+`GET /api/admin/roles`
+
+- **Respuesta `200 OK`:** arreglo de `RolResponse`, ordenado por nombre:
+
+```json
+[
+  { "idRol": 1, "nombre": "Administrador", "descripcion": "Administración global" },
+  { "idRol": 2, "nombre": "Usuario registrado", "descripcion": "Participación en la comunidad" }
+]
+```
+
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+**Pendiente para una iteración posterior:** los endpoints para listar asignaciones activas por usuario o establecimiento y para leer el historial de auditoría. Esta iteración no los implementa.
 
 ---
 

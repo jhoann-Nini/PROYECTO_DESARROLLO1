@@ -31,6 +31,14 @@ vi.mock("@/services/api", async () => {
   };
 });
 
+vi.mock("@/components/admin/AdminUsuariosRoles", () => ({
+  default: () => <div data-testid="admin-usuarios-roles" />,
+}));
+
+vi.mock("@/components/admin/AdminEstablecimientos", () => ({
+  default: () => <div data-testid="admin-establecimientos" />,
+}));
+
 describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   const adminUser: UsuarioSesion = {
     id: "admin-1",
@@ -107,6 +115,46 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         />,
       );
       expect(screen.queryByRole("dialog")).toBeNull();
+    });
+  });
+
+  describe("Administración de usuarios y roles", () => {
+    it("muestra la pestaña de usuarios y roles y su contenido", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      fireEvent.click(
+        screen.getByRole("tab", { name: /Usuarios y roles/i }),
+      );
+
+      expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
+    });
+  });
+
+  describe("Administración de establecimientos", () => {
+    it("muestra la pestaña de establecimientos y su contenido", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      fireEvent.click(
+        screen.getByRole("tab", { name: /Establecimientos/i }),
+      );
+
+      expect(screen.getByTestId("admin-establecimientos")).toBeDefined();
     });
   });
 

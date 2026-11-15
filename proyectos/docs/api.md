@@ -1386,3 +1386,51 @@ Marca los reportes en estado `EN_REVISION` de una reseña como `RECHAZADO`, regi
   - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o autor de la reseña.
   - `404 Not Found`: Reseña inexistente.
   - `409 Conflict`: Si existen reportes todavía en estado `PENDIENTE` que requieren revisión previa.
+
+---
+
+# 30. Control General de Tasa de Peticiones (HU-S2-14 / TEC-121)
+
+La API REST de TecReview implementa un mecanismo general de control de tasa de peticiones (**General Rate Limiting**) para proteger la plataforma contra denegación de servicio (DoS), scraping descontrolado, ataques de fuerza bruta y saturación de recursos.
+
+## 30.1 Políticas y funcionamiento general
+
+1. **Alcance:** Aplica de manera transversal a todos los endpoints bajo el prefijo `/api/**`.
+2. **Identificación de cliente:**
+   - **Clientes autenticados:** Se identifican por su sujeto/identidad de usuario (`user:<sub/email>`) obtenida del token JWT validado por Spring Security.
+   - **Clientes anónimos:** Se identifican por la dirección IP de origen (`ip:<clientIp>`), con soporte para proxies inversos mediante las cabeceras `X-Forwarded-For` y `X-Real-IP`.
+3. **Parámetros configurables:**
+   - `ratelimit.general.enabled`: Activa o desactiva el mecanismo (por defecto `true`).
+   - `ratelimit.general.limit`: Límite máximo de solicitudes permitidas en la ventana (por defecto `100` peticiones).
+   - `ratelimit.general.window-seconds`: Duración de la ventana temporal fija (por defecto `60` segundos).
+4. **Exclusiones (Whitelist):**
+   - Solicitudes HTTP `OPTIONS` (preflight CORS del navegador) no consumen cuota.
+   - Endpoint de salud y diagnóstico (`/api/health`) se encuentra excluido para permitir monitoreo continuo por balanceadores o herramientas de infraestructura.
+
+## 30.2 Cabeceras de respuesta HTTP
+
+Todas las solicitudes evaluadas por el filtro de rate limiting incluyen las cabeceras informativas estándar:
+
+| Cabecera | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `X-RateLimit-Limit` | `Integer` | Límite máximo de peticiones permitidas en la ventana actual (ej. `100`). |
+| `X-RateLimit-Remaining` | `Integer` | Peticiones restantes permitidas en la ventana actual (decrementa con cada petición, `0` al bloquearse). |
+| `X-RateLimit-Reset` | `Long` | Timestamp epoch en segundos en el cual se reinicia la ventana de cuota. |
+| `Retry-After` | `Long` | *(Solo en HTTP 429)* Segundos restantes que el cliente debe esperar antes de reintentar. |
+
+## 30.3 Respuesta ante exceso de peticiones (HTTP 429)
+
+Cuando un cliente supera el límite establecido, el backend interrumpe inmediatamente el procesamiento y responde:
+
+- **Código de estado:** `429 Too Many Requests`
+- **Cabeceras:** `Retry-After: <segundos>`, `X-RateLimit-Remaining: 0`
+- **Cuerpo JSON:**
+  ```json
+  {
+    "timestamp": "2026-11-13T10:45:00.123",
+    "status": 429,
+    "error": "Too Many Requests",
+    "message": "Has superado el límite de peticiones permitido. Por favor, intenta de nuevo más tarde.",
+    "path": "/api/categorias"
+  }
+  ```

@@ -14,7 +14,8 @@ export type ClaveFilaComparacion =
   | "almacenamiento"
   | "camaras"
   | "bateria"
-  | `tecnica:${string}`;
+  | `tecnica:${string}`
+  | `benchmark:${string}`;
 
 export interface FilaComparacion {
   clave: ClaveFilaComparacion;

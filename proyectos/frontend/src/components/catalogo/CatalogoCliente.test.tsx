@@ -715,4 +715,19 @@ describe("CatalogoCliente", () => {
 
     expect(mockPush).toHaveBeenCalledWith("/productos/7");
   });
+
+  it("no navega a rutas de detalle cuando el producto tiene un ID negativo o mock", async () => {
+    mockPush.mockClear();
+    configurarExito([crearProducto(-15)]);
+
+    render(<CatalogoCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Producto -15")).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Ver detalle" }));
+
+    expect(mockPush).not.toHaveBeenCalled();
+  });
 });

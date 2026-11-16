@@ -2,6 +2,8 @@
 "use client";
 
 import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
+import type { ProductoViewModel } from "@/data/productoViewModel";
+import { idApiDeViewModel } from "@/data/productoViewModel";
 import { useState, useEffect, useMemo } from "react";
 import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
 import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
@@ -18,7 +20,7 @@ import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
 interface FichaTecnicaModalProps {
-  producto: DispositivoKimovil | Producto | null;
+  producto: DispositivoKimovil | Producto | ProductoViewModel | null;
   onClose: () => void;
   usuarioSesion?: UsuarioSesion | null;
   onPedirLogin?: () => void;
@@ -70,27 +72,38 @@ export default function FichaTecnicaModal({
     [nuevaResenaTexto],
   );
 
-  const idProducto = useMemo(() => {
+  const idProductoApi = useMemo<number | null>(() => {
     if (!producto) return null;
-    if ("idProducto" in producto && typeof producto.idProducto === "number") {
-      return producto.idProducto;
+    if ("origen" in producto) {
+      if (producto.origen === "mock" || producto.origen === "ranking") return null;
+      return idApiDeViewModel(producto as ProductoViewModel);
     }
-    if ("id" in producto && typeof (producto as DispositivoKimovil).id === "number") {
-      return (producto as DispositivoKimovil).id;
+    if ("idProducto" in producto && typeof producto.idProducto === "number") {
+      if (Number.isSafeInteger(producto.idProducto) && producto.idProducto > 0) {
+        return producto.idProducto;
+      }
     }
     return null;
   }, [producto]);
 
+  const claveProductoUnica = useMemo(() => {
+    if (!producto) return null;
+    if ("idGlobal" in producto && producto.idGlobal) return producto.idGlobal;
+    if ("idProducto" in producto) return `prod:${producto.idProducto}`;
+    if ("id" in producto) return `kimovil:${(producto as DispositivoKimovil).id}`;
+    return null;
+  }, [producto]);
+
   // Resetear estados locales durante el render cuando cambia el producto (patrón recomendado por React)
-  const [prevIdProducto, setPrevIdProducto] = useState(idProducto);
-  if (idProducto !== prevIdProducto) {
-    setPrevIdProducto(idProducto);
+  const [prevClaveProducto, setPrevClaveProducto] = useState(claveProductoUnica);
+  if (claveProductoUnica !== prevClaveProducto) {
+    setPrevClaveProducto(claveProductoUnica);
     setPuntuacionSeleccionada(0);
     setPuntuacionActual(null);
     setHoverEstrella(0);
     setErrorImagenUrl(null);
     setResenasProducto([]);
-    setCargandoResenas(Boolean(idProducto));
+    setCargandoResenas(Boolean(idProductoApi));
     setErrorCargaResenas("");
     setNuevaResenaTexto("");
     setErrorResena("");
@@ -99,11 +112,11 @@ export default function FichaTecnicaModal({
     setPestanaSeleccionada(null);
   }
 
-  // Cargar valoración de estrellas previa del usuario
+  // Cargar valoración de estrellas previa del usuario (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (usuarioSesion && idProducto) {
-      obtenerMiValoracion(idProducto)
+    if (usuarioSesion && idProductoApi) {
+      obtenerMiValoracion(idProductoApi)
         .then((val) => {
           if (montado && val) {
             setPuntuacionActual(val.puntuacion);
@@ -114,13 +127,13 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [usuarioSesion, idProducto]);
+  }, [usuarioSesion, idProductoApi]);
 
-  // Cargar estadísticas públicas de valoración comunitaria
+  // Cargar estadísticas públicas de valoración comunitaria (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (idProducto) {
-      obtenerValoracionStats(idProducto)
+    if (idProductoApi) {
+      obtenerValoracionStats(idProductoApi)
         .then((stats) => {
           if (montado) setValoracionStats(stats);
         })
@@ -131,13 +144,13 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [idProducto]);
+  }, [idProductoApi]);
 
-  // Cargar reseñas comunitarias escritas del producto
+  // Cargar reseñas comunitarias escritas del producto (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (idProducto) {
-      obtenerResenas(idProducto)
+    if (idProductoApi) {
+      obtenerResenas(idProductoApi)
         .then((datos) => {
           if (montado) {
             setResenasProducto(datos);
@@ -159,7 +172,7 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [idProducto]);
+  }, [idProductoApi]);
 
   const manejarGuardarResena = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,8 +180,10 @@ export default function FichaTecnicaModal({
       setErrorResena("Debes iniciar sesión para publicar una opinión.");
       return;
     }
-    if (!idProducto) {
-      setErrorResena("No se pudo identificar el código del dispositivo a reseñar.");
+    if (!idProductoApi) {
+      setErrorResena(
+        "Las opiniones y valoraciones solo están disponibles para productos registrados en el catálogo."
+      );
       return;
     }
     if (puntuacionSeleccionada !== 0 && (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5)) {
@@ -193,7 +208,7 @@ export default function FichaTecnicaModal({
 
     try {
       const res = await crearResena({
-        idProducto,
+        idProducto: idProductoApi,
         comentario: nuevaResenaTexto.trim(),
         ...(puntuacionSeleccionada > 0 ? { puntuacion: puntuacionSeleccionada } : {}),
       });
@@ -204,8 +219,8 @@ export default function FichaTecnicaModal({
       setPuntuacionSeleccionada(0);
       setExitoResena("¡Tu opinión ha sido publicada con éxito!");
       setResenasProducto((prev) => [res, ...prev.filter((r) => r.idResena !== res.idResena)]);
-      if (idProducto) {
-        obtenerValoracionStats(idProducto)
+      if (idProductoApi) {
+        obtenerValoracionStats(idProductoApi)
           .then((st) => setValoracionStats(st))
           .catch(() => {});
       }
@@ -224,7 +239,7 @@ export default function FichaTecnicaModal({
 
   const ficha = useMemo(() => {
     if (!producto) return null;
-    return normalizarFichaProducto(producto);
+    return normalizarFichaProducto(producto as unknown as Producto | DispositivoKimovil);
   }, [producto]);
 
   const pestanasSpecs = useMemo(() => {
@@ -680,9 +695,9 @@ export default function FichaTecnicaModal({
                         <span aria-hidden="true">💬</span>
                         <span>Opiniones de la comunidad ({resenasProducto.length})</span>
                       </h4>
-                      {idProducto && (
+                      {idProductoApi && (
                         <span className="text-[10px] text-[var(--color-subtle)]">
-                          Ref #{idProducto}
+                          Ref #{idProductoApi}
                         </span>
                       )}
                     </div>
@@ -750,7 +765,11 @@ export default function FichaTecnicaModal({
                     <span className="mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                       Publicar una opinión sobre este dispositivo
                     </span>
-                    {!usuarioSesion ? (
+                    {!idProductoApi ? (
+                      <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 text-center text-xs text-[var(--color-subtle)]">
+                        Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo.
+                      </div>
+                    ) : !usuarioSesion ? (
                       <div className="flex flex-col items-center justify-between gap-3 text-xs sm:flex-row">
                         <p className="text-[var(--color-subtle)]">
                           Debes iniciar sesión para publicar una opinión en la comunidad.

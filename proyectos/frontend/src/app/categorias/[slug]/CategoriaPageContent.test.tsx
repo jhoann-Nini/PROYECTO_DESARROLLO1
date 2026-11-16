@@ -219,4 +219,36 @@ describe("Página de categoría (CategoriaPageContent)", () => {
 
     expect(mockPush).toHaveBeenCalledWith("/productos/501");
   });
+
+  describe("HA-03: Protección de rutas de navegación en CategoriaPageContent", () => {
+    it("no navega a rutas de detalle cuando el producto de la categoría tiene un ID negativo o mock", async () => {
+      mockPush.mockClear();
+      mockObtenerProductosPorCategoria.mockResolvedValueOnce([
+        {
+          idProducto: -15,
+          nombre: "Dispositivo Mock Categoría",
+          descripcion: "Mock",
+          idCategoria: 17,
+          idMarca: 2,
+          imagen: null,
+          precioReferencia: 2000000,
+          estado: true,
+        },
+      ]);
+
+      render(<CategoriaPageContent slug="celulares" />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Dispositivo Mock Categoría")).toBeDefined();
+      });
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Ver detalle de Dispositivo Mock Categoría",
+        }),
+      );
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
 });

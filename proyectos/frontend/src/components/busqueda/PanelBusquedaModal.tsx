@@ -59,15 +59,27 @@ function FilaResultado({
   const [errorImagen, setErrorImagen] = useState(false);
   const tieneImagen = Boolean(producto.imagen) && !errorImagen;
 
-  return (
-    <Link
-      href={`/productos/${producto.idProducto}`}
-      onClick={() => {
-        onSeleccionar?.(producto);
-        onCerrar();
-      }}
-      className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
-    >
+  const esIdApiValido =
+    (typeof producto.idApi === "number" &&
+      Number.isSafeInteger(producto.idApi) &&
+      producto.idApi > 0) ||
+    (typeof producto.idProducto === "number" &&
+      Number.isSafeInteger(producto.idProducto) &&
+      producto.idProducto > 0 &&
+      producto.origen !== "mock" &&
+      producto.origen !== "ranking");
+
+  const idDestino =
+    typeof producto.idApi === "number" &&
+    Number.isSafeInteger(producto.idApi) &&
+    producto.idApi > 0
+      ? producto.idApi
+      : esIdApiValido
+        ? producto.idProducto
+        : null;
+
+  const contenido = (
+    <>
       <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)]">
         {tieneImagen ? (
           <img
@@ -100,7 +112,47 @@ function FilaResultado({
       <span className="shrink-0 text-xs font-semibold text-[var(--color-ink)]">
         {producto.precioFormateado}
       </span>
-    </Link>
+    </>
+  );
+
+  if (idDestino) {
+    return (
+      <Link
+        href={`/productos/${idDestino}`}
+        onClick={() => {
+          onSeleccionar?.(producto);
+          onCerrar();
+        }}
+        className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+      >
+        {contenido}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      role={onSeleccionar ? "button" : undefined}
+      tabIndex={onSeleccionar ? 0 : undefined}
+      onClick={() => {
+        onSeleccionar?.(producto);
+        onCerrar();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSeleccionar?.(producto);
+          onCerrar();
+        }
+      }}
+      className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
+        onSeleccionar
+          ? "cursor-pointer hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          : "opacity-80"
+      }`}
+    >
+      {contenido}
+    </div>
   );
 }
 

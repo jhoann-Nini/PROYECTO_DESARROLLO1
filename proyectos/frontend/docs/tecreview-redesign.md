@@ -242,7 +242,10 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   `valoracion-stats`; nunca se derivan de una reseña.
 - Blog: cuatro artículos editoriales estáticos en `src/data/blog.ts`, sin
   autores, métricas, precios ni afirmaciones inventadas. Enlazan a categorías
-  reales y no crean endpoints ni CMS.
+  reales, al comparador y a reseñas. La guía de comparación documenta el límite
+  de cuatro productos de la misma categoría, las filas técnicas registradas por
+  categoría y «Sin dato». El blog no crea endpoints ni CMS. Detalle de la
+  revisión: [`blog-revision.md`](blog-revision.md).
 - Perfil: usa la sesión de Supabase y `GET /api/usuarios/me`; muestra rol,
   fecha de registro, estado y las reseñas propias filtradas desde
   `/api/resenas`. Sin sesión ofrece `AuthModal`; con sesión permite cerrar

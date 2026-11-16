@@ -567,6 +567,7 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
 
   beforeEach(() => {
     mockObtenerResenas.mockReset();
+    mockObtenerResenas.mockResolvedValue([]);
     mockCrearResena.mockReset();
     mockObtenerMiValoracion.mockReset();
     mockObtenerMiValoracion.mockResolvedValue(null);

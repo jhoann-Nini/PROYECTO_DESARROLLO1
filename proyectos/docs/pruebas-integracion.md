@@ -430,3 +430,61 @@ Criterios validados:
 - **Regresión total del backend:** 365 pruebas ejecutadas, 0 fallos, 0 errores (`BUILD SUCCESS`).
 
 
+
+## HU-S2-13 / TEC-139: Pruebas 401 y 403 de todos los endpoints nuevos
+
+### 1. Alcance y objetivo
+Verificar exhaustivamente la seguridad perimetral y los controles de acceso basados en roles (RBAC) para todos los endpoints introducidos en el Sprint 2:
+- **HTTP 401 Unauthorized:** Solicitudes sin cabecera `Authorization` o con credenciales anónimas.
+- **HTTP 403 Forbidden:** Solicitudes de usuarios autenticados sin los permisos, roles o asignaciones requeridas (usuarios estándar, representantes de tienda accediendo a moderación, moderadores accediendo a administración de roles, o restricciones de integridad de negocio como el intento de auto-reportar la propia reseña).
+- **Contraste positivo (200 OK / 201 Created):** Comprobación de que las solicitudes con roles autorizados se procesan satisfactoriamente.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Endpoint | Método | Perfil / Condición | Código Esperado | Código Obtenido | Estado |
+| :--- | :--- | :---: | :--- | :---: | :---: | :---: |
+| **S2-13-01** | `/api/resenas/{id}/reportes` | `POST` | Anónimo (sin token) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-02** | `/api/resenas/{id}/reportes` | `POST` | Autor de la reseña (autorreporte) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-03** | `/api/reportes/resenas/{id}` | `POST` | Anónimo (ruta alterna) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-04** | `/api/reportes` | `POST` | Anónimo (ID en payload) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-05** | `/api/reportes/mis-reportes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-06** | `/api/moderacion/reportes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-07** | `/api/moderacion/reportes` | `GET` | Usuario estándar (sin rol) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-08** | `/api/moderacion/reportes` | `GET` | Representante de tienda | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-09** | `/api/moderacion/resenas/reportadas` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-10** | `/api/moderacion/resenas/reportadas` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-11** | `/api/moderacion/resenas/pendientes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-12** | `/api/moderacion/resenas/pendientes` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-13** | `/api/moderacion/reportes/{id}/estado` | `PATCH` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-14** | `/api/moderacion/reportes/{id}/estado` | `PATCH` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-15** | `/api/moderacion/reportes/{id}/historial` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-16** | `/api/moderacion/reportes/{id}/historial` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-17** | `/api/moderacion/resenas/{id}/ocultar` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-18** | `/api/moderacion/resenas/{id}/ocultar` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-19** | `/api/moderacion/resenas/{id}/ocultar` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-20** | `/api/moderacion/resenas/{id}/ocultar` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-21** | `/api/moderacion/resenas/{id}/publicar` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-22** | `/api/moderacion/resenas/{id}/publicar` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-23** | `/api/moderacion/resenas/{id}/publicar` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-24** | `/api/moderacion/resenas/{id}/publicar` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-25** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-26** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-27** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-28** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-29** | `/api/admin/usuarios` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-30** | `/api/admin/usuarios` | `GET` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-31** | `/api/admin/roles` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-32** | `/api/admin/roles` | `POST` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-33** | `/api/admin/roles` | `DELETE` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-34** | `/api/admin/representantes` | `POST` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-35** | `/api/admin/representantes` | `DELETE` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-36** | `/api/establecimientos` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-37** | `/api/establecimientos` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-38** | `/api/resenas/{id}/reportes` | `POST` | Usuario autenticado (reseña ajena) | `201 Created` | `201 Created` | **APROBADO** |
+| **S2-13-39** | `/api/moderacion/reportes` | `GET` | Moderador activo | `200 OK` | `200 OK` | **APROBADO** |
+| **S2-13-40** | `/api/admin/usuarios` | `GET` | Administrador activo | `200 OK` | `200 OK` | **APROBADO** |
+
+### 3. Cobertura y ejecución
+- **Clase de prueba:** `com.example.backend.controller.EndpointsNuevos401y403IntegrationTest`.
+- **Total pruebas ejecutadas:** 40 pruebas automatizadas, 0 fallos, 0 errores (100% éxito).
+- **Tiempo de ejecución:** ~12.43 s en entorno H2 / Spring Security MockMvc.

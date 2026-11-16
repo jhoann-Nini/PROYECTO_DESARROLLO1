@@ -361,8 +361,6 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "tablets",
-      benchmarkEtiqueta: "Benchmark Global Tablet",
-      benchmarkValor: "2,050,000 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -377,7 +375,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "12GB RAM LPDDR5X · 256GB Almacenamiento de alta velocidad UFS 4.0.",
+          descripcion: "12GB RAM LPDDR5X · 256GB de almacenamiento UFS 3.1.",
         },
         {
           icono: "📸",
@@ -424,8 +422,6 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "auriculares",
-      benchmarkEtiqueta: "Aislamiento Acústico ANC",
-      benchmarkValor: "-42 dB · Hi-Res Audio Wireless",
       secciones: [
         {
           icono: "🎧",
@@ -576,10 +572,10 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 202,
     ranking: 2,
-    nombre: "Galaxy S24 Ultra",
+    nombre: "Galaxy S24 Ultra (256GB)",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "Snapdragon 8 Gen 3 for Galaxy · S-Pen · 200MP · Marco de Titanio",
+    especificaciones: "12GB RAM · 256GB · Snapdragon 8 Gen 3 for Galaxy · S-Pen · 200MP · Marco de Titanio",
     puntuacion: 9.4,
     precio: 4199900, // $ 4.199.900 COP
     precioOriginal: 5399900, // $ 5.399.900 COP
@@ -591,13 +587,16 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     chipInfo: "Snapdragon 8 Gen 3 · 200MP",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,050,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "DYNAMIC AMOLED 2X PLANO",
           descripcion: "6.8'' Dynamic AMOLED 2X 120Hz · 2600 nits pico · Corning Gorilla Armor antirreflejos.",
+        },
+        {
+          icono: "💾",
+          titulo: "MEMORIA Y ALMACENAMIENTO",
+          descripcion: "12GB de RAM · 256GB de almacenamiento.",
         },
       ],
       metricas: [
@@ -870,7 +869,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     nombre: "Apple iPad Pro 11'' M4 OLED",
     marca: "Apple",
     categoria: "tablets",
-    especificaciones: "Tandem OLED Ultra Retina XDR · Chip Apple M4 · 512GB",
+    especificaciones: "Tandem OLED Ultra Retina XDR · Chip Apple M4 de 10 núcleos CPU y 10 GPU · 16GB RAM · 1TB",
     puntuacion: 9.7,
     precio: 3996000,
     tendencia: "sube",
@@ -879,8 +878,6 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "tablets",
-      benchmarkEtiqueta: "Geekbench 6 Metal GPU",
-      benchmarkValor: "53,800 pts · AnTuTu: 2,700,000 pts",
       secciones: [
         {
           icono: "📱",
@@ -890,12 +887,12 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "⚡",
           titulo: "CHIP APPLE M4 DE NUEVA GENERACIÓN",
-          descripcion: "Apple M4 (9 núcleos CPU + 10 núcleos GPU con trazado de rayos por hardware + Neural Engine 16 núcleos).",
+          descripcion: "Apple M4 (10 núcleos CPU + 10 núcleos GPU con trazado de rayos por hardware + Neural Engine de 16 núcleos).",
         },
         {
           icono: "💾",
           titulo: "MEMORIA UNIFICADA & NVMe",
-          descripcion: "8GB Memoria Unificada de alto ancho de banda · 512GB Almacenamiento NVMe ultrarrápido.",
+          descripcion: "16GB de memoria unificada · 1TB de almacenamiento.",
         },
         {
           icono: "📸",
@@ -931,7 +928,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     nombre: "Apple MacBook Pro 16'' M3 Max",
     marca: "Apple",
     categoria: "laptops",
-    especificaciones: "Liquid Retina XDR · M3 Max 16-Core · 36GB RAM · 1TB SSD",
+    especificaciones: "Liquid Retina XDR · M3 Max 16 CPU / 40 GPU · 48GB de memoria unificada · 1TB SSD",
     puntuacion: 9.8,
     precio: 5996000,
     tendencia: "igual",
@@ -940,8 +937,6 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "laptops",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "21,500 pts · Metal GPU: 154,000 pts",
       secciones: [
         {
           icono: "🖥️",
@@ -956,7 +951,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA UNIFICADA & SSD",
-          descripcion: "36GB Memoria Unificada de 300GB/s ancho de banda · 1TB SSD ultrarrápido (hasta 7.4GB/s de lectura).",
+          descripcion: "48GB de memoria unificada con 400GB/s de ancho de banda · 1TB SSD.",
         },
         {
           icono: "🔋",
@@ -1230,8 +1225,6 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
     tipo: "oferta",
     detalleSpecs: {
       categoriaTipo: "tablets",
-      benchmarkEtiqueta: "Benchmark Global Tablet",
-      benchmarkValor: "2,050,000 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -1246,7 +1239,7 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "12GB RAM LPDDR5X · 256GB Almacenamiento UFS 4.0.",
+          descripcion: "12GB RAM LPDDR5X · 256GB de almacenamiento UFS 3.1.",
         },
         {
           icono: "📸",
@@ -1532,7 +1525,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
   {
     idProducto: 6,
     nombre: "Lenovo ThinkPad E14 Gen 5",
-    descripcion: "Procesador Intel Core i7 de 13ª Gen, 16GB RAM DDR4, 512GB SSD NVMe y pantalla 14'' IPS WUXGA antirreflejo.",
+    descripcion: "Procesador Intel Core i5-1335U de 13.ª generación, 16GB RAM DDR4, 512GB SSD NVMe y pantalla 14'' IPS WUXGA antirreflejo. SKU de referencia: 21JK0005RI.",
     idCategoria: 3,
     idMarca: 6,
     nombreCategoria: "Laptops / PCs",
@@ -1541,8 +1534,9 @@ export const PRODUCTOS_MOCK: Producto[] = [
     precioReferencia: 3196000,
     estado: true,
     caracteristicas: {
-      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 100% sRGB · Bisagra con apertura de 180°",
-      procesador: "Intel Core i7-1355U 13ª Generación (10 núcleos, 12 hilos, frecuencia turbo hasta 5.0GHz)",
+      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 45% NTSC · Bisagra con apertura de 180°",
+      procesador: "Intel Core i5-1335U 13.ª generación (10 núcleos: 2P + 8E, 12 hilos; P-core hasta 4.6GHz y E-core hasta 3.4GHz) con gráficos Intel Iris Xe.",
+      sku: "21JK0005RI",
       ram: "16GB Memoria RAM DDR4 3200MHz (8GB soldado + 8GB SODIMM, ampliable hasta 40GB)",
       almacenamiento: "512GB SSD M.2 2242 PCIe 4.0 NVMe Opal 2.0",
       bateria: "Batería integrada de 57Wh con tecnología Rapid Charge (80% de carga en 60 minutos con USB-C 65W)",

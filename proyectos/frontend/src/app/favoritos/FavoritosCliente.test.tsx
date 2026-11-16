@@ -36,6 +36,7 @@ import {
   obtenerProductos,
 } from "@/services/api";
 import { CLAVE_FAVORITOS } from "@/data/favoritos";
+import * as hookFavoritos from "@/hooks/useFavoritos";
 import FavoritosCliente from "./FavoritosCliente";
 
 const mockProductos = vi.mocked(obtenerProductos);
@@ -258,6 +259,58 @@ describe("FavoritosCliente", () => {
       expect(
         screen.getByText("Aún no tienes productos favoritos."),
       ).toBeDefined();
+    });
+  });
+
+  describe("HA-03: Protección de rutas de navegación en FavoritosCliente", () => {
+    it("no navega a /productos/-N si un favorito tiene identificador mock o negativo", async () => {
+      mockPush.mockClear();
+      vi.spyOn(hookFavoritos, "useFavoritos").mockReturnValue({
+        ids: [-15],
+        hidratado: true,
+        limpiar: vi.fn(),
+        alternar: vi.fn(),
+        quitar: vi.fn(),
+        contiene: () => true,
+      });
+
+      mockProductos.mockResolvedValueOnce([
+        crearProducto(-15, "Mock Negativo"),
+      ]);
+
+      render(<FavoritosCliente />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Mock Negativo")).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: "Ver detalle" }));
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+
+    it("navega a /productos/{id} para productos legítimos de API con ID positivo", async () => {
+      mockPush.mockClear();
+      vi.spyOn(hookFavoritos, "useFavoritos").mockReturnValue({
+        ids: [42],
+        hidratado: true,
+        limpiar: vi.fn(),
+        alternar: vi.fn(),
+        quitar: vi.fn(),
+        contiene: () => true,
+      });
+
+      mockProductos.mockResolvedValueOnce([
+        crearProducto(42, "Producto Legítimo"),
+      ]);
+
+      render(<FavoritosCliente />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Producto Legítimo")).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: "Ver detalle" }));
+      expect(mockPush).toHaveBeenCalledWith("/productos/42");
     });
   });
 });

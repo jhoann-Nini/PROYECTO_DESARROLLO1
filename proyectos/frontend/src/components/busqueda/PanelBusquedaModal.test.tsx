@@ -256,4 +256,56 @@ describe("PanelBusquedaModal", () => {
     expect(screen.queryByText("Galaxy Buds FE")).toBeNull();
     expect(screen.getByText("Se encontraron 1 producto")).toBeDefined();
   });
+
+  describe("HA-04: Protección de enlaces en PanelBusquedaModal", () => {
+    it("renderiza un enlace <Link> hacia /productos/{id} para productos legítimos de API", () => {
+      render(
+        <PanelBusquedaModal
+          abierto
+          onCerrar={vi.fn()}
+          productos={[
+            crearProducto({
+              idProducto: 42,
+              idApi: 42,
+              origen: "api",
+              nombre: "Dispositivo API",
+            }),
+          ]}
+        />
+      );
+
+      const link = screen.getByRole("link", { name: /Dispositivo API/i });
+      expect(link).toBeDefined();
+      expect(link.getAttribute("href")).toBe("/productos/42");
+    });
+
+    it("no genera un enlace para productos mock o con ID negativo, pero permite seleccionar y cerrar", () => {
+      const onSeleccionar = vi.fn();
+      const onCerrar = vi.fn();
+
+      render(
+        <PanelBusquedaModal
+          abierto
+          onCerrar={onCerrar}
+          onSeleccionarProducto={onSeleccionar}
+          productos={[
+            crearProducto({
+              idProducto: -15,
+              idApi: null,
+              origen: "mock",
+              nombre: "Dispositivo Mock Negativo",
+            }),
+          ]}
+        />
+      );
+
+      expect(screen.queryByRole("link", { name: /Dispositivo Mock Negativo/i })).toBeNull();
+      const item = screen.getByText("Dispositivo Mock Negativo");
+      expect(item).toBeDefined();
+
+      fireEvent.click(item);
+      expect(onSeleccionar).toHaveBeenCalled();
+      expect(onCerrar).toHaveBeenCalled();
+    });
+  });
 });

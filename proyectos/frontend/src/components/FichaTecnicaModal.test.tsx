@@ -4,6 +4,7 @@ import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/re
 import FichaTecnicaModal from "./FichaTecnicaModal";
 import { Producto, UsuarioSesion } from "@/types/producto";
 import { DISPOSITIVOS_VENDIDOS } from "@/data/mockProductos";
+import { convertirKimovilAViewModel } from "@/data/productoViewModel";
 
 const mockObtenerMiValoracion = vi.fn();
 const mockObtenerResenas = vi.fn().mockResolvedValue([]);
@@ -859,5 +860,253 @@ describe("Componente FichaTecnicaModal — Fase 3: ficha técnica ampliada", () 
     expect(
       screen.getByText("Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.")
     ).toBeDefined();
+  });
+});
+
+describe("Componente FichaTecnicaModal — HA-01: Protección de endpoints API contra identificadores mock o inválidos", () => {
+  afterEach(() => cleanup());
+
+  beforeEach(() => {
+    mockObtenerMiValoracion.mockClear();
+    mockObtenerResenas.mockClear();
+    mockCrearResena.mockClear();
+    mockObtenerValoracionStats.mockClear();
+  });
+
+  const usuarioTest: UsuarioSesion = {
+    id: "1",
+    nombre: "Usuario Test",
+    usuario: "usuario_test",
+    email: "test@tecreview.test",
+  };
+
+  it("no ejecuta peticiones al backend cuando el producto es un DispositivoKimovil de ranking o mock", async () => {
+    const dispositivoMock = DISPOSITIVOS_VENDIDOS[0];
+
+    render(
+      <FichaTecnicaModal
+        producto={dispositivoMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("no ejecuta peticiones al backend cuando el producto tiene idProducto negativo o 0", async () => {
+    const productoNegativo: Producto = {
+      idProducto: -15,
+      nombre: "Producto con ID negativo",
+      descripcion: "Mock producto",
+      idCategoria: 1,
+      idMarca: 1,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca Mock",
+      imagen: null,
+      precioReferencia: 500000,
+      estado: true,
+      caracteristicas: {},
+    };
+
+    render(
+      <FichaTecnicaModal
+        producto={productoNegativo}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("no ejecuta peticiones al backend cuando es un ProductoViewModel con origen mock", async () => {
+    const productoVmMock = convertirKimovilAViewModel(DISPOSITIVOS_VENDIDOS[0]);
+
+    render(
+      <FichaTecnicaModal
+        producto={productoVmMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("muestra mensaje informativo en pestaña de opiniones para productos mock y no renderiza formulario de envío", () => {
+    const dispositivoMock = DISPOSITIVOS_VENDIDOS[0];
+
+    render(
+      <FichaTecnicaModal
+        producto={dispositivoMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    const pestanaOpiniones = screen.getByRole("tab", { name: /opiniones/i });
+    fireEvent.click(pestanaOpiniones);
+
+    expect(
+      screen.getByText("Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo.")
+    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: /publicar opinión/i })).toBeNull();
+    expect(mockCrearResena).not.toHaveBeenCalled();
+  });
+
+  it("ejecuta las llamadas al backend correctamente cuando el producto es un Producto legítimo de API con id positivo", async () => {
+    const productoApi: Producto = {
+      idProducto: 305,
+      nombre: "Producto Legítimo API",
+      descripcion: "Registrado en BD",
+      idCategoria: 1,
+      idMarca: 1,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca Real",
+      imagen: null,
+      precioReferencia: 1200000,
+      estado: true,
+      caracteristicas: {},
+    };
+
+    render(
+      <FichaTecnicaModal
+        producto={productoApi}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).toHaveBeenCalledWith(305);
+      expect(mockObtenerValoracionStats).toHaveBeenCalledWith(305);
+      expect(mockObtenerMiValoracion).toHaveBeenCalledWith(305);
+    });
+  });
+
+  describe("HA-06: Reinicio dinámico de estado en FichaTecnicaModal ante cambio de producto", () => {
+    it("reinicia estados y gestiona llamadas de red al cambiar dinámicamente de API a mock, mock a mock y mock a API", async () => {
+      const productoApi1: Producto = {
+        idProducto: 101,
+        nombre: "Teléfono API 1",
+        descripcion: "Desc",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca",
+        imagen: null,
+        precioReferencia: 1000000,
+        estado: true,
+        caracteristicas: {},
+      };
+
+      const mockDispositivo1 = DISPOSITIVOS_VENDIDOS[0];
+      const mockDispositivo2 = DISPOSITIVOS_VENDIDOS[1];
+
+      const productoApi2: Producto = {
+        idProducto: 202,
+        nombre: "Teléfono API 2",
+        descripcion: "Desc",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca",
+        imagen: null,
+        precioReferencia: 2000000,
+        estado: true,
+        caracteristicas: {},
+      };
+
+      // 1. Montar inicialmente con producto API 1
+      const { rerender } = render(
+        <FichaTecnicaModal
+          producto={productoApi1}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(mockObtenerResenas).toHaveBeenCalledWith(101);
+        expect(mockObtenerValoracionStats).toHaveBeenCalledWith(101);
+        expect(mockObtenerMiValoracion).toHaveBeenCalledWith(101);
+      });
+
+      mockObtenerResenas.mockClear();
+      mockObtenerValoracionStats.mockClear();
+      mockObtenerMiValoracion.mockClear();
+
+      // 2. Transición de API a Mock 1
+      rerender(
+        <FichaTecnicaModal
+          producto={mockDispositivo1}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(mockDispositivo1.nombre)).toBeDefined();
+      });
+
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+
+      const pestanaOpiniones = screen.getByRole("tab", { name: /opiniones/i });
+      fireEvent.click(pestanaOpiniones);
+      expect(
+        screen.getByText(
+          "Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo."
+        )
+      ).toBeDefined();
+      expect(screen.queryByRole("button", { name: /publicar opinión/i })).toBeNull();
+
+      // 3. Transición de Mock 1 a Mock 2
+      rerender(
+        <FichaTecnicaModal
+          producto={mockDispositivo2}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(mockDispositivo2.nombre)).toBeDefined();
+      });
+
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+
+      // 4. Transición de Mock 2 a API 2
+      rerender(
+        <FichaTecnicaModal
+          producto={productoApi2}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Teléfono API 2")).toBeDefined();
+        expect(mockObtenerResenas).toHaveBeenCalledWith(202);
+        expect(mockObtenerValoracionStats).toHaveBeenCalledWith(202);
+        expect(mockObtenerMiValoracion).toHaveBeenCalledWith(202);
+      });
+    });
   });
 });

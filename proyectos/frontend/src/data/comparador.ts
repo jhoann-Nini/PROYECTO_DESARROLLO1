@@ -191,6 +191,7 @@ export function construirFilasComparacion(
       ),
     ),
     ...construirFilasMetricasTecnicas(productos),
+    ...construirFilasBenchmarks(productos),
   ];
 }
 
@@ -221,6 +222,31 @@ function construirFilasMetricasTecnicas(productos: ProductoViewModel[]): FilaCom
   });
 }
 
+function construirFilasBenchmarks(productos: ProductoViewModel[]): FilaComparacion[] {
+  if (productos.length < 2) return [];
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) return [];
+
+  const claveBenchmark = (benchmark: ProductoViewModel["datosFichaTecnica"]["benchmarks"][number]) =>
+    [benchmark.nombre, benchmark.prueba ?? "", benchmark.version ?? "", benchmark.unidad ?? ""].join("|");
+  const mapas = productos.map((producto) =>
+    new Map(producto.datosFichaTecnica.benchmarks.map((benchmark) => [claveBenchmark(benchmark), benchmark])),
+  );
+  const clavesComunes = [...mapas[0].keys()].filter((clave) =>
+    mapas.every((mapa) => mapa.has(clave)),
+  );
+
+  return clavesComunes.map((clave) => {
+    const resultados = mapas.map((mapa) => mapa.get(clave)!);
+    const primero = resultados[0];
+    return fila(
+      `benchmark:${clave}`,
+      primero.prueba ? `${primero.nombre} · ${primero.prueba}` : primero.nombre,
+      resultados.map((resultado) =>
+        resultado.unidad ? `${resultado.valor} ${resultado.unidad}` : String(resultado.valor),
+      ),
+    );
+  });
+}
 function contarEspecificaciones(producto: ProductoViewModel): number {
   return Object.values(producto.especificaciones).filter(
     (valor): valor is string => Boolean(valor),
@@ -241,6 +267,15 @@ export function generarRecomendacion(
       nombre: null,
       motivos: [],
       mensaje: "Agrega al menos dos productos para generar una recomendación.",
+    };
+  }
+
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) {
+    return {
+      idProducto: null,
+      nombre: null,
+      motivos: [],
+      mensaje: "La recomendación requiere productos de la misma categoría.",
     };
   }
 

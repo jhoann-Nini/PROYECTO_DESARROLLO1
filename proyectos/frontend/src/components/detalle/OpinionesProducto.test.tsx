@@ -53,6 +53,7 @@ const usuarioAdmin: UsuarioSesion = {
   usuario: "admin",
   email: "admin@example.com",
   rol: "Administrador",
+  activo: true,
 };
 
 const resenaAna: ResenaResponse = {

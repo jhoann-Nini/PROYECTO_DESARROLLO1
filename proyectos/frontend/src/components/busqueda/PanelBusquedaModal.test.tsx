@@ -10,6 +10,7 @@ import {
 } from "@testing-library/react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import PanelBusquedaModal from "./PanelBusquedaModal";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 afterEach(() => {
   cleanup();
@@ -42,6 +43,7 @@ function crearProducto(
       camaras: null,
       bateria: null,
     },
+    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: [],
     textoBusqueda: `${nombre} ${marca} ${categoriaEtiqueta}`.toLowerCase(),
     ...overrides,

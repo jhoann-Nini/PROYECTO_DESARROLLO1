@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type {
   CategoriaResponse,
   MarcaResponse,
@@ -26,6 +26,7 @@ import {
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import { normalizarPresupuestoCOP } from "@/data/presupuesto";
 import SearchBar from "@/components/SearchBar";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
@@ -36,19 +37,34 @@ import Pagination from "./Pagination";
 
 const POR_PAGINA = 12;
 
-function filtrosBase(): FiltrosCatalogo {
+function filtrosBase(precioMax = Number.MAX_SAFE_INTEGER): FiltrosCatalogo {
   return {
     busqueda: "",
     categorias: [],
     marcas: [],
     precioMin: 0,
-    precioMax: Number.MAX_SAFE_INTEGER,
+    precioMax,
     caracteristicas: [],
     excluirMarcas: false,
   };
 }
 
 export default function CatalogoCliente() {
+  const parametros = useSearchParams();
+  const valores = parametros.getAll("precioMax");
+  const presupuesto = valores.length === 1
+    ? normalizarPresupuestoCOP(valores[0])
+    : null;
+
+  return (
+    <CatalogoFiltrado
+      key={presupuesto ?? "sin-presupuesto"}
+      precioMaxInicial={presupuesto ?? Number.MAX_SAFE_INTEGER}
+    />
+  );
+}
+
+function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
   const router = useRouter();
   const botonFiltrosRef = useRef<HTMLButtonElement>(null);
   const [productosApi, setProductosApi] = useState<Producto[]>([]);
@@ -57,7 +73,7 @@ export default function CatalogoCliente() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [intento, setIntento] = useState(0);
-  const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase());
+  const [filtros, setFiltros] = useState<FiltrosCatalogo>(() => filtrosBase(precioMaxInicial));
   const [orden, setOrden] = useState<OrdenCatalogo>("relevancia");
   const [pagina, setPagina] = useState(1);
   const [drawerAbierto, setDrawerAbierto] = useState(false);

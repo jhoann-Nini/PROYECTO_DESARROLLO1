@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormEvent } from "react";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import CategoriasHome from "./CategoriasHome";
-import PresupuestoHome from "./PresupuestoHome";
+import PresupuestoHome, { type PresupuestoHomeProps } from "./PresupuestoHome";
 import OfertasHome from "./OfertasHome";
 import DestacadosHome, {
   type DestacadosHomeProps,
@@ -171,12 +171,21 @@ function propsDestacados(
     cargando: false,
     estadoBackend: "online",
     busqueda: "",
-    filtroPresupuesto: false,
-    presupuestoMax: 4_000_000,
-    limitePresupuestoCOP: 4_000_000,
     onVerDetalle: vi.fn(),
     onLimpiarBusqueda: vi.fn(),
-    onMostrarTodos: vi.fn(),
+    ...overrides,
+  };
+}
+
+function propsPresupuesto(
+  overrides: Partial<PresupuestoHomeProps> = {},
+): PresupuestoHomeProps {
+  return {
+    presupuestoMax: 4_000_000,
+    onCambiarPresupuesto: vi.fn(),
+    onConfirmarPresupuesto: vi.fn(),
+    totalEnPresupuesto: 4,
+    totalProductos: 10,
     ...overrides,
   };
 }
@@ -222,18 +231,11 @@ describe("CategoriasHome", () => {
 });
 
 describe("PresupuestoHome", () => {
-  it("mueve el slider y alterna el filtro explícito", () => {
+  it("mueve el slider sin confirmar y el botón confirma el presupuesto COP actual", () => {
     const onCambiarPresupuesto = vi.fn();
-    const onAlternarFiltro = vi.fn();
+    const onConfirmarPresupuesto = vi.fn();
     const { rerender } = render(
-      <PresupuestoHome
-        presupuestoMax={4_000_000}
-        onCambiarPresupuesto={onCambiarPresupuesto}
-        totalEnPresupuesto={4}
-        totalProductos={10}
-        filtrarSolo={false}
-        onAlternarFiltro={onAlternarFiltro}
-      />,
+      <PresupuestoHome {...propsPresupuesto({ onCambiarPresupuesto, onConfirmarPresupuesto })} />,
     );
 
     const slider = screen.getByLabelText(
@@ -245,44 +247,24 @@ describe("PresupuestoHome", () => {
 
     fireEvent.change(slider, { target: { value: "250000" } });
     expect(onCambiarPresupuesto).toHaveBeenCalledWith(250_000);
-
+    expect(onConfirmarPresupuesto).not.toHaveBeenCalled();
     expect(screen.getByText(/de 10 dentro del presupuesto/)).toBeDefined();
 
-    const alternar = screen.getByRole("button", {
-      name: /Filtrar por presupuesto/,
-    });
-    expect(alternar.getAttribute("aria-pressed")).toBe("false");
-    fireEvent.click(alternar);
-    expect(onAlternarFiltro).toHaveBeenCalledTimes(1);
-
     rerender(
-      <PresupuestoHome
-        presupuestoMax={4_000_000}
-        onCambiarPresupuesto={onCambiarPresupuesto}
-        totalEnPresupuesto={4}
-        totalProductos={10}
-        filtrarSolo
-        onAlternarFiltro={onAlternarFiltro}
-      />,
+      <PresupuestoHome {...propsPresupuesto({ presupuestoMax: 250_000, onConfirmarPresupuesto })} />,
     );
-
-    const activo = screen.getByRole("button", { name: /Solo en presupuesto/ });
-    expect(activo.getAttribute("aria-pressed")).toBe("true");
+    const confirmar = screen.getByRole("button", { name: "Filtrar por presupuesto" });
+    expect(confirmar.getAttribute("aria-pressed")).toBeNull();
+    fireEvent.click(confirmar);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledWith(250_000);
   });
 
-  it("notifica el fin del ajuste con el valor actual del slider", () => {
-    const onCambiarPresupuesto = vi.fn();
-    const onFinalizarAjuste = vi.fn();
+  it.each(["pointerUp", "mouseUp", "touchEnd"] as const)(
+    "confirma al terminar un ajuste por %s",
+    (evento) => {
+    const onConfirmarPresupuesto = vi.fn();
     const { rerender } = render(
-      <PresupuestoHome
-        presupuestoMax={4_000_000}
-        onCambiarPresupuesto={onCambiarPresupuesto}
-        onFinalizarAjuste={onFinalizarAjuste}
-        totalEnPresupuesto={4}
-        totalProductos={10}
-        filtrarSolo={false}
-        onAlternarFiltro={vi.fn()}
-      />,
+      <PresupuestoHome {...propsPresupuesto({ onConfirmarPresupuesto })} />,
     );
 
     const slider = screen.getByLabelText(
@@ -291,25 +273,51 @@ describe("PresupuestoHome", () => {
     fireEvent.change(slider, { target: { value: "250000" } });
 
     rerender(
-      <PresupuestoHome
-        presupuestoMax={250_000}
-        onCambiarPresupuesto={onCambiarPresupuesto}
-        onFinalizarAjuste={onFinalizarAjuste}
-        totalEnPresupuesto={4}
-        totalProductos={10}
-        filtrarSolo={false}
-        onAlternarFiltro={vi.fn()}
-      />,
+      <PresupuestoHome {...propsPresupuesto({ presupuestoMax: 250_000, onConfirmarPresupuesto })} />,
     );
+    expect(onConfirmarPresupuesto).not.toHaveBeenCalled();
+    fireEvent[evento](slider);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledTimes(1);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledWith(250_000);
+  });
 
-    expect(onFinalizarAjuste).not.toHaveBeenCalled();
+  it("no duplica confirmaciones por eventos de compatibilidad de la misma interacción", () => {
+    const onConfirmarPresupuesto = vi.fn();
+    render(<PresupuestoHome {...propsPresupuesto({ onConfirmarPresupuesto })} />);
+    const slider = screen.getByRole("slider");
+    fireEvent.pointerUp(slider);
+    fireEvent.mouseUp(slider);
+    fireEvent.touchEnd(slider);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledTimes(1);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledWith(4_000_000);
+  });
 
-    for (const evento of ["pointerUp", "mouseUp", "touchEnd", "keyUp"] as const) {
-      onFinalizarAjuste.mockClear();
-      fireEvent[evento](slider);
-      expect(onFinalizarAjuste).toHaveBeenCalledTimes(1);
-      expect(onFinalizarAjuste).toHaveBeenCalledWith(250_000);
-    }
+  it("permite confirmar un nuevo ajuste aunque termine en el último valor confirmado", () => {
+    const onConfirmarPresupuesto = vi.fn();
+    render(<PresupuestoHome {...propsPresupuesto({ onConfirmarPresupuesto })} />);
+    const slider = screen.getByRole("slider");
+    fireEvent.pointerUp(slider);
+    fireEvent.change(slider, { target: { value: "3000000" } });
+    fireEvent.change(slider, { target: { value: "4000000" } });
+    fireEvent.pointerUp(slider);
+    expect(onConfirmarPresupuesto).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown", "Enter"])(
+    "permite confirmar con la tecla %s", (key) => {
+      const onConfirmarPresupuesto = vi.fn();
+      render(<PresupuestoHome {...propsPresupuesto({ onConfirmarPresupuesto })} />);
+      fireEvent.keyUp(screen.getByRole("slider"), { key });
+      expect(onConfirmarPresupuesto).toHaveBeenCalledWith(4_000_000);
+    },
+  );
+
+  it("no navega al abandonar el slider con Tab ni con teclas ajenas al ajuste", () => {
+    const onConfirmarPresupuesto = vi.fn();
+    render(<PresupuestoHome {...propsPresupuesto({ onConfirmarPresupuesto })} />);
+    fireEvent.keyUp(screen.getByRole("slider"), { key: "Tab" });
+    fireEvent.keyUp(screen.getByRole("slider"), { key: "Escape" });
+    expect(onConfirmarPresupuesto).not.toHaveBeenCalled();
   });
 });
 
@@ -370,7 +378,7 @@ describe("DestacadosHome", () => {
     expect(screen.getByText("Cargando catálogo de dispositivos...")).toBeDefined();
   });
 
-  it("muestra tarjetas con los badges de presupuesto", () => {
+  it("muestra las tarjetas independientemente del presupuesto, sin sus badges", () => {
     const productos = [
       crearVista({ idProducto: 1, precioCOP: 1_000_000, precioFormateado: "$ 1.000.000 COP" }),
       crearVista({ idProducto: 2, nombre: "iPhone 15 Pro Max", precioCOP: 5_499_000, precioFormateado: "$ 5.499.000 COP" }),
@@ -388,8 +396,8 @@ describe("DestacadosHome", () => {
       />,
     );
 
-    expect(screen.getByText("✓ En presupuesto")).toBeDefined();
-    expect(screen.getByText("Supera presupuesto")).toBeDefined();
+    expect(screen.queryByText("✓ En presupuesto")).toBeNull();
+    expect(screen.queryByText("Supera presupuesto")).toBeNull();
     expect(
       screen.getByText("2 productos verificados en la plataforma • 2 mostrados"),
     ).toBeDefined();
@@ -466,27 +474,15 @@ describe("DestacadosHome", () => {
     expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);
   });
 
-  it("muestra el estado vacío de presupuesto y permite mostrar todos", () => {
-    const onMostrarTodos = vi.fn();
-    render(
-      <DestacadosHome
-        {...propsDestacados({ filtroPresupuesto: true, onMostrarTodos })}
-      />,
-    );
+  it("muestra un vacío general sin mezclar el presupuesto", () => {
+    render(<DestacadosHome {...propsDestacados()} />);
 
-    expect(
-      screen.getByText(/No hay productos registrados dentro del presupuesto/),
-    ).toBeDefined();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Mostrar todos los productos" }),
-    );
-    expect(onMostrarTodos).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(/No hay productos registrados en el catálogo/)).toBeDefined();
+    expect(screen.queryByText(/dentro del presupuesto/)).toBeNull();
   });
 
-  it("expone el ancla de destacados y el presupuesto aplicado", () => {
-    const { rerender } = render(
-      <DestacadosHome {...propsDestacados({ filtroPresupuesto: false })} />,
-    );
+  it("conserva el ancla de destacados sin un presupuesto aplicado", () => {
+    render(<DestacadosHome {...propsDestacados()} />);
 
     const seccion = screen.getByRole("region", {
       name: "Destacados para ti.",
@@ -495,18 +491,6 @@ describe("DestacadosHome", () => {
     expect(seccion.className).toContain("scroll-mt-16");
     expect(screen.queryByText(/Presupuesto aplicado/)).toBeNull();
 
-    rerender(
-      <DestacadosHome
-        {...propsDestacados({
-          filtroPresupuesto: true,
-          limitePresupuestoCOP: 4_000_000,
-        })}
-      />,
-    );
-
-    expect(
-      screen.getByText(/Presupuesto aplicado:.*4\.000\.000.*COP/),
-    ).toBeDefined();
   });
 
   it("muestra 'Servidor no disponible' cuando la API no responde", () => {
@@ -596,6 +580,12 @@ describe("RankingsHome", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Reintentar deseos" }));
     expect(props.onReintentarMasDeseados).toHaveBeenCalledTimes(1);
+  });
+
+  it("orienta a cambiar la búsqueda sin ofrecer un filtro de presupuesto retirado de home", () => {
+    render(<RankingsHome {...propsRankings()} masDeseados={[]} sinDeseos={false} />);
+    expect(screen.queryByText(/desactiva el filtro de presupuesto/)).toBeNull();
+    expect(screen.getByText("Prueba con otro término de búsqueda.")).toBeDefined();
   });
 });
 

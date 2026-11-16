@@ -319,7 +319,7 @@ export default function RankingsHome({
               <p className="max-w-xs text-xs leading-relaxed text-[var(--color-subtle)]">
                 {vacioDeseos
                   ? "La funcionalidad de listas de deseos y favoritos estará disponible en una fase posterior. Actualmente la plataforma no muestra datos ficticios."
-                  : "Prueba con otro término de búsqueda o desactiva el filtro de presupuesto."}
+                  : "Prueba con otro término de búsqueda."}
               </p>
             </div>
           }

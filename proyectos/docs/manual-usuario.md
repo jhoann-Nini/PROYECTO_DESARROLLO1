@@ -194,6 +194,26 @@ Lenovo
 
 Los filtros disponibles dependerán de la información registrada en el sistema.
 
+## 11.1 Buscar por presupuesto desde la página principal
+
+1. Ajusta la barra «Presupuesto máximo» al límite deseado en pesos colombianos.
+2. Pulsa «Filtrar por presupuesto» o termina el ajuste con ratón, tacto o
+   teclado. Se abrirá el catálogo general con ese máximo.
+3. Verás productos de cualquier categoría cuyo precio registrado sea menor o
+   igual al presupuesto. Los productos sin precio no se consideran dentro del
+   límite.
+4. Puedes seguir usando búsqueda, categorías, marcas y orden. Para retirar el
+   presupuesto, quita el chip «Hasta… COP» o limpia los filtros.
+
+«Destacados para ti» no se filtra ni cambia sus productos al ajustar o confirmar
+el presupuesto. La búsqueda de la página principal tampoco se lleva al catálogo
+al confirmar ese límite.
+
+El enlace conserva el presupuesto inicial, por ejemplo
+`/productos?precioMax=4000000`. Los ajustes posteriores de filtros son locales;
+recargar ese enlace vuelve a aplicar el presupuesto inicial. Para abrir sin
+límite, usa `/productos` sin parámetros.
+
 ---
 
 # 12. Consulta por categoría

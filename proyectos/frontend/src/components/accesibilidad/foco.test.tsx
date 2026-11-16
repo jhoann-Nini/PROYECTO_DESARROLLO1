@@ -18,6 +18,7 @@ import type {
 vi.mock("next/navigation", () => ({
   usePathname: () => "/productos",
   useRouter: () => ({ push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 const sesionMock = vi.hoisted(() => ({

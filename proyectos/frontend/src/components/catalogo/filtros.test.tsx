@@ -250,7 +250,7 @@ describe("FilterSidebar — buscador de marcas", () => {
 
 describe("FilterSidebar — precios manuales", () => {
   it("muestra vacíos los límites sin restricción", () => {
-    renderSidebar();
+    renderSidebar({ filtros: { ...filtrosVacios(), precioMax: Number.MAX_SAFE_INTEGER } });
 
     expect(
       (screen.getByLabelText("Precio mínimo en pesos") as HTMLInputElement)
@@ -260,6 +260,12 @@ describe("FilterSidebar — precios manuales", () => {
       (screen.getByLabelText("Precio máximo en pesos") as HTMLInputElement)
         .value
     ).toBe("");
+  });
+
+  it("muestra el máximo explícito incluso cuando coincide con el mayor precio del catálogo", () => {
+    renderSidebar();
+    expect((screen.getByLabelText("Precio máximo en pesos") as HTMLInputElement).value)
+      .toBe("6000000");
   });
 
   it("aplica el precio mínimo al salir del campo", () => {

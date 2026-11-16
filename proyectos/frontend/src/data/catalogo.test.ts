@@ -360,7 +360,7 @@ describe("construirChips", () => {
 });
 
 describe("hayFiltrosActivos", () => {
-  it("detecta si hay filtros activos comparando con el rango completo", () => {
+  it("detecta filtros activos y distingue un máximo finito del sentinela sin límite", () => {
     const rango = { min: 1_000_000, max: 6_000_000 };
 
     expect(hayFiltrosActivos(filtrosVacios(), rango)).toBe(false);
@@ -379,6 +379,11 @@ describe("hayFiltrosActivos", () => {
         },
         rango
       )
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it("un máximo superior al rango sigue excluyendo precios desconocidos y es un filtro activo", () => {
+    const filtros = { ...filtrosVacios(), precioMax: 10000000 };
+    expect(hayFiltrosActivos(filtros, { min: 1000000, max: 6000000 })).toBe(true);
   });
 });

@@ -200,6 +200,13 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   (`tecreview:comparador`). No requiere sesión ni persistencia de comparaciones
   en backend; sí consulta el catálogo real para validar los productos y su
   `idCategoria`. El primer producto válido fija la categoría.
+- El presupuesto de home se confirma navegando al catálogo general con
+  `/productos?precioMax=<entero COP>`. El máximo es inclusivo, abarca todas las
+  categorías y excluye precios desconocidos/no positivos. Destacados, rankings
+  y ofertas de home no reciben este filtro ni badges de presupuesto.
+  El parámetro inicial es validado y los cambios manuales de filtros siguen
+  siendo locales. Detalle:
+  [`presupuesto-catalogo-general.md`](presupuesto-catalogo-general.md).
 - Las filas técnicas del comparador se construyen desde las características
   registradas de los seleccionados: campos planos, secciones y métricas
   comparables. Se omiten campos reconocidos ajenos a la categoría y filas sin
@@ -561,6 +568,11 @@ aplicación rota.
 ---
 
 ## 8.7 Criterios de aceptación del Bloque I — Filtro automático por presupuesto
+
+> Registro histórico, sustituido por la mejora 3 del 16/11/2026: confirmar ahora
+> abre `/productos?precioMax=<COP>`, sin filtrar ni desplazar la vista a
+> destacados. La búsqueda de home se mantiene independiente de esta navegación.
+> Véase [`presupuesto-catalogo-general.md`](presupuesto-catalogo-general.md).
 
 - [x] El valor “Hasta: $ X COP” y el límite mostrado bajo el slider se
   actualizan en vivo mientras se arrastra (`onChange`).

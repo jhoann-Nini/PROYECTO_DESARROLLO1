@@ -27,7 +27,7 @@ import {
 } from "@/types/producto";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
-import { sanearPrecioCOP } from "@/data/precios";
+import { rutaCatalogoPresupuesto } from "@/data/presupuesto";
 import { seleccionarDestacados } from "@/data/destacados";
 import { contieneLenguajeNoPermitido } from "@/data/resenas";
 import {
@@ -73,36 +73,15 @@ function coincideBusqueda(
 function filtrarRanking<T extends ItemRankingFiltrable>(
   items: T[],
   busqueda: string,
-  filtrarPorPresupuesto: boolean,
-  limitePresupuestoCOP: number,
 ): T[] {
   const termino = normalizarTexto(busqueda);
 
-  return items.filter((item) => {
-    if (termino) {
-      // La búsqueda prevalece sobre el presupuesto.
-      return coincideBusqueda(item.nombre, item.descripcion, termino);
-    }
-
-    if (!filtrarPorPresupuesto) return true;
-
-    // Los rankings sin precio se conservan: no se inventa un valor.
-    if (
-      item.precioReferencia === null ||
-      item.precioReferencia === undefined
-    ) {
-      return true;
-    }
-
-    return sanearPrecioCOP(item.precioReferencia) <= limitePresupuestoCOP;
-  });
+  return items.filter((item) => coincideBusqueda(item.nombre, item.descripcion, termino));
 }
 
 function filtrarOfertas(
   ofertas: ProductoOferta[],
   busqueda: string,
-  filtrarPorPresupuesto: boolean,
-  limitePresupuestoCOP: number,
 ): ProductoOferta[] {
   const termino = normalizarTexto(busqueda);
 
@@ -114,9 +93,7 @@ function filtrarOfertas(
       );
     }
 
-    if (!filtrarPorPresupuesto) return true;
-
-    return sanearPrecioCOP(oferta.precioActual) <= limitePresupuestoCOP;
+    return true;
   });
 }
 
@@ -156,18 +133,11 @@ export default function Home() {
   const [busqueda, setBusqueda] = useState("");
   const contenedorBusquedaRef = useRef<HTMLDivElement>(null);
   const [buscadorEnfocado, setBuscadorEnfocado] = useState(false);
-  // El presupuesto vive en COP: 4.000.000 equivale al antiguo valor 1000.
+  // El presupuesto se expresa en COP y se confirma en el catálogo general.
   const [presupuestoMax, setPresupuestoMax] = useState<number>(4_000_000);
-  const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] =
-    useState(false);
-
-  const manejarFinAjustePresupuesto = useCallback(() => {
-    setFiltrarSoloEnPresupuesto(true);
-    document.getElementById("seccion-destacados")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, []);
+  const confirmarPresupuesto = useCallback((valorCOP: number) => {
+    router.push(rutaCatalogoPresupuesto(valorCOP));
+  }, [router]);
 
   // Estados de los rankings y las ofertas
   const [mostrarTodosMejorValorados, setMostrarTodosMejorValorados] =
@@ -524,7 +494,6 @@ export default function Home() {
     () =>
       vistas.filter(
         (producto) =>
-          producto.disponible &&
           producto.precioCOP > 0 &&
           producto.precioCOP <= limitePresupuestoCOP,
       ).length,
@@ -537,13 +506,10 @@ export default function Home() {
       categorias: [],
       marcas: [],
       precioMin: 0,
-      precioMax:
-        filtrarSoloEnPresupuesto && !busqueda.trim()
-          ? limitePresupuestoCOP
-          : Number.MAX_SAFE_INTEGER,
+      precioMax: Number.MAX_SAFE_INTEGER,
       caracteristicas: [],
     }),
-    [busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
+    [busqueda],
   );
 
   const productosFiltrados = useMemo(
@@ -551,10 +517,8 @@ export default function Home() {
     [vistas, filtros],
   );
 
-  // En la home se muestran 6 destacados como máximo. Si hay búsqueda o
-  // filtro de presupuesto activo, se respetan todos los resultados filtrados.
-  const hayFiltrosHome =
-    busqueda.trim().length > 0 || filtrarSoloEnPresupuesto;
+  // La búsqueda conserva sus resultados; el presupuesto no altera destacados.
+  const hayFiltrosHome = busqueda.trim().length > 0;
 
   const productosDestacados = useMemo(
     () =>
@@ -569,10 +533,8 @@ export default function Home() {
       filtrarRanking(
         mejorValorados,
         busqueda,
-        filtrarSoloEnPresupuesto,
-        limitePresupuestoCOP,
       ),
-    [mejorValorados, busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
+    [mejorValorados, busqueda],
   );
 
   const masComentadosFiltrados = useMemo(
@@ -580,10 +542,8 @@ export default function Home() {
       filtrarRanking(
         masComentados,
         busqueda,
-        filtrarSoloEnPresupuesto,
-        limitePresupuestoCOP,
       ),
-    [masComentados, busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
+    [masComentados, busqueda],
   );
 
   const masDeseadosFiltrados = useMemo(
@@ -591,10 +551,8 @@ export default function Home() {
       filtrarRanking(
         masDeseados,
         busqueda,
-        filtrarSoloEnPresupuesto,
-        limitePresupuestoCOP,
       ),
-    [masDeseados, busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
+    [masDeseados, busqueda],
   );
 
   const ofertasFiltradas = useMemo(
@@ -602,10 +560,8 @@ export default function Home() {
       filtrarOfertas(
         ofertas,
         busqueda,
-        filtrarSoloEnPresupuesto,
-        limitePresupuestoCOP,
       ),
-    [ofertas, busqueda, filtrarSoloEnPresupuesto, limitePresupuestoCOP],
+    [ofertas, busqueda],
   );
 
   const irAlDetalle = useCallback(
@@ -710,7 +666,6 @@ export default function Home() {
 
   const seleccionarTodos = useCallback(() => {
     setBusqueda("");
-    setFiltrarSoloEnPresupuesto(false);
   }, []);
 
   return (
@@ -786,8 +741,8 @@ export default function Home() {
                   </div>
                   <p className="mt-2 text-xs text-[var(--color-subtle)]">
                     Presupuesto de referencia: hasta{" "}
-                    {formatearCOP(presupuestoMax)}. Activa el filtro para
-                    aplicarlo al catálogo.
+                    {formatearCOP(presupuestoMax)}. Confirma para ver productos
+                    de todas las categorías en el catálogo general.
                   </p>
                 </div>
 
@@ -801,13 +756,9 @@ export default function Home() {
                 <PresupuestoHome
                   presupuestoMax={presupuestoMax}
                   onCambiarPresupuesto={setPresupuestoMax}
-                  onFinalizarAjuste={manejarFinAjustePresupuesto}
+                  onConfirmarPresupuesto={confirmarPresupuesto}
                   totalEnPresupuesto={totalEnPresupuesto}
-                  totalProductos={totalProductosVerificados}
-                  filtrarSolo={filtrarSoloEnPresupuesto}
-                  onAlternarFiltro={() =>
-                    setFiltrarSoloEnPresupuesto((previo) => !previo)
-                  }
+                  totalProductos={vistas.length}
                 />
               </div>
 
@@ -835,12 +786,8 @@ export default function Home() {
           error={errorProductos}
           onReintentar={recargarProductosCatalogo}
           busqueda={busqueda}
-          filtroPresupuesto={filtrarSoloEnPresupuesto}
-          presupuestoMax={presupuestoMax}
-          limitePresupuestoCOP={limitePresupuestoCOP}
           onVerDetalle={abrirDetalle}
           onLimpiarBusqueda={() => setBusqueda("")}
-          onMostrarTodos={() => setFiltrarSoloEnPresupuesto(false)}
         />
 
         <RankingsHome

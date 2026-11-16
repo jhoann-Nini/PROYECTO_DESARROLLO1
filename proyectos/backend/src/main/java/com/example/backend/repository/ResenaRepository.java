@@ -1,3 +1,4 @@
+
 package com.example.backend.repository;
 
 import com.example.backend.dto.ResenaStats;
@@ -13,45 +14,90 @@ import java.util.Optional;
 import org.springframework.data.repository.query.Param;
 
 public interface ResenaRepository extends JpaRepository<Resena, Long> {
-    List<Resena> findByUsuarioIdUsuario(Long idUsuario);
 
-    @EntityGraph(attributePaths = {"usuario", "producto"})
-    List<Resena> findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
+  // Consulta privada: conserva las reseñas del usuario, incluidas las pendientes.
+  List<Resena> findByUsuarioIdUsuario(Long idUsuario);
 
-    @EntityGraph(attributePaths = {"usuario", "producto"})
-    List<Resena> findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(Long idProducto);
+  // Listado público general.
+  @EntityGraph(attributePaths = {"usuario", "producto"})
+  @Query("SELECT r FROM Resena r WHERE r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "ORDER BY r.fechaCreacion DESC")
+  List<Resena> findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
 
-    @EntityGraph(attributePaths = {"usuario", "producto"})
-    @Query("SELECT r FROM Resena r WHERE r.estado = true AND r.ocultaPorReportes = false ORDER BY r.fechaCreacion DESC")
-    List<Resena> findByEstadoTrueOrderByFechaCreacionDesc();
+  // Listado público por producto.
+  @EntityGraph(attributePaths = {"usuario", "producto"})
+  @Query("SELECT r FROM Resena r WHERE r.producto.idProducto = :idProducto " +
+    "AND r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "ORDER BY r.fechaCreacion DESC")
+  List<Resena> findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(
+    @Param("idProducto") Long idProducto);
 
-    @EntityGraph(attributePaths = {"usuario", "producto"})
-    @Query("SELECT r FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false ORDER BY r.fechaCreacion DESC")
-    List<Resena> findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(@Param("idProducto") Long idProducto);
+  // Listado público general (consulta alternativa existente).
+  @EntityGraph(attributePaths = {"usuario", "producto"})
+  @Query("SELECT r FROM Resena r WHERE r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "ORDER BY r.fechaCreacion DESC")
+  List<Resena> findByEstadoTrueOrderByFechaCreacionDesc();
 
-    Optional<Resena> findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(Long idUsuario, Long idProducto);
+  // Listado público por producto (consulta alternativa existente).
+  @EntityGraph(attributePaths = {"usuario", "producto"})
+  @Query("SELECT r FROM Resena r WHERE r.producto.idProducto = :idProducto " +
+    "AND r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "ORDER BY r.fechaCreacion DESC")
+  List<Resena> findByProductoIdProductoAndEstadoTrueOrderByFechaCreacionDesc(
+    @Param("idProducto") Long idProducto);
 
-    @Query("SELECT new com.example.backend.dto.ResenaStats(r.producto.idProducto, COUNT(r.idResena)) " +
-           "FROM Resena r " +
-           "WHERE r.estado = true AND r.ocultaPorReportes = false AND r.producto.estado = true " +
-           "GROUP BY r.producto.idProducto " +
-           "ORDER BY COUNT(r.idResena) DESC, r.producto.idProducto ASC")
-    List<ResenaStats> findMasComentadosStats(Pageable pageable);
+  // Consulta interna: no excluir pendientes, evita reseñas duplicadas.
+  Optional<Resena> findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
+    Long idUsuario, Long idProducto);
 
-    @Query("SELECT new com.example.backend.dto.ValoracionStats(r.producto.idProducto, AVG(r.puntuacion), COUNT(r.idResena)) " +
-           "FROM Resena r " +
-           "WHERE r.producto.estado = true AND r.estado = true AND r.ocultaPorReportes = false " +
-           "GROUP BY r.producto.idProducto " +
-           "ORDER BY AVG(r.puntuacion) DESC, COUNT(r.idResena) DESC, r.producto.idProducto ASC")
-    List<ValoracionStats> findMejorValoradosStats(Pageable pageable);
+  // Estadísticas de productos más comentados.
+  @Query("SELECT new com.example.backend.dto.ResenaStats(r.producto.idProducto, COUNT(r.idResena)) " +
+    "FROM Resena r " +
+    "WHERE r.estado = true AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "AND r.producto.estado = true " +
+    "GROUP BY r.producto.idProducto " +
+    "ORDER BY COUNT(r.idResena) DESC, r.producto.idProducto ASC")
+  List<ResenaStats> findMasComentadosStats(Pageable pageable);
 
-    @Query("SELECT AVG(r.puntuacion) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false")
-    Double findPromedioByProducto(@Param("idProducto") Long idProducto);
+  // Estadísticas de productos mejor valorados.
+  @Query("SELECT new com.example.backend.dto.ValoracionStats(r.producto.idProducto, AVG(r.puntuacion), COUNT(r.idResena)) " +
+    "FROM Resena r " +
+    "WHERE r.producto.estado = true AND r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA " +
+    "GROUP BY r.producto.idProducto " +
+    "ORDER BY AVG(r.puntuacion) DESC, COUNT(r.idResena) DESC, r.producto.idProducto ASC")
+  List<ValoracionStats> findMejorValoradosStats(Pageable pageable);
 
-    @Query("SELECT COUNT(r) FROM Resena r WHERE r.producto.idProducto = :idProducto AND r.estado = true AND r.ocultaPorReportes = false")
-    Long countByProducto(@Param("idProducto") Long idProducto);
+  // Promedio público de valoraciones.
+  @Query("SELECT AVG(r.puntuacion) FROM Resena r " +
+    "WHERE r.producto.idProducto = :idProducto AND r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA")
+  Double findPromedioByProducto(@Param("idProducto") Long idProducto);
 
-    @Query("SELECT COUNT(r) FROM Resena r WHERE r.usuario.idUsuario = :idUsuario AND r.fechaCreacion >= :fechaInicio")
-    long countNuevasResenasEnVentana(@Param("idUsuario") Long idUsuario, @Param("fechaInicio") LocalDateTime fechaInicio);
+  // Cantidad de reseñas públicas.
+  @Query("SELECT COUNT(r) FROM Resena r " +
+    "WHERE r.producto.idProducto = :idProducto AND r.estado = true " +
+    "AND r.ocultaPorReportes = false " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PUBLICADA")
+  Long countByProducto(@Param("idProducto") Long idProducto);
+
+  // Control de límite por hora: contar también las reseñas pendientes.
+  @Query("SELECT COUNT(r) FROM Resena r " +
+    "WHERE r.usuario.idUsuario = :idUsuario " +
+    "AND r.fechaCreacion >= :fechaInicio")
+  long countNuevasResenasEnVentana(
+    @Param("idUsuario") Long idUsuario,
+    @Param("fechaInicio") LocalDateTime fechaInicio);
 }
 

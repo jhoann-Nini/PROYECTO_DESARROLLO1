@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+
 import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import {

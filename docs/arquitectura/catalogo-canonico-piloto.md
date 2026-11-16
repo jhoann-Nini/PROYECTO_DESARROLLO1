@@ -57,3 +57,27 @@ Antes de persistir el catálogo en Spring Boot/PostgreSQL, conviene acordar:
 - Estrategia de alias para IDs actuales y rutas públicas existentes.
 
 Este documento es una propuesta de evolución; no crea tablas, endpoints ni altera Supabase.
+
+## Validación externa de identidad (16 de noviembre de 2026)
+
+Se contrastó la identidad comercial de los ocho modelos con documentación publicada por sus fabricantes. Esta comprobación valida la existencia del modelo/familia; no equivale a verificar precio, inventario, vendedor, autenticidad de una unidad ni derechos de uso de fotografías.
+
+| Producto | Fuente oficial | Resultado y cautela |
+|---|---|---|
+| Nothing Phone (2a) Special Edition | [Nothing — Phone (2a) Special Edition](https://checkout.nothing.tech/pages/phone-2a) | El fabricante identifica expresamente la edición especial. La capacidad 12 GB/256 GB debe conservarse como variante de la fuente local hasta verificarla contra SKU/mercado. |
+| Samsung Galaxy S24 Ultra | [Samsung — Galaxy S24 series specifications](https://news.samsung.com/us/enter-new-era-of-mobile-ai-samsung-galaxy-s24-series//) | Modelo confirmado. Samsung enumera capacidades de 256 GB, 512 GB y 1 TB; la referencia local de 512 GB es compatible con la oferta publicada, pero precio e inventario no quedan validados. |
+| OnePlus Pad 2 | [OnePlus — especificaciones](https://www.oneplus.com/us/oneplus-pad-2/specs) | Modelo confirmado. La ficha estadounidense especifica 12 GB RAM y 256 GB; coincide con la variante piloto. |
+| Apple iPad Pro 11 pulgadas M4 | [Apple — especificaciones técnicas](https://support.apple.com/en-am/119892) | Modelo y capacidades 256/512 GB confirmados. La ficha también documenta las opciones de capacidad; mantener la variante local 8 GB/512 GB como dato de origen, pendiente de cotejo por SKU y conectividad. |
+| Lenovo ThinkPad E14 Gen 5 | [Lenovo — E14 Gen 5 AMD](https://www.lenovo.com/us/en/p/LEN101T0068) y [PSREF modelo AMD](https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_AMD?M=21JR000AIX) | Familia confirmada, pero hay configuraciones Intel y AMD y distintas combinaciones por mercado. La ficha PSREF consultada aparece como retirada. No se debe inferir el procesador ni dar por verificada la combinación local 16 GB/512 GB sin número de modelo/MTM. |
+| Apple MacBook Pro 16 pulgadas M3 Max | [Apple — especificaciones técnicas](https://support.apple.com/es-la/117737) | Modelo confirmado (noviembre de 2023). Apple documenta M3 Max y opciones de memoria/almacenamiento; la combinación local 36 GB/1 TB no debe marcarse como confirmada sin comprobar el SKU exacto, ya que las configuraciones dependen del chip y del mercado. |
+| Nothing Ear (2) | [Nothing — Ear (2)](https://checkout-us.nothing.tech/products/ear-2) | Modelo confirmado y ficha oficial de características disponible. El color Transparent White se conserva como variante de origen; no se validó disponibilidad comercial actual. |
+| Sony WH-1000XM5 | [Sony — especificaciones](https://www.sony.com/electronics/support/wireless-headphones-bluetooth-headphones/wh-1000xm5/specifications) | Modelo confirmado mediante ficha oficial de soporte. La fuente consultada respalda especificaciones, no disponibilidad ni precio actual. |
+
+### Resultado de la validación
+
+- **Identidad de modelo/familia:** los ocho productos tienen respaldo en fuentes oficiales.
+- **Variantes:** Samsung Galaxy S24 Ultra 512 GB y OnePlus Pad 2 12/256 GB coinciden con opciones publicadas por sus fabricantes. Para ThinkPad E14 Gen 5 y MacBook Pro M3 Max se requiere identificar el SKU/MTM exacto antes de confirmar la configuración. En los demás casos se conserva la variante heredada sin elevarla automáticamente a dato verificado.
+- **Precios, disponibilidad y vendedores:** no verificados; deben obtenerse de una fuente comercial por país y con fecha de consulta.
+- **Imágenes:** siguen pendientes de verificación individual de procedencia, licencia y atribución. Una página oficial del producto no demuestra que la URL de imagen heredada esté autorizada para reutilización.
+- **Estado técnico:** el campo `estadoVerificacion` del catálogo permanece en `pendiente`; esta revisión documental no cambia el estado de verificación de cada registro en código.
+

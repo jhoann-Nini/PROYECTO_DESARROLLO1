@@ -756,3 +756,107 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
     ).toBeNull();
   });
 });
+
+
+describe("Componente FichaTecnicaModal — Fase 3: ficha técnica ampliada", () => {
+  afterEach(() => cleanup());
+
+  it("muestra variante, métricas, benchmarks y fuentes sin mezclarlos con la puntuación editorial", () => {
+    const producto: Producto = {
+      idProducto: 990,
+      nombre: "Equipo de prueba TecReview",
+      descripcion: "Producto utilizado para validar la ficha ampliada.",
+      idCategoria: 1,
+      idMarca: 2,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca de prueba",
+      imagen: null,
+      precioReferencia: 1000000,
+      estado: true,
+      caracteristicas: {
+        pantalla: "Panel AMOLED",
+        puntuacion: 8.7,
+        variante: {
+          modelo: "Modelo X",
+          sku: "SKU-X-128",
+          mercado: "Colombia",
+          ram: "8 GB",
+          almacenamiento: "128 GB",
+        },
+        metricasComparables: [
+          {
+            clave: "bateria_capacidad",
+            nombre: "Capacidad de batería",
+            grupo: "Batería",
+            valor: 5000,
+            unidad: "mAh",
+            comparable: true,
+          },
+        ],
+        benchmarks: [
+          {
+            nombre: "Geekbench 6",
+            valor: 2100,
+            unidad: "puntos",
+            prueba: "Single-Core",
+            version: "6.2",
+            fecha: "2026-11-01",
+          },
+        ],
+        fuentes: [
+          {
+            id: "fabricante-1",
+            tipo: "fabricante",
+            nombre: "Ficha oficial",
+            url: "https://example.com/ficha",
+            fecha_consulta: "2026-11-02",
+          },
+        ],
+        estado_verificacion: "parcial",
+      },
+    };
+
+    render(<FichaTecnicaModal producto={producto} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("heading", { name: "Ficha técnica detallada" })).toBeDefined();
+    expect(screen.getByText("Verificación parcial")).toBeDefined();
+    expect(screen.getByText("Modelo X")).toBeDefined();
+    expect(screen.getByText("SKU-X-128")).toBeDefined();
+    expect(screen.getByText("Colombia")).toBeDefined();
+    expect(screen.getByText("Capacidad de batería")).toBeDefined();
+    expect(screen.getByText("5000 mAh")).toBeDefined();
+    expect(screen.getByText("Geekbench 6")).toBeDefined();
+    expect(screen.getByText("2100 puntos")).toBeDefined();
+    expect(screen.getByText("Ficha oficial")).toBeDefined();
+    expect(screen.getByRole("link", { name: "Consultar fuente" }).getAttribute("href")).toBe("https://example.com/ficha");
+
+    // La puntuación editorial sigue siendo una evaluación separada.
+    expect(screen.getByText("8.7 / 10")).toBeDefined();
+  });
+
+  it("muestra un estado vacío cuando no hay variante, métricas, benchmarks ni fuentes", () => {
+    const producto: Producto = {
+      idProducto: 991,
+      nombre: "Producto sin datos ampliados",
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca",
+      imagen: null,
+      precioReferencia: 0,
+      estado: true,
+      caracteristicas: {
+        pantalla: "LCD",
+        estado_verificacion: "pendiente",
+      },
+    };
+
+    render(<FichaTecnicaModal producto={producto} onClose={vi.fn()} />);
+
+    expect(screen.getByText("Pendiente de verificación")).toBeDefined();
+    expect(
+      screen.getByText("Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.")
+    ).toBeDefined();
+  });
+});

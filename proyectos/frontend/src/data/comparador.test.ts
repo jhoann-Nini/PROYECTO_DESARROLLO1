@@ -3,7 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import {
-import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
   MAX_COMPARADOR,
   agregarIdComparador,
   construirFilasComparacion,

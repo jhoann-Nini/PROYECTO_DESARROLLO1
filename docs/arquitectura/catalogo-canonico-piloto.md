@@ -81,3 +81,48 @@ Se contrastó la identidad comercial de los ocho modelos con documentación publ
 - **Imágenes:** siguen pendientes de verificación individual de procedencia, licencia y atribución. Una página oficial del producto no demuestra que la URL de imagen heredada esté autorizada para reutilización.
 - **Estado técnico:** el campo `estadoVerificacion` del catálogo permanece en `pendiente`; esta revisión documental no cambia el estado de verificación de cada registro en código.
 
+## Revisión de fuentes comerciales e imágenes (16 de noviembre de 2026)
+
+Esta revisión es una fotografía de resultados públicos consultados en la fecha indicada. No es un feed de inventario ni una garantía de que el precio siga vigente.
+
+### Referencias comerciales encontradas en Colombia
+
+| Producto / variante | Fuente consultada | Precio publicado | Condición y observación |
+|---|---|---:|---|
+| Samsung Galaxy S24 Ultra 512 GB | [Samsung Colombia](https://www.samsung.com/co/smartphones/galaxy-s24-ultra/buy/?modelCode=SM-S928BZTILTC) | $7.499.900 COP | Precio mostrado en el selector de 512 GB; verificar disponibilidad/color y precio final en checkout. |
+| iPad Pro 11 M4 512 GB | [Tienda PC](https://www.tiendapc.com.co/LoNuevo) | $6.839.000 COP | Publicación indexada para 512 GB; confirmar stock, color y vigencia directamente con la tienda. |
+| iPad Pro 11 M4 512 GB | [Mac Center](https://mac-center.com/products/ipad-pro-de-11-pulgadas-m4-mvvc3cl-a) | $7.169.000 COP | La página consultada indicaba agotado. No presentar como oferta disponible. |
+| ThinkPad E14 Gen 5 Intel i5-1335U, 16/512 | [PCWare](https://www.pcware.com.co/lenovo-thinkpad-e14-gen-5-intel-core-i5-1335u-4-6ghz-ram-16gb-ssd-512gb-intel-iris-xe-graphics-14-pulgadas-ips-wuxga-1920-1200-windows-11-pro-21jl000llm) | $5.299.900 COP | La publicación indicaba sobre pedido y precio excluido de IVA. No comparar directamente con precios finales con impuestos. |
+| ThinkPad E14 Gen 5 Intel i7-1355U, 16/512 | [Castor Data](https://www.castordata.com.co/shop/computacion-computadores-portatiles-1046/21jl002alm-portatil-lenovo-thinkpad-e14-gen-5-intel-core-i7-1355u-ram-16gb-ssd-512gb-w11-pro-negro-4427) | $4.697.750 COP | Configuración distinta (i7); la página muestra precio promocional. Confirmar inventario y precio final. |
+| MacBook Pro 16 M3 Max, 36 GB/1 TB | [Mac Center](https://mac-center.com/products/macbook-pro-de-16-pulgadas-m3-max-mrw33e-a) | $18.629.000 COP | Configuración y SKU publicados; verificar stock. |
+| MacBook Pro 16 M3 Max, 36 GB/1 TB | [Colombian Mac Store](https://www.colombianmacstore.com.co/comprar-mac-usado/computador-apple-portatil/macbook-pro-16-pulgadas/laptop-macbook-pro-m3-max-16.html) | $11.499.900 COP | Publicación de equipo usado en condición "como nuevo"; no mezclar con producto nuevo. |
+| Sony WH-1000XM5 | [Sony Colombia](https://www.sony.com.co/headphones/wireless) | $2.249.896 COP | Precio mostrado para color Smoky Pink; confirmar color, stock y precio final. |
+| Nothing Ear (2) | [Exclusive JJ](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) | $599.990 COP | Publicación por encargo; confirmar plazo, existencia y garantía. |
+| Nothing Phone (2a) Special Edition | [Nothing — ficha oficial](https://checkout.nothing.tech/pages/phone-2a) | Sin oferta colombiana verificada | La ficha confirma la edición, pero no se encontró oferta local verificable en esta revisión. La tienda colombiana localizada corresponde al Phone (2a) regular, no a la Special Edition. |
+| OnePlus Pad 2 | [OnePlus — ficha oficial](https://www.oneplus.com/us/oneplus-pad-2) | Sin oferta colombiana verificada | Se confirmó el modelo en el fabricante, pero no se localizó una oferta colombiana suficientemente respaldada en esta revisión. |
+
+**Regla para el catálogo:** no guardar un precio como atributo fijo del producto canónico. Cada oferta debe ser un registro separado con vendedor, URL, variante/SKU, moneda, precio, condición (nuevo/usado/reacondicionado), disponibilidad, fecha y hora de consulta, e impuestos/envío cuando se conozcan. Si no hay fuente o stock verificable, el estado debe ser "no verificado" y no "disponible".
+
+### Imágenes y derechos de uso
+
+La revisión no autoriza copiar imágenes de páginas oficiales ni de tiendas:
+
+- [Apple — directrices de propiedad intelectual](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html) y [términos del sitio](https://images.apple.com/legal/internet-services/terms/site.html): las fotografías de Apple están protegidas; para fotografías propiedad de Apple o licenciadas por Apple se requiere permiso expreso, salvo activos entregados para programas autorizados con sus reglas.
+- [OnePlus — política de propiedad intelectual](https://www.oneplus.com/global/legal/copyright): el permiso general descrito para materiales del sitio es personal y no comercial; el uso distinto requiere consentimiento previo por escrito.
+- [Samsung — términos de Newsroom](https://news.samsung.com/global/terms): los materiales se limitan a uso personal, informativo y no comercial salvo autorización aplicable. No se debe asumir que una imagen de producto puede reutilizarse comercialmente.
+
+Por tanto, la política de implementación sigue siendo:
+
+1. Mantener las URLs heredadas solo como referencias pendientes; no declararlas autorizadas.
+2. Preferir imágenes propias tomadas por el equipo o activos con licencia comercial documentada.
+3. Para assets del fabricante, solicitar permiso escrito o usar un portal/feed de distribuidor que conceda expresamente derechos de merchandising.
+4. Guardar en cada imagen: URL/archivo, autor o proveedor, licencia, alcance de uso, atribución requerida, fecha de obtención y evidencia del permiso.
+5. No descargar, copiar ni alojar imágenes oficiales por scraping para producción.
+
+### Estado tras la revisión
+
+- Los ocho modelos conservan su identidad canónica y referencias originales.
+- Se encontraron referencias comerciales colombianas para seis productos; para Nothing Phone (2a) Special Edition y OnePlus Pad 2 no se confirmó oferta local.
+- Las referencias de precio son heterogéneas y algunas tienen restricciones de stock, condición o IVA. No deben convertirse en precio "actual" del catálogo sin revalidación.
+- No se ha validado permiso de reutilización para ninguna imagen heredada.
+- No se modificó código, backend, SQL ni Supabase en esta revisión; el estado `estadoVerificacion` continúa en `pendiente`.

@@ -7,7 +7,6 @@ import FilterChips from "./FilterChips";
 import Pagination from "./Pagination";
 import { prepararCatalogo, type FiltrosCatalogo } from "@/data/catalogo";
 import type { ProductoViewModel } from "@/data/productoViewModel";
-import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 afterEach(() => {
   cleanup();
@@ -36,7 +35,6 @@ function crearVista(
       camaras: null,
       bateria: null,
     },
-    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: ["5g"],
     textoBusqueda: "producto samsung celulares",
     ...overrides,

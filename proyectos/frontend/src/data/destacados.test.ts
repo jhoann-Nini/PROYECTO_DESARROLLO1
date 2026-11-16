@@ -3,7 +3,6 @@ import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoMejorValorado } from "@/types/producto";
 import type { ProductoViewModel } from "./productoViewModel";
 import { MAX_DESTACADOS, seleccionarDestacados } from "./destacados";
-import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 function crearVista(
   idProducto: number,
@@ -29,7 +28,6 @@ function crearVista(
       camaras: null,
       bateria: null,
     },
-    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: [],
     textoBusqueda: `producto ${idProducto}`,
     ...overrides,

@@ -12,7 +12,6 @@ import {
   type FiltrosCatalogo,
 } from "./catalogo";
 import { formatearCOP } from "./specsHelper";
-import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 function crearVista(
   overrides: Partial<ProductoViewModel> = {}
@@ -37,7 +36,6 @@ function crearVista(
       camaras: null,
       bateria: null,
     },
-    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: [],
     textoBusqueda: "producto samsung celulares",
     ...overrides,

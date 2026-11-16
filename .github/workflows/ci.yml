@@ -63,6 +63,12 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Tests
+        run: npm test
+
       - name: Lint
         run: npm run lint
 

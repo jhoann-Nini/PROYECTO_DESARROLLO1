@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import TarjetaProducto from "./TarjetaProducto";
@@ -36,6 +37,8 @@ function crearProducto(
     caracteristicas: ["5g"],
     textoBusqueda: "samsung galaxy s24 ultra celulares",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

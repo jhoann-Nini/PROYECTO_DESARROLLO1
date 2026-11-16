@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { ProductoViewModel } from "@/data/productoViewModel";
 import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
+import type { ProductoViewModel } from "@/data/productoViewModel";
 import {
   MAX_COMPARADOR,
   agregarIdComparador,
@@ -36,10 +36,11 @@ function crearVista(
       camaras: "50 MP",
       bateria: "5000 mAh",
     },
-    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: [],
     textoBusqueda: "producto uno samsung",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

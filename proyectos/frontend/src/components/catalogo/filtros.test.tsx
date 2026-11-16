@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import FilterSidebar from "./FilterSidebar";
@@ -39,6 +40,8 @@ function crearVista(
     caracteristicas: ["5g"],
     textoBusqueda: "producto samsung celulares",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

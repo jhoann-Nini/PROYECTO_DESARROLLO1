@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import TarjetaProducto from "./TarjetaProducto";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 afterEach(() => {
   cleanup();
@@ -31,6 +32,7 @@ function crearProducto(
       camaras: "200 MP",
       bateria: "5000 mAh",
     },
+    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: ["5g"],
     textoBusqueda: "samsung galaxy s24 ultra celulares",
     ...overrides,

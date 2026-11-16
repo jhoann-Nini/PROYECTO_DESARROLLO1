@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+
 import type { ProductoViewModel } from "@/data/productoViewModel";
-import {
 import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
+import {
   MAX_COMPARADOR,
   agregarIdComparador,
   construirFilasComparacion,

@@ -13,7 +13,8 @@ export type ClaveFilaComparacion =
   | "ram"
   | "almacenamiento"
   | "camaras"
-  | "bateria";
+  | "bateria"
+  | `tecnica:${string}`;
 
 export interface FilaComparacion {
   clave: ClaveFilaComparacion;
@@ -189,7 +190,35 @@ export function construirFilasComparacion(
         ),
       ),
     ),
+    ...construirFilasMetricasTecnicas(productos),
   ];
+}
+
+/** Compara métricas comparables presentes en todos los productos y con igual unidad. */
+function construirFilasMetricasTecnicas(productos: ProductoViewModel[]): FilaComparacion[] {
+  if (productos.length < 2) return [];
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) return [];
+
+  const porProducto = productos.map((producto) => new Map(
+    producto.datosFichaTecnica.metricasComparables
+      .filter((metrica) => metrica.comparable)
+      .map((metrica) => [metrica.clave, metrica]),
+  ));
+  const clavesComunes = [...porProducto[0].keys()].filter((clave) =>
+    porProducto.every((mapa) => mapa.has(clave)),
+  );
+
+  return clavesComunes.flatMap((clave) => {
+    const metricas = porProducto.map((mapa) => mapa.get(clave)!);
+    const unidades = new Set(metricas.map((metrica) => metrica.unidad ?? ""));
+    if (unidades.size !== 1) return [];
+    const primera = metricas[0];
+    const valores = metricas.map((metrica) => {
+      if (typeof metrica.valor === "boolean") return metrica.valor ? "Sí" : "No";
+      return metrica.unidad ? `${metrica.valor} ${metrica.unidad}` : String(metrica.valor);
+    });
+    return [fila(`tecnica:${clave}`, primera.nombre, valores)];
+  });
 }
 
 function contarEspecificaciones(producto: ProductoViewModel): number {

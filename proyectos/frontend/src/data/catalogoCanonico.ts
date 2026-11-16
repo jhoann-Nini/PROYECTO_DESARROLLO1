@@ -200,7 +200,7 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 109)],
     variantes: [],
   },
-] as const;
+];
 
 function buscarRegistro(
   origen: ReferenciaProductoCanonico,

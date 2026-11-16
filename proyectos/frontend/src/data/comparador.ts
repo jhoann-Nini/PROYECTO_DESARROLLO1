@@ -13,7 +13,9 @@ export type ClaveFilaComparacion =
   | "ram"
   | "almacenamiento"
   | "camaras"
-  | "bateria";
+  | "bateria"
+  | `tecnica:${string}`
+  | `benchmark:${string}`;
 
 export interface FilaComparacion {
   clave: ClaveFilaComparacion;
@@ -189,9 +191,63 @@ export function construirFilasComparacion(
         ),
       ),
     ),
+    ...construirFilasMetricasTecnicas(productos),
+    ...construirFilasBenchmarks(productos),
   ];
 }
 
+/** Compara métricas comparables presentes en todos los productos y con igual unidad. */
+function construirFilasMetricasTecnicas(productos: ProductoViewModel[]): FilaComparacion[] {
+  if (productos.length < 2) return [];
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) return [];
+
+  const porProducto = productos.map((producto) => new Map(
+    producto.datosFichaTecnica.metricasComparables
+      .filter((metrica) => metrica.comparable)
+      .map((metrica) => [metrica.clave, metrica] as const),
+  ));
+  const clavesComunes = [...porProducto[0].keys()].filter((clave) =>
+    porProducto.every((mapa) => mapa.has(clave)),
+  );
+
+  return clavesComunes.flatMap((clave) => {
+    const metricas = porProducto.map((mapa) => mapa.get(clave)!);
+    const unidades = new Set(metricas.map((metrica) => metrica.unidad ?? ""));
+    if (unidades.size !== 1) return [];
+    const primera = metricas[0];
+    const valores = metricas.map((metrica) => {
+      if (typeof metrica.valor === "boolean") return metrica.valor ? "Sí" : "No";
+      return metrica.unidad ? `${metrica.valor} ${metrica.unidad}` : String(metrica.valor);
+    });
+    return [fila(`tecnica:${clave}`, primera.nombre, valores)];
+  });
+}
+
+function construirFilasBenchmarks(productos: ProductoViewModel[]): FilaComparacion[] {
+  if (productos.length < 2) return [];
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) return [];
+
+  const claveBenchmark = (benchmark: ProductoViewModel["datosFichaTecnica"]["benchmarks"][number]) =>
+    [benchmark.nombre, benchmark.prueba ?? "", benchmark.version ?? "", benchmark.unidad ?? ""].join("|");
+  const mapas = productos.map((producto) =>
+    new Map(producto.datosFichaTecnica.benchmarks.map((benchmark) => [claveBenchmark(benchmark), benchmark] as const)),
+  );
+  const clavesComunes = [...mapas[0].keys()].filter((clave) =>
+    mapas.every((mapa) => mapa.has(clave)),
+  );
+
+  return clavesComunes.map((clave) => {
+    const resultados = mapas.map((mapa) => mapa.get(clave)!);
+    const primero = resultados[0];
+    return fila(
+      `benchmark:${clave}`,
+      primero.prueba ? `${primero.nombre} · ${primero.prueba}` : primero.nombre,
+      resultados.map((resultado) =>
+        resultado.unidad ? `${resultado.valor} ${resultado.unidad}` : String(resultado.valor),
+      ),
+    );
+  });
+}
 function contarEspecificaciones(producto: ProductoViewModel): number {
   return Object.values(producto.especificaciones).filter(
     (valor): valor is string => Boolean(valor),
@@ -212,6 +268,15 @@ export function generarRecomendacion(
       nombre: null,
       motivos: [],
       mensaje: "Agrega al menos dos productos para generar una recomendación.",
+    };
+  }
+
+  if (new Set(productos.map((producto) => producto.categoria)).size !== 1) {
+    return {
+      idProducto: null,
+      nombre: null,
+      motivos: [],
+      mensaje: "La recomendación requiere productos de la misma categoría.",
     };
   }
 

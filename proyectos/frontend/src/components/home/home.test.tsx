@@ -20,6 +20,7 @@ import type {
   ProductoOferta,
 } from "@/types/producto";
 import type { ResenaResponse } from "@/services/api";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 
 afterEach(() => {
   cleanup();
@@ -48,6 +49,7 @@ function crearVista(
       camaras: null,
       bateria: null,
     },
+    datosFichaTecnica: normalizarDatosFichaTecnica(null),
     caracteristicas: [],
     textoBusqueda: "samsung galaxy s24 ultra",
     ...overrides,

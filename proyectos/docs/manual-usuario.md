@@ -371,6 +371,29 @@ Valoración
 
 Las características mostradas dependerán de la categoría de los productos.
 
+## 18.1 Seleccionar productos de la misma categoría
+
+El comparador permite seleccionar hasta cuatro productos. El primero fija la
+categoría: los siguientes deben pertenecer a esa misma categoría registrada en
+el catálogo.
+
+- En `/comparador`, el selector muestra únicamente productos compatibles con
+  la selección actual.
+- Desde una ficha, «Agregar al comparador» se bloquea si el producto pertenece
+  a otra categoría y se explica el motivo. Puedes ir a «Ver comparador» para
+  vaciar la selección y empezar con otra categoría.
+- Al quitar el último producto o pulsar «Vaciar comparador», se libera la
+  categoría.
+- La selección se conserva en este navegador. Si una selección antigua mezcla
+  categorías, se mantiene el primer producto válido y los de su misma
+  categoría; se informa de la depuración. También se quitan productos que ya
+  no están en el catálogo.
+- Si no se puede consultar el catálogo desde la ficha, no se agregan productos
+  sin validar. La selección se conserva y aparece «Reintentar comparador».
+
+Esta restricción de selección no cambia todavía las filas técnicas de la
+tabla; su adaptación a cada categoría corresponde a una mejora posterior.
+
 ---
 
 # 19. Consulta de establecimientos

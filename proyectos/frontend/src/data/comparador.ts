@@ -3,6 +3,11 @@ import type { ProductoViewModel } from "@/data/productoViewModel";
 export const CLAVE_COMPARADOR = "tecreview:comparador";
 export const MAX_COMPARADOR = 4;
 
+export interface ProductoComparable {
+  idProducto: number;
+  idCategoria: number;
+}
+
 export type ClaveFilaComparacion =
   | "precio"
   | "disponibilidad"
@@ -32,7 +37,13 @@ export interface ResultadoRecomendacion {
 export interface ResultadoAgregarComparador {
   ids: number[];
   agregado: boolean;
-  motivo: "agregado" | "duplicado" | "lleno" | "invalido";
+  motivo:
+    | "agregado"
+    | "duplicado"
+    | "lleno"
+    | "invalido"
+    | "categoria-incompatible"
+    | "sin-validar";
 }
 
 /**
@@ -94,18 +105,46 @@ export function guardarIdsComparador(
   }
 }
 
+/**
+ * Conserva la categoría real del primer producto válido, no la categoría
+ * visual inferida de sus especificaciones. También depura selecciones antiguas.
+ */
+export function validarSeleccionComparador(
+  ids: number[],
+  catalogo: readonly ProductoComparable[],
+): number[] {
+  const porId = new Map(catalogo.map((producto) => [producto.idProducto, producto]));
+  let idCategoria: number | null = null;
+
+  return normalizarIdsComparador(ids).filter((id) => {
+    const producto = porId.get(id);
+    if (!producto || !Number.isInteger(producto.idCategoria) || producto.idCategoria <= 0) {
+      return false;
+    }
+    idCategoria ??= producto.idCategoria;
+    return producto.idCategoria === idCategoria;
+  });
+}
+
 export function agregarIdComparador(
   ids: number[],
   id: number,
+  catalogo: readonly ProductoComparable[],
 ): ResultadoAgregarComparador {
-  const actuales = normalizarIdsComparador(ids);
+  const actuales = validarSeleccionComparador(ids, catalogo);
 
-  if (!Number.isInteger(id) || id <= 0) {
+  if (validarSeleccionComparador([id], catalogo).length === 0) {
     return { ids: actuales, agregado: false, motivo: "invalido" };
   }
 
   if (actuales.includes(id)) {
     return { ids: actuales, agregado: false, motivo: "duplicado" };
+  }
+
+  const primero = catalogo.find((producto) => producto.idProducto === actuales[0]);
+  const candidato = catalogo.find((producto) => producto.idProducto === id);
+  if (primero && candidato?.idCategoria !== primero.idCategoria) {
+    return { ids: actuales, agregado: false, motivo: "categoria-incompatible" };
   }
 
   if (actuales.length >= MAX_COMPARADOR) {

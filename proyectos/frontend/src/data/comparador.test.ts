@@ -9,7 +9,15 @@ import {
   leerIdsComparador,
   normalizarIdsComparador,
   quitarIdComparador,
+  validarSeleccionComparador,
 } from "./comparador";
+
+const CATALOGO = [
+  ...[1, 2, 3, 4, 5, 7].map((idProducto) => ({ idProducto, idCategoria: 10 })),
+  { idProducto: 8, idCategoria: 20 },
+  { idProducto: 9, idCategoria: 20 },
+  { idProducto: 6, idCategoria: 0 },
+];
 
 function crearVista(
   overrides: Partial<ProductoViewModel> = {},
@@ -65,7 +73,7 @@ describe("normalizarIdsComparador", () => {
 
 describe("agregarIdComparador", () => {
   it("agrega un id nuevo", () => {
-    expect(agregarIdComparador([], 7)).toEqual({
+    expect(agregarIdComparador([], 7, CATALOGO)).toEqual({
       ids: [7],
       agregado: true,
       motivo: "agregado",
@@ -73,7 +81,7 @@ describe("agregarIdComparador", () => {
   });
 
   it("no duplica un id existente", () => {
-    expect(agregarIdComparador([7], 7)).toEqual({
+    expect(agregarIdComparador([7], 7, CATALOGO)).toEqual({
       ids: [7],
       agregado: false,
       motivo: "duplicado",
@@ -82,7 +90,7 @@ describe("agregarIdComparador", () => {
 
   it("rechaza un quinto producto", () => {
     const ids = Array.from({ length: MAX_COMPARADOR }, (_, i) => i + 1);
-    expect(agregarIdComparador(ids, 5)).toEqual({
+    expect(agregarIdComparador(ids, 5, CATALOGO)).toEqual({
       ids,
       agregado: false,
       motivo: "lleno",
@@ -90,12 +98,39 @@ describe("agregarIdComparador", () => {
   });
 
   it("rechaza ids inválidos", () => {
-    expect(agregarIdComparador([], 0).motivo).toBe("invalido");
-    expect(agregarIdComparador([], Number.NaN).motivo).toBe("invalido");
+    expect(agregarIdComparador([], 0, CATALOGO).motivo).toBe("invalido");
+    expect(agregarIdComparador([], Number.NaN, CATALOGO).motivo).toBe("invalido");
+    expect(agregarIdComparador([], 99, CATALOGO).motivo).toBe("invalido");
+    expect(agregarIdComparador([], 6, CATALOGO).motivo).toBe("invalido");
+  });
+
+  it("rechaza otra categoría sin cambiar la selección", () => {
+    expect(agregarIdComparador([7], 8, CATALOGO)).toEqual({
+      ids: [7],
+      agregado: false,
+      motivo: "categoria-incompatible",
+    });
+  });
+
+  it("permite fijar otra categoría cuando no quedan productos", () => {
+    expect(agregarIdComparador(quitarIdComparador([7], 7), 8, CATALOGO).ids)
+      .toEqual([8]);
   });
 
   it("quita un id sin alterar el orden de los demás", () => {
     expect(quitarIdComparador([3, 1, 2], 1)).toEqual([3, 2]);
+  });
+});
+
+describe("validarSeleccionComparador", () => {
+  it("conserva el primer producto válido y los compatibles en su orden", () => {
+    expect(validarSeleccionComparador([99, 8, 1, 9], CATALOGO)).toEqual([8, 9]);
+    expect(validarSeleccionComparador([1, 8, 2], CATALOGO)).toEqual([1, 2]);
+  });
+
+  it("no usa categorías inválidas ni inventa productos para un catálogo vacío", () => {
+    expect(validarSeleccionComparador([6, 8, 9], CATALOGO)).toEqual([8, 9]);
+    expect(validarSeleccionComparador([1, 2], [])).toEqual([]);
   });
 });
 

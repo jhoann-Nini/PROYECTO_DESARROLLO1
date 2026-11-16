@@ -89,6 +89,58 @@ afterEach(() => {
 });
 
 describe("ComparadorCliente", () => {
+  it("identifica la categoría activa por su nombre registrado, no por el tipo visual", async () => {
+    configurarExito([crearProducto(1, { idCategoria: 80, caracteristicas: null })]);
+    mockCategorias.mockResolvedValue([
+      { idCategoria: 80, nombre: "Accesorios", descripcion: null, estado: true },
+    ]);
+    seleccionarEnStorage([1]);
+    render(<ComparadorCliente />);
+    expect(await screen.findByText(/Categoría de la comparación: Accesorios/)).toBeDefined();
+  });
+
+  it("identifica por ID una categoría cuyo nombre no está registrado en la respuesta", async () => {
+    configurarExito([crearProducto(1, { idCategoria: 80, caracteristicas: null })]);
+    seleccionarEnStorage([1]);
+    render(<ComparadorCliente />);
+    expect(await screen.findByText(/Categoría de la comparación: Categoría #80/)).toBeDefined();
+  });
+
+  it("filtra por el id de categoría real y vuelve a permitir otra al vaciar", async () => {
+    configurarExito([
+      crearProducto(1),
+      crearProducto(2),
+      // Misma etiqueta visual, distinta categoría real: no deben mezclarse.
+      crearProducto(3, { idCategoria: 50, nombreCategoria: "Móviles" }),
+    ]);
+    render(<ComparadorCliente />);
+    fireEvent.click(await screen.findByRole("button", { name: "Agregar Producto 1 al comparador" }));
+    expect(screen.queryByRole("button", { name: "Agregar Producto 3 al comparador" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Producto 2 al comparador" }));
+    expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([1, 2]);
+    fireEvent.change(screen.getByLabelText("Buscar productos para comparar"), { target: { value: "Producto 3" } });
+    expect(screen.queryByRole("button", { name: "Agregar Producto 3 al comparador" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Vaciar comparador" }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Producto 3 al comparador" }));
+    expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([3]);
+  });
+
+  it("no muestra columnas de otra categoría al recuperar una selección mixta", async () => {
+    configurarExito([
+      crearProducto(1),
+      crearProducto(2, { idCategoria: 50 }),
+      crearProducto(3, { idCategoria: 50 }),
+    ]);
+    seleccionarEnStorage([99, 2, 1, 3]);
+    render(<ComparadorCliente />);
+    const tabla = await screen.findByRole("table", { name: "Comparación de productos" });
+    expect(within(tabla).queryByRole("link", { name: "Producto 1" })).toBeNull();
+    expect(within(tabla).getByRole("link", { name: "Producto 2" })).toBeDefined();
+    expect(within(tabla).getByRole("link", { name: "Producto 3" })).toBeDefined();
+    await waitFor(() => expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([2, 3]));
+    expect(screen.getByText(/Se depuró la selección guardada/)).toBeDefined();
+  });
+
   it("muestra el estado de carga", () => {
     mockProductos.mockImplementation(() => new Promise(() => {}));
     mockCategorias.mockImplementation(() => new Promise(() => {}));

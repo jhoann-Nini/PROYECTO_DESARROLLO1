@@ -196,8 +196,10 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   convierten a COP con tasa 4.000. Los demás se consideran COP. Esta regla se
   centraliza en `src/data/precios.ts` y se eliminará cuando todos los datos
   estén normalizados.
-- El comparador se persiste en `localStorage` y no requiere backend. Guarda
-  máximo 4 ids en `tecreview:comparador`.
+- El comparador persiste máximo 4 ids en `localStorage`
+  (`tecreview:comparador`). No requiere sesión ni persistencia de comparaciones
+  en backend; sí consulta el catálogo real para validar los productos y su
+  `idCategoria`. El primer producto válido fija la categoría.
 - Favoritos usa `localStorage` con la clave `tecreview:favoritos`, normaliza
   ids enteros positivos, evita duplicados y admite hasta 100 productos. Se
   sincroniza entre pestañas con `storage` y dentro de la misma pestaña con el

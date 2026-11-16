@@ -30,7 +30,7 @@ describe("fichas técnicas de los ocho productos piloto", () => {
     const vendido = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 108);
     const oferta = ULTIMAS_OFERTAS.find((item) => item.id === 303);
     expect(productoMock?.nombre).toBe("OnePlus Pad 2");
-    expect(productoMock?.caracteristicas?.almacenamiento).toContain("UFS 3.1");
+    expect(productoMock?.caracteristicas?.ram_almacenamiento).toContain("UFS 3.1");
     for (const producto of [vendido, oferta]) {
       expect(producto?.detalleSpecs?.secciones?.some((seccion) =>
         seccion.descripcion.includes("UFS 3.1")

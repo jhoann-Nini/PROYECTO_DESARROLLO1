@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { obtenerResenas, type ResenaResponse } from "@/services/api";
-import { esAdministrador } from "@/types/producto";
+import { esAdministrador, esRepresentante, puedeModerar } from "@/types/producto";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import { useComparador } from "@/hooks/useComparador";
 import AuthModal from "@/components/AuthModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
+import PanelModeracionModal from "@/components/moderacion/PanelModeracionModal";
+import PanelRepresentanteModal from "@/components/representante/PanelRepresentanteModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 
@@ -43,12 +45,17 @@ export default function PerfilCliente() {
 
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
+  const [modalModeracionAbierto, setModalModeracionAbierto] = useState(false);
+  const [modalRepresentanteAbierto, setModalRepresentanteAbierto] =
+    useState(false);
   const [resenas, setResenas] = useState<ResenaResponse[]>([]);
   const [cargandoResenas, setCargandoResenas] = useState(false);
   const [errorResenas, setErrorResenas] = useState<string | null>(null);
   const [intentoResenas, setIntentoResenas] = useState(0);
 
   const esAdmin = useMemo(() => esAdministrador(usuario), [usuario]);
+  const esModerador = useMemo(() => puedeModerar(usuario), [usuario]);
+  const esRep = useMemo(() => esRepresentante(usuario), [usuario]);
 
   function reintentarResenas() {
     setCargandoResenas(true);
@@ -263,6 +270,24 @@ export default function PerfilCliente() {
                 Panel de administración
               </button>
             )}
+            {esModerador && (
+              <button
+                type="button"
+                onClick={() => setModalModeracionAbierto(true)}
+                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              >
+                Panel de moderación
+              </button>
+            )}
+            {(esAdmin || esRep) && (
+              <button
+                type="button"
+                onClick={() => setModalRepresentanteAbierto(true)}
+                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              >
+                Panel de representante
+              </button>
+            )}
             <button
               type="button"
               onClick={cerrarSesion}
@@ -409,6 +434,18 @@ export default function PerfilCliente() {
         onClose={() => setModalAdminAbierto(false)}
         usuarioSesion={usuario}
         onProductoCambiado={() => {}}
+      />
+
+      <PanelModeracionModal
+        isOpen={modalModeracionAbierto}
+        onClose={() => setModalModeracionAbierto(false)}
+        usuarioSesion={usuario}
+      />
+
+      <PanelRepresentanteModal
+        isOpen={modalRepresentanteAbierto}
+        onClose={() => setModalRepresentanteAbierto(false)}
+        usuarioSesion={usuario}
       />
     </main>
   );

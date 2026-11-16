@@ -442,6 +442,21 @@ class ValoracionSecurityIntegrationTest {
     }
 
     @Test
+    @DisplayName("Una cuenta suspendida no puede consultar su valoración")
+    void cuentaSuspendidaNoPuedeConsultarMiValoracion() throws Exception {
+        Usuario usuario = usuarioRepository.findBySupabaseUid(TEST_SUB).orElseThrow();
+        usuario.setEstado(false);
+        usuarioRepository.saveAndFlush(usuario);
+
+        String token = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");
+
+        mockMvc.perform(get("/api/valoraciones/mi-valoracion")
+                        .param("idProducto", idProductoValido.toString())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @DisplayName("El ranking mejor valorados refleja media y recuento, y excluye valoraciones inactivas")
     void rankingReflejaMediaYExcluyeInactivas() throws Exception {
         String token1 = generarToken(TEST_SUB, "val_test@example.com", "Usuario Valoraciones Test");

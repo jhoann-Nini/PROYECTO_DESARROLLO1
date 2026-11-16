@@ -50,6 +50,7 @@ public class ValoracionService {
         }
 
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
 
         Producto producto = productoRepository.findById(request.idProducto())
                 .filter(p -> Boolean.TRUE.equals(p.getEstado()))
@@ -86,11 +87,21 @@ public class ValoracionService {
             return Optional.empty();
         }
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(usuario);
         return resenaRepository
                 .findByUsuarioIdUsuarioAndProductoIdProductoAndEstadoTrue(
                         usuario.getIdUsuario(),
                         idProducto)
                 .map(this::toValoracionResponse);
+    }
+
+    /**
+     * Impide que una cuenta suspendida consulte o modifique sus valoraciones.
+     */
+    private void validarUsuarioActivo(Usuario usuario) {
+        if (!Boolean.TRUE.equals(usuario.getEstado())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
+        }
     }
 
     /**

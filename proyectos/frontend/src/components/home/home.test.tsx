@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormEvent } from "react";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
@@ -53,6 +54,8 @@ function crearVista(
     caracteristicas: [],
     textoBusqueda: "samsung galaxy s24 ultra",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 
@@ -204,7 +207,7 @@ describe("CategoriasHome", () => {
       within(grupo).getByRole("link", { name: /Tablets/ }).getAttribute("href"),
     ).toBe("/categorias/tablets");
     expect(
-      within(grupo).getByRole("link", { name: /Portátiles \/ PC/ }).getAttribute("href"),
+      within(grupo).getByRole("link", { name: /Portátiles/ }).getAttribute("href"),
     ).toBe("/categorias/portatiles");
     expect(
       within(grupo).getByRole("link", { name: /Auriculares/ }).getAttribute("href"),
@@ -511,14 +514,14 @@ describe("DestacadosHome", () => {
     ).toBeDefined();
   });
 
-  it("muestra 'Modo local' cuando la API no responde", () => {
+  it("muestra 'Servidor no disponible' cuando la API no responde", () => {
     render(
       <DestacadosHome
         {...propsDestacados({ estadoBackend: "offline" })}
       />,
     );
 
-    expect(screen.getByText("Modo local")).toBeDefined();
+    expect(screen.getByText("Servidor no disponible")).toBeDefined();
   });
 });
 

@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Size;
 
 /**
  * DTO para la solicitud de reporte de una reseña.
- * Únicamente captura el motivo y la descripción opcional (obligatoria para motivo 'otro').
- * El id de la reseña se extrae de la URL y el usuario del JWT autenticado.
+ * El identificador puede recibirse en el cuerpo o en la URL.
+ * La identidad del reportante siempre se obtiene del JWT autenticado.
  */
 public record ReporteResenaRequest(
         @NotBlank(message = "El motivo es obligatorio.")
@@ -23,6 +23,9 @@ public record ReporteResenaRequest(
 
         Long idResena
 ) {
+    /**
+     * Conserva compatibilidad con las llamadas que utilizan dos argumentos.
+     */
     public ReporteResenaRequest(String motivo, String descripcion) {
         this(motivo, descripcion, null);
     }
@@ -35,4 +38,3 @@ public record ReporteResenaRequest(
         return true;
     }
 }
-

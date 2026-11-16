@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   crearResena,
@@ -25,7 +25,6 @@ import {
   type ProductoMejorValorado,
   type ProductoOferta,
 } from "@/types/producto";
-import { DISPOSITIVOS_VENDIDOS, PRODUCTOS_MOCK } from "@/data/mockProductos";
 import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { sanearPrecioCOP } from "@/data/precios";
@@ -41,7 +40,7 @@ import SiteHeader from "@/components/shell/SiteHeader";
 import SiteFooter from "@/components/shell/SiteFooter";
 import BottomNav from "@/components/shell/BottomNav";
 import SearchBar from "@/components/SearchBar";
-import MasVendidosBusqueda from "@/components/home/MasVendidosBusqueda";
+import SugerenciasBusqueda from "@/components/home/SugerenciasBusqueda";
 import AuthModal from "@/components/AuthModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import ResumenSesion from "@/components/home/ResumenSesion";
@@ -132,6 +131,7 @@ export default function Home() {
   const [estadoBackend, setEstadoBackend] = useState<"online" | "offline">(
     "offline",
   );
+  const [errorProductos, setErrorProductos] = useState<string | null>(null);
 
   // Sesión y roles confirmados por el backend
   const {
@@ -154,6 +154,8 @@ export default function Home() {
 
   // Búsqueda y presupuesto
   const [busqueda, setBusqueda] = useState("");
+  const contenedorBusquedaRef = useRef<HTMLDivElement>(null);
+  const [buscadorEnfocado, setBuscadorEnfocado] = useState(false);
   // El presupuesto vive en COP: 4.000.000 equivale al antiguo valor 1000.
   const [presupuestoMax, setPresupuestoMax] = useState<number>(4_000_000);
   const [filtrarSoloEnPresupuesto, setFiltrarSoloEnPresupuesto] =
@@ -207,18 +209,29 @@ export default function Home() {
   const [filtroComentarios, setFiltroComentarios] = useState("");
 
   const recargarProductosCatalogo = useCallback(async () => {
+    setCargandoApi(true);
+    setErrorProductos(null);
     try {
       const datos = await obtenerProductos<Producto>();
       if (datos && datos.length > 0) {
         setProductosBackend(datos);
         setEstadoBackend("online");
+        setErrorProductos(null);
       } else {
-        setProductosBackend(PRODUCTOS_MOCK);
-        setEstadoBackend("offline");
+        setProductosBackend([]);
+        setEstadoBackend("online");
+        setErrorProductos(null);
       }
-    } catch {
-      setProductosBackend(PRODUCTOS_MOCK);
+    } catch (err) {
+      setProductosBackend([]);
       setEstadoBackend("offline");
+      setErrorProductos(
+        err instanceof Error
+          ? err.message
+          : "No fue posible conectarse con el servidor.",
+      );
+    } finally {
+      setCargandoApi(false);
     }
   }, []);
 
@@ -234,15 +247,22 @@ export default function Home() {
         if (datos.length > 0) {
           setProductosBackend(datos);
           setEstadoBackend("online");
+          setErrorProductos(null);
         } else {
-          setProductosBackend(PRODUCTOS_MOCK);
-          setEstadoBackend("offline");
+          setProductosBackend([]);
+          setEstadoBackend("online");
+          setErrorProductos(null);
         }
       })
-      .catch(() => {
+      .catch((err) => {
         if (!activo) return;
-        setProductosBackend(PRODUCTOS_MOCK);
+        setProductosBackend([]);
         setEstadoBackend("offline");
+        setErrorProductos(
+          err instanceof Error
+            ? err.message
+            : "No fue posible conectarse con el servidor.",
+        );
       })
       .finally(() => {
         if (activo) setCargandoApi(false);
@@ -485,6 +505,14 @@ export default function Home() {
         marcas: marcasApi,
       }),
     [productosBackend, categoriasApi, marcasApi],
+  );
+
+  const productosSugeridos = useMemo(
+    () =>
+      vistas
+        .filter((producto) => producto.disponible)
+        .slice(0, 5),
+    [vistas],
   );
 
   const totalProductosVerificados = useMemo(
@@ -732,18 +760,30 @@ export default function Home() {
                   <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
                     Buscar dispositivos tecnológicos
                   </p>
-                  <SearchBar
-                    value={busqueda}
-                    onChange={setBusqueda}
-                    placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
-                    ariaLabel="Buscar dispositivos por marca, modelo o características"
-                  />
-                  {!busqueda.trim() && (
-                    <MasVendidosBusqueda
-                      productos={DISPOSITIVOS_VENDIDOS}
-                      onSeleccionar={setBusqueda}
+                  <div ref={contenedorBusquedaRef}>
+                    <SearchBar
+                      value={busqueda}
+                      onChange={setBusqueda}
+                      placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
+                      ariaLabel="Buscar dispositivos por marca, modelo o características"
+                      onFocus={() => setBuscadorEnfocado(true)}
+                      onBlur={(event) => {
+                        const siguiente = event.relatedTarget as Node | null;
+                        if (
+                          !siguiente ||
+                          !contenedorBusquedaRef.current?.contains(siguiente)
+                        ) {
+                          setBuscadorEnfocado(false);
+                        }
+                      }}
                     />
-                  )}
+                    {buscadorEnfocado && !busqueda.trim() && (
+                      <SugerenciasBusqueda
+                        productos={productosSugeridos}
+                        onSeleccionar={setBusqueda}
+                      />
+                    )}
+                  </div>
                   <p className="mt-2 text-xs text-[var(--color-subtle)]">
                     Presupuesto de referencia: hasta{" "}
                     {formatearCOP(presupuestoMax)}. Activa el filtro para
@@ -792,6 +832,8 @@ export default function Home() {
           totalMostrados={productosDestacados.length}
           cargando={cargandoApi}
           estadoBackend={estadoBackend}
+          error={errorProductos}
+          onReintentar={recargarProductosCatalogo}
           busqueda={busqueda}
           filtroPresupuesto={filtrarSoloEnPresupuesto}
           presupuestoMax={presupuestoMax}

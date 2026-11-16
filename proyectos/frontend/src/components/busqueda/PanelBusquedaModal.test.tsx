@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -47,6 +48,8 @@ function crearProducto(
     caracteristicas: [],
     textoBusqueda: `${nombre} ${marca} ${categoriaEtiqueta}`.toLowerCase(),
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 
@@ -54,7 +57,7 @@ const ETIQUETAS_CATEGORIA = [
   "Todos",
   "Celulares",
   "Tablets",
-  "Portátiles / PC",
+  "Portátiles",
   "Auriculares",
 ];
 

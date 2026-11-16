@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import {
 import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
@@ -39,6 +40,8 @@ function crearVista(
     caracteristicas: [],
     textoBusqueda: "producto uno samsung",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

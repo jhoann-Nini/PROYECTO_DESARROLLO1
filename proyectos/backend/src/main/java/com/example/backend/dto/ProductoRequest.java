@@ -3,6 +3,7 @@ package com.example.backend.dto;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -12,6 +13,10 @@ import java.util.Map;
  * Datos que el cliente envía para crear o actualizar un producto.
  * idCategoria e idMarca referencian entidades existentes por su id.
  * caracteristicas contiene especificaciones técnicas estructuradas (JSONB).
+ * Criterios TEC-117:
+ * - Solo un administrador escribe (control de acceso en SecurityConfig).
+ * - Los enlaces deben empezar por http o https (validación en imagen).
+ * - El precio no puede ser negativo (DecimalMin >= 0.0 en precioReferencia).
  */
 public record ProductoRequest(
 
@@ -28,6 +33,7 @@ public record ProductoRequest(
         Long idMarca,
 
         @Size(max = 1000, message = "La imagen no puede superar 1000 caracteres")
+        @Pattern(regexp = "^(https?://.*)?$", message = "Los enlaces deben empezar por http o https")
         String imagen,
 
         @DecimalMin(value = "0.0", inclusive = true, message = "El precio no puede ser negativo")

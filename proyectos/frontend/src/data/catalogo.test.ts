@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoViewModel } from "./productoViewModel";
 import {
   ORDENES_CATALOGO,
@@ -38,6 +39,8 @@ function crearVista(
     caracteristicas: [],
     textoBusqueda: "producto samsung celulares",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

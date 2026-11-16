@@ -5,6 +5,8 @@ import type {
 } from "@/types/producto";
 import { detectarCategoria, formatearCOP } from "./specsHelper";
 import { sanearPrecioCOP } from "./precios";
+import { normalizarDatosFichaTecnica } from "./fichaTecnica";
+import type { DatosFichaTecnica } from "./fichaTecnica";
 
 export type CaracteristicaClave =
   | "5g"
@@ -34,6 +36,7 @@ export interface ProductoViewModel {
   rating: number | null;
   cantidadResenas: number | null;
   especificaciones: EspecificacionesClave;
+  datosFichaTecnica: DatosFichaTecnica;
   caracteristicas: CaracteristicaClave[];
   textoBusqueda: string;
   posicionRanking?: number | null;
@@ -340,6 +343,7 @@ export function crearProductoViewModel(
     opciones.nombreMarca?.trim() ||
     `Marca #${producto.idMarca}`;
   const especificaciones = extraerEspecificaciones(producto.caracteristicas);
+  const datosFichaTecnica = normalizarDatosFichaTecnica(producto.caracteristicas);
   const tiendas = extraerTiendas(producto.caracteristicas);
   const imagen = producto.imagen?.trim() || null;
   const textoBusqueda = construirTextoBusqueda(
@@ -362,6 +366,7 @@ export function crearProductoViewModel(
     rating: normalizarRating(opciones.rating),
     cantidadResenas: normalizarCantidadResenas(opciones.cantidadResenas),
     especificaciones,
+    datosFichaTecnica,
     caracteristicas: detectarCaracteristicas(
       especificaciones,
       textoBusqueda

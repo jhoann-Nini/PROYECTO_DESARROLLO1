@@ -204,7 +204,7 @@ function construirFilasMetricasTecnicas(productos: ProductoViewModel[]): FilaCom
   const porProducto = productos.map((producto) => new Map(
     producto.datosFichaTecnica.metricasComparables
       .filter((metrica) => metrica.comparable)
-      .map((metrica) => [metrica.clave, metrica]),
+      .map((metrica) => [metrica.clave, metrica] as const),
   ));
   const clavesComunes = [...porProducto[0].keys()].filter((clave) =>
     porProducto.every((mapa) => mapa.has(clave)),
@@ -230,7 +230,7 @@ function construirFilasBenchmarks(productos: ProductoViewModel[]): FilaComparaci
   const claveBenchmark = (benchmark: ProductoViewModel["datosFichaTecnica"]["benchmarks"][number]) =>
     [benchmark.nombre, benchmark.prueba ?? "", benchmark.version ?? "", benchmark.unidad ?? ""].join("|");
   const mapas = productos.map((producto) =>
-    new Map(producto.datosFichaTecnica.benchmarks.map((benchmark) => [claveBenchmark(benchmark), benchmark])),
+    new Map(producto.datosFichaTecnica.benchmarks.map((benchmark) => [claveBenchmark(benchmark), benchmark] as const)),
   );
   const clavesComunes = [...mapas[0].keys()].filter((clave) =>
     mapas.every((mapa) => mapa.has(clave)),

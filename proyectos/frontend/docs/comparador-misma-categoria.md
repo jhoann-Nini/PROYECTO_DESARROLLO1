@@ -40,6 +40,10 @@ Mejora 1 implementada el 16 de noviembre de 2026. No incluye las mejoras 2–5.
   favoritos. La adaptación de filas técnicas por categoría queda para la
   mejora 2.
 
+**Actualización posterior:** la mejora 2 está documentada en
+[`comparador-filas-por-categoria.md`](comparador-filas-por-categoria.md).
+El alcance y los resultados anteriores corresponden al cierre de la mejora 1.
+
 ## Pruebas
 
 `npm test` incluye pruebas de la regla pura, del hook, del selector y del botón

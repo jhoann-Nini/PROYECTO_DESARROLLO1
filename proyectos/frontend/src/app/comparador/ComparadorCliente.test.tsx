@@ -89,6 +89,135 @@ afterEach(() => {
 });
 
 describe("ComparadorCliente", () => {
+  it("compara audio registrado sin filas de pantalla, RAM o cámaras", async () => {
+    configurarExito([
+      crearProducto(1, {
+        idCategoria: 82,
+        caracteristicas: {
+          transductores: "40 mm",
+          cancelacion_ruido: false,
+          codecs: ["AAC", "SBC"],
+          pantalla: "Dato ajeno",
+          ram: "8 GB",
+          camaras: "50 MP",
+        },
+      }),
+      crearProducto(2, {
+        idCategoria: 82,
+        caracteristicas: {
+          secciones: [{ titulo: "TRANSDUCTORES / DRIVERS", descripcion: "11 mm" }],
+          metricasComparables: [
+            { clave: "autonomia", nombre: "Autonomía", grupo: "audio", valor: 30, unidad: "h", comparable: true },
+          ],
+        },
+      }),
+    ]);
+    mockCategorias.mockResolvedValue([
+      { idCategoria: 82, nombre: "Auriculares", descripcion: null, estado: true },
+    ]);
+    seleccionarEnStorage([1, 2]);
+    render(<ComparadorCliente />);
+
+    const tabla = await screen.findByRole("table", { name: "Comparación de productos" });
+    expect(within(tabla).queryByRole("rowheader", { name: /Pantalla|RAM|Cámaras/ })).toBeNull();
+    const transductores = within(tabla)
+      .getByRole("rowheader", { name: /Transductores/ }).closest("tr")!;
+    expect(within(transductores).getAllByRole("cell").map((celda) => celda.textContent))
+      .toEqual(["40 mm", "11 mm"]);
+    const anc = within(tabla)
+      .getByRole("rowheader", { name: /Cancelación de ruido/ }).closest("tr")!;
+    expect(within(anc).getAllByRole("cell").map((celda) => celda.textContent))
+      .toEqual(["No", "Sin dato"]);
+    expect(within(tabla).getByText("AAC, SBC")).toBeDefined();
+    expect(within(tabla).getByText("30 h")).toBeDefined();
+    expect(within(tabla).queryByRole("rowheader", { name: /Micrófonos/ })).toBeNull();
+  });
+
+  it("aplica Solo diferencias a las filas técnicas de audio", async () => {
+    configurarExito([1, 2].map((id) => crearProducto(id, {
+      idCategoria: 82,
+      caracteristicas: {
+        drivers: id === 1 ? "40 mm" : "11 mm",
+        anc: false,
+      },
+    })));
+    mockCategorias.mockResolvedValue([
+      { idCategoria: 82, nombre: "Auriculares", descripcion: null, estado: true },
+    ]);
+    seleccionarEnStorage([1, 2]);
+    render(<ComparadorCliente />);
+    await screen.findByRole("rowheader", { name: /Cancelación de ruido/ });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Solo diferencias" }));
+    expect(screen.queryByRole("rowheader", { name: /Cancelación de ruido/ })).toBeNull();
+    expect(screen.getByRole("rowheader", { name: /Transductores/ })).toBeDefined();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Solo diferencias" }));
+    expect(screen.getByRole("rowheader", { name: /Cancelación de ruido/ })).toBeDefined();
+  });
+
+  it("muestra solo datos generales cuando faltan características, sin una plantilla ficticia", async () => {
+    configurarExito([crearProducto(1, { caracteristicas: null })]);
+    seleccionarEnStorage([1]);
+    render(<ComparadorCliente />);
+    const tabla = await screen.findByRole("table", { name: "Comparación de productos" });
+    expect(within(tabla).getAllByRole("rowheader").map((fila) => fila.textContent))
+      .toEqual(["Precio de referencia", "Disponibilidad", "Marca", "Categoría"]);
+    expect(screen.getByText("No hay características técnicas registradas para esta selección.")).toBeDefined();
+  });
+
+  it("cambia las filas al empezar una comparación de portátiles después de audio", async () => {
+    configurarExito([
+      crearProducto(1, { idCategoria: 82, caracteristicas: { drivers: "40 mm" } }),
+      crearProducto(2, {
+        idCategoria: 200,
+        caracteristicas: { pantalla: "IPS", grafica: "GPU registrada", puertos: "HDMI" },
+      }),
+    ]);
+    mockCategorias.mockResolvedValue([
+      { idCategoria: 82, nombre: "Auriculares", descripcion: null, estado: true },
+      { idCategoria: 200, nombre: "Portátiles", descripcion: null, estado: true },
+    ]);
+    seleccionarEnStorage([1]);
+    render(<ComparadorCliente />);
+    await screen.findByRole("rowheader", { name: /Transductores/ });
+    fireEvent.click(screen.getByRole("button", { name: "Vaciar comparador" }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar Producto 2 al comparador" }));
+    expect(screen.queryByRole("rowheader", { name: /Transductores/ })).toBeNull();
+    expect(screen.getByRole("rowheader", { name: /Tarjeta gráfica/ })).toBeDefined();
+    expect(screen.getByRole("rowheader", { name: "Puertos" })).toBeDefined();
+    expect(screen.getByRole("rowheader", { name: "Pantalla" })).toBeDefined();
+    expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([2]);
+  });
+
+  it("cuenta solo características pertinentes en la sugerencia, independientemente de Solo diferencias", async () => {
+    configurarExito([
+      crearProducto(1, {
+        idCategoria: 82,
+        precioReferencia: 500000,
+        caracteristicas: {
+          transductores: "40 mm", ram: "8 GB", pantalla: "OLED", camaras: "50 MP",
+          memoria: "8 GB",
+          secciones: [{ titulo: "CHIPSET & ARQUITECTURA", descripcion: "Snapdragon" }],
+        },
+      }),
+      crearProducto(2, {
+        idCategoria: 82,
+        precioReferencia: 500000,
+        caracteristicas: { transductores: "40 mm", cancelacion_ruido: false, puertos: "Jack 3.5 mm" },
+      }),
+    ]);
+    mockCategorias.mockResolvedValue([
+      { idCategoria: 82, nombre: "Auriculares", descripcion: null, estado: true },
+    ]);
+    seleccionarEnStorage([1, 2]);
+    render(<ComparadorCliente />);
+    const sugerencia = await screen.findByRole("region", { name: "Sugerencia del comparador" });
+    expect(within(sugerencia).getByText("Producto 2")).toBeDefined();
+    expect(within(sugerencia).getByText(/Registra más especificaciones.*\(3\)/)).toBeDefined();
+    expect(sugerencia.textContent).not.toContain("de 6");
+    fireEvent.click(screen.getByRole("checkbox", { name: "Solo diferencias" }));
+    expect(within(sugerencia).getByText(/Registra más especificaciones.*\(3\)/)).toBeDefined();
+  });
+
   it("identifica la categoría activa por su nombre registrado, no por el tipo visual", async () => {
     configurarExito([crearProducto(1, { idCategoria: 80, caracteristicas: null })]);
     mockCategorias.mockResolvedValue([

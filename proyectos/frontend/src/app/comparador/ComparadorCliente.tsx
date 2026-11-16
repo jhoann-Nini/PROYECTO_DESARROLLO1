@@ -107,15 +107,15 @@ export default function ComparadorCliente() {
   }, [recientes, productos]);
 
   const filas = useMemo(
-    () => construirFilasComparacion(seleccionados),
-    [seleccionados],
+    () => construirFilasComparacion(seleccionados, catalogo ?? []),
+    [seleccionados, catalogo],
   );
   const filasVisibles = soloDiferencias
     ? filas.filter((fila) => fila.difiere)
     : filas;
   const recomendacion = useMemo(
-    () => generarRecomendacion(seleccionados),
-    [seleccionados],
+    () => generarRecomendacion(seleccionados, filas),
+    [seleccionados, filas],
   );
 
   const resultadosSelector = useMemo(() => {
@@ -404,6 +404,11 @@ export default function ComparadorCliente() {
           />
         ) : (
           <>
+            {!filas.some((fila) => fila.clave.startsWith("tecnica:")) && (
+              <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
+                No hay características técnicas registradas para esta selección.
+              </p>
+            )}
             <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">
               <table
                 aria-label="Comparación de productos"

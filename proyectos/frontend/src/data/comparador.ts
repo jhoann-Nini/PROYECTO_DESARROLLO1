@@ -1,4 +1,6 @@
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import type { Producto } from "@/types/producto";
+import { obtenerFilasTecnicasComparador } from "./especificacionesComparador";
 
 export const CLAVE_COMPARADOR = "tecreview:comparador";
 export const MAX_COMPARADOR = 4;
@@ -13,12 +15,7 @@ export type ClaveFilaComparacion =
   | "disponibilidad"
   | "marca"
   | "categoria"
-  | "pantalla"
-  | "procesador"
-  | "ram"
-  | "almacenamiento"
-  | "camaras"
-  | "bateria";
+  | `tecnica:${string}`;
 
 export interface FilaComparacion {
   clave: ClaveFilaComparacion;
@@ -176,23 +173,12 @@ function fila(
 
 export function construirFilasComparacion(
   productos: ProductoViewModel[],
+  catalogo: readonly Producto[],
 ): FilaComparacion[] {
-  const especificaciones: Array<{
-    clave: ClaveFilaComparacion;
-    etiqueta: string;
-    campo: keyof ProductoViewModel["especificaciones"];
-  }> = [
-    { clave: "pantalla", etiqueta: "Pantalla", campo: "pantalla" },
-    { clave: "procesador", etiqueta: "Procesador", campo: "procesador" },
-    { clave: "ram", etiqueta: "Memoria RAM", campo: "ram" },
-    {
-      clave: "almacenamiento",
-      etiqueta: "Almacenamiento",
-      campo: "almacenamiento",
-    },
-    { clave: "camaras", etiqueta: "Cámaras", campo: "camaras" },
-    { clave: "bateria", etiqueta: "Batería", campo: "bateria" },
-  ];
+  if (productos.length === 0) return [];
+  const porId = new Map(catalogo.map((producto) => [producto.idProducto, producto]));
+  const seleccion = productos.map((producto) => porId.get(producto.idProducto));
+  const especificaciones = obtenerFilasTecnicasComparador(seleccion);
 
   return [
     fila(
@@ -217,23 +203,19 @@ export function construirFilasComparacion(
     fila(
       "categoria",
       "Categoría",
-      productos.map((producto) => producto.categoriaEtiqueta || null),
+      seleccion.map((producto) => producto
+        ? producto.nombreCategoria?.trim() || `Categoría #${producto.idCategoria}`
+        : null),
     ),
-    ...especificaciones.map(({ clave, etiqueta, campo }) =>
-      fila(
-        clave,
-        etiqueta,
-        productos.map(
-          (producto) => producto.especificaciones[campo] ?? null,
-        ),
-      ),
+    ...especificaciones.map(({ clave, etiqueta, valores }) =>
+      fila(`tecnica:${clave}`, etiqueta, valores),
     ),
   ];
 }
 
-function contarEspecificaciones(producto: ProductoViewModel): number {
-  return Object.values(producto.especificaciones).filter(
-    (valor): valor is string => Boolean(valor),
+function contarEspecificaciones(filas: FilaComparacion[], indice: number): number {
+  return filas.filter(
+    (fila) => fila.clave.startsWith("tecnica:") && fila.valores[indice] != null,
   ).length;
 }
 
@@ -244,6 +226,7 @@ function contarEspecificaciones(producto: ProductoViewModel): number {
  */
 export function generarRecomendacion(
   productos: ProductoViewModel[],
+  filas: FilaComparacion[],
 ): ResultadoRecomendacion {
   if (productos.length < 2) {
     return {
@@ -295,17 +278,21 @@ export function generarRecomendacion(
   }
 
   if (candidatos.length > 1) {
+    const cantidades = new Map(productos.map((producto, indice) => [
+      producto.idProducto,
+      contarEspecificaciones(filas, indice),
+    ]));
     const mayorCantidad = Math.max(
-      ...candidatos.map((producto) => contarEspecificaciones(producto)),
+      ...candidatos.map((producto) => cantidades.get(producto.idProducto) ?? 0),
     );
     const masCompletos = candidatos.filter(
-      (producto) => contarEspecificaciones(producto) === mayorCantidad,
+      (producto) => cantidades.get(producto.idProducto) === mayorCantidad,
     );
 
     if (masCompletos.length < candidatos.length) {
       candidatos = masCompletos;
       motivos.push(
-        `Registra más especificaciones completas (${mayorCantidad} de 6).`,
+        `Registra más especificaciones de la comparación (${mayorCantidad}).`,
       );
     }
   }

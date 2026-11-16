@@ -200,6 +200,12 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   (`tecreview:comparador`). No requiere sesión ni persistencia de comparaciones
   en backend; sí consulta el catálogo real para validar los productos y su
   `idCategoria`. El primer producto válido fija la categoría.
+- Las filas técnicas del comparador se construyen desde las características
+  registradas de los seleccionados: campos planos, secciones y métricas
+  comparables. Se omiten campos reconocidos ajenos a la categoría y filas sin
+  datos; las celdas ausentes muestran «Sin dato». No se usa una plantilla fija
+  de móviles ni datos simulados. Reglas y formatos:
+  [`comparador-filas-por-categoria.md`](comparador-filas-por-categoria.md).
 - Favoritos usa `localStorage` con la clave `tecreview:favoritos`, normaliza
   ids enteros positivos, evita duplicados y admite hasta 100 productos. Se
   sincroniza entre pestañas con `storage` y dentro de la misma pestaña con el
@@ -218,8 +224,9 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   `/api/productos/{id}/valoracion-stats`. Las estrellas y el texto de la
   reseña son fuentes distintas: una reseña no implica una valoración.
 - La sugerencia del comparador se deriva de disponibilidad, precio de
-  referencia y cantidad de especificaciones registradas. No declara un ganador
-  absoluto ni una calificación editorial.
+  referencia y cantidad de valores registrados en sus filas técnicas pertinentes,
+  sin un total fijo de seis campos. No declara un ganador absoluto ni una
+  calificación editorial.
 - Reseñas: se consumen las existentes de `/api/resenas`. `/resenas` permite
   buscar, filtrar por producto y ordenar por fecha; publicar exige sesión y usa
   `crearResena`. “Compra verificada” no está modelada; se omite hasta que el

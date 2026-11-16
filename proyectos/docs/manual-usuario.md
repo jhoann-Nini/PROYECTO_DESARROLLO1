@@ -391,8 +391,24 @@ el catálogo.
 - Si no se puede consultar el catálogo desde la ficha, no se agregan productos
   sin validar. La selección se conserva y aparece «Reintentar comparador».
 
-Esta restricción de selección no cambia todavía las filas técnicas de la
-tabla; su adaptación a cada categoría corresponde a una mejora posterior.
+## 18.2 Filas técnicas según la categoría
+
+La tabla conserva precio, disponibilidad, marca y categoría. Las filas técnicas
+se adaptan a los productos seleccionados y muestran únicamente características
+registradas:
+
+- En auriculares se muestran datos de audio, como transductores, ANC,
+  micrófonos, autonomía o códecs, cuando existen. No se presentan filas de
+  pantalla, RAM o cámaras de móvil.
+- En portátiles pueden aparecer GPU, puertos o webcam; en celulares y tablets
+  se mantienen sus características pertinentes.
+- Si un producto tiene un dato y otro no, el segundo muestra «Sin dato». Si
+  ninguno lo tiene, no se añade esa fila.
+- Cuando faltan todas las características técnicas, se informa y solo se
+  muestran los datos generales. No se rellenan especificaciones de ejemplo.
+- «Solo diferencias» oculta filas iguales sin cambiar la selección ni la
+  sugerencia informativa. La cantidad de información registrada no es una
+  puntuación de calidad.
 
 ---
 

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import type { Producto } from "@/types/producto";
 import {
   MAX_COMPARADOR,
   agregarIdComparador,
@@ -55,6 +56,22 @@ function crearStorage(inicial: Record<string, string> = {}) {
     setItem: vi.fn((clave: string, valor: string) => {
       datos.set(clave, valor);
     }),
+  };
+}
+
+function productoApi(vista: ProductoViewModel, overrides: Partial<Producto> = {}): Producto {
+  return {
+    idProducto: vista.idProducto,
+    nombre: vista.nombre,
+    nombreCategoria: "Móviles",
+    idCategoria: 10,
+    idMarca: 1,
+    descripcion: null,
+    imagen: null,
+    precioReferencia: vista.precioCOP,
+    estado: vista.disponible,
+    caracteristicas: { ...vista.especificaciones },
+    ...overrides,
   };
 }
 
@@ -159,7 +176,7 @@ describe("persistencia del comparador", () => {
 
 describe("construirFilasComparacion", () => {
   it("construye filas reales y marca solo las diferencias", () => {
-    const filas = construirFilasComparacion([
+    const vistas = [
       crearVista(),
       crearVista({
         idProducto: 2,
@@ -172,15 +189,16 @@ describe("construirFilasComparacion", () => {
           pantalla: "6.7'' AMOLED",
         },
       }),
-    ]);
+    ];
+    const filas = construirFilasComparacion(vistas, vistas.map((vista) => productoApi(vista)));
 
     const porClave = new Map(filas.map((fila) => [fila.clave, fila]));
 
     expect(porClave.get("precio")?.difiere).toBe(true);
     expect(porClave.get("disponibilidad")?.difiere).toBe(true);
     expect(porClave.get("marca")?.difiere).toBe(false);
-    expect(porClave.get("pantalla")?.difiere).toBe(true);
-    expect(porClave.get("ram")?.difiere).toBe(false);
+    expect(porClave.get("tecnica:pantalla")?.difiere).toBe(true);
+    expect(porClave.get("tecnica:ram")?.difiere).toBe(false);
     expect(porClave.get("precio")?.valores).toEqual([
       "$ 1.000.000 COP",
       "$ 2.000.000 COP",
@@ -188,7 +206,7 @@ describe("construirFilasComparacion", () => {
   });
 
   it("usa null cuando falta un dato y lo considera distinto de un valor real", () => {
-    const filas = construirFilasComparacion([
+    const vistas = [
       crearVista(),
       crearVista({
         idProducto: 2,
@@ -197,17 +215,54 @@ describe("construirFilasComparacion", () => {
           pantalla: null,
         },
       }),
-    ]);
+    ];
+    const filas = construirFilasComparacion(vistas, vistas.map((vista) => productoApi(vista)));
 
-    const pantalla = filas.find((fila) => fila.clave === "pantalla");
+    const pantalla = filas.find((fila) => fila.clave === "tecnica:pantalla");
     expect(pantalla?.valores).toEqual(["6.1'' AMOLED", null]);
     expect(pantalla?.difiere).toBe(true);
+  });
+
+  it("alinea por ID los datos de audio y omite campos ajenos o vacíos para todos", () => {
+    const vistas = [crearVista({ idProducto: 2 }), crearVista({ idProducto: 1 })];
+    const filas = construirFilasComparacion(vistas, [
+      productoApi(vistas[1], {
+        nombreCategoria: "Auriculares",
+        caracteristicas: { transductores: "40 mm", anc: false, pantalla: "OLED" },
+      }),
+      productoApi(vistas[0], {
+        nombreCategoria: "Auriculares",
+        caracteristicas: { drivers: "11 mm", microfonos: "3" },
+      }),
+    ]);
+    expect(filas.map((fila) => fila.clave)).toEqual([
+      "precio", "disponibilidad", "marca", "categoria",
+      "tecnica:transductores", "tecnica:cancelacion_ruido", "tecnica:microfonos",
+    ]);
+    expect(filas.find((fila) => fila.clave === "tecnica:transductores")?.valores)
+      .toEqual(["11 mm", "40 mm"]);
+    expect(filas.find((fila) => fila.clave === "tecnica:cancelacion_ruido")?.valores)
+      .toEqual([null, "No"]);
+    expect(filas.find((fila) => fila.clave === "categoria")?.valores)
+      .toEqual(["Auriculares", "Auriculares"]);
+  });
+
+  it("no inventa especificaciones del view model si no hay características reales", () => {
+    const vista = crearVista();
+    const filas = construirFilasComparacion([vista], [
+      productoApi(vista, { caracteristicas: null, nombreCategoria: "Accesorios" }),
+    ]);
+    expect(filas.map((fila) => fila.clave)).toEqual([
+      "precio", "disponibilidad", "marca", "categoria",
+    ]);
+    expect(filas.find((fila) => fila.clave === "categoria")?.valores).toEqual(["Accesorios"]);
+    expect(construirFilasComparacion([], [])).toEqual([]);
   });
 });
 
 describe("generarRecomendacion", () => {
   it("pide al menos dos productos", () => {
-    const resultado = generarRecomendacion([crearVista()]);
+    const resultado = generarRecomendacion([crearVista()], []);
     expect(resultado.idProducto).toBeNull();
     expect(resultado.mensaje).toMatch(/al menos dos/i);
   });
@@ -216,7 +271,7 @@ describe("generarRecomendacion", () => {
     const resultado = generarRecomendacion([
       crearVista({ idProducto: 1, nombre: "No disponible", disponible: false }),
       crearVista({ idProducto: 2, nombre: "Disponible", disponible: true }),
-    ]);
+    ], []);
 
     expect(resultado.idProducto).toBe(2);
     expect(resultado.nombre).toBe("Disponible");
@@ -237,7 +292,7 @@ describe("generarRecomendacion", () => {
         precioCOP: 2_500_000,
         precioFormateado: "$ 2.500.000 COP",
       }),
-    ]);
+    ], []);
 
     expect(resultado.idProducto).toBe(1);
     expect(resultado.motivos.join(" ")).toMatch(/precio/i);
@@ -260,7 +315,12 @@ describe("generarRecomendacion", () => {
         },
       }),
       crearVista({ idProducto: 2, nombre: "Con precio" }),
-    ]);
+    ], [{
+      clave: "tecnica:ram",
+      etiqueta: "Memoria RAM",
+      valores: [null, "8 GB"],
+      difiere: true,
+    }]);
 
     expect(resultado.idProducto).toBe(2);
     expect(resultado.motivos.join(" ")).toMatch(/especificaciones/i);
@@ -270,7 +330,7 @@ describe("generarRecomendacion", () => {
     const resultado = generarRecomendacion([
       crearVista({ idProducto: 1, nombre: "Uno" }),
       crearVista({ idProducto: 2, nombre: "Dos" }),
-    ]);
+    ], []);
 
     expect(resultado.idProducto).toBeNull();
     expect(resultado.mensaje).toMatch(/empate/i);
@@ -280,9 +340,47 @@ describe("generarRecomendacion", () => {
     const resultado = generarRecomendacion([
       crearVista({ idProducto: 1, disponible: false }),
       crearVista({ idProducto: 2, disponible: false }),
-    ]);
+    ], []);
 
     expect(resultado.idProducto).toBeNull();
     expect(resultado.mensaje).toMatch(/disponibilidad/i);
+  });
+
+  it("cuenta solo las filas técnicas vigentes, no las seis especificaciones del view model", () => {
+    const resultado = generarRecomendacion([
+      crearVista({ idProducto: 1, nombre: "Sin audio registrado" }),
+      crearVista({ idProducto: 2, nombre: "Con audio registrado" }),
+    ], [{
+      clave: "tecnica:transductores",
+      etiqueta: "Transductores / drivers",
+      valores: [null, "40 mm"],
+      difiere: true,
+    }]);
+    expect(resultado.idProducto).toBe(2);
+    expect(resultado.motivos.join(" ")).toContain("1");
+    expect(resultado.motivos.join(" ")).not.toContain("de 6");
+  });
+
+  it("cuenta puertos de audio pero no residuos de memoria o chipset al sugerir un producto", () => {
+    const vistas = [crearVista({ idProducto: 1 }), crearVista({ idProducto: 2 })];
+    const filas = construirFilasComparacion(vistas, [
+      productoApi(vistas[0], {
+        nombreCategoria: "Auriculares",
+        caracteristicas: {
+          drivers: "40 mm",
+          memoria: "8 GB",
+          secciones: [{ titulo: "CHIPSET & ARQUITECTURA", descripcion: "Snapdragon" }],
+        },
+      }),
+      productoApi(vistas[1], {
+        nombreCategoria: "Auriculares",
+        caracteristicas: { drivers: "40 mm", puertos: "Jack 3.5 mm, USB-C" },
+      }),
+    ]);
+    expect(filas.map((fila) => fila.clave)).toEqual([
+      "precio", "disponibilidad", "marca", "categoria",
+      "tecnica:transductores", "tecnica:puertos",
+    ]);
+    expect(generarRecomendacion(vistas, filas).idProducto).toBe(2);
   });
 });

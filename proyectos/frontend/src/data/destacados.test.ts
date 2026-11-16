@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoMejorValorado } from "@/types/producto";
 import type { ProductoViewModel } from "./productoViewModel";
 import { MAX_DESTACADOS, seleccionarDestacados } from "./destacados";
@@ -30,6 +31,8 @@ function crearVista(
     caracteristicas: [],
     textoBusqueda: `producto ${idProducto}`,
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

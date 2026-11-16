@@ -133,6 +133,11 @@ export default function ComparadorCliente() {
   }, [productos, busqueda]);
 
   function agregarProducto(producto: ProductoViewModel) {
+    const categoriaActual = seleccionados[0]?.categoria;
+    if (categoriaActual && categoriaActual !== producto.categoria) {
+      setAviso("Solo puedes comparar productos de la misma categoría. Quita los productos actuales para cambiar de categoría.");
+      return;
+    }
     const resultado = agregar(producto.idProducto);
 
     if (resultado.motivo === "lleno") {
@@ -227,8 +232,7 @@ export default function ComparadorCliente() {
               Agregar productos
             </h2>
             <p className="mt-1 text-sm text-[var(--color-subtle)]">
-              Busca por nombre, marca o categoría y suma productos a la
-              comparación.
+              Busca productos de una misma categoría para obtener una comparación técnica válida.
             </p>
           </div>
           <span className="shrink-0 rounded-full bg-[var(--color-canvas)] px-3 py-1 text-xs font-semibold text-[var(--color-subtle)]">
@@ -274,6 +278,9 @@ export default function ComparadorCliente() {
             {resultadosSelector.map((producto) => {
               const seleccionado = ids.includes(producto.idProducto);
               const lleno = ids.length >= MAX_COMPARADOR && !seleccionado;
+              const categoriaIncompatible = Boolean(
+                seleccionados[0] && seleccionados[0].categoria !== producto.categoria && !seleccionado,
+              );
 
               return (
                 <li
@@ -297,7 +304,7 @@ export default function ComparadorCliente() {
                   <button
                     type="button"
                     onClick={() => agregarProducto(producto)}
-                    disabled={!hidratado || seleccionado || lleno}
+                    disabled={!hidratado || seleccionado || lleno || categoriaIncompatible}
                     aria-label={
                       seleccionado
                         ? `${producto.nombre} ya está en el comparador`
@@ -309,7 +316,9 @@ export default function ComparadorCliente() {
                       ? "En el comparador"
                       : lleno
                         ? "Límite alcanzado"
-                        : "Agregar"}
+                        : categoriaIncompatible
+                          ? "Otra categoría"
+                          : "Agregar"}
                   </button>
                 </li>
               );

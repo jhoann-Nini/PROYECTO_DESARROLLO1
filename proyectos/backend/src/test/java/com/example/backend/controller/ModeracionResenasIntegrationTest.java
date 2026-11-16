@@ -19,10 +19,13 @@ import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.CategoriaRepository;
 import com.example.backend.repository.MarcaRepository;
 import com.example.backend.repository.ProductoRepository;
+import com.example.backend.repository.ReporteResenaDecisionAuditoriaRepository;
 import com.example.backend.repository.ReporteResenaRepository;
+import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
 import com.example.backend.repository.ResenaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.repository.UsuarioRolRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -57,6 +60,9 @@ class ModeracionResenasIntegrationTest {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private UsuarioRolRepository usuarioRolRepository;
+
+    @Autowired
     private RolRepository rolRepository;
 
     @Autowired
@@ -64,6 +70,12 @@ class ModeracionResenasIntegrationTest {
 
     @Autowired
     private ReporteResenaRepository reporteResenaRepository;
+
+    @Autowired
+    private ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
+
+    @Autowired
+    private ResenaModeracionAuditoriaRepository resenaModeracionAuditoriaRepository;
 
     private MockMvc mockMvc;
 
@@ -77,11 +89,18 @@ class ModeracionResenasIntegrationTest {
     private Usuario usuarioModerador;
     private Usuario usuarioAdmin;
     private Usuario usuarioNormal;
-    private Usuario moderadorInactivo;
+    private Usuario usuarioTienda;
+    private Usuario usuarioSuspendido;
+    private Usuario moderadorRevocadoConRolLegado;
 
     private Resena resenaReportada1;
     private Resena resenaReportada2;
     private Resena resenaLimpiaSinReportes;
+
+    private Rol rolUsuario;
+    private Rol rolModerador;
+    private Rol rolAdmin;
+    private Rol rolRepresentante;
 
     @BeforeEach
     void setUp() {
@@ -101,7 +120,7 @@ class ModeracionResenasIntegrationTest {
         marca.setEstado(true);
         marca = marcaRepository.save(marca);
 
-        Rol rolUsuario = rolRepository.findByNombre("Usuario registrado")
+        rolUsuario = rolRepository.findByNombre("Usuario registrado")
                 .orElseGet(() -> {
                     Rol r = new Rol();
                     r.setNombre("Usuario registrado");
@@ -109,7 +128,7 @@ class ModeracionResenasIntegrationTest {
                     return rolRepository.save(r);
                 });
 
-        Rol rolModerador = rolRepository.findByNombre("Moderador")
+        rolModerador = rolRepository.findByNombre("Moderador")
                 .orElseGet(() -> {
                     Rol r = new Rol();
                     r.setNombre("Moderador");
@@ -117,11 +136,19 @@ class ModeracionResenasIntegrationTest {
                     return rolRepository.save(r);
                 });
 
-        Rol rolAdmin = rolRepository.findByNombre("Administrador")
+        rolAdmin = rolRepository.findByNombre("Administrador")
                 .orElseGet(() -> {
                     Rol r = new Rol();
                     r.setNombre("Administrador");
                     r.setDescripcion("Rol de administracion");
+                    return rolRepository.save(r);
+                });
+
+        rolRepresentante = rolRepository.findByNombre("Representante de establecimiento")
+                .orElseGet(() -> {
+                    Rol r = new Rol();
+                    r.setNombre("Representante de establecimiento");
+                    r.setDescripcion("Rol representante tienda");
                     return rolRepository.save(r);
                 });
 
@@ -138,8 +165,15 @@ class ModeracionResenasIntegrationTest {
         usuarioAdmin = crearUsuario("Usuario Admin", rolAdmin, true);
         vincularRol(usuarioAdmin, rolAdmin, true);
 
-        moderadorInactivo = crearUsuario("Mod Inactivo", rolModerador, false);
-        vincularRol(moderadorInactivo, rolModerador, true);
+        usuarioTienda = crearUsuario("Usuario Tienda", rolRepresentante, true);
+        vincularRol(usuarioTienda, rolRepresentante, true);
+
+        usuarioSuspendido = crearUsuario("Usuario Suspendido", rolModerador, false);
+        vincularRol(usuarioSuspendido, rolModerador, true);
+
+        // Usuario con rol legado 'Moderador' pero cuya asignación multirrol está revocada (estado=false)
+        moderadorRevocadoConRolLegado = crearUsuario("Mod Revocado", rolModerador, true);
+        vincularRol(moderadorRevocadoConRolLegado, rolModerador, false);
 
         // Crear productos
         producto1 = new Producto();
@@ -216,8 +250,10 @@ class ModeracionResenasIntegrationTest {
         ur.setRol(rol);
         ur.setEstado(activo);
         ur.setFechaAsignacion(LocalDateTime.now());
-        usuario.agregarRol(ur);
-        usuarioRepository.save(usuario);
+        usuarioRolRepository.save(ur);
+        if (usuario.getRoles() != null) {
+            usuario.getRoles().add(ur);
+        }
     }
 
     private ReporteResena crearReporte(Resena resena, Usuario reportante, String motivo, String descripcion, EstadoReporte estado) {
@@ -233,40 +269,12 @@ class ModeracionResenasIntegrationTest {
     }
 
     // =========================================================================
-    // Pruebas S2-42: Control de Acceso y Roles
+    // 14 Pruebas Obligatorias S2-42
     // =========================================================================
 
     @Test
-    @DisplayName("[S2-42] Moderador autenticado lista reseñas reportadas exitosamente (200 OK)")
-    void listarResenasReportadas_comoModerador_devuelve200OKYListaAgrupada() throws Exception {
-        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
-                        .with(jwt().jwt(builder -> builder
-                                .subject(usuarioModerador.getSupabaseUid())
-                                .claim("email", usuarioModerador.getCorreo())))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                // La resena 1 tiene 2 reportes pendientes y 2 totales
-                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
-                .andExpect(jsonPath("$[0].nombreProducto").value(producto1.getNombre()))
-                .andExpect(jsonPath("$[0].idAutor").value(autor.getIdUsuario()))
-                .andExpect(jsonPath("$[0].nombreAutor").value(autor.getNombre()))
-                .andExpect(jsonPath("$[0].comentario").value(resenaReportada1.getComentario()))
-                .andExpect(jsonPath("$[0].puntuacion").value(1))
-                .andExpect(jsonPath("$[0].totalReportes").value(2))
-                .andExpect(jsonPath("$[0].reportesPendientes").value(2))
-                .andExpect(jsonPath("$[0].reportes", hasSize(2)))
-                .andExpect(jsonPath("$[0].reportes[0].motivo").isNotEmpty())
-                .andExpect(jsonPath("$[0].reportes[0].estado").value("PENDIENTE"))
-                // La resena 2 tiene 0 pendientes y 1 total
-                .andExpect(jsonPath("$[1].idResena").value(resenaReportada2.getIdResena()))
-                .andExpect(jsonPath("$[1].totalReportes").value(1))
-                .andExpect(jsonPath("$[1].reportesPendientes").value(0));
-    }
-
-    @Test
-    @DisplayName("[S2-42] Administrador autenticado lista reseñas reportadas exitosamente (200 OK)")
-    void listarResenasReportadas_comoAdministrador_devuelve200OK() throws Exception {
+    @DisplayName("1. Administrador activo puede consultar reseñas reportadas")
+    void administradorActivoPuedeConsultarResenasReportadas() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioAdmin.getSupabaseUid())
@@ -277,8 +285,20 @@ class ModeracionResenasIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-42] Usuario registrado regular sin permisos de moderación recibe 403 Forbidden")
-    void listarResenasReportadas_comoUsuarioRegistrado_devuelve403Forbidden() throws Exception {
+    @DisplayName("2. Moderador activo puede consultar reseñas reportadas")
+    void moderadorActivoPuedeConsultarResenasReportadas() throws Exception {
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    @DisplayName("3. Usuario regular recibe 403")
+    void usuarioRegularRecibe403() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioNormal.getSupabaseUid())
@@ -288,42 +308,39 @@ class ModeracionResenasIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-42] Cuenta de moderador inactiva o suspendida recibe 403 Forbidden")
-    void listarResenasReportadas_comoModeradorInactivo_devuelve403Forbidden() throws Exception {
+    @DisplayName("4. Tienda sin permisos de moderación recibe 403")
+    void tiendaSinPermisosModeracionRecibe403() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .with(jwt().jwt(builder -> builder
-                                .subject(moderadorInactivo.getSupabaseUid())
-                                .claim("email", moderadorInactivo.getCorreo())))
+                                .subject(usuarioTienda.getSupabaseUid())
+                                .claim("email", usuarioTienda.getCorreo())))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("[S2-42] Petición sin token de autenticación recibe 401 Unauthorized")
-    void listarResenasReportadas_sinToken_devuelve401Unauthorized() throws Exception {
+    @DisplayName("5. Usuario suspendido recibe 403")
+    void usuarioSuspendidoRecibe403() throws Exception {
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioSuspendido.getSupabaseUid())
+                                .claim("email", usuarioSuspendido.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("6. Usuario sin autenticación recibe 401")
+    void usuarioSinAutenticacionRecibe401() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
 
-    // =========================================================================
-    // Pruebas S2-42: Filtros y Casos de Negocio
-    // =========================================================================
-
     @Test
-    @DisplayName("[S2-42] Atajo /pendientes o filtro ?estado=PENDIENTE solo retorna reseñas con reportes pendientes")
-    void listarResenasPendientes_filtroPendientes_soloRetornaResenasConReportesPendientes() throws Exception {
-        mockMvc.perform(get("/api/moderacion/resenas/pendientes")
-                        .with(jwt().jwt(builder -> builder
-                                .subject(usuarioModerador.getSupabaseUid())
-                                .claim("email", usuarioModerador.getCorreo())))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
-                .andExpect(jsonPath("$[0].reportesPendientes").value(2));
-
-        // Mismo resultado usando el query param en la ruta general
+    @DisplayName("7. El filtro por estado funciona")
+    void filtroPorEstadoFunciona() throws Exception {
+        // Filtrar por PENDIENTE: debe retornar solo resenaReportada1
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .param("estado", "PENDIENTE")
                         .with(jwt().jwt(builder -> builder
@@ -332,12 +349,26 @@ class ModeracionResenasIntegrationTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()));
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].reportes", hasSize(2)))
+                .andExpect(jsonPath("$[0].reportes[*].estado", everyItem(equalTo("PENDIENTE"))));
+
+        // Filtrar por ACEPTADO: debe retornar solo resenaReportada2
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .param("estado", "ACEPTADO")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada2.getIdResena()))
+                .andExpect(jsonPath("$[0].reportes[0].estado").value("ACEPTADO"));
     }
 
     @Test
-    @DisplayName("[S2-42] Filtro por idProducto retorna únicamente reseñas del producto indicado")
-    void listarResenasReportadas_filtroPorProducto_filtraCorrectamente() throws Exception {
+    @DisplayName("8. El filtro por producto funciona")
+    void filtroPorProductoFunciona() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .param("idProducto", producto2.getIdProducto().toString())
                         .with(jwt().jwt(builder -> builder
@@ -351,8 +382,9 @@ class ModeracionResenasIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-42] Filtro por oculta=true retorna únicamente reseñas ocultas preventivamente")
-    void listarResenasReportadas_filtroOcultas_filtraCorrectamente() throws Exception {
+    @DisplayName("9. El filtro oculta funciona")
+    void filtroOcultaFunciona() throws Exception {
+        // resenaReportada2 tiene ocultaPorReportes=true
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .param("oculta", "true")
                         .with(jwt().jwt(builder -> builder
@@ -363,11 +395,23 @@ class ModeracionResenasIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].idResena").value(resenaReportada2.getIdResena()))
                 .andExpect(jsonPath("$[0].ocultaPorReportes").value(true));
+
+        // resenaReportada1 tiene ocultaPorReportes=false
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .param("oculta", "false")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].ocultaPorReportes").value(false));
     }
 
     @Test
-    @DisplayName("[S2-42] Reseñas sin reportes nunca aparecen en la cola de moderación")
-    void resenasSinReportes_noAparecenEnCola() throws Exception {
+    @DisplayName("10. Las reseñas sin reportes no aparecen")
+    void resenasSinReportesNoAparecen() throws Exception {
         mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioModerador.getSupabaseUid())
@@ -378,37 +422,234 @@ class ModeracionResenasIntegrationTest {
     }
 
     @Test
-    @DisplayName("[S2-42] Rutas compatibles (/api/resenas/reportadas y /api/admin/resenas/reportadas) responden 200 OK")
-    void listarResenasReportadas_rutasCompatibles_devuelvenMismoResultado() throws Exception {
-        mockMvc.perform(get("/api/resenas/reportadas")
+    @DisplayName("11. La agrupación de reportes por reseña es correcta")
+    void agrupacionReportesPorResenaEsCorrecta() throws Exception {
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
                         .with(jwt().jwt(builder -> builder
-                                .subject(usuarioAdmin.getSupabaseUid())
-                                .claim("email", usuarioAdmin.getCorreo())))
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
-
-        mockMvc.perform(get("/api/admin/resenas/reportadas")
-                        .with(jwt().jwt(builder -> builder
-                                .subject(usuarioAdmin.getSupabaseUid())
-                                .claim("email", usuarioAdmin.getCorreo())))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].idProducto").value(producto1.getIdProducto()))
+                .andExpect(jsonPath("$[0].nombreProducto").value(producto1.getNombre()))
+                .andExpect(jsonPath("$[0].idAutor").value(autor.getIdUsuario()))
+                .andExpect(jsonPath("$[0].nombreAutor").value(autor.getNombre()))
+                .andExpect(jsonPath("$[0].comentario").value(resenaReportada1.getComentario()))
+                .andExpect(jsonPath("$[0].puntuacion").value(1))
+                .andExpect(jsonPath("$[0].reportes", hasSize(2)));
     }
 
     @Test
-    @DisplayName("[S2-42] Consulta plana de reportes de moderación en /api/moderacion/reportes devuelve 200 OK")
-    void listarReportes_comoModerador_devuelveListaPlana200OK() throws Exception {
+    @DisplayName("12. Los conteos de reportes pendientes y totales son correctos")
+    void conteosReportesPendientesYTotalesSonCorrectos() throws Exception {
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].totalReportes").value(2))
+                .andExpect(jsonPath("$[0].reportesPendientes").value(2))
+                .andExpect(jsonPath("$[1].idResena").value(resenaReportada2.getIdResena()))
+                .andExpect(jsonPath("$[1].totalReportes").value(1))
+                .andExpect(jsonPath("$[1].reportesPendientes").value(0));
+    }
+
+    @Test
+    @DisplayName("13. Un usuario con rol Moderador revocado no conserva acceso por su rol legado")
+    void moderadorConRolRevocadoNoConservaAccesoPorRolLegado() throws Exception {
+        // moderadorRevocadoConRolLegado tiene usuario.rol = Moderador, pero UsuarioRol.estado = false
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(moderadorRevocadoConRolLegado.getSupabaseUid())
+                                .claim("email", moderadorRevocadoConRolLegado.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("14. Las consultas no modifican estados ni campos de auditoría")
+    void consultasNoModificanEstadosNiAuditoria() throws Exception {
+        long conteoAuditoriaDecisionAntes = decisionAuditoriaRepository.count();
+        long conteoAuditoriaResenaAntes = resenaModeracionAuditoriaRepository.count();
+
+        // Estados y flags de visibilidad antes de las consultas
+        Boolean estadoResena1Antes = resenaReportada1.getEstado();
+        Boolean ocultaRepResena1Antes = resenaReportada1.getOcultaPorReportes();
+        Boolean ocultaModResena1Antes = resenaReportada1.getOcultaPorModeracion();
+
+        Boolean estadoResena2Antes = resenaReportada2.getEstado();
+        Boolean ocultaRepResena2Antes = resenaReportada2.getOcultaPorReportes();
+        Boolean ocultaModResena2Antes = resenaReportada2.getOcultaPorModeracion();
+
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/moderacion/resenas/pendientes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/moderacion/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        long conteoAuditoriaDecisionDespues = decisionAuditoriaRepository.count();
+        long conteoAuditoriaResenaDespues = resenaModeracionAuditoriaRepository.count();
+
+        // 1. Verificación de inmutabilidad en auditoría
+        assertEquals(conteoAuditoriaDecisionAntes, conteoAuditoriaDecisionDespues,
+                "No deben crearse registros en auditoria de decisiones sobre reportes");
+        assertEquals(conteoAuditoriaResenaAntes, conteoAuditoriaResenaDespues,
+                "No deben crearse registros en auditoria de moderacion de resenas");
+
+        // 2. Verificación de inmutabilidad en estados de reportes
+        ReporteResena reporte1 = reporteResenaRepository.findAll().stream()
+                .filter(r -> r.getResena().getIdResena().equals(resenaReportada1.getIdResena()))
+                .findFirst().orElseThrow();
+        assertEquals(EstadoReporte.PENDIENTE, reporte1.getEstado(),
+                "El estado del reporte 1 no debe cambiar tras las consultas");
+
+        ReporteResena reporte2 = reporteResenaRepository.findAll().stream()
+                .filter(r -> r.getResena().getIdResena().equals(resenaReportada2.getIdResena()))
+                .findFirst().orElseThrow();
+        assertEquals(EstadoReporte.ACEPTADO, reporte2.getEstado(),
+                "El estado del reporte 2 no debe cambiar tras las consultas");
+
+        // 3. Verificación de inmutabilidad en estado y flags de visibilidad de las reseñas
+        Resena resena1Despues = resenaRepository.findById(resenaReportada1.getIdResena()).orElseThrow();
+        assertEquals(estadoResena1Antes, resena1Despues.getEstado(),
+                "El estado activo/inactivo de la reseña 1 no debe cambiar");
+        assertEquals(ocultaRepResena1Antes, resena1Despues.getOcultaPorReportes(),
+                "ocultaPorReportes de la reseña 1 no debe cambiar");
+        assertEquals(ocultaModResena1Antes, resena1Despues.getOcultaPorModeracion(),
+                "ocultaPorModeracion de la reseña 1 no debe cambiar");
+
+        Resena resena2Despues = resenaRepository.findById(resenaReportada2.getIdResena()).orElseThrow();
+        assertEquals(estadoResena2Antes, resena2Despues.getEstado(),
+                "El estado activo/inactivo de la reseña 2 no debe cambiar");
+        assertEquals(ocultaRepResena2Antes, resena2Despues.getOcultaPorReportes(),
+                "ocultaPorReportes de la reseña 2 no debe cambiar");
+        assertEquals(ocultaModResena2Antes, resena2Despues.getOcultaPorModeracion(),
+                "ocultaPorModeracion de la reseña 2 no debe cambiar");
+    }
+
+    // =========================================================================
+    // Pruebas adicionales para /pendientes y /reportes plano
+    // =========================================================================
+
+    @Test
+    @DisplayName("Atajo /api/moderacion/resenas/pendientes solo retorna reseñas con reportes pendientes")
+    void listarResenasPendientesAtajo() throws Exception {
+        mockMvc.perform(get("/api/moderacion/resenas/pendientes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].reportesPendientes").value(2));
+    }
+
+    @Test
+    @DisplayName("Consulta plana /api/moderacion/reportes retorna reportes PENDIENTE por defecto y admite filtrado")
+    void listarReportesPlano() throws Exception {
+        // Sin parámetro estado: por defecto filtra por PENDIENTE (compatibilidad Fase 2)
         mockMvc.perform(get("/api/moderacion/reportes")
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioModerador.getSupabaseUid())
                                 .claim("email", usuarioModerador.getCorreo())))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].estado", everyItem(equalTo("PENDIENTE"))))
                 .andExpect(jsonPath("$[0].idReporte").isNumber())
                 .andExpect(jsonPath("$[0].motivo").isNotEmpty());
+
+        // Con parámetro explícito estado=ACEPTADO
+        mockMvc.perform(get("/api/moderacion/reportes")
+                        .param("estado", "ACEPTADO")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].estado").value("ACEPTADO"));
+    }
+
+    // =========================================================================
+    // Prueba de regresión S2-42: Conteos globales con reportes mixtos y filtros
+    // =========================================================================
+
+    @Test
+    @DisplayName("17. Regresión S2-42: Conteo global exacto (totalReportes=3, reportesPendientes=2) al filtrar por estado=PENDIENTE, /pendientes y sin filtro")
+    void regresionConteosConFiltroEstado() throws Exception {
+        // resenaReportada1 ya tiene 2 reportes PENDIENTE en setUp().
+        // Agregamos un tercer reporte con estado ACEPTADO a la misma resenaReportada1.
+        Usuario reportante3 = crearUsuario("Reportante 3", rolUsuario, true);
+        crearReporte(resenaReportada1, reportante3, "contenido-inapropiado", "Reporte ya evaluado y aceptado", EstadoReporte.ACEPTADO);
+
+        // 1. Consulta con filtro estado=PENDIENTE
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .param("estado", "PENDIENTE")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Solo resenaReportada1 califica porque tiene reportes pendientes (resenaReportada2 solo tiene ACEPTADO)
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].totalReportes").value(3))
+                .andExpect(jsonPath("$[0].reportesPendientes").value(2))
+                .andExpect(jsonPath("$[0].reportes", hasSize(3)))
+                .andExpect(jsonPath("$[0].reportes[?(@.estado == 'PENDIENTE')]", hasSize(2)))
+                .andExpect(jsonPath("$[0].reportes[?(@.estado == 'ACEPTADO')]", hasSize(1)));
+
+        // 2. Consulta en el atajo de pendientes (/api/moderacion/resenas/pendientes)
+        mockMvc.perform(get("/api/moderacion/resenas/pendientes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].totalReportes").value(3))
+                .andExpect(jsonPath("$[0].reportesPendientes").value(2))
+                .andExpect(jsonPath("$[0].reportes", hasSize(3)))
+                .andExpect(jsonPath("$[0].reportes[?(@.estado == 'PENDIENTE')]", hasSize(2)))
+                .andExpect(jsonPath("$[0].reportes[?(@.estado == 'ACEPTADO')]", hasSize(1)));
+
+        // 3. Consulta sin filtro de estado
+        mockMvc.perform(get("/api/moderacion/resenas/reportadas")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioModerador.getSupabaseUid())
+                                .claim("email", usuarioModerador.getCorreo())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // Aparecen ambas resenas (resenaReportada1 con 2 pendientes y 3 totales; resenaReportada2 con 0 pendientes y 1 total)
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].idResena").value(resenaReportada1.getIdResena()))
+                .andExpect(jsonPath("$[0].totalReportes").value(3))
+                .andExpect(jsonPath("$[0].reportesPendientes").value(2))
+                .andExpect(jsonPath("$[0].reportes", hasSize(3)))
+                .andExpect(jsonPath("$[1].idResena").value(resenaReportada2.getIdResena()))
+                .andExpect(jsonPath("$[1].totalReportes").value(1))
+                .andExpect(jsonPath("$[1].reportesPendientes").value(0));
     }
 }
 

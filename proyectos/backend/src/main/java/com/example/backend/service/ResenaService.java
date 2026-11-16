@@ -3,12 +3,17 @@ package com.example.backend.service;
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
 import com.example.backend.dto.ResenaUpdateRequest;
+import com.example.backend.dto.ModeracionResenaRequest;
+import com.example.backend.dto.ResenaModeracionAuditoriaResponse;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Resena;
+import com.example.backend.entity.ResenaModeracionAuditoria;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ProductoRepository;
 import com.example.backend.repository.ResenaRepository;
+import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -32,17 +37,20 @@ public class ResenaService {
     private final UsuarioService usuarioService;
     private final ResenaUpdateHelper resenaUpdateHelper;
     private final ResenaCreateTransaction resenaCreateTransaction;
+    private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
     public ResenaService(ResenaRepository resenaRepository,
                          ProductoRepository productoRepository,
                          UsuarioService usuarioService,
                          ResenaUpdateHelper resenaUpdateHelper,
-                         ResenaCreateTransaction resenaCreateTransaction) {
+                         ResenaCreateTransaction resenaCreateTransaction,
+                         ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
         this.resenaRepository = resenaRepository;
         this.productoRepository = productoRepository;
         this.usuarioService = usuarioService;
         this.resenaUpdateHelper = resenaUpdateHelper;
         this.resenaCreateTransaction = resenaCreateTransaction;
+        this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -52,9 +60,9 @@ public class ResenaService {
             if (!productoRepository.existsById(idProducto)) {
                 throw new ResourceNotFoundException("Producto no encontrado con id " + idProducto);
             }
-            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(idProducto);
+            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc(idProducto);
         } else {
-            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
+            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc();
         }
         return resenas.stream().map(this::toResponse).toList();
     }
@@ -164,7 +172,13 @@ public class ResenaService {
         }
 
         boolean esAutor = resena.getUsuario().getIdUsuario().equals(usuario.getIdUsuario());
-        boolean esAdmin = usuario.getRol() != null && "Administrador".equalsIgnoreCase(usuario.getRol().getNombre());
+        boolean esAdmin = usuario.getRoles() != null
+                && usuario.getRoles().stream()
+                        .anyMatch(asignacion ->
+                                Boolean.TRUE.equals(asignacion.getEstado())
+                                && asignacion.getRol() != null
+                                && "Administrador".equalsIgnoreCase(asignacion.getRol().getNombre())
+                        );
 
         if (!esAutor && !esAdmin) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar esta reseña.");
@@ -172,6 +186,106 @@ public class ResenaService {
 
         resena.setEstado(false);
         resenaRepository.save(resena);
+    }
+
+    /**
+     * Oculta o restaura manualmente una reseña y registra la decisión en una auditoría append-only.
+     * El ocultamiento automático por reportes y el borrado lógico del autor permanecen independientes.
+     */
+    @Transactional
+    public void actualizarOcultamientoModeracion(Long idResena, ModeracionResenaRequest request, Jwt jwt) {
+        if (idResena == null || request == null || request.ocultar() == null
+                || request.motivo() == null || request.motivo().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La reseña y la justificación son obligatorias.");
+        }
+
+        Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(actor);
+        validarPermisoModeracion(actor);
+
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
+                .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
+
+        if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No puedes moderar tu propia reseña.");
+        }
+
+        boolean ocultamientoActual = Boolean.TRUE.equals(resena.getOcultaPorModeracion());
+        if (ocultamientoActual == request.ocultar()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    request.ocultar() ? "La reseña ya está oculta por moderación."
+                            : "La reseña no está oculta manualmente.");
+        }
+
+        if (request.ocultar() && !Boolean.TRUE.equals(resena.getEstado())) {
+            throw new ResourceNotFoundException("No se puede moderar una reseña eliminada por su autor.");
+        }
+
+        LocalDateTime ahora = LocalDateTime.now();
+        String accion = request.ocultar() ? "OCULTAR" : "RESTAURAR";
+        String motivo = request.motivo().trim();
+
+        // Primero se persiste el evento mientras la reseña conserva su estado anterior.
+        // El trigger BEFORE INSERT de PostgreSQL valida ese estado; el constraint trigger
+        // diferido comprobará al COMMIT que la reseña cambió y coincide con la auditoría.
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion(accion);
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
+
+        if (request.ocultar()) {
+            resena.setOcultaPorModeracion(true);
+            resena.setModeradaPor(actor);
+            resena.setFechaModeracion(ahora);
+            resena.setMotivoModeracion(motivo);
+        } else {
+            resena.setOcultaPorModeracion(false);
+            resena.setModeradaPor(null);
+            resena.setFechaModeracion(null);
+            resena.setMotivoModeracion(null);
+        }
+
+        resenaRepository.saveAndFlush(resena);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResenaModeracionAuditoriaResponse> listarHistorialModeracion(Long idResena, Jwt jwt) {
+        Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+        validarUsuarioActivo(actor);
+        validarPermisoModeracion(actor);
+
+        if (!resenaRepository.existsById(idResena)) {
+            throw new ResourceNotFoundException("Reseña no encontrada con id " + idResena);
+        }
+
+        return moderacionAuditoriaRepository.findByResenaIdResenaOrderByFechaEventoDescIdAuditoriaDesc(idResena)
+                .stream()
+                .map(evento -> new ResenaModeracionAuditoriaResponse(
+                        evento.getIdAuditoria(),
+                        evento.getResena().getIdResena(),
+                        evento.getModerador().getIdUsuario(),
+                        evento.getModerador().getNombre(),
+                        evento.getAccion(),
+                        evento.getMotivo(),
+                        evento.getFechaEvento()))
+                .toList();
+    }
+
+    private void validarPermisoModeracion(Usuario usuario) {
+        boolean autorizado = usuario.getRoles() != null && usuario.getRoles().stream()
+                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+                .map(asignacion -> asignacion.getRol())
+                .anyMatch(rol -> rol != null && rol.getNombre() != null
+                        && ("Moderador".equalsIgnoreCase(rol.getNombre())
+                        || "Administrador".equalsIgnoreCase(rol.getNombre())));
+        if (!autorizado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Se requiere un rol activo de Moderador o Administrador.");
+        }
     }
 
     /**

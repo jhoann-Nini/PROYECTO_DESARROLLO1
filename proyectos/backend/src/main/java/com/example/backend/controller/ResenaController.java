@@ -3,6 +3,8 @@ package com.example.backend.controller;
 import com.example.backend.dto.ResenaRequest;
 import com.example.backend.dto.ResenaResponse;
 import com.example.backend.dto.ResenaUpdateRequest;
+import com.example.backend.dto.ModeracionResenaRequest;
+import com.example.backend.dto.ResenaModeracionAuditoriaResponse;
 import com.example.backend.service.ResenaService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -90,6 +92,28 @@ public class ResenaController {
             @Valid @RequestBody ResenaUpdateRequest request,
             @AuthenticationPrincipal Jwt jwt) {
         return resenaService.actualizar(idProducto, idResena, request, jwt);
+    }
+
+    /**
+     * Oculta o restaura manualmente una reseña. Solo Moderador o Administrador activo.
+     */
+    @PatchMapping("/api/moderacion/resenas/{idResena}/ocultamiento")
+    public ResponseEntity<Void> actualizarOcultamientoModeracion(
+            @PathVariable Long idResena,
+            @Valid @RequestBody ModeracionResenaRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        resenaService.actualizarOcultamientoModeracion(idResena, request, jwt);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Consulta la auditoría inmutable de decisiones manuales sobre una reseña.
+     */
+    @GetMapping("/api/moderacion/resenas/{idResena}/historial")
+    public List<ResenaModeracionAuditoriaResponse> listarHistorialModeracion(
+            @PathVariable Long idResena,
+            @AuthenticationPrincipal Jwt jwt) {
+        return resenaService.listarHistorialModeracion(idResena, jwt);
     }
 
     /**

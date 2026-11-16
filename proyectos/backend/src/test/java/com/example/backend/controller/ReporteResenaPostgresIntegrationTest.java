@@ -57,7 +57,7 @@ class ReporteResenaPostgresIntegrationTest {
             .withEnv("POSTGRES_DB", "testdb_reportes")
             .withEnv("POSTGRES_USER", "test")
             .withEnv("POSTGRES_PASSWORD", "test")
-            .waitingFor(Wait.forListeningPort());
+            .waitingFor(Wait.forLogMessage(".*database system is ready to accept connections.*", 2));
 
     @DynamicPropertySource
     static void setDatasourceProperties(DynamicPropertyRegistry registry) {

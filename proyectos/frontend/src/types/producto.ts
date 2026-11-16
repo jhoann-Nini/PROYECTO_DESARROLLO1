@@ -147,6 +147,7 @@ export interface TiendaPrecio {
   precio: number;
   envioGratis: boolean;
   url?: string;
+  verificada?: boolean;
 }
 
 export interface EspecificacionesDetalladas {
@@ -202,40 +203,81 @@ export interface UsuarioSesion {
   email: string;
   avatar?: string;
   rol?: string;
+  /**
+   * Roles activos confirmados por el backend. Para cuentas multirrol,
+   * `rol` conserva el rol principal y este arreglo contiene todos los vigentes.
+   */
+  roles?: string[];
   idUsuario?: number;
   activo?: boolean;
   fechaRegistro?: string;
 }
 
-export type RolSistema = "Usuario registrado" | "Administrador" | "Representante de establecimiento";
+export type RolSistema =
+  | "Usuario registrado"
+  | "Moderador"
+  | "Administrador"
+  | "Representante de establecimiento";
 
 export const ROLES_SISTEMA = {
   USUARIO_REGISTRADO: "Usuario registrado",
+  MODERADOR: "Moderador",
   ADMINISTRADOR: "Administrador",
   REPRESENTANTE: "Representante de establecimiento",
 } as const;
+
+/**
+ * Comprueba si la sesión tiene un rol activo, ya sea el principal o uno de
+ * los roles adicionales de una cuenta multirrol. El backend sigue siendo la
+ * autoridad final de autorización.
+ */
+function tieneRol(usuario: UsuarioSesion | null | undefined, rol: string): boolean {
+  // El estado debe estar confirmado por /api/usuarios/me. Si falta o es false,
+  // no mostramos capacidades asociadas a roles potencialmente obsoletos.
+  if (!usuario || usuario.activo !== true) return false;
+
+  const objetivo = rol.trim().toLowerCase();
+  const roles = [usuario.rol, ...(usuario.roles ?? [])].filter(
+    (valor): valor is string => typeof valor === "string",
+  );
+  return roles.some((valor) => valor.trim().toLowerCase() === objetivo);
+}
+
+/**
+ * Valida si la sesión tiene rol de Moderador confirmado por el backend.
+ * Compara de forma estricta e insensible a mayúsculas/minúsculas.
+ */
+export function esModerador(usuario?: UsuarioSesion | null): boolean {
+  return tieneRol(usuario, "Moderador");
+}
+
+/**
+ * Valida si la sesión puede consultar la cola de moderación: Moderador o
+ * Administrador activo. El backend sigue siendo la autoridad final.
+ */
+export function puedeModerar(usuario?: UsuarioSesion | null): boolean {
+  return esModerador(usuario) || esAdministrador(usuario);
+}
 
 /**
  * Valida si la sesión tiene rol de Administrador confirmado por el backend.
  * Compara de forma estricta e insensible a mayúsculas/minúsculas.
  */
 export function esAdministrador(usuario?: UsuarioSesion | null): boolean {
-  if (!usuario?.rol) return false;
-  return usuario.rol.trim().toLowerCase() === "administrador";
+  return tieneRol(usuario, "Administrador");
 }
 
 /**
  * Valida si la sesión tiene rol de Representante de establecimiento confirmado por el backend.
  */
 export function esRepresentante(usuario?: UsuarioSesion | null): boolean {
-  if (!usuario?.rol) return false;
-  return usuario.rol.trim().toLowerCase() === "representante de establecimiento";
+  return tieneRol(usuario, "Representante de establecimiento");
 }
 
 /**
  * Valida si la sesión tiene rol de Usuario registrado confirmado por el backend.
  */
 export function esUsuarioRegistrado(usuario?: UsuarioSesion | null): boolean {
-  if (!usuario?.rol) return false;
-  return usuario.rol.trim().toLowerCase() === "usuario registrado";
+  return tieneRol(usuario, "Usuario registrado");
 }
+

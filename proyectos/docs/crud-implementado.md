@@ -4,7 +4,7 @@ Este documento describe los endpoints **realmente implementados y probados** con
 
 **Base URL local:** `http://localhost:8080`
 **Formato:** JSON
-**Autenticación:** ninguna todavía (pendiente de definir — ver sección "Pendientes")
+**Autenticación:** JWT de Supabase para operaciones protegidas; las lecturas públicas no requieren token.
 
 ---
 
@@ -203,6 +203,22 @@ Permite consultar reseñas de forma pública y publicarlas/actualizarlas/elimina
 
 ---
 
+## Establecimiento
+
+| Método | Endpoint | Body | Respuesta |
+| --- | --- | --- | --- |
+| GET | `/api/establecimientos` | — | `200` — lista de `EstablecimientoResponse` activos |
+| GET | `/api/establecimientos/{id}` | — | `200` — `EstablecimientoResponse` activo; `404` si no existe o está inactivo |
+| POST | `/api/establecimientos` | `EstablecimientoUpdateRequest` | `201` — establecimiento creado activo |
+| PUT | `/api/establecimientos/{id}` | `EstablecimientoUpdateRequest` | `200` — datos básicos actualizados |
+| DELETE | `/api/establecimientos/{id}` | — | `204` — desactivación lógica; `409` si ya estaba inactivo |
+
+- Las lecturas son públicas; las escrituras requieren un Administrador activo.
+- `PUT` y `DELETE` no alteran el estado ni las asignaciones de representantes (salvo la desactivación lógica del propio establecimiento en `DELETE`).
+- Las rutas para que un representante gestione sus establecimientos asignados se mantienen en `/api/representante/establecimientos`.
+
+---
+
 ## Probar rápido con curl
 
 ```bash
@@ -231,16 +247,16 @@ curl http://localhost:8080/api/productos
 
 Entidades documentadas en `modelo-datos.md` que **todavía no tienen CRUD**, por depender de reglas de negocio sin confirmar:
 
-- **Establecimiento** — sin dependencias de reglas pendientes, se puede construir en cualquier momento.
-- **Usuario / Rol** — requieren definir autenticación (¿JWT? ¿sesión?) antes de exponer registro/login.
+- **CRUD de Usuario / Rol** — las consultas administrativas de solo lectura ya existen en `/api/admin/usuarios` y `/api/admin/roles`; faltan altas, bajas y cambios de estado de cuentas y roles.
 - **Valoración** — integrada en la entidad `Resena` con puntuación fija de 1 a 5.
 - **ProductoEstablecimiento** — requiere confirmar la cardinalidad usuario–establecimiento (relación N:N con precio/disponibilidad por par).
 
 ## Seguridad y Autorización Implementada
 
-- **Lecturas públicas:** `GET /api/productos/**`, `GET /api/categorias/**` y `GET /api/marcas/**` son de libre acceso para cualquier visitante (`200 OK`).
+- **Lecturas públicas:** `GET /api/productos/**`, `GET /api/categorias/**`, `GET /api/marcas/**` y `GET /api/establecimientos/**` son de libre acceso para cualquier visitante (`200 OK`).
 - **Aprovisionamiento JIT:** `GET /api/usuarios/me` requiere autenticación Bearer con token JWT válido de Supabase (`200 OK`).
-- **Escrituras restringidas:** `POST`, `PUT` y `DELETE` sobre productos, categorías y marcas están estrictamente protegidos mediante `AdminAuthorizationManager`.
+- **Consultas administrativas:** `GET /api/admin/usuarios` y `GET /api/admin/roles` requieren un Administrador activo. No exponen contraseña ni `supabaseUid`.
+- **Escrituras restringidas:** `POST`, `PUT` y `DELETE` sobre productos, categorías, marcas y establecimientos están estrictamente protegidos mediante `AdminAuthorizationManager`.
   - Peticiones anónimas devuelven `401 Unauthorized` con cabecera `WWW-Authenticate: Bearer`.
   - Peticiones de usuarios autenticados sin rol `"Administrador"` en `public.usuario`/`public.rol` devuelven `403 Forbidden` en POST, PUT y DELETE, sin alterar ni eliminar ningún recurso en base de datos.
   - Peticiones de administradores activos verificados en base de datos proceden con éxito en el ciclo completo CRUD:

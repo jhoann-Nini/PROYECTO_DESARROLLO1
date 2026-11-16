@@ -35,6 +35,19 @@ public class Resena {
     @Column(name = "oculta_por_reportes", nullable = false)
     private Boolean ocultaPorReportes = false;
 
+    @Column(name = "oculta_por_moderacion", nullable = false)
+    private Boolean ocultaPorModeracion = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderada_por")
+    private Usuario moderadaPor;
+
+    @Column(name = "fecha_moderacion")
+    private LocalDateTime fechaModeracion;
+
+    @Column(name = "motivo_moderacion", columnDefinition = "TEXT")
+    private String motivoModeracion;
+
     public Long getIdResena() { return idResena; }
     public void setIdResena(Long idResena) { this.idResena = idResena; }
 
@@ -58,4 +71,16 @@ public class Resena {
 
     public Boolean getOcultaPorReportes() { return ocultaPorReportes; }
     public void setOcultaPorReportes(Boolean ocultaPorReportes) { this.ocultaPorReportes = ocultaPorReportes; }
+
+    public Boolean getOcultaPorModeracion() { return ocultaPorModeracion; }
+    public void setOcultaPorModeracion(Boolean ocultaPorModeracion) { this.ocultaPorModeracion = ocultaPorModeracion; }
+
+    public Usuario getModeradaPor() { return moderadaPor; }
+    public void setModeradaPor(Usuario moderadaPor) { this.moderadaPor = moderadaPor; }
+
+    public LocalDateTime getFechaModeracion() { return fechaModeracion; }
+    public void setFechaModeracion(LocalDateTime fechaModeracion) { this.fechaModeracion = fechaModeracion; }
+
+    public String getMotivoModeracion() { return motivoModeracion; }
+    public void setMotivoModeracion(String motivoModeracion) { this.motivoModeracion = motivoModeracion; }
 }

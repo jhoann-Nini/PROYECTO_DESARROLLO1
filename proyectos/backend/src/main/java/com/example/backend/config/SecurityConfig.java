@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +26,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -60,7 +62,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AdminAuthorizationManager adminAuthorizationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            AdminAuthorizationManager adminAuthorizationManager,
+            ModeratorAuthorizationManager moderatorAuthorizationManager,
+            RepresentativeAuthorizationManager representativeAuthorizationManager,
+            GeneralRateLimitingFilter generalRateLimitingFilter) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
@@ -69,6 +76,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
             )
+            .addFilterAfter(generalRateLimitingFilter, BearerTokenAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
@@ -77,13 +85,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/rankings/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/marcas/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/establecimientos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/reportadas", "/api/resenas/pendientes").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                 .requestMatchers("/api/admin/**").access(adminAuthorizationManager)
-                .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
-                .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
-                .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**").access(adminAuthorizationManager)
+                .requestMatchers("/api/moderacion/**").access(moderatorAuthorizationManager)
+                .requestMatchers("/api/representante/**").access(representativeAuthorizationManager)
+                .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
@@ -94,10 +105,18 @@ public class SecurityConfig {
     }
 
     @Bean
+    public FilterRegistrationBean<GeneralRateLimitingFilter> generalRateLimitingFilterRegistration(
+            GeneralRateLimitingFilter filter) {
+        FilterRegistrationBean<GeneralRateLimitingFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendUrl));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -134,4 +153,3 @@ public class SecurityConfig {
         return new DelegatingOAuth2TokenValidator<>(validators);
     }
 }
-

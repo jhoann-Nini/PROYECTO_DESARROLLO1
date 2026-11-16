@@ -479,23 +479,22 @@ class ReporteResenaIntegrationTest {
         assertEquals(EstadoReporte.PENDIENTE, guardado.getEstado());
     }
 
+
     @Test
-    @DisplayName("13. [S2-39] Usuario puede reportar mediante POST /api/reportes con idResena en el cuerpo (201 Created)")
-    void usuarioPuedeReportarMedianteEndpointPlano() throws Exception {
-        mockMvc.perform(post("/api/reportes")
+    @DisplayName("13. El alias de ruta permite crear un reporte")
+    void aliasDeRutaCreaReporteExitosamente() throws Exception {
+        mockMvc.perform(post("/api/reportes/resenas/{idResena}", resenaActiva.getIdResena())
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioReportante1.getSupabaseUid())
                                 .claim("email", usuarioReportante1.getCorreo())))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(String.format("""
+                        .content("""
                                 {
-                                    "idResena": %d,
                                     "motivo": "spam",
-                                    "descripcion": "Reporte enviado a endpoint plano"
+                                    "descripcion": "Reporte mediante alias"
                                 }
-                                """, resenaActiva.getIdResena())))
+                                """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idReporte").isNumber())
                 .andExpect(jsonPath("$.idResena").value(resenaActiva.getIdResena()))
                 .andExpect(jsonPath("$.motivo").value("spam"))
                 .andExpect(jsonPath("$.estado").value("PENDIENTE"));
@@ -504,8 +503,31 @@ class ReporteResenaIntegrationTest {
     }
 
     @Test
-    @DisplayName("14. [S2-39] POST /api/reportes sin idResena devuelve 400 Bad Request")
-    void reporteSinIdResenaDevuelve400BadRequest() throws Exception {
+    @DisplayName("14. El endpoint /api/reportes crea un reporte con idResena en el cuerpo")
+    void crearReporteDesdeBodyExitosamente() throws Exception {
+        mockMvc.perform(post("/api/reportes")
+                        .with(jwt().jwt(builder -> builder
+                                .subject(usuarioReportante1.getSupabaseUid())
+                                .claim("email", usuarioReportante1.getCorreo())))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "idResena": %d,
+                                    "motivo": "falso",
+                                    "descripcion": "Reporte con identificador en el cuerpo"
+                                }
+                                """.formatted(resenaActiva.getIdResena())))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.idResena").value(resenaActiva.getIdResena()))
+                .andExpect(jsonPath("$.motivo").value("falso"))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"));
+
+        assertEquals(1, reporteResenaRepository.count());
+    }
+
+    @Test
+    @DisplayName("15. El endpoint /api/reportes rechaza solicitudes sin idResena")
+    void crearReporteDesdeBodySinIdResenaEsRechazado() throws Exception {
         mockMvc.perform(post("/api/reportes")
                         .with(jwt().jwt(builder -> builder
                                 .subject(usuarioReportante1.getSupabaseUid())
@@ -514,12 +536,12 @@ class ReporteResenaIntegrationTest {
                         .content("""
                                 {
                                     "motivo": "spam",
-                                    "descripcion": "Sin id de reseña"
+                                    "descripcion": "Falta el identificador de la reseña"
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
 
-        assertEquals(0, reporteResenaRepository.count());
+        assertTrue(reporteResenaRepository.findAll().isEmpty());
     }
-}
 
+}

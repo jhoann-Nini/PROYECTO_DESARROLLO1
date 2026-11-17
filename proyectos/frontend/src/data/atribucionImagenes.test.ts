@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra nueve fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(9);
+  it("registra diez fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(10);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,12 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra OnePlus 13 con CC BY-SA 4.0", () => {
+    const oneplus = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Maksdroider" && imagen.paginaOrigen.includes("OnePlus_13_back"));
+    expect(oneplus?.licencia).toBe("CC BY-SA 4.0");
+    expect(oneplus?.nota).toContain("Black Eclipse");
   });
 
   it("registra Redmi Note 14 Pro+ con CC BY-SA 4.0", () => {

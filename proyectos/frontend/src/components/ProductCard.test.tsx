@@ -32,6 +32,18 @@ describe("Componente ProductCard — Manejo de imágenes y placeholder", () => {
     expect(screen.queryByText("Imagen pendiente")).toBeNull();
   });
 
+  it("no aplica zoom a una imagen con licencia CC BY-ND 2.0", () => {
+    const productoSony = {
+      ...baseProducto,
+      nombre: "Sony WH-1000XM5",
+      imagen: "https://thehelpfulbuyer.com/assets/products/xm5.jpg",
+    };
+    render(<ProductCard producto={productoSony} />);
+
+    const img = screen.getByRole("img", { name: /Fotografía de Sony WH-1000XM5/i });
+    expect(img.className).not.toContain("group-hover:scale");
+  });
+
   it("renderiza ProductImagePlaceholder cuando imagen es null", () => {
     const prodSinImagen = { ...baseProducto, imagen: null };
     render(<ProductCard producto={prodSinImagen} />);

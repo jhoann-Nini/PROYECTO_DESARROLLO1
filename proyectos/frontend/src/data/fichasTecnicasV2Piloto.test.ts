@@ -38,6 +38,19 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
   });
 
+  it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {
+    const pad = FICHAS_TECNICAS_V2_PILOTO.oneplusPad2;
+    expect(pad.estado_verificacion).toBe("verificado");
+    expect(pad.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "dimensiones", valor: "268,66 × 195,06 × 6,49 mm" }),
+      expect.objectContaining({ clave: "peso", valor: 584, unidad: "g" }),
+      expect.objectContaining({ clave: "sistema_operativo", valor: "OxygenOS 14.1" }),
+      expect.objectContaining({ clave: "densidad_pixeles", valor: 303 }),
+      expect.objectContaining({ clave: "puerto_usb", valor: "USB Type-C 3.2 Gen 1, hasta 5 Gbps" }),
+    ]));
+    expect(pad.fuentes.map((fuente) => fuente.url)).toContain("https://www.oneplus.com/cl/oneplus-pad-2/specs");
+  });
+
   it("incluye las especificaciones oficiales confirmadas de Nothing Ear (2) sin verificar el nombre del acabado", () => {
     const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
     expect(ear.estado_verificacion).toBe("parcial");

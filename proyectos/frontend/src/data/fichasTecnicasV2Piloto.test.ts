@@ -38,6 +38,16 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
   });
 
+  it("incluye las especificaciones oficiales confirmadas de Nothing Ear (2) sin verificar el nombre del acabado", () => {
+    const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
+    expect(ear.estado_verificacion).toBe("parcial");
+    expect(ear.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "codecs", valor: "AAC, SBC, LHDC 5.0" }),
+      expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),
+    ]));
+    expect(ear.fuentes[0]?.url).toBe("https://checkout-es.nothing.tech/products/ear-2");
+  });
+
   it("conserva el país real del MTM Lenovo y no confunde EET con un país", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.variantes[0]).toMatchObject({
       sku: "21JK0005RI",

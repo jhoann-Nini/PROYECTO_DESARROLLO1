@@ -99,14 +99,36 @@ describe("catálogo canónico piloto", () => {
     );
   });
 
-  it("marca las imágenes externas actuales como pendientes y no inventa licencia o atribución", () => {
-    const catalogo = obtenerCatalogoCanonicoPiloto();
+  it("verifica solo las imágenes con procedencia y licencia documentadas", () => {
+    const samsung = obtenerProductoCanonico("samsung-galaxy-s24-ultra");
+    const onePlus = obtenerProductoCanonico("oneplus-pad-2");
+    const ipad = obtenerProductoCanonico("apple-ipad-pro-11-m4");
+    const ear = obtenerProductoCanonico("nothing-ear-2");
 
-    for (const producto of catalogo) {
-      expect(producto.imagen.url).toMatch(/^https:\/\//);
-      expect(producto.imagen.estadoVerificacion).toBe("pendiente");
-      expect(producto.imagen.licencia).toBeNull();
-      expect(producto.imagen.atribucion).toBeNull();
+    for (const producto of [samsung, onePlus, ipad, ear]) {
+      expect(producto?.imagen.url).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
+      expect(producto?.imagen.estadoVerificacion).toBe("verificada");
+      expect(producto?.imagen.licencia).toBe("CC BY-SA 4.0");
+      expect(producto?.imagen.licenciaUrl).toBe("https://creativecommons.org/licenses/by-sa/4.0/");
+      expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+      expect(producto?.imagen.autor).not.toBeNull();
+      expect(producto?.imagen.atribucion).not.toBeNull();
+    }
+
+    expect(ear?.imagen.cambios).toContain("archivo recortado");
+    expect(ear?.imagen.estadoVerificacion).toBe("verificada");
+
+    const pendientes = [
+      obtenerProductoCanonico("nothing-phone-2a-special-edition"),
+      obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5"),
+      obtenerProductoCanonico("apple-macbook-pro-16-m3-max"),
+      obtenerProductoCanonico("sony-wh-1000xm5"),
+    ];
+
+    for (const producto of pendientes) {
+      expect(producto?.imagen.estadoVerificacion).toBe("pendiente");
+      expect(producto?.imagen.licencia).toBeNull();
+      expect(producto?.imagen.atribucion).toBeNull();
     }
   });
 

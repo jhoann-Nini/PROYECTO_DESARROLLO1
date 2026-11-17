@@ -468,6 +468,7 @@ const iphone13 = crearFicha(
 
 
 const redmiNote14Fuente = "xiaomi-redmi-note14proplus-co-specs";
+const redmiNote14NoMicrosdFuente = "xiaomi-redmi-note14proplus-storage";
 const redmiNote14Variante = "12gb-512gb-co";
 const redmiNote14ProPlus = crearFicha(
   "moviles",
@@ -488,8 +489,10 @@ const redmiNote14ProPlus = crearFicha(
     atributo("brillo_maximo", "Brillo máximo de pico", "pantalla", 3000, redmiNote14Fuente, "nits"),
     atributo("profundidad_color", "Profundidad de color", "pantalla", 12, redmiNote14Fuente, "bits"),
     atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus 2", redmiNote14Fuente),
-    atributo("ram", "Memoria RAM física", "memoria", 12, redmiNote14Fuente, "GB LPDDR4X"),
-    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, redmiNote14Fuente, "GB UFS 2.2"),
+    atributo("ram", "Memoria RAM física", "memoria", 12, redmiNote14Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR4X", redmiNote14Fuente),
+    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, redmiNote14Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 2.2", redmiNote14Fuente),
     atributo("extension_ram", "Extensión de memoria", "memoria", "Admite extensión de RAM virtual usando espacio de almacenamiento; no equivale a RAM física", redmiNote14Fuente),
     atributo("camara_principal", "Cámara principal", "camaras", 200, redmiNote14Fuente, "mpx"),
     atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 8, redmiNote14Fuente, "mpx"),
@@ -509,7 +512,7 @@ const redmiNote14ProPlus = crearFicha(
     atributo("nfc", "NFC", "conectividad", true, redmiNote14Fuente),
     atributo("sim", "Configuración SIM", "conectividad", "Dual nano-SIM o nano-SIM + eSIM, según región/operador", redmiNote14Fuente),
     atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", redmiNote14Fuente),
-    atributo("almacenamiento_expandible", "Expansión microSD", "almacenamiento", false, redmiNote14Fuente),
+    atributo("almacenamiento_expandible", "Expansión microSD", "almacenamiento", false, redmiNote14NoMicrosdFuente),
   ],
   [
     metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", redmiNote14Fuente),
@@ -521,6 +524,7 @@ const redmiNote14ProPlus = crearFicha(
     fuente("xiaomi-redmi-note14proplus-co-buy", "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, variante 12 GB + 512 GB", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/buy/?gid=4223712110", redmiNote14Variante, "La tienda oficial colombiana identifica explícitamente la variante Lavender Purple de 12 GB + 512 GB.", "2026-11-17"),
     fuente(redmiNote14Fuente, "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, especificaciones", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/specs/", redmiNote14Variante, "Ficha oficial de chipset, memoria, almacenamiento, pantalla, cámaras, batería, resistencia y conectividad.", "2026-11-17"),
     fuente("xiaomi-redmi-note14proplus-memory-extension", "Xiaomi Support — Redmi Note 14 Pro+ 5G, extensión de memoria", "https://www.mi.com/es/support/faq/details/KA-757974/", null, "Confirma que la extensión crea RAM adicional utilizando espacio del almacenamiento interno; no debe confundirse con RAM física.", "2026-11-17"),
+    fuente(redmiNote14NoMicrosdFuente, "Xiaomi Support — Redmi Note 14 Pro+ 5G, almacenamiento expandible", "https://www.mi.com/global/support/faq/details/KA-524687/", null, "Xiaomi confirma que el modelo no admite expansión mediante tarjeta microSD.", "2026-11-17"),
   ],
 );
 

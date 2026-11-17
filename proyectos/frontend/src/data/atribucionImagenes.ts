@@ -74,6 +74,26 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Archivo original sin modificaciones; se presenta a menor tamaño en la interfaz.",
     nota: "La fotografía muestra el acabado Silver; el registro del catálogo no especifica el color.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Samsung_Galaxy_A55_5G_2024.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_A55_5G_2024.jpg",
+    autor: "Captainmorlypogi1959",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía del Galaxy A55 5G en exhibición; no se usa para inferir una variante de memoria o color.",
+  },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/3/3c/IPhone_13.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:IPhone_13.jpg",
+    autor: "Kskhh",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía de un iPhone 13 blanco; no verifica por sí sola la capacidad de 128 GB.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

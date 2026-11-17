@@ -15,6 +15,8 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 | Nothing Ear (2) | Ganesh Mohan T | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing_ear2_(cropped).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Se usa el archivo recortado publicado por el autor, sin modificaciones adicionales |
 | Nothing Phone (2a) Special Edition | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing-Design-Event-Tokyo-2024-07-05_028.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Original sin modificaciones; fotografía de la edición especial en exhibición |
 | Sony WH-1000XM5 (Silver) | HS You | [Flickr](https://www.flickr.com/photos/thebetterday4u/52436931175/) | [CC BY-ND 2.0](https://creativecommons.org/licenses/by-nd/2.0/) | Título original: “SONY Noise Canceling Headphone WH-1000XM5”; archivo original sin modificaciones, mostrado a menor tamaño |
+| Samsung Galaxy A55 5G | Captainmorlypogi1959 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_A55_5G_2024.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía del modelo en exhibición; original sin modificaciones |
+| Apple iPhone 13 | Kskhh | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:IPhone_13.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía de un iPhone 13 blanco; original sin modificaciones |
 
 ## Cumplimiento
 
@@ -35,9 +37,9 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
   sola la variante comercial de color Transparent White. La verificación técnica
   de esa variante permanece parcial.
 
-## Pendientes
+## Pendientes del grupo piloto
 
 Las imágenes de Lenovo ThinkPad E14 Gen 5 y Apple MacBook Pro 16 pulgadas M3 Max
 siguen pendientes de una fuente con licencia y correspondencia de modelo
-comprobadas. No se reemplazan
-por fotografías genéricas ni por imágenes oficiales copiadas sin permiso.
+comprobadas. No se reemplazan por fotografías genéricas ni por imágenes oficiales
+copiadas sin permiso.

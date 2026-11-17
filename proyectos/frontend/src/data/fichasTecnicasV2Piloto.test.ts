@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo ampliado", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(18); // Nueve modelos añadidos al lote 2. // Samsung tiene dos variantes comerciales.
+    expect(fichas).toHaveLength(19); // Diez modelos añadidos al lote 2. // Samsung tiene dos variantes comerciales.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);

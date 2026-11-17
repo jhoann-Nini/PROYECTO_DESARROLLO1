@@ -160,6 +160,23 @@ El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galax
 | Nothing Ear (2) — Transparent White | `parcial` | La fuente oficial respalda las especificaciones del modelo; falta una fuente primaria que confirme expresamente el acabado Transparent White. |
 | Sony WH-1000XM5 | `verificado` | Ficha oficial de soporte de Sony respalda el modelo y las especificaciones registradas. |
 
+
+### Ampliación de especificaciones técnicas (17 de noviembre de 2026)
+
+Se amplió el detalle de las nueve fichas V2 con atributos adicionales respaldados por fichas oficiales de fabricante. Esta ampliación no cambia automáticamente los estados de verificación ni la identidad canónica de las variantes.
+
+| Modelo / variante | Datos técnicos añadidos o precisados |
+|---|---|
+| Nothing Phone (2a) Special Edition — 12/256 GB | Brillo máximo, protección IP54, dimensiones, peso, Wi‑Fi 6, Bluetooth 5.3, NFC y doble SIM. Las especificaciones de hardware se apoyan en la plataforma Phone (2a); la edición especial se identifica por separado. |
+| Galaxy S24 Ultra — 12/256 y 12/512 GB | Resolución QHD+, cámaras secundarias, brillo, IP68, dimensiones, peso por variante de red, conectividad, USB, NFC, UWB y S Pen. Los atributos comunes se comparten entre las dos capacidades; no se mezclan sus referencias comerciales. |
+| iPad Pro 11 M4 — 16 GB/1 TB | Brillo SDR/HDR, densidad, contraste, cámaras, LiDAR, dimensiones, peso condicionado a Wi‑Fi o Wi‑Fi + Cellular, USB-C/Thunderbolt, Wi‑Fi 6E y Bluetooth 5.3. La conectividad exacta del registro sigue sin estar identificada y no se inventa. |
+| ThinkPad E14 Gen 5 Intel — MTM 21JK0005RI | Dimensiones, gráficos, cámara, audio, micrófonos, Ethernet, puertos, sistema operativo de fábrica, color, teclado y batería, contrastados con el PSREF del MTM. |
+| MacBook Pro 16 M3 Max — 48 GB/1 TB | Brillo SDR/HDR, densidad, cámara, Wi‑Fi 6E, Bluetooth 5.3, puertos, dimensiones, peso, capacidad real de batería, autonomía, adaptador, audio y teclado, según Apple. |
+| Nothing Ear (2) — Transparent White | Dimensiones y peso de auriculares/estuche, autonomía con ANC, conversación, carga Qi, carga rápida, protección IP54/IP55, micrófonos y conexión multipunto. El acabado se mantiene parcial porque falta una identificación primaria inequívoca de la variante local. |
+| Sony WH‑1000XM5 | Peso, respuesta Bluetooth, impedancia, sensibilidad, conexión analógica, cable, tiempos de carga, autonomía de llamadas, DSEE Extreme y funciones de sonido ambiente/cancelación. |
+
+Las métricas continúan como informativas y no se convierten en comparables automáticos. Las variantes con conectividad o mercado desconocidos conservan ese vacío explícitamente. Los precios, vendedores y disponibilidad permanecen fuera de las fichas técnicas.
+
 ### Interpretación de los estados y límites
 
 - `verificado` significa que la evidencia primaria identificada respalda los datos técnicos incluidos en esa ficha y variante. No certifica autenticidad de una unidad física ni disponibilidad comercial.

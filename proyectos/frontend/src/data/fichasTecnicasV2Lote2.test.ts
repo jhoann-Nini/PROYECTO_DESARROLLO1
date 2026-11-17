@@ -17,7 +17,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack,
   ];
 
-  it("mantiene las cinco fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
+  it("mantiene las seis fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
     expect(fichas).toHaveLength(6);
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);

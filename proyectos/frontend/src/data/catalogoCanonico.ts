@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de once modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de doce modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -242,6 +242,18 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 104, "128gb")],
     variantes: [
       { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
+    ],
+  },
+  {
+    id: "oneplus-13",
+    nombre: "OnePlus 13 5G",
+    marca: "OnePlus",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 207, "16gb-512gb")],
+    variantes: [
+      { id: "16gb-512gb", nombre: "16 GB RAM · 512 GB", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" },
+      { id: "12gb-256gb", nombre: "12 GB RAM · 256 GB", ram: "12 GB LPDDR5X", almacenamiento: "256 GB UFS 4.0" },
     ],
   },
   {

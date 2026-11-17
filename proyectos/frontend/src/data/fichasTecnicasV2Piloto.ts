@@ -723,6 +723,54 @@ const appleIphone13 = crearFicha(
   ],
 );
 
+
+const xiaomi14UltraFuente = "xiaomi-14-ultra";
+const xiaomi14UltraVariante = "16gb-512gb";
+const xiaomi14Ultra = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: xiaomi14UltraVariante,
+    modelo: "Xiaomi 14 Ultra",
+    ram: "16 GB LPDDR5X",
+    almacenamiento: "512 GB UFS 4.0",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 8 Gen 3 · 4 nm · CPU hasta 3,3 GHz · GPU Adreno", xiaomi14UltraFuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "AMOLED WQHD+ LTPO · Dolby Vision · HDR10+", xiaomi14UltraFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.73, xiaomi14UltraFuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "3200 × 1440 píxeles", xiaomi14UltraFuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "522 ppi", xiaomi14UltraFuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", "LTPO adaptativa de 1 a 120 Hz", xiaomi14UltraFuente),
+    atributo("brillo", "Brillo HBM / máximo", "pantalla", "1000 / 3000 nits", xiaomi14UltraFuente),
+    atributo("ram", "Memoria RAM", "memoria", 16, xiaomi14UltraFuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5X", xiaomi14UltraFuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, xiaomi14UltraFuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 4.0", xiaomi14UltraFuente),
+    atributo("camara_principal", "Cámara principal Leica", "camaras", "50 MP Sony LYT-900 · sensor de 1 pulgada · apertura variable ƒ/1.63–ƒ/4.0 · OIS", xiaomi14UltraFuente),
+    atributo("teleobjetivo", "Teleobjetivo Leica", "camaras", "50 MP · equivalente a 75 mm · OIS", xiaomi14UltraFuente),
+    atributo("periscopio", "Teleobjetivo periscópico Leica", "camaras", "50 MP · equivalente a 120 mm · OIS", xiaomi14UltraFuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular Leica", "camaras", "50 MP · campo de visión 122°", xiaomi14UltraFuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "32 MP · ƒ/2.0", xiaomi14UltraFuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, xiaomi14UltraFuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable e inalámbrica", "bateria", "90 W HyperCharge · 80 W inalámbrica", xiaomi14UltraFuente),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 7 · Bluetooth 5.4 · NFC", xiaomi14UltraFuente),
+    atributo("puertos", "Puerto USB", "conectividad", "USB-C 3.2 Gen 2", xiaomi14UltraFuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", xiaomi14UltraFuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "161,4 × 75,3 × 9,2 mm", xiaomi14UltraFuente),
+    atributo("peso", "Peso", "dimensiones", 219.8, xiaomi14UltraFuente, "g"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", xiaomi14UltraFuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.73, "in", xiaomi14UltraFuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", xiaomi14UltraFuente),
+  ],
+  [
+    fuente("xiaomi-14-ultra-global", "Xiaomi Global — Xiaomi 14 Ultra, especificaciones oficiales", "https://www.mi.com/global/product/xiaomi-14-ultra/specs/", xiaomi14UltraVariante, "La ficha global confirma 16 GB LPDDR5X/512 GB UFS 4.0 y las especificaciones de procesador, pantalla, cámaras, batería, carga, conectividad, dimensiones y peso."),
+    fuente("xiaomi-14-ultra-co-faq", "Xiaomi Colombia — Preguntas frecuentes Xiaomi 14 Ultra", "https://www.mi.com/co/support/faq/details/KA-110997/", xiaomi14UltraVariante, "La página regional confirma la configuración de 16 GB/512 GB, batería de 5000 mAh, carga 90 W/80 W, dimensiones, peso y colores disponibles."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -741,6 +789,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingEarABlack: nothingEarABlack,
   samsungGalaxyA55: samsungGalaxyA55,
   appleIphone13: appleIphone13,
+  xiaomi14Ultra: xiaomi14Ultra,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -774,6 +823,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
   if (n.includes("galaxy a55")) return samsungGalaxyA55;
   if (n.includes("iphone 13")) return appleIphone13;
+  if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
   return null;
 }
 
@@ -812,6 +862,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return samsungGalaxyA55;
     case 104:
       return appleIphone13;
+    case 204:
+      return xiaomi14Ultra;
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
@@ -828,6 +880,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
       if (n.includes("galaxy a55")) return samsungGalaxyA55;
       if (n.includes("iphone 13")) return appleIphone13;
+      if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
       return null;
     }
   }

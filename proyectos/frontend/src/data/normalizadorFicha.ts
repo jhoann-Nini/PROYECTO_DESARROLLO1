@@ -47,6 +47,10 @@ import {
 } from "./identificadores";
 import { detectarCategoria } from "./specsHelper";
 import type { DatosFichaTecnica, MetricaComparableFicha } from "./fichaTecnica";
+import {
+  obtenerFichaTecnicaV2PilotoParaKimovil,
+  obtenerFichaTecnicaV2PilotoParaProducto,
+} from "./fichasTecnicasV2Piloto";
 
 export {
   esMetricaComparableAutomaticamente,
@@ -1008,11 +1012,17 @@ export function normalizarDesdeProducto(
         `Versión de esquema no soportada en características del producto: ${String(rawObj.version_esquema)}`
       );
     }
+    const fichaPiloto = obtenerFichaTecnicaV2PilotoParaProducto(producto.nombre);
+    if (fichaPiloto) return { ...fichaPiloto, categoria };
+
     return normalizarDesdeMapaCaracteristicas(
       rawObj,
       ctx
     );
   }
+
+  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaProducto(producto.nombre);
+  if (fichaPiloto) return { ...fichaPiloto, categoria };
 
   return crearFichaVacia(categoria);
 }
@@ -1029,6 +1039,9 @@ export function normalizarDesdeKimovil(
   }
 
   const categoria = detectarCategoria(dispositivo) as CategoriaFichaTecnica;
+  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
+  if (fichaPiloto) return { ...fichaPiloto, categoria };
+
   const idClave = String(dispositivo.id);
   const idGlobal = contexto?.idGlobal ?? (idGlobalMock(idClave) ?? undefined);
   const claveFuente = idGlobal ? idGlobal.replace(/^mock:/, "") : idClave;

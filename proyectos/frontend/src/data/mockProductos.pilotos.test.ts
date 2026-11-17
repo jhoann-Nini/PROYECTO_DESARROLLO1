@@ -74,6 +74,13 @@ describe("fichas técnicas de los ocho productos piloto", () => {
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });
 
+  it("no usa fotografías genéricas para Lenovo o MacBook cuando no hay licencia reutilizable", () => {
+    const thinkpad = PRODUCTOS_MOCK.find((item) => item.idProducto === 6);
+    const macbook = DISPOSITIVOS_DESEADOS.find((item) => item.id === 209);
+    expect(thinkpad?.imagen).toBeNull();
+    expect(macbook?.imagen).toBe("");
+  });
+
   it("mantiene Nothing Ear (2) Transparent White", () => {
     const producto = PRODUCTOS_MOCK.find((item) => item.idProducto === 3);
     expect(producto?.nombre).toBe("Nothing Ear (2) Transparent White");

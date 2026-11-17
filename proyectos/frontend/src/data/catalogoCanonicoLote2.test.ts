@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico — lote 2", () => {
-  it("incorpora ocho modelos sin alterar las ocho identidades piloto", () => {
-    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(8);
-    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(16);
+  it("incorpora nueve modelos sin alterar las ocho identidades piloto", () => {
+    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(9);
+    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(17);
   });
 
   it("conserva IDs originales y variantes comerciales verificadas por fabricante", () => {
@@ -45,6 +45,10 @@ describe("catálogo canónico — lote 2", () => {
       almacenamiento: "128 GB",
       mercado: "Colombia",
     });
+    expect(obtenerProductoCanonico("xiaomi-14-ultra")?.variantes[0]).toMatchObject({
+      ram: "16 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+    });
   });
 
   it("verifica imagen y licencia para los seis modelos del lote", () => {
@@ -57,6 +61,7 @@ describe("catálogo canónico — lote 2", () => {
       "nothing-ear-a-black",
       "samsung-galaxy-a55-5g",
       "apple-iphone-13",
+      "xiaomi-14-ultra",
     ];
     for (const id of ids) {
       const producto = obtenerProductoCanonico(id);

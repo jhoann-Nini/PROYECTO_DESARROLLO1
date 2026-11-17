@@ -1,4 +1,6 @@
-# Procedencia y licencias de imágenes del catálogo piloto
+# Procedencia y licencias de imágenes del catálogo
+
+Este registro incluye los modelos piloto y productos adicionales ya incorporados; no significa que el catálogo completo esté cubierto. La cobertura se amplía por lotes y cada imagen permanece pendiente hasta verificar modelo, autoría, fuente y licencia.
 
 Las imágenes con licencia abierta se registran en
 `src/data/atribucionImagenes.ts`. La interfaz muestra el crédito junto a la

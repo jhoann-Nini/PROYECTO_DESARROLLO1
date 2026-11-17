@@ -156,6 +156,17 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Se utiliza la miniatura de 960 px generada por Wikimedia Commons; sin otras modificaciones.",
     nota: "Fotografía de exhibición del estuche negro de Nothing Ear (a); el acabado Black también se confirma en el selector oficial de Nothing.",
   },
+
+  {
+    urlImagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Shibuya-Tokyo---2024-08-28_066.jpg/960px-Shibuya-Tokyo---2024-08-28_066.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Shibuya-Tokyo---2024-08-28_066.jpg",
+    autor: "RuinDig/Yuki Uchida",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by/4.0/",
+    cambios: "Se utiliza la miniatura de 960 px generada por Wikimedia Commons; sin otras modificaciones.",
+    nota: "Fotografía del Xiaomi 14 Ultra negro expuesto en una tienda Xiaomi; el registro del catálogo no fija el color.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

@@ -956,7 +956,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "🔋",
           titulo: "BATERÍA LÍDER EN LA INDUSTRIA",
-          descripcion: "Batería de 100Wh · Hasta 22 horas de autonomía · Carga rápida MagSafe 3 de 140W (50% en 30 minutos).",
+          descripcion: "Batería de 99.6Wh · Hasta 22 horas de reproducción de vídeo · adaptador USB-C de 140W y puerto MagSafe 3.",
         },
         {
           icono: "🌐",
@@ -1534,13 +1534,18 @@ export const PRODUCTOS_MOCK: Producto[] = [
     precioReferencia: 3196000,
     estado: true,
     caracteristicas: {
-      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 45% NTSC · Bisagra con apertura de 180°",
+      pantalla: "14'' IPS WUXGA (1920x1200) antirreflejo · 300 nits · 45% NTSC · 60Hz · sin pantalla táctil",
       procesador: "Intel Core i5-1335U 13.ª generación (10 núcleos: 2P + 8E, 12 hilos; P-core hasta 4.6GHz y E-core hasta 3.4GHz) con gráficos Intel Iris Xe.",
       sku: "21JK0005RI",
       ram: "16GB Memoria RAM DDR4 3200MHz (8GB soldado + 8GB SODIMM, ampliable hasta 40GB)",
       almacenamiento: "512GB SSD M.2 2242 PCIe 4.0 NVMe Opal 2.0",
-      bateria: "Batería integrada de 57Wh con tecnología Rapid Charge (80% de carga en 60 minutos con USB-C 65W)",
-      puertos: "Thunderbolt 4 / USB4, USB-C 3.2 Gen 2, USB-A 3.2 Gen 1, USB-A 2.0, HDMI 2.1, RJ-45 Gigabit Ethernet",
+      bateria: "Batería integrada de 57Wh · adaptador USB-C de 65W",
+      puertos: "Thunderbolt 4 / USB4 40Gbps, USB-C 3.2 Gen 2, USB-A 3.2 Gen 1 Always On, USB-A 2.0, HDMI 2.1, RJ-45 Gigabit Ethernet, combo 3.5mm",
+      camara: "FHD 1080p + IR híbrida con obturador de privacidad",
+      audio: "2 altavoces estéreo de 2W con Dolby Atmos y 2 micrófonos de matriz",
+      conectividad: "Wi-Fi 6 (802.11ax) y Bluetooth 5.1",
+      dimensiones: "313 x 219.3 x 17.99 mm · peso inicial 1.43 kg",
+      sistema_operativo: "Sin sistema operativo preinstalado",
     },
   },
 ];

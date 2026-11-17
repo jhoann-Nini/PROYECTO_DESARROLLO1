@@ -1110,3 +1110,108 @@ describe("Componente FichaTecnicaModal — HA-01: Protección de endpoints API c
     });
   });
 });
+
+
+describe("FichaTecnicaModal — integración del contrato FichaTecnicaV2", () => {
+  afterEach(() => cleanup());
+
+  it("presenta variantes, atributos, métricas, benchmarks y fuentes desde un JSON V2 válido", () => {
+    const productoV2: Producto = {
+      idProducto: 992,
+      nombre: "Equipo V2 de prueba",
+      descripcion: "Producto utilizado para comprobar la integración del esquema canónico.",
+      idCategoria: 1,
+      idMarca: 2,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca de prueba",
+      imagen: null,
+      precioReferencia: 1000000,
+      estado: true,
+      caracteristicas: {
+        version_esquema: 2,
+        categoria: "moviles",
+        estado_verificacion: "parcial",
+        variantes: [{
+          id: "8gb-256gb",
+          modelo: "Modelo V2",
+          sku: "SKU-V2-256",
+          mercado: "Colombia",
+          ram: "8 GB",
+          almacenamiento: "256 GB",
+        }],
+        atributos: [{
+          clave: "pantalla",
+          nombre: "Diagonal de pantalla",
+          grupo: "pantalla",
+          valor: 6.8,
+          unidad: "in",
+          valorOriginal: "6.8 pulgadas",
+          fuenteId: "fabricante-v2",
+        }],
+        metricasComparables: [{
+          clave: "capacidad_bateria",
+          nombre: "Capacidad de batería",
+          grupo: "bateria",
+          valor: 5000,
+          unidad: "mAh",
+          unidadOriginal: "5000 mAh",
+          sistema_unidades: "internacional",
+          comparable: true,
+          metodo: "Ficha declarada del fabricante",
+          version_metodo: "1",
+          plataforma: "Modelo V2",
+          fuenteId: "fabricante-v2",
+        }],
+        benchmarks: [{
+          id: "benchmark-v2-1",
+          nombre: "Geekbench 6",
+          prueba: "Multi-Core",
+          version: "6.2",
+          valor: 4200,
+          unidad: "puntos",
+          metodo: "Prueba estándar Geekbench",
+          plataforma: "Modelo V2",
+          fecha: "2026-11-01",
+          fuenteId: "benchmark-v2",
+        }],
+        fuentes: [
+          {
+            id: "fabricante-v2",
+            tipo: "fabricante",
+            nombre: "Ficha oficial del fabricante",
+            url: "https://example.com/ficha-v2",
+            fecha_consulta: "2026-11-02",
+            varianteId: "8gb-256gb",
+          },
+          {
+            id: "benchmark-v2",
+            tipo: "benchmark",
+            nombre: "Resultado Geekbench publicado",
+            url: "https://example.com/benchmark-v2",
+            fecha_consulta: "2026-11-03",
+          },
+        ],
+      },
+    };
+
+    render(<FichaTecnicaModal producto={productoV2} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("heading", { name: "Ficha técnica detallada" })).toBeDefined();
+    expect(screen.getByText("Verificación parcial")).toBeDefined();
+    expect(screen.getAllByText("Modelo V2").length).toBeGreaterThan(0);
+    expect(screen.getByText("SKU-V2-256")).toBeDefined();
+    expect(screen.getByText("Colombia")).toBeDefined();
+    expect(screen.getByText("Diagonal de pantalla")).toBeDefined();
+    expect(screen.getByText("6.8 in")).toBeDefined();
+    expect(screen.getByText("Capacidad de batería")).toBeDefined();
+    expect(screen.getByText("Comparable automáticamente")).toBeDefined();
+    expect(screen.getByText("Geekbench 6")).toBeDefined();
+    expect(screen.getByText("4200 puntos")).toBeDefined();
+    expect(screen.getByText("Ficha oficial del fabricante")).toBeDefined();
+    expect(
+      screen.getAllByRole("link", { name: "Consultar fuente" }).some(
+        (link) => link.getAttribute("href") === "https://example.com/ficha-v2",
+      ),
+    ).toBe(true);
+  });
+});

@@ -225,6 +225,36 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
 
 /** Lote 2 de identidades canónicas: se incorpora sin alterar los ocho registros piloto. */
 export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
+
+  {
+    id: "samsung-galaxy-a55-5g",
+    nombre: "Samsung Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 102, "8gb-256gb")],
+    variantes: [{
+      id: "8gb-256gb",
+      nombre: "8 GB RAM · 256 GB · Colombia",
+      ram: "8 GB",
+      almacenamiento: "256 GB",
+      mercado: "Colombia",
+    }],
+  },
+  {
+    id: "apple-iphone-13",
+    nombre: "Apple iPhone 13",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 104, "128gb")],
+    variantes: [{
+      id: "128gb",
+      nombre: "128 GB · Colombia",
+      almacenamiento: "128 GB",
+      mercado: "Colombia",
+    }],
+  },
   {
     id: "redmi-note-14-pro-plus-5g",
     nombre: "Redmi Note 14 Pro+ 5G",

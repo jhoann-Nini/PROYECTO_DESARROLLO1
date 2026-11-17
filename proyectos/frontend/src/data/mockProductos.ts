@@ -619,33 +619,27 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 204,
     ranking: 4,
-    nombre: "Xiaomi 14 Ultra (512GB)",
+    nombre: "Xiaomi 14 Ultra (16GB/512GB)",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "Sensor Leica 1 pulgada LYT-900 · 90W HyperCharge · Cuádruple 50MP",
+    especificaciones: "16GB RAM · 512GB · Snapdragon 8 Gen 3 · Leica LYT-900 de 1 pulgada",
     puntuacion: 9.3,
     precio: 4950000, // $ 4.950.000 COP
     precioOriginal: 5400000,
     descuento: "-8%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/Shibuya-Tokyo---2024-08-28_066.jpg/960px-Shibuya-Tokyo---2024-08-28_066.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
     tipo: "deseado",
     chipInfo: "Snapdragon 8 Gen 3 · Ópticas Leica",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "DxOMark Calidad de Cámara",
-      benchmarkValor: "155 Puntos",
       secciones: [
         {
           icono: "📸",
           titulo: "ÓPTICAS LEICA SUMMILUX",
-          descripcion: "Cuádruple cámara de 50MP con sensor LYT-900 de 1 pulgada.",
+          descripcion: "Cuádruple cámara Leica de 50MP: principal LYT-900 de 1 pulgada, teleobjetivo 75mm, periscopio 120mm y ultra gran angular.",
         },
-      ],
-      metricas: [
-        { nombre: "Fotografía Profesional", puntos: 9.9 },
-        { nombre: "Rendimiento Snapdragon", puntos: 9.5 },
       ],
       tiendas: [
         { nombre: "Xiaomi Store Colombia", precio: 4950000, envioGratis: true },

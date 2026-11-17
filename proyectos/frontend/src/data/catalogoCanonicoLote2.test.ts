@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico — lote 2", () => {
-  it("incorpora seis modelos sin alterar las ocho identidades piloto", () => {
-    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(6);
-    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(14);
+  it("incorpora ocho modelos sin alterar las ocho identidades piloto", () => {
+    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(8);
+    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(16);
   });
 
   it("conserva IDs originales y variantes comerciales verificadas por fabricante", () => {
@@ -36,6 +36,15 @@ describe("catálogo canónico — lote 2", () => {
     expect(obtenerProductoCanonico("nothing-ear-a-black")?.variantes[0]).toMatchObject({
       color: "Black",
     });
+    expect(obtenerProductoCanonico("samsung-galaxy-a55-5g")?.variantes[0]).toMatchObject({
+      ram: "8 GB",
+      almacenamiento: "256 GB",
+      mercado: "Colombia",
+    });
+    expect(obtenerProductoCanonico("apple-iphone-13")?.variantes[0]).toMatchObject({
+      almacenamiento: "128 GB",
+      mercado: "Colombia",
+    });
   });
 
   it("verifica imagen y licencia para los seis modelos del lote", () => {
@@ -46,6 +55,8 @@ describe("catálogo canónico — lote 2", () => {
       "oneplus-13",
       "xiaomi-14t-pro",
       "nothing-ear-a-black",
+      "samsung-galaxy-a55-5g",
+      "apple-iphone-13",
     ];
     for (const id of ids) {
       const producto = obtenerProductoCanonico(id);

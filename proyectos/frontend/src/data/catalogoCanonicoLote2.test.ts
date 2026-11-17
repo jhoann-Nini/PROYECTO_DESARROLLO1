@@ -38,7 +38,7 @@ describe("catálogo canónico — lote 2", () => {
     });
   });
 
-  it("verifica imagen y licencia para los cinco modelos del lote", () => {
+  it("verifica imagen y licencia para los seis modelos del lote", () => {
     const ids = [
       "redmi-note-14-pro-plus-5g",
       "apple-iphone-15-pro-max",

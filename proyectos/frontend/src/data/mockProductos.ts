@@ -480,7 +480,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-18%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: null,
+    imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "laptops",
@@ -1530,7 +1530,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 6,
     nombreCategoria: "Laptops / PCs",
     nombreMarca: "Lenovo",
-    imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
+    imagen: null,
     precioReferencia: 3196000,
     estado: true,
     caracteristicas: {

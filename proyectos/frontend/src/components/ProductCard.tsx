@@ -2,6 +2,7 @@
 "use client";
 
 import { Producto } from "@/types/producto";
+import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 import { sanearPrecioCOP } from "@/data/precios";
@@ -23,6 +24,8 @@ export default function ProductCard({
   const tieneImagenValida = Boolean(
     producto.imagen && producto.imagen.trim().length > 0 && !errorImagen
   );
+
+  const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
 
   const precioFormateado = formatearCOP(producto.precioReferencia);
 
@@ -46,7 +49,7 @@ export default function ProductCard({
             src={producto.imagen!}
             alt={`Fotografía de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
-            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            className={`h-full w-full object-contain transition-transform duration-300 ${imagenSinDerivados ? "" : "group-hover:scale-105"}`}
             loading="lazy"
           />
         ) : (

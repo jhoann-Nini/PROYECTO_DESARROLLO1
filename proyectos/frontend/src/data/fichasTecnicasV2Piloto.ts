@@ -373,7 +373,6 @@ const sonyWh1000Xm5 = crearFicha(
 
 
 const galaxyA55Fuente = "samsung-galaxy-a55-5g";
-const galaxyA55Variante = "8gb-256gb-co";
 const galaxyA55 = crearFicha(
   "moviles",
   "parcial",

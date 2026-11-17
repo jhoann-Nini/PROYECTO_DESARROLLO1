@@ -63,7 +63,7 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     nota: "Fotografía de la edición especial en exhibición; no acredita por sí sola la variante de memoria y almacenamiento del registro.",
   },
   {
-    urlImagen: "https://live.staticflickr.com/65535/52436931175_943f2b71ef.jpg",
+    urlImagen: "https://thehelpfulbuyer.com/assets/products/xm5.jpg",
     paginaOrigen: "https://www.flickr.com/photos/thebetterday4u/52436931175/",
     autor: "HS You",
     fuente: "Flickr",

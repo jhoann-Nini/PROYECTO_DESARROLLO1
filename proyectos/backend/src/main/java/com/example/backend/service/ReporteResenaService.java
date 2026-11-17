@@ -476,7 +476,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {

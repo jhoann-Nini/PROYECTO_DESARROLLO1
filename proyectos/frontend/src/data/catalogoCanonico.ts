@@ -34,6 +34,9 @@ export interface VarianteProductoCanonico {
   almacenamiento?: string | null;
   color?: string | null;
   mercado?: string | null;
+  sku?: string | null;
+  procesador?: string | null;
+  pantalla?: string | null;
 }
 
 export type EstadoImagenCanonica = "pendiente" | "sin_imagen";
@@ -97,13 +100,20 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     categoria: "moviles",
     estadoVerificacion: "pendiente",
     referencias: [
-      referencia("deseados", 202),
+      referencia("deseados", 202, "256gb"),
       referencia("ofertas", 300, "512gb"),
     ],
     variantes: [
       {
+        id: "256gb",
+        nombre: "12 GB RAM · 256 GB",
+        ram: "12 GB",
+        almacenamiento: "256 GB",
+      },
+      {
         id: "512gb",
-        nombre: "512 GB",
+        nombre: "12 GB RAM · 512 GB",
+        ram: "12 GB",
         almacenamiento: "512 GB",
       },
     ],
@@ -124,7 +134,7 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
         id: "12gb-256gb",
         nombre: "12 GB RAM · 256 GB",
         ram: "12 GB",
-        almacenamiento: "256 GB",
+        almacenamiento: "256 GB UFS 3.1",
       },
     ],
   },
@@ -134,13 +144,13 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     marca: "Apple",
     categoria: "tablets",
     estadoVerificacion: "pendiente",
-    referencias: [referencia("deseados", 208, "8gb-512gb")],
+    referencias: [referencia("deseados", 208, "16gb-1tb")],
     variantes: [
       {
-        id: "8gb-512gb",
-        nombre: "8 GB memoria unificada · 512 GB",
-        ram: "8 GB memoria unificada",
-        almacenamiento: "512 GB",
+        id: "16gb-1tb",
+        nombre: "16 GB memoria unificada · 1 TB",
+        ram: "16 GB memoria unificada",
+        almacenamiento: "1 TB",
       },
     ],
   },
@@ -154,9 +164,12 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       {
         id: "16gb-512gb",
-        nombre: "16 GB RAM · 512 GB SSD",
-        ram: "16 GB",
-        almacenamiento: "512 GB SSD",
+        nombre: "Intel Core i5-1335U · 16 GB RAM · 512 GB SSD",
+        ram: "16 GB DDR4",
+        almacenamiento: "512 GB SSD NVMe",
+        sku: "21JK0005RI",
+        procesador: "Intel Core i5-1335U de 13.ª generación",
+        pantalla: "14 pulgadas IPS WUXGA · 300 nits · 45% NTSC",
       },
     ],
   },
@@ -166,13 +179,14 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     marca: "Apple",
     categoria: "laptops",
     estadoVerificacion: "pendiente",
-    referencias: [referencia("deseados", 209, "36gb-1tb")],
+    referencias: [referencia("deseados", 209, "48gb-1tb")],
     variantes: [
       {
-        id: "36gb-1tb",
-        nombre: "36 GB memoria unificada · 1 TB SSD",
-        ram: "36 GB memoria unificada",
+        id: "48gb-1tb",
+        nombre: "48 GB memoria unificada · 1 TB SSD",
+        ram: "48 GB memoria unificada",
         almacenamiento: "1 TB SSD",
+        procesador: "Apple M3 Max · 16 núcleos CPU · 40 núcleos GPU",
       },
     ],
   },

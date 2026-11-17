@@ -23,7 +23,15 @@ describe("catálogo canónico piloto", () => {
       "deseados:202",
       "ofertas:300",
     ]);
-    expect(samsung?.variantes.map((item) => item.id)).toEqual(["512gb"]);
+    expect(samsung?.referencias.map((item) => item.varianteId)).toEqual([
+      "256gb",
+      "512gb",
+    ]);
+    expect(samsung?.variantes.map((item) => item.id)).toEqual(["256gb", "512gb"]);
+    expect(samsung?.variantes.map((item) => item.almacenamiento)).toEqual([
+      "256 GB",
+      "512 GB",
+    ]);
 
     expect(onePlus?.referencias.map((item) => `${item.coleccion}:${item.idRegistro}`)).toEqual([
       "vendidos:108",
@@ -31,6 +39,40 @@ describe("catálogo canónico piloto", () => {
       "mock:5",
     ]);
     expect(onePlus?.registros).toHaveLength(3);
+  });
+
+  it("refleja las variantes corregidas por PR #108 sin cambiar IDs de origen", () => {
+    const onePlus = obtenerProductoCanonico("oneplus-pad-2");
+    const ipad = obtenerProductoCanonico("apple-ipad-pro-11-m4");
+    const thinkpad = obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5");
+    const macbook = obtenerProductoCanonico("apple-macbook-pro-16-m3-max");
+
+    expect(onePlus?.variantes[0]).toMatchObject({
+      ram: "12 GB",
+      almacenamiento: "256 GB UFS 3.1",
+    });
+    expect(ipad?.referencias[0]).toMatchObject({
+      coleccion: "deseados",
+      idRegistro: 208,
+      varianteId: "16gb-1tb",
+    });
+    expect(ipad?.variantes[0]).toMatchObject({
+      ram: "16 GB memoria unificada",
+      almacenamiento: "1 TB",
+    });
+    expect(thinkpad?.variantes[0]).toMatchObject({
+      sku: "21JK0005RI",
+      procesador: "Intel Core i5-1335U de 13.ª generación",
+      ram: "16 GB DDR4",
+      almacenamiento: "512 GB SSD NVMe",
+      pantalla: "14 pulgadas IPS WUXGA · 300 nits · 45% NTSC",
+    });
+    expect(macbook?.referencias[0].varianteId).toBe("48gb-1tb");
+    expect(macbook?.variantes[0]).toMatchObject({
+      ram: "48 GB memoria unificada",
+      almacenamiento: "1 TB SSD",
+      procesador: "Apple M3 Max · 16 núcleos CPU · 40 núcleos GPU",
+    });
   });
 
   it("no fusiona Nothing Phone (2a) Plus con Special Edition", () => {

@@ -222,14 +222,18 @@ describe("Componente FichaTecnicaModal — Fase 4.2: Fichas técnicas dinámicas
   });
 
   it("los productos antiguos de los rankings siguen siendo compatibles", () => {
-    const demo = DISPOSITIVOS_VENDIDOS[0];
+    const demo = DISPOSITIVOS_VENDIDOS.find(
+      (item) => Boolean(item.detalleSpecs?.benchmarkEtiqueta),
+    );
+    expect(demo).toBeDefined();
+    if (!demo) return;
 
     render(<FichaTecnicaModal producto={demo} onClose={vi.fn()} />);
 
     expect(screen.getByText(demo.nombre)).toBeDefined();
     expect(screen.getByText(new RegExp(`RANKING #${demo.ranking}`))).toBeDefined();
     expect(screen.getByText(`${demo.puntuacion.toFixed(1)} / 10`)).toBeDefined();
-    expect(screen.getByText(demo.detalleSpecs!.benchmarkEtiqueta! + ":")).toBeDefined();
+    expect(screen.getByText(`${demo.detalleSpecs!.benchmarkEtiqueta}:`)).toBeDefined();
   });
 
   it("permite cambiar dinámicamente de pestaña al hacer clic", () => {

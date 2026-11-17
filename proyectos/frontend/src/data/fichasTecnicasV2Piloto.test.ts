@@ -38,6 +38,58 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
   });
 
+  it("amplía las fichas con los bloques técnicos publicados por los fabricantes", () => {
+    const phone = FICHAS_TECNICAS_V2_PILOTO.nothingPhone2aSpecialEdition;
+    const samsung = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS24Ultra256;
+    const ipad = FICHAS_TECNICAS_V2_PILOTO.appleIpadPro11M4;
+    const lenovo = FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5;
+    const mac = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
+    const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
+    const sony = FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5;
+
+    expect(phone.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "dimensiones", valor: "161,74 × 76,32 × 8,55 mm" }),
+      expect.objectContaining({ clave: "proteccion", valor: "IP54" }),
+    ]));
+    expect(samsung.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "resolucion", valor: "3120 × 1440 píxeles (QHD+)" }),
+      expect.objectContaining({ clave: "s_pen", valor: true }),
+    ]));
+    expect(ipad.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "peso", valor: "444 g (Wi-Fi) / 446 g (Wi-Fi + Cellular)" }),
+      expect.objectContaining({ clave: "camara_trasera", valor: 12, unidad: "mpx" }),
+    ]));
+    expect(lenovo.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "sistema_operativo", valor: "Sin sistema operativo preinstalado" }),
+    ]));
+    expect(mac.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 6E (802.11ax)" }),
+      expect.objectContaining({ clave: "bateria_capacidad_real", valor: 99.6, unidad: "Wh" }),
+    ]));
+    expect(ear.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "dimensiones_auricular" }),
+      expect.objectContaining({ clave: "proteccion_estuche", valor: "IP55" }),
+    ]));
+    expect(sony.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "peso", valor: 250, unidad: "g" }),
+      expect.objectContaining({ clave: "respuesta_frecuencia_bluetooth" }),
+      expect.objectContaining({ clave: "autonomia_llamadas" }),
+    ]));
+  });
+
+  it("mantiene claves de atributos únicas y fuentes referenciadas en cada ficha", () => {
+    for (const ficha of Object.values(FICHAS_TECNICAS_V2_PILOTO)) {
+      const claves = ficha.atributos.map((atributo) => atributo.clave);
+      expect(new Set(claves).size).toBe(claves.length);
+      const fuenteIds = new Set(ficha.fuentes.map((fuente) => fuente.id));
+      for (const atributo of ficha.atributos) {
+        expect(fuenteIds.has(atributo.fuenteId ?? "")).toBe(true);
+      }
+    }
+  });
+
   it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {
     const pad = FICHAS_TECNICAS_V2_PILOTO.oneplusPad2;
     expect(pad.estado_verificacion).toBe("verificado");

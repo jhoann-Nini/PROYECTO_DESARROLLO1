@@ -114,6 +114,26 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía de la parte trasera del OnePlus 13 en acabado Black Eclipse; el registro del catálogo no especifica color.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/9/99/IPhone_15_Pro_Max.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:IPhone_15_Pro_Max.jpg",
+    autor: "Kyu3",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía frontal de un iPhone 15 Pro Max en exhibición; el registro identifica la capacidad de 256 GB.",
+  },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Samsung_Galaxy_S25_Ultra_2025.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S25_Ultra_2025.jpg",
+    autor: "Captainmorlypogi1959",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía de la parte trasera de un Galaxy S25 Ultra en exhibición; el registro del catálogo indica Titanium Black.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

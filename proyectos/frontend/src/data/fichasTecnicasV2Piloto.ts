@@ -259,7 +259,8 @@ const thinkpadE14Gen5 = crearFicha(
     almacenamiento: "512 GB SSD M.2 2242 PCIe 4.0 NVMe",
   }],
   [
-    atributo("procesador", "Procesador", "rendimiento", "Intel Core i5-1335U · 10 núcleos · 12 hilos", lenovoFuente),
+    atributo("procesador", "Procesador", "rendimiento", "Intel Core i5-1335U · 10 núcleos (2P + 8E) · 12 hilos", lenovoFuente),
+    atributo("graficos", "Gráficos integrados", "rendimiento", "Intel Iris Xe Graphics", lenovoFuente),
     atributo("ram", "Memoria RAM", "memoria", 16, lenovoFuente, "GB"),
     atributo("tipo_ram", "Tipo de memoria", "memoria", "DDR4-3200 · 8 GB soldados + 8 GB SO-DIMM", lenovoFuente),
     atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, lenovoFuente, "GB"),
@@ -268,6 +269,14 @@ const thinkpadE14Gen5 = crearFicha(
     atributo("resolucion", "Resolución", "pantalla", "1920 × 1200 (WUXGA)", lenovoFuente),
     atributo("brillo", "Brillo", "pantalla", 300, lenovoFuente, "nits"),
     atributo("cobertura_color", "Cobertura de color", "pantalla", "45% NTSC", lenovoFuente),
+    atributo("frecuencia_pantalla", "Frecuencia de actualización", "pantalla", 60, lenovoFuente, "Hz"),
+    atributo("superficie_pantalla", "Superficie", "pantalla", "Antirreflejo · sin pantalla táctil", lenovoFuente),
+    atributo("camara", "Cámara", "multimedia", "FHD 1080p + infrarroja híbrida con obturador de privacidad", lenovoFuente),
+    atributo("audio", "Altavoces y micrófonos", "multimedia", "2 altavoces estéreo de 2 W con Dolby Atmos · 2 micrófonos de matriz", lenovoFuente),
+    atributo("puertos", "Puertos", "conectividad", "1 USB 2.0 · 1 USB-A 3.2 Gen 1 Always On · 1 USB-C 3.2 Gen 2 (PD 3.0 y DisplayPort 1.4) · 1 Thunderbolt 4 / USB4 40 Gbps · HDMI 2.1 · RJ-45 Gigabit · combo 3,5 mm", lenovoFuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "313 × 219,3 × 17,99 mm", lenovoFuente),
+    atributo("sistema_operativo", "Sistema operativo incluido", "software", "Sin sistema operativo preinstalado", lenovoFuente),
+    atributo("seguridad", "Seguridad", "seguridad", "TPM 2.0 · lector de huellas integrado en botón de encendido · cámara IR para Windows Hello", lenovoFuente),
     atributo("energia_bateria", "Energía de batería", "bateria", 57, lenovoFuente, "Wh"),
     atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6 (802.11ax)", lenovoFuente),
     atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.1", lenovoFuente),
@@ -280,7 +289,7 @@ const thinkpadE14Gen5 = crearFicha(
     metrica("energia_bateria", "Energía de batería", "bateria", 57, "Wh", lenovoFuente),
   ],
   [
-    fuente("lenovo-psref-21jk0005ri", "Lenovo PSREF — ThinkPad E14 Gen 5 (Intel), MTM 21JK0005RI", "https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI", lenovoVariante, "PSREF identifica el MTM exacto 21JK0005RI, país/región Rumania (EET), y detalla CPU, memoria, SSD, pantalla y batería."),
+    fuente("lenovo-psref-21jk0005ri", "Lenovo PSREF — ThinkPad E14 Gen 5 (Intel), MTM 21JK0005RI", "https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI", lenovoVariante, "PSREF identifica el MTM exacto 21JK0005RI, país/región Rumania (EET), y respalda CPU, gráficos, memoria, SSD, pantalla, cámara, audio, puertos, batería, dimensiones, peso y seguridad."),
   ],
 );
 
@@ -303,8 +312,21 @@ const macbookPro16M3Max = crearFicha(
     atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 16.2, macFuente, "in"),
     atributo("resolucion", "Resolución", "pantalla", "3456 × 2234 píxeles", macFuente),
     atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, macFuente, "Hz"),
-    atributo("energia_bateria", "Energía de batería", "bateria", 100, macFuente, "Wh"),
+    atributo("brillo_sdr", "Brillo SDR", "pantalla", 600, macFuente, "nits"),
+    atributo("brillo_xdr", "Brillo sostenido XDR", "pantalla", 1000, macFuente, "nits"),
+    atributo("brillo_hdr", "Pico de brillo HDR", "pantalla", 1600, macFuente, "nits"),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 254, macFuente, "puntos"),
+    atributo("camara", "Cámara", "multimedia", "FaceTime HD 1080p", macFuente),
+    atributo("audio", "Audio", "multimedia", "Sistema de seis altavoces con woofers de cancelación de fuerza · tres micrófonos · salida 3,5 mm", macFuente),
+    atributo("conectividad_inalambrica", "Conectividad inalámbrica", "conectividad", "Wi-Fi 6E · Bluetooth 5.3", macFuente),
+    atributo("puertos", "Puertos", "conectividad", "3 Thunderbolt 4 / USB-C (hasta 40 Gb/s) · HDMI · SDXC · MagSafe 3 · audio 3,5 mm", macFuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "35,57 × 24,81 × 1,68 cm", macFuente),
+    atributo("peso", "Peso", "diseno", 2.16, macFuente, "kg"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "macOS", macFuente),
+    atributo("adaptador", "Adaptador de corriente incluido", "energia", 140, macFuente, "W"),
+    atributo("energia_bateria", "Capacidad de batería", "bateria", 99.6, macFuente, "Wh"),
     atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, macFuente, "h"),
+    atributo("autonomia_web", "Navegación web inalámbrica (máximo declarado)", "bateria", 15, macFuente, "h"),
     atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", "400 GB/s", macFuente),
   ],
   [
@@ -314,7 +336,7 @@ const macbookPro16M3Max = crearFicha(
     metrica("energia_bateria", "Energía de batería", "bateria", 100, "Wh", macFuente),
   ],
   [
-    fuente("apple-macbook-pro-m3-max", "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023)", "https://support.apple.com/es-la/117737", macVariante, "La ficha oficial incluye la configuración probada M3 Max CPU 16/GPU 40, memoria unificada de 48 GB y SSD de 1 TB."),
+    fuente("apple-macbook-pro-m3-max", "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023)", "https://support.apple.com/es-la/117737", macVariante, "La ficha oficial respalda la configuración probada M3 Max CPU 16/GPU 40, memoria unificada de 48 GB y SSD de 1 TB; también pantalla, conectividad, puertos, cámara, audio, dimensiones, peso y batería."),
   ],
 );
 

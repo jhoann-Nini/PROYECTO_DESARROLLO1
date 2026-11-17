@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import RatingStars from "./RatingStars";
@@ -109,6 +110,7 @@ export default function TarjetaProducto({
           />
         </div>
       </div>
+      <AtribucionImagenProducto src={producto.imagen} className="px-3 py-1" />
 
       <div
         className={

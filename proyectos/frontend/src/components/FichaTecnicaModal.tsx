@@ -407,7 +407,7 @@ export default function FichaTecnicaModal({
                     src={ficha.imagen}
                     alt={`Vista frontal de ${ficha.nombre}`}
                     onError={() => setErrorImagenUrl(ficha.imagen)}
-                    className={`max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 ${imagenSinDerivados ? "" : "hover:scale-105"}`}
+                    className={`max-h-full max-w-full object-contain ${imagenSinDerivados ? "" : "filter drop-shadow-md transition-transform duration-300 hover:scale-105"}`}
                   />
                 ) : (
                   <ProductImagePlaceholder

@@ -85,7 +85,10 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "carga_rapida", valor: 120 }),
       expect.objectContaining({ clave: "resistencia", valor: "IP68" }),
     ]));
-    expect(redmi.fuentes.map((f) => f.url)).toContain("https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/buy/?gid=4223712110");
+    expect(redmi.fuentes.map((f) => f.url)).toEqual(expect.arrayContaining([
+      "https://www.mi.com/co/support/terms/tc-para-cupones-202509/",
+      "https://www.mi.com/global/product/redmi-note-14-pro-plus-5g/specs/",
+    ]));
   });
 
   it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {

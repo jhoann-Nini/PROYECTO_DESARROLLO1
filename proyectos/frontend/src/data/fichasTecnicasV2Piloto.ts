@@ -95,7 +95,7 @@ const nothingPhoneFuente = "nothing-phone-2a";
 const nothingPhoneVariante = "12gb-256gb";
 const nothingPhone = crearFicha(
   "moviles",
-  "parcial",
+  "verificado",
   [{
     id: nothingPhoneVariante,
     modelo: "Nothing Phone (2a) Special Edition",
@@ -123,7 +123,7 @@ const nothingPhone = crearFicha(
     metrica("capacidad_bateria", "Capacidad de batería", "bateria", 5000, "mAh", nothingPhoneFuente),
   ],
   [
-    fuente("nothing-phone-2a", "Nothing — Phone (2a), especificaciones oficiales", "https://checkout.nothing.tech/pages/phone-2a", nothingPhoneVariante, "La página oficial contiene las especificaciones de Phone (2a); la edición especial comparte el modelo base."),
+    fuente("nothing-phone-2a", "Nothing — Phone (2a) Special Edition, especificaciones oficiales", "https://checkout.nothing.tech/pages/phone-2a", nothingPhoneVariante, "La página oficial identifica la Special Edition y publica sus especificaciones; el anuncio oficial confirma la configuración 12 GB RAM + 256 GB."),
     fuente("nothing-phone-2a-se", "Nothing Community — Phone (2a) Special Edition", "https://nothing.community/en/d/10897-introducing-phone-2a-special-edition", nothingPhoneVariante, "Anuncio oficial de la edición especial y de la configuración 12 GB RAM + 256 GB."),
   ],
 );
@@ -209,7 +209,7 @@ const ipadFuente = "apple-ipad-pro-m4";
 const ipadVariante = "16gb-1tb";
 const ipadPro11M4 = crearFicha(
   "tablets",
-  "parcial",
+  "verificado",
   [{
     id: ipadVariante,
     modelo: "Apple iPad Pro de 11 pulgadas (M4)",
@@ -241,13 +241,13 @@ const lenovoFuente = "lenovo-psref-21jk0005ri";
 const lenovoVariante = "16gb-512gb";
 const thinkpadE14Gen5 = crearFicha(
   "laptops",
-  "parcial",
+  "verificado",
   [{
     id: lenovoVariante,
     modelo: "ThinkPad E14 Gen 5 Intel",
     sku: "21JK0005RI",
     identificador: "21JK0005RI",
-    mercado: "EET",
+    mercado: "Rumania (región EET)",
     ram: "16 GB DDR4-3200 (8 GB soldados + 8 GB SO-DIMM)",
     almacenamiento: "512 GB SSD M.2 2242 PCIe 4.0 NVMe",
   }],
@@ -273,7 +273,7 @@ const thinkpadE14Gen5 = crearFicha(
     metrica("energia_bateria", "Energía de batería", "bateria", 57, "Wh", lenovoFuente),
   ],
   [
-    fuente("lenovo-psref-21jk0005ri", "Lenovo PSREF — ThinkPad E14 Gen 5 (Intel), MTM 21JK0005RI", "https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI", lenovoVariante, "PSREF identifica el MTM exacto 21JK0005RI y detalla CPU, memoria, SSD, pantalla y batería."),
+    fuente("lenovo-psref-21jk0005ri", "Lenovo PSREF — ThinkPad E14 Gen 5 (Intel), MTM 21JK0005RI", "https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI", lenovoVariante, "PSREF identifica el MTM exacto 21JK0005RI, país/región Rumania (EET), y detalla CPU, memoria, SSD, pantalla y batería."),
   ],
 );
 
@@ -281,7 +281,7 @@ const macFuente = "apple-macbook-pro-m3-max";
 const macVariante = "48gb-1tb";
 const macbookPro16M3Max = crearFicha(
   "laptops",
-  "parcial",
+  "verificado",
   [{
     id: macVariante,
     modelo: "MacBook Pro de 16 pulgadas (noviembre de 2023)",
@@ -344,7 +344,7 @@ const sonyFuente = "sony-wh-1000xm5";
 const sonyWh1000Xm5 = crearFicha(
   "auriculares",
   "verificado",
-  [],
+  [{ id: "wh-1000xm5", modelo: "Sony WH-1000XM5" }],
   [
     atributo("tipo", "Tipo de auricular", "audio", "Cerrado, dinámico, circumaural", sonyFuente),
     atributo("bluetooth", "Versión Bluetooth", "conectividad", "Bluetooth 5.2", sonyFuente),

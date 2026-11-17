@@ -100,6 +100,7 @@ function crearFicha(
 }
 
 const samsungA55Fuente = "samsung-galaxy-a55-colombia";
+const samsungA55ChipsetFuente = "samsung-galaxy-a55-chipset";
 const samsungA55Variante = "8gb-256gb";
 const galaxyA55 = crearFicha(
   "moviles",
@@ -112,7 +113,7 @@ const galaxyA55 = crearFicha(
     mercado: "Colombia",
   }],
   [
-    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480", samsungA55Fuente),
+    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480", samsungA55ChipsetFuente),
     atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super AMOLED · Vision Booster", samsungA55Fuente),
     atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.6, samsungA55Fuente, "in"),
     atributo("resolucion", "Resolución", "pantalla", "FHD+", samsungA55Fuente),

@@ -8,37 +8,29 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Redmi Note 13 Pro+ 5G",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "Dimensity 7200 Ultra · 200MP OIS · 12GB RAM · 120Hz Curved AMOLED",
+    especificaciones: "12GB RAM · 512GB · Dimensity 7200-Ultra · 200MP OIS · 120W HyperCharge",
     puntuacion: 9.1,
     precio: 1749000, // $ 1.749.000 COP
     precioOriginal: 2099000,
     descuento: "-17%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Shibuya-Tokyo---2024-08-28_059.jpg/960px-Shibuya-Tokyo---2024-08-28_059.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
     tipo: "vendido",
     chipInfo: "Dimensity 7200 Ultra · 200MP",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "800,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & DISEÑO CURVO",
-          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K · 120Hz · 1800 nits pico · Dolby Vision · IP68.",
+          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K (2712 × 1220) · 120Hz · 1800 nits · Dolby Vision · Gorilla Glass Victus · IP68.",
         },
         {
           icono: "⚡",
           titulo: "PROCESADOR & RENDIMIENTO",
-          descripcion: "MediaTek Dimensity 7200 Ultra (4nm TSMC) Octa-Core con refrigeración líquida VC.",
+          descripcion: "MediaTek Dimensity 7200-Ultra (4 nm) · CPU octa-core hasta 2,8 GHz · GPU Mali-G610.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento y CPU", puntos: 9.1 },
-        { nombre: "Cámara 200MP OIS", puntos: 9.2 },
-        { nombre: "Pantalla AMOLED 1.5K", puntos: 9.3 },
-        { nombre: "Batería y Carga 120W", puntos: 9.4 },
       ],
       tiendas: [
         { nombre: "Éxito Colombia Oficial", precio: 1749000, envioGratis: true },

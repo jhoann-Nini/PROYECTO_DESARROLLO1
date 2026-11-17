@@ -226,6 +226,21 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
 /** Lote 2 de identidades canónicas: se incorpora sin alterar los ocho registros piloto. */
 export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
 
+
+  {
+    id: "xiaomi-14-ultra",
+    nombre: "Xiaomi 14 Ultra",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 204, "16gb-512gb")],
+    variantes: [{
+      id: "16gb-512gb",
+      nombre: "16 GB RAM · 512 GB",
+      ram: "16 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+    }],
+  },
   {
     id: "samsung-galaxy-a55-5g",
     nombre: "Samsung Galaxy A55 5G",

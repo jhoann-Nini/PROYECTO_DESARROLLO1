@@ -196,7 +196,7 @@ const oneplusPad2 = crearFicha(
     atributo("dimensiones", "Dimensiones", "diseno", "268,66 × 195,06 × 6,49 mm", oneplusFuente),
     atributo("peso", "Peso", "diseno", 584, oneplusFuente, "g"),
     atributo("sistema_operativo", "Sistema operativo", "software", "OxygenOS 14.1", oneplusFuente),
-    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 303, oneplusFuente, "ppi"),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 303, oneplusFuente),
     atributo("brillo", "Brillo", "pantalla", "600 nits (HBM 900 nits)", oneplusFuente),
     atributo("puerto_usb", "Puerto USB", "conectividad", "USB Type-C 3.2 Gen 1, hasta 5 Gbps", oneplusFuente),
   ],

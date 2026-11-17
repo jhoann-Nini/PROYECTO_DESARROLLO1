@@ -15,10 +15,12 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     FICHAS_TECNICAS_V2_PILOTO.redmiNote14ProPlus,
     FICHAS_TECNICAS_V2_PILOTO.xiaomi14TPro,
     FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack,
+    FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55,
+    FICHAS_TECNICAS_V2_PILOTO.appleIphone13,
   ];
 
   it("mantiene las seis fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
-    expect(fichas).toHaveLength(6);
+    expect(fichas).toHaveLength(8);
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.estado_verificacion).toBe("verificado");
@@ -100,6 +102,31 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     ]));
   });
 
+  it("verifica Galaxy A55 8 GB/256 GB para Colombia", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55;
+    expect(ficha.variantes[0]).toMatchObject({
+      id: "8gb-256gb",
+      modelo: "Samsung Galaxy A55 5G",
+      ram: "8 GB",
+      almacenamiento: "256 GB",
+      mercado: "Colombia",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 5000, unidad: "mAh" }),
+      expect.objectContaining({ clave: "tasa_refresco", valor: 120, unidad: "Hz" }),
+    ]));
+  });
+
+  it("verifica iPhone 13 de 128 GB sin inventar RAM", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleIphone13;
+    expect(ficha.variantes[0]).toMatchObject({ id: "128gb", almacenamiento: "128 GB" });
+    expect(ficha.variantes[0].ram).toBeUndefined();
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("A15 Bionic") }),
+      expect.objectContaining({ clave: "autonomia_video", valor: 19, unidad: "h" }),
+    ]));
+  });
+
   it("asocia cada ficha a su registro original sin cambiar sus IDs", () => {
     const iphone = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201)!;
     const s25 = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206)!;
@@ -107,6 +134,8 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     const redmi = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107)!;
     const xiaomi = ULTIMAS_OFERTAS.find((item) => item.id === 306)!;
     const earA = ULTIMAS_OFERTAS.find((item) => item.id === 301)!;
+    const a55 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 102)!;
+    const iphone13 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 104)!;
 
     expect(normalizarDesdeKimovil(iphone).variantes[0]?.id).toBe("256gb");
     expect(normalizarDesdeKimovil(s25).variantes[0]?.id).toBe("12gb-1tb");
@@ -114,5 +143,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     expect(normalizarDesdeKimovil(redmi).variantes[0]?.id).toBe("8gb-256gb");
     expect(normalizarDesdeKimovil(xiaomi).variantes[0]?.id).toBe("12gb-512gb");
     expect(normalizarDesdeKimovil(earA).variantes[0]?.id).toBe("black");
+    expect(normalizarDesdeKimovil(a55).variantes[0]?.id).toBe("8gb-256gb");
+    expect(normalizarDesdeKimovil(iphone13).variantes[0]?.id).toBe("128gb");
   });
 });

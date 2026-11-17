@@ -140,3 +140,22 @@ Por tanto, la política de implementación sigue siendo:
 - Las referencias de precio son heterogéneas y algunas tienen restricciones de stock, condición o IVA. No deben convertirse en precio "actual" del catálogo sin revalidación.
 - No se ha validado permiso de reutilización para ninguna imagen heredada.
 - No se modificó código, backend, SQL ni Supabase en esta revisión; el estado `estadoVerificacion` continúa en `pendiente`.
+
+
+## Estado vigente de las fichas técnicas V2 tras PR #112 (17 de noviembre de 2026)
+
+La verificación de fuentes oficiales se incorporó en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.ts` y quedó cubierta por pruebas en `fichasTecnicasV2Piloto.test.ts`. El estado de la ficha V2 no debe confundirse con el campo de verificación del catálogo canónico: son contratos distintos y no se sincronizan automáticamente.
+
+| Ficha V2 | Estado vigente | Alcance de la verificación |
+|---|---|---|
+| Nothing Phone (2a) Special Edition | `verificado` | La fuente del fabricante y el anuncio de Nothing respaldan el modelo Special Edition y la configuración 12 GB/256 GB. |
+| Samsung Galaxy S24 Ultra 256 GB | `verificado` | La ficha oficial respalda la variante de 256 GB. |
+| Samsung Galaxy S24 Ultra 512 GB | `verificado` | La ficha oficial respalda la variante de 512 GB. |
+| OnePlus Pad 2 12 GB/256 GB | `verificado` | La ficha estadounidense del fabricante respalda memoria, almacenamiento UFS 3.1 y especificaciones asociadas. |
+| Apple iPad Pro 11 pulgadas M4 16 GB/1 TB | `verificado` | Las especificaciones oficiales respaldan la configuración técnica registrada. |
+| Lenovo ThinkPad E14 Gen 5, MTM 21JK0005RI | `verificado` | La ficha PSREF asociada al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
+| Apple MacBook Pro 16 pulgadas M3 Max 48 GB/1 TB | `verificado` | Las especificaciones oficiales respaldan la configuración técnica registrada. |
+| Nothing Ear (2) | `parcial` | El modelo y sus especificaciones están respaldados; no se encontró confirmación primaria expresa del acabado Transparent White. |
+| Sony WH-1000XM5 | `verificado` | La ficha oficial de soporte respalda el modelo y las especificaciones registradas. |
+
+**Importante:** `verificado` describe la evidencia técnica de la ficha V2; no garantiza precio vigente, inventario, vendedor autorizado, condición del producto, disponibilidad en Colombia ni licencia de las imágenes. Nothing Ear (2) permanece `parcial` hasta confirmar el acabado específico. El estado independiente del catálogo canónico continúa sujeto a sus propias reglas y no debe elevarse por inferencia.

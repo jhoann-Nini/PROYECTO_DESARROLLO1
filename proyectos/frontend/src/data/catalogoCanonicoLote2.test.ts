@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico — lote 2", () => {
-  it("incorpora cinco modelos sin alterar las ocho identidades piloto", () => {
-    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(5);
-    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(13);
+  it("incorpora seis modelos sin alterar las ocho identidades piloto", () => {
+    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(6);
+    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(14);
   });
 
   it("conserva IDs originales y variantes comerciales verificadas por fabricante", () => {
@@ -33,6 +33,9 @@ describe("catálogo canónico — lote 2", () => {
       ram: "12 GB LPDDR5X",
       almacenamiento: "512 GB UFS 4.0",
     });
+    expect(obtenerProductoCanonico("nothing-ear-a-black")?.variantes[0]).toMatchObject({
+      color: "Black",
+    });
   });
 
   it("verifica imagen y licencia para los cinco modelos del lote", () => {
@@ -42,12 +45,13 @@ describe("catálogo canónico — lote 2", () => {
       "samsung-galaxy-s25-ultra",
       "oneplus-13",
       "xiaomi-14t-pro",
+      "nothing-ear-a-black",
     ];
     for (const id of ids) {
       const producto = obtenerProductoCanonico(id);
       expect(producto?.imagen.url).toMatch(/^https:\/\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
-      expect(producto?.imagen.licencia).toBe("CC BY-SA 4.0");
+      expect(["CC BY-SA 4.0", "CC BY 4.0"]).toContain(producto?.imagen.licencia);
       expect(producto?.imagen.paginaOrigen).toContain("commons.wikimedia.org/wiki/File:");
       expect(producto?.imagen.autor).not.toBeNull();
       expect(producto?.imagen.atribucion).not.toBeNull();

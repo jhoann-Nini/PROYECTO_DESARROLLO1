@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   CATALOGO_CANONICO_PILOTO,
+  CATALOGO_CANONICO_ADICIONAL,
+  CATALOGO_CANONICO_REGISTRADO,
   obtenerCatalogoCanonicoPiloto,
+  obtenerCatalogoCanonicoRegistrado,
   obtenerProductoCanonico,
   validarCatalogoCanonicoPiloto,
+  validarCatalogoCanonicoRegistrado,
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
@@ -136,6 +140,51 @@ describe("catálogo canónico piloto", () => {
 
   it("valida todas las referencias y variantes del piloto", () => {
     expect(validarCatalogoCanonicoPiloto()).toEqual([]);
+  });
+
+  it("incorpora Galaxy A55, iPhone 13 y OnePlus 13 al registro sin alterar el piloto", () => {
+    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(8);
+    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(3);
+    expect(CATALOGO_CANONICO_REGISTRADO).toHaveLength(11);
+
+    const a55 = obtenerProductoCanonico("samsung-galaxy-a55-5g");
+    const iphone = obtenerProductoCanonico("apple-iphone-13");
+    const onePlus13 = obtenerProductoCanonico("oneplus-13");
+
+    expect(a55?.referencias).toEqual([
+      expect.objectContaining({ coleccion: "vendidos", idRegistro: 102, varianteId: "8gb-256gb" }),
+    ]);
+    expect(a55?.variantes[0]).toMatchObject({ ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia" });
+    expect(iphone?.referencias).toEqual([
+      expect.objectContaining({ coleccion: "vendidos", idRegistro: 104, varianteId: "128gb" }),
+    ]);
+    expect(iphone?.variantes[0]).toMatchObject({ almacenamiento: "128 GB" });
+    expect(onePlus13?.referencias).toEqual([
+      expect.objectContaining({ coleccion: "deseados", idRegistro: 207, varianteId: "16gb-512gb" }),
+    ]);
+    expect(onePlus13?.nombre).toBe("OnePlus 13");
+    expect(CATALOGO_CANONICO_REGISTRADO.some((item) => item.nombre.includes("OnePlus 13 Pro"))).toBe(false);
+  });
+
+  it("resuelve y verifica las tres imágenes adicionales por su atribución exacta", () => {
+    const a55 = obtenerProductoCanonico("samsung-galaxy-a55-5g");
+    const iphone = obtenerProductoCanonico("apple-iphone-13");
+    const onePlus13 = obtenerProductoCanonico("oneplus-13");
+
+    for (const producto of [a55, iphone, onePlus13]) {
+      expect(producto?.imagen.url).toMatch(/^https:\/\//);
+      expect(producto?.imagen.estadoVerificacion).toBe("verificada");
+      expect(producto?.imagen.licencia).toBe("CC BY-SA 4.0");
+      expect(producto?.imagen.autor).not.toBeNull();
+      expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\//);
+    }
+    expect(onePlus13?.imagen.autor).toBe("Maksdroider");
+    expect(onePlus13?.imagen.cambios).toBe("Sin modificaciones.");
+  });
+
+  it("valida las referencias de los once productos registrados", () => {
+    expect(validarCatalogoCanonicoRegistrado()).toEqual([]);
+    expect(obtenerCatalogoCanonicoRegistrado()).toHaveLength(11);
   });
 
   it("devuelve null para un ID canónico desconocido", () => {

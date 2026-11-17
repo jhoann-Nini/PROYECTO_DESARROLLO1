@@ -59,7 +59,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-12%",
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Samsung_Galaxy_A55_5G_2024.jpg",
     tipo: "vendido",
     chipInfo: "Exynos 1480 · 50MP",
     detalleSpecs: {
@@ -133,7 +133,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-12%",
     tendencia: "sube",
     cambioRanking: 3,
-    imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/3c/IPhone_13.jpg",
     tipo: "vendido",
     chipInfo: "Apple A15 Bionic · 12MP",
     detalleSpecs: {

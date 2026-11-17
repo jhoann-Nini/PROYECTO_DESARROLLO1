@@ -630,6 +630,97 @@ const nothingEarABlack = crearFicha(
   ],
 );
 
+
+const a55Fuente = "samsung-galaxy-a55-co";
+const a55Variante = "8gb-256gb";
+const samsungGalaxyA55 = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: a55Variante,
+    modelo: "Samsung Galaxy A55 5G",
+    ram: "8 GB",
+    almacenamiento: "256 GB",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480 · CPU octa-core hasta 2,75 GHz", a55Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super AMOLED · FHD+ · Vision Booster", a55Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", "6,6 pulgadas en rectángulo completo · 6,4 pulgadas en esquinas redondeadas", a55Fuente),
+    atributo("resolucion", "Resolución", "pantalla", "1080 × 2340 píxeles", a55Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", 120, a55Fuente, "Hz"),
+    atributo("brillo", "Brillo HBM", "pantalla", 1000, a55Fuente, "nits"),
+    atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus+", a55Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 8, a55Fuente, "GB"),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, a55Fuente, "GB"),
+    atributo("expansion", "Expansión de almacenamiento", "almacenamiento", "microSD hasta 1 TB · ranura híbrida", a55Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "50 MP · OIS · ƒ/1.8", a55Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "12 MP · ƒ/2.2", a55Fuente),
+    atributo("camara_macro", "Cámara macro", "camaras", "5 MP · ƒ/2.4", a55Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "32 MP · ƒ/2.2", a55Fuente),
+    atributo("video", "Grabación de vídeo", "camaras", "UHD 4K (3840 × 2160) a 30 fps", a55Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, a55Fuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable", "bateria", "Carga superrápida de hasta 25 W · cargador se vende por separado", a55Fuente),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 28, a55Fuente, "h"),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 6 · Bluetooth 5.3 · NFC · USB-C 2.0", a55Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP67", a55Fuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "161,1 × 77,4 × 8,2 mm", a55Fuente),
+    atributo("peso", "Peso", "dimensiones", 213, a55Fuente, "g"),
+    atributo("seguridad", "Seguridad", "seguridad", "Samsung Knox Vault", a55Fuente),
+    atributo("actualizaciones", "Soporte de software anunciado", "software", "Hasta 4 generaciones de actualizaciones de sistema operativo y hasta 5 años de seguridad", a55Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.6, "in", a55Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", a55Fuente),
+  ],
+  [
+    fuente("samsung-galaxy-a55-colombia", "Samsung Colombia — Galaxy A55 5G, especificaciones oficiales", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-lemon-128gb-sm-a556ezylltc/", a55Variante, "La página regional confirma 8 GB de RAM, disponibilidad de 256 GB, Exynos 1480, pantalla, cámaras, batería, IP67, Wi-Fi 6, Bluetooth 5.3 y peso."),
+  ],
+);
+
+const iphone13Fuente = "apple-iphone-13";
+const iphone13Variante = "128gb";
+const appleIphone13 = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: iphone13Variante,
+    modelo: "iPhone 13",
+    almacenamiento: "128 GB",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A15 Bionic · CPU de 6 núcleos · GPU de 4 núcleos · Neural Engine de 16 núcleos", iphone13Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super Retina XDR OLED · HDR · True Tone", iphone13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, iphone13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2532 × 1170 píxeles", iphone13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "460 ppi", iphone13Fuente),
+    atributo("brillo", "Brillo típico / HDR", "pantalla", "800 / 1200 nits", iphone13Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 128, iphone13Fuente, "GB"),
+    atributo("camara_principal", "Cámara gran angular", "camaras", "12 MP · ƒ/1.6 · estabilización óptica por desplazamiento de sensor", iphone13Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "12 MP · ƒ/2.4 · campo de visión 120°", iphone13Fuente),
+    atributo("camara_frontal", "Cámara frontal TrueDepth", "camaras", "12 MP · ƒ/2.2", iphone13Fuente),
+    atributo("video", "Grabación de vídeo", "camaras", "4K hasta 60 fps · HDR Dolby Vision hasta 4K a 60 fps · modo Cine 1080p a 30 fps", iphone13Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos en condiciones de laboratorio", iphone13Fuente),
+    atributo("conectividad", "Conectividad inalámbrica", "conectividad", "5G · Wi-Fi 6 · Bluetooth 5.0 · NFC", iphone13Fuente),
+    atributo("puertos", "Conector", "conectividad", "Lightning", iphone13Fuente),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "MagSafe hasta 15 W · Qi hasta 7,5 W", iphone13Fuente),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 19, iphone13Fuente, "h"),
+    atributo("autonomia_streaming", "Vídeo en streaming (máximo declarado)", "bateria", 15, iphone13Fuente, "h"),
+    atributo("autonomia_audio", "Reproducción de audio (máximo declarado)", "bateria", 75, iphone13Fuente, "h"),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "146,7 × 71,5 × 7,65 mm", iphone13Fuente),
+    atributo("peso", "Peso", "dimensiones", 173, iphone13Fuente, "g"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "iOS", iphone13Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, "in", iphone13Fuente),
+    metrica("autonomia_video", "Reproducción de vídeo", "bateria", 19, "h", iphone13Fuente),
+  ],
+  [
+    fuente("apple-iphone-13-co", "Apple Support Colombia — iPhone 13, especificaciones técnicas", "https://support.apple.com/es-co/111872", iphone13Variante, "La página oficial confirma 128 GB y detalla chip, pantalla, cámaras, conectividad, batería, dimensiones y peso."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -646,6 +737,8 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   redmiNote14ProPlus: redmiNote14ProPlus,
   xiaomi14TPro: xiaomi14TPro,
   nothingEarABlack: nothingEarABlack,
+  samsungGalaxyA55: samsungGalaxyA55,
+  appleIphone13: appleIphone13,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -677,6 +770,8 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
   if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
   if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
+  if (n.includes("galaxy a55")) return samsungGalaxyA55;
+  if (n.includes("iphone 13")) return appleIphone13;
   return null;
 }
 
@@ -711,6 +806,10 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return xiaomi14TPro;
     case 301:
       return nothingEarABlack;
+    case 102:
+      return samsungGalaxyA55;
+    case 104:
+      return appleIphone13;
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
@@ -725,6 +824,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
       if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
       if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
+      if (n.includes("galaxy a55")) return samsungGalaxyA55;
+      if (n.includes("iphone 13")) return appleIphone13;
       return null;
     }
   }

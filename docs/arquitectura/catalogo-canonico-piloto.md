@@ -1,4 +1,4 @@
-# Catálogo canónico TecReview — piloto de ocho productos
+# Catálogo canónico TecReview — piloto ampliado
 
 ## Alcance implementado en frontend
 
@@ -35,6 +35,9 @@ Las URLs actuales se conservan como referencias heredadas para no romper la pres
 | `apple-macbook-pro-16-m3-max` | Apple MacBook Pro 16 pulgadas M3 Max | deseados:209 (48 GB/1 TB, 16 CPU/40 GPU; pendiente de validar SKU) |
 | `nothing-ear-2` | Nothing Ear (2) | mock:3 |
 | `sony-wh-1000xm5` | Sony WH-1000XM5 | vendidos:109 |
+| `samsung-galaxy-a55-5g` | Samsung Galaxy A55 5G | vendidos:102 (8 GB RAM; capacidad exacta pendiente entre 128/256 GB) |
+| `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
+| `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -176,3 +179,17 @@ El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galax
 4. Una vez cerrados estos controles, ampliar el mismo estándar a los demás modelos del catálogo (28 modelos únicos identificados en la auditoría), sin duplicar modelos ni mezclar variantes.
 
 Esta actualización documental describe el estado del código integrado en `main`; no modifica datos del catálogo, backend, migraciones SQL ni Supabase.
+
+
+## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
+
+El lote de trabajo amplía la cobertura controlada a **once modelos** (trece variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+
+| Modelo | Ficha V2 | Imagen | Nota de coherencia |
+|---|---|---|---|
+| Samsung Galaxy A55 5G | `parcial` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Samsung Colombia documenta 8/128 GB y 8/256 GB; el registro vendido:102 solo indica 8 GB de RAM, por lo que no se asigna una capacidad a ciegas. |
+| Apple iPhone 13 — 128 GB | `verificado` | CC BY-SA 4.0, autor Kskhh | Ficha técnica oficial Apple y fotografía del modelo; el registro identifica 128 GB. |
+| Xiaomi Redmi Note 14 Pro+ 5G — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigieron datos heredados incorrectos: RAM física 12 GB LPDDR4X, UFS 2.2, batería 5110 mAh, cámara frontal 20 MP y carga 120 W. Se eliminó el benchmark no respaldado y se distingue RAM virtual de RAM física. |
+
+Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
+

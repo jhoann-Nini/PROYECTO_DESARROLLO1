@@ -3,6 +3,7 @@ export interface AtribucionImagenProducto {
   paginaOrigen: string;
   autor: string;
   fuente: string;
+  titulo?: string;
   licencia: string;
   urlLicencia: string;
   cambios: string;
@@ -67,6 +68,7 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     paginaOrigen: "https://www.flickr.com/photos/thebetterday4u/52436931175/",
     autor: "HS You",
     fuente: "Flickr",
+    titulo: "SONY Noise Canceling Headphone WH-1000XM5",
     licencia: "CC BY-ND 2.0",
     urlLicencia: "https://creativecommons.org/licenses/by-nd/2.0/",
     cambios: "Archivo original sin modificaciones; se presenta a menor tamaño en la interfaz.",

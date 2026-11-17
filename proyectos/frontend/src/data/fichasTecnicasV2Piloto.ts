@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del piloto de ocho productos.
+ * Fichas técnicas estructuradas del catálogo: piloto y lotes de ampliación.
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.

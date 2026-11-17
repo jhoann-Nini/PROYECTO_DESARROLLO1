@@ -529,6 +529,63 @@ const redmiNote14ProPlus = crearFicha(
   ],
 );
 
+
+const oneplus13Fuente = "oneplus-13-latam-specs";
+const oneplus13IpFuente = "oneplus-13-ip-rating";
+const oneplus13 = crearFicha(
+  "moviles",
+  "verificado",
+  [
+    { id: "16gb-512gb", modelo: "OnePlus 13", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" },
+    { id: "12gb-256gb", modelo: "OnePlus 13", ram: "12 GB LPDDR5X", almacenamiento: "256 GB UFS 4.0" },
+  ],
+  [
+    atributo("procesador", "Plataforma móvil", "rendimiento", "Qualcomm Snapdragon 8 Elite · CPU Qualcomm Oryon hasta 4,32 GHz", oneplus13Fuente),
+    atributo("gpu", "GPU", "rendimiento", "Adreno 830", oneplus13Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "ProXDR LTPO 4.1 · Ceramic Guard", oneplus13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.82, oneplus13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "3168 × 1440 píxeles (QHD+)", oneplus13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 510, oneplus13Fuente, "ppi"),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", "Dinámica de 1 a 120 Hz", oneplus13Fuente),
+    atributo("brillo_hbm", "Brillo HBM", "pantalla", 1600, oneplus13Fuente, "nits"),
+    atributo("brillo_maximo", "Brillo pico", "pantalla", 4500, oneplus13Fuente, "nits"),
+    atributo("profundidad_color", "Profundidad de color", "pantalla", "10 bits", oneplus13Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 16, oneplus13Fuente, "GB LPDDR5X"),
+    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, oneplus13Fuente, "GB UFS 4.0"),
+    atributo("camara_principal", "Cámara principal", "camaras", 50, oneplus13Fuente, "mpx"),
+    atributo("sensor_principal", "Sensor principal", "camaras", "Sony LYT-808 · OIS · f/1.6", oneplus13Fuente),
+    atributo("camara_teleobjetivo", "Teleobjetivo", "camaras", 50, oneplus13Fuente, "mpx"),
+    atributo("zoom_optico", "Zoom óptico", "camaras", 3, oneplus13Fuente, "x"),
+    atributo("sensor_teleobjetivo", "Sensor teleobjetivo", "camaras", "Sony LYT-600 · OIS · f/2.6", oneplus13Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 50, oneplus13Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 32, oneplus13Fuente, "mpx"),
+    atributo("video_trasero", "Grabación de vídeo trasera", "camaras", "Hasta 8K a 30 fps · 4K hasta 60 fps · Dolby Vision", oneplus13Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 6000, oneplus13Fuente, "mAh"),
+    atributo("carga_cable", "Carga por cable", "bateria", 100, oneplus13Fuente, "W"),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", 50, oneplus13Fuente, "W"),
+    atributo("dimensiones", "Dimensiones según acabado", "diseno", "162,9 × 76,5 mm; grosor 8,5 mm (Arctic Dawn/Black Eclipse) o 8,9 mm (Midnight Ocean)", oneplus13Fuente),
+    atributo("peso", "Peso según acabado", "diseno", "213 g (Arctic Dawn/Black Eclipse) o 210 g (Midnight Ocean)", oneplus13Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 e IP69", oneplus13IpFuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G", oneplus13Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7", oneplus13Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", oneplus13Fuente),
+    atributo("nfc", "NFC", "conectividad", true, oneplus13Fuente),
+    atributo("usb", "Interfaz USB", "conectividad", "USB Type-C 3.2 Gen 1", oneplus13Fuente),
+    atributo("sim", "SIM", "conectividad", "Doble nano-SIM; eSIM depende del operador/región", oneplus13Fuente),
+    atributo("sistema_operativo", "Sistema operativo de lanzamiento", "software", "OxygenOS 15 basado en Android 15", oneplus13Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.82, "in", oneplus13Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", oneplus13Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 6000, "mAh", oneplus13Fuente),
+    metrica("carga_cable", "Carga por cable", "bateria", 100, "W", oneplus13Fuente),
+  ],
+  [
+    fuente(oneplus13Fuente, "OnePlus México — OnePlus 13, especificaciones oficiales", "https://www.oneplus.com/mx/13/specs", "16gb-512gb", "Fuente oficial regional: configuraciones 12/256 y 16/512, plataforma, pantalla, cámaras, batería, carga y conectividad.", "2026-11-17"),
+    fuente(oneplus13IpFuente, "OnePlus — lanzamiento global de OnePlus 13 y OnePlus 13R", "https://www.oneplus.com/global/press/press-release/oneplus-launches-new-flagship-series-oneplus-13-and-oneplus-13r", null, "Comunicado oficial confirma clasificación IP68 e IP69.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -542,6 +599,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   samsungGalaxyA55: galaxyA55,
   appleIphone13_128: iphone13,
   xiaomiRedmiNote14ProPlus12_512: redmiNote14ProPlus,
+  oneplus13_16_512: oneplus13,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -560,6 +618,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
   if (n.includes("nothing ear 2")) return nothingEar2;
@@ -579,6 +638,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   nombre: string,
 ): FichaTecnicaV2 | null {
   switch (id) {
+    case 207:
+      return oneplus13;
     case 107:
       return redmiNote14ProPlus;
     case 102:
@@ -601,6 +662,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
       if (n.includes("galaxy a55")) return galaxyA55;
       if (n.includes("iphone 13") && n.includes("128")) return iphone13;
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;

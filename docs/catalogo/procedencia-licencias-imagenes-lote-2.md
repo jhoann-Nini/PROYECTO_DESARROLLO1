@@ -27,7 +27,7 @@ Este lote incorpora ocho modelos adicionales al catálogo canónico. Dos de ello
 | OnePlus 13 · 16 GB/512 GB | [OnePlus México — especificaciones](https://www.oneplus.com/mx/13/specs) | 16 GB LPDDR5X, 512 GB UFS 4.0, Snapdragon 8 Elite, 6.000 mAh y especificación regional de carga 100 W/50 W |
 | Xiaomi 14T Pro · 12 GB/512 GB | [Xiaomi Colombia — especificaciones](https://www.mi.com/co/product/xiaomi-14t-pro/specs/) | 12 GB LPDDR5X, 512 GB UFS 4.0, Dimensity 9300+, batería típica 5.000 mAh y carga 120 W/50 W |
 | Nothing Ear (a) · Black | [Nothing — Ear (a), selector Black y especificaciones](https://nothing.tech/products/ear-a?Colour=Black) | Acabado Black, transductor de 11 mm, LDAC, ANC de hasta 45 dB, Bluetooth 5.3, autonomía y resistencia |
-| Samsung Galaxy A55 5G · 8 GB/256 GB | [Samsung Colombia — Galaxy A55 5G](https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-lemon-128gb-sm-a556ezylltc/) | 8 GB RAM, 256 GB disponible, Exynos 1480, pantalla, cámaras, batería, IP67 y conectividad |
+| Samsung Galaxy A55 5G · 8 GB/256 GB | [Samsung Colombia](https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-navy-256gb-sm-a556ezkmltc/) · [Newsroom Colombia](https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos) · [Exynos Showcase](https://semiconductor.samsung.com/processor/showcase/smartphone/) | 8 GB RAM, 256 GB, Exynos 1480, pantalla, cámaras, batería, IP67, conectividad y política de actualizaciones |
 | iPhone 13 · 128 GB | [Apple Colombia — iPhone 13](https://support.apple.com/es-co/111872) | 128 GB, A15 Bionic, pantalla, cámaras, conectividad, autonomía y dimensiones |
 
 ## Correcciones de coherencia aplicadas

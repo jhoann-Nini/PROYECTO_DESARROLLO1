@@ -21,7 +21,9 @@ Los identificadores de origen no se reemplazan ni se interpretan como IDs de la 
 
 ## Imágenes
 
-Las URLs actuales se conservan como referencias heredadas para no romper la presentación existente. No se consideran imágenes verificadas del dispositivo. La metadata deja licencia y atribución como nulas hasta que se confirme la imagen exacta, su autoría y sus condiciones de uso.
+La verificación de imagen es independiente de la ficha técnica. Una URL solo se marca como `verificada` cuando coincide exactamente con una entrada de `src/data/atribucionImagenes.ts`, que documenta página de origen, autor, licencia, enlace de licencia y tratamiento. Las imágenes sin registro de atribución permanecen en estado `pendiente`; no se infiere permiso de reutilización a partir de una página oficial o de una URL válida.
+
+En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, Apple iPhone 13 y Xiaomi Redmi Note 14 Pro+ 5G. Lenovo ThinkPad E14 Gen 5 y MacBook Pro 16 M3 Max siguen pendientes de una fotografía reutilizable cuya correspondencia de modelo y variante esté comprobada.
 
 ## Piloto
 

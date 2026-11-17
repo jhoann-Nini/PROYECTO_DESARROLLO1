@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra ocho fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(8);
+  it("registra trece fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(13);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,20 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra las cinco fotografías licenciadas del lote 2", () => {
+    const autores = ATRIBUCIONES_IMAGENES.map((imagen) => imagen.autor);
+    expect(autores).toContain("Maksdroider");
+    expect(autores).toContain("Captainmorlypogi1959");
+    expect(autores).toContain("Petar Milošević");
+
+    const lote2 = ATRIBUCIONES_IMAGENES.filter((imagen) =>
+      ["Maksdroider", "Captainmorlypogi1959", "Petar Milošević"].includes(imagen.autor)
+    );
+    expect(lote2).toHaveLength(5);
+    expect(lote2.every((imagen) => imagen.licencia === "CC BY-SA 4.0")).toBe(true);
+    expect(lote2.every((imagen) => imagen.paginaOrigen.startsWith("https://commons.wikimedia.org/wiki/File:"))).toBe(true);
   });
 
   it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {

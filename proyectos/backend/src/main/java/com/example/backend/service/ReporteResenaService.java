@@ -91,7 +91,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(usuario);
         validarMotivoYDescripcion(request);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (!Boolean.TRUE.equals(resena.getEstado())) {
@@ -183,6 +183,12 @@ public class ReporteResenaService {
 
         ReporteResena reporte = reporteResenaRepository.findWithResenaAndUsuarioByIdReporte(idReporte)
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
+        // Todas las decisiones sobre un reporte serializan también los cambios de su reseña.
+        // El orden de bloqueo es reporte -> reseña, igual que en la resolución por lotes.
+        Resena resenaBloqueada = resenaRepository.findByIdForModeration(reporte.getResena().getIdResena())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Reseña no encontrada con id " + reporte.getResena().getIdResena()));
+        reporte.setResena(resenaBloqueada);
 
         boolean esReportante = reporte.getUsuario().getIdUsuario().equals(actor.getIdUsuario());
         boolean esAutorResena = reporte.getResena().getUsuario().getIdUsuario().equals(actor.getIdUsuario());
@@ -410,7 +416,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
@@ -543,14 +549,15 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        // Bloquear primero todos los reportes y después la reseña. La resolución individual
+        // usa el mismo orden para evitar carreras y reducir el riesgo de interbloqueos.
+        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdForUpdate(idResena);
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes moderar tu propia reseña.");
         }
-
-        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdResenaOrderByFechaCreacionDesc(idResena);
 
         boolean hayPendientes = reportes.stream()
                 .anyMatch(r -> EstadoReporte.PENDIENTE.equals(r.getEstado()));

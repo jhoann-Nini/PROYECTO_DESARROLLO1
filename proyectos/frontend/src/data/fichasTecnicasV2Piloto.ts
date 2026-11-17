@@ -372,7 +372,9 @@ const sonyWh1000Xm5 = crearFicha(
 );
 
 
-const galaxyA55Fuente = "samsung-galaxy-a55-5g";
+const galaxyA55Fuente = "samsung-a55-newsroom-co";
+const galaxyA55SpecsFuente = "samsung-a55-specs-co";
+const galaxyA55ExynosFuente = "samsung-a55-exynos";
 const galaxyA55 = crearFicha(
   "moviles",
   "parcial",
@@ -381,7 +383,7 @@ const galaxyA55 = crearFicha(
     { id: "8gb-256gb", modelo: "Samsung Galaxy A55 5G", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia · configuración de lanzamiento" },
   ],
   [
-    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480 · CPU de ocho núcleos", galaxyA55Fuente),
+    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480 · CPU de ocho núcleos", galaxyA55ExynosFuente),
     atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super AMOLED FHD+", galaxyA55Fuente),
     atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.6, galaxyA55Fuente, "in"),
     atributo("resolucion", "Resolución", "pantalla", "2340 × 1080 píxeles", galaxyA55Fuente),
@@ -419,7 +421,7 @@ const galaxyA55 = crearFicha(
   ],
 );
 
-const iphone13Fuente = "apple-iphone-13";
+const iphone13Fuente = "apple-iphone-13-tech-specs";
 const iphone13Variante = "128gb";
 const iphone13 = crearFicha(
   "moviles",

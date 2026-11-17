@@ -14,10 +14,11 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     FICHAS_TECNICAS_V2_PILOTO.oneplus13,
     FICHAS_TECNICAS_V2_PILOTO.redmiNote14ProPlus,
     FICHAS_TECNICAS_V2_PILOTO.xiaomi14TPro,
+    FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack,
   ];
 
   it("mantiene las cinco fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
-    expect(fichas).toHaveLength(5);
+    expect(fichas).toHaveLength(6);
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.estado_verificacion).toBe("verificado");
@@ -89,17 +90,29 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     ]));
   });
 
+  it("verifica Nothing Ear (a) Black con las especificaciones de Nothing", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack;
+    expect(ficha.variantes[0]).toMatchObject({ id: "black", modelo: "Nothing Ear (a)", color: "Black" });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "cancelacion_ruido", valor: expect.stringContaining("45 dB") }),
+      expect.objectContaining({ clave: "autonomia_sin_anc", valor: expect.stringContaining("42,5 h") }),
+      expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3 · conexión dual" }),
+    ]));
+  });
+
   it("asocia cada ficha a su registro original sin cambiar sus IDs", () => {
     const iphone = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201)!;
     const s25 = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206)!;
     const oneplus = DISPOSITIVOS_DESEADOS.find((item) => item.id === 207)!;
     const redmi = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107)!;
     const xiaomi = ULTIMAS_OFERTAS.find((item) => item.id === 306)!;
+    const earA = ULTIMAS_OFERTAS.find((item) => item.id === 301)!;
 
     expect(normalizarDesdeKimovil(iphone).variantes[0]?.id).toBe("256gb");
     expect(normalizarDesdeKimovil(s25).variantes[0]?.id).toBe("12gb-1tb");
     expect(normalizarDesdeKimovil(oneplus).variantes[0]?.id).toBe("16gb-512gb");
     expect(normalizarDesdeKimovil(redmi).variantes[0]?.id).toBe("8gb-256gb");
     expect(normalizarDesdeKimovil(xiaomi).variantes[0]?.id).toBe("12gb-512gb");
+    expect(normalizarDesdeKimovil(earA).variantes[0]?.id).toBe("black");
   });
 });

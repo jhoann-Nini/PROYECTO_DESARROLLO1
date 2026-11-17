@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de doce modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de catorce modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -242,6 +242,28 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 104, "128gb")],
     variantes: [
       { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
+    ],
+  },
+  {
+    id: "apple-iphone-15-pro-max",
+    nombre: "Apple iPhone 15 Pro Max",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 201, "256gb")],
+    variantes: [{ id: "256gb", nombre: "256 GB", almacenamiento: "256 GB" }],
+  },
+  {
+    id: "samsung-galaxy-s25-ultra",
+    nombre: "Samsung Galaxy S25 Ultra",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 206, "12gb-1tb")],
+    variantes: [
+      { id: "12gb-1tb", nombre: "12 GB RAM · 1 TB", ram: "12 GB", almacenamiento: "1 TB", mercado: "Colombia" },
+      { id: "12gb-512gb", nombre: "12 GB RAM · 512 GB", ram: "12 GB", almacenamiento: "512 GB", mercado: "Colombia" },
+      { id: "12gb-256gb", nombre: "12 GB RAM · 256 GB", ram: "12 GB", almacenamiento: "256 GB", mercado: "Colombia" },
     ],
   },
   {

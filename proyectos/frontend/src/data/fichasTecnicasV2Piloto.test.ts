@@ -36,13 +36,20 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.nothingEar2.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
-    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
   });
 
   it("completa Galaxy A55 5G 8GB/256GB con fuentes oficiales de Samsung Colombia", () => {
     const a55 = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55;
-    expect(a55.variantes[0]).toMatchObject({ id: "8gb-256gb-co", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia" });
+    expect(a55.variantes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "8gb-128gb", ram: "8 GB", almacenamiento: "128 GB" }),
+      expect.objectContaining({ id: "8gb-256gb", ram: "8 GB", almacenamiento: "256 GB" }),
+    ]));
+    expect(a55.estado_verificacion).toBe("parcial");
+    expect(a55.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("el registro del catálogo no identifica cuál") }),
+    ]));
     expect(a55.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "procesador", valor: "Samsung Exynos 1480 · CPU de ocho núcleos" }),
       expect.objectContaining({ clave: "camara_principal", valor: 50, unidad: "mpx" }),
@@ -148,7 +155,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(ipad.variantes[0]?.id).toBe("16gb-1tb");
     expect(mac.variantes[0]?.id).toBe("48gb-1tb");
     expect(sony.fuentes[0]?.url).toContain("sony.com");
-    expect(a55.variantes[0]?.id).toBe("8gb-256gb-co");
+    expect(a55.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone.variantes[0]?.id).toBe("128gb");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);

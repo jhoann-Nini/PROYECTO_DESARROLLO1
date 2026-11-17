@@ -6,6 +6,25 @@ import {
 } from "./mockProductos";
 
 describe("registros comerciales — lote 2", () => {
+  it("reutiliza la imagen licenciada del Galaxy A55 y verifica 8 GB/256 GB", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 102);
+    expect(producto?.especificaciones).toContain("8GB RAM · 256GB");
+    expect(producto?.imagen).toContain("Samsung_Galaxy_A55_5G_2024.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
+  });
+
+  it("reutiliza la imagen licenciada del iPhone 13 y conserva 128 GB", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 104);
+    expect(producto?.nombre).toBe("iPhone 13 (128GB)");
+    expect(producto?.especificaciones).toContain("128GB");
+    expect(producto?.imagen).toContain("IPhone_13.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
+  });
+
   it("corrige Redmi Note 14 Pro+ a la variante colombiana 8 GB/256 GB", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107);
     expect(producto?.especificaciones).toContain("8GB RAM · 256GB");

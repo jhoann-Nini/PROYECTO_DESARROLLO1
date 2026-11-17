@@ -1065,12 +1065,10 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
     descuento: "-28%",
     tendencia: "sube",
     cambioRanking: 3,
-    imagen: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Nothing-Tokyo-2024-04-18_151.jpg/960px-Nothing-Tokyo-2024-04-18_151.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
     tipo: "oferta",
     detalleSpecs: {
       categoriaTipo: "auriculares",
-      benchmarkEtiqueta: "Aislamiento Acústico ANC",
-      benchmarkValor: "-45 dB · Certificación LDAC Hi-Res",
       secciones: [
         {
           icono: "🎧",
@@ -1085,29 +1083,23 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
         {
           icono: "🎙️",
           titulo: "MICRÓFONOS CLEAR VOICE 2.0",
-          descripcion: "3 micrófonos de alta definición por auricular con tecnología de captación de voz clara entrenada con más de 28 millones de ruidos.",
+          descripcion: "3 micrófonos por auricular con Clear Voice Technology.",
         },
         {
           icono: "🔋",
           titulo: "BATERÍA & ESTUCHE ULTRA COMPACTO",
-          descripcion: "Hasta 9.5 horas en auriculares y 42.5 horas totales con el estuche de carga · Carga rápida 10 min = 10 horas de reproducción.",
+          descripcion: "Hasta 9,5 horas en auriculares y 42,5 horas con el estuche sin ANC · hasta 24,5 horas con ANC · carga rápida de 10 min para 10 horas de reproducción.",
         },
         {
           icono: "📡",
           titulo: "CONECTIVIDAD & CÓDEC LDAC",
-          descripcion: "Bluetooth 5.3 · Soporte para códec LDAC de alta fidelidad (24-bit/96kHz) · Doble conexión multipunto simultánea.",
+          descripcion: "Bluetooth 5.3 · códecs AAC, SBC y LDAC · conexión dual simultánea · IP54 auriculares / IPX2 estuche.",
         },
         {
           icono: "⚙️",
           titulo: "NOTHING X APP & CHATGPT",
-          descripcion: "Integración directa con ChatGPT por gestos táctiles · Modo de baja latencia para gaming · Ecualizador de graves Bass Enhance.",
+          descripcion: "Integración con ChatGPT en teléfonos Nothing compatibles · modo de baja latencia · ecualizador Bass Enhance.",
         },
-      ],
-      metricas: [
-        { nombre: "Calidad de Audio & Graves", puntos: 9.4 },
-        { nombre: "Cancelación de Ruido (Smart ANC)", puntos: 9.5 },
-        { nombre: "Autonomía de Batería (42.5h)", puntos: 9.7 },
-        { nombre: "Relación Calidad/Precio", puntos: 9.9 },
       ],
       tiendas: [
         { nombre: "Nothing Store Oficial", precio: 316000, envioGratis: true },

@@ -40,7 +40,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
   });
 
-  it("completa Galaxy A55 5G 8GB/256GB con fuentes oficiales de Samsung Colombia", () => {
+  it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
     const a55 = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55;
     expect(a55.variantes).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "8gb-128gb", ram: "8 GB", almacenamiento: "128 GB" }),
@@ -205,7 +205,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
     expect(normalizarDesdeProducto(ear!).variantes[0]?.id).toBe("transparent-white");
     expect(normalizarDesdeKimovil(sony!).fuentes[0]?.url).toContain("sony.com");
-    expect(normalizarDesdeKimovil(a55!).variantes[0]?.id).toBe("8gb-256gb-co");
+    expect(normalizarDesdeKimovil(a55!).variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(normalizarDesdeKimovil(iphone!).variantes[0]?.id).toBe("128gb");
   });
 });

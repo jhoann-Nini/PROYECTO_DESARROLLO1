@@ -6,6 +6,7 @@ import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 import { sanearPrecioCOP } from "@/data/precios";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 
 interface ProductCardProps {
   producto: Producto;
@@ -78,6 +79,7 @@ export default function ProductCard({
           </span>
         )}
       </div>
+      <AtribucionImagenProducto src={producto.imagen} className="px-3 py-1" />
 
       {/* Contenido descriptivo del producto */}
       <div className="flex flex-1 flex-col p-5">

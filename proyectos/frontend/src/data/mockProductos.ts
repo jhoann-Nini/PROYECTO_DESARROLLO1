@@ -330,12 +330,6 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
           descripcion: "Certificación IP68 · 5G · Wi-Fi 6/6E · Bluetooth 5.4 · NFC.",
         },
       ],
-      metricas: [
-        { nombre: "Rendimiento (CPU / GPU)", puntos: 9.0 },
-        { nombre: "Fotografía y Cámaras 200MP", puntos: 9.5 },
-        { nombre: "Pantalla Curva OLED", puntos: 9.3 },
-        { nombre: "Batería y Autonomía (5110mAh)", puntos: 9.8 },
-      ],
       tiendas: [
         { nombre: "Amazon Prime", precio: 1276000, envioGratis: true },
         { nombre: "AliExpress Plaza", precio: 1196000, envioGratis: true },
@@ -555,10 +549,6 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
           titulo: "PANTALLA SUPER RETINA XDR PROMOTION",
           descripcion: "6.7'' OLED con ProMotion 120Hz adaptativo · Dynamic Island · 2000 nits pico exterior.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento Global", puntos: 9.8 },
-        { nombre: "Cámaras y Zoom 5X", puntos: 9.7 },
       ],
       tiendas: [
         { nombre: "Apple Colombia Store", precio: 5190000, envioGratis: true },
@@ -784,12 +774,6 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
           descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · Android 15 con One UI 7 · 7 generaciones de actualizaciones del sistema y 7 años de seguridad.",
         },
       ],
-      metricas: [
-        { nombre: "Rendimiento y Potencia", puntos: 9.9 },
-        { nombre: "Fotografía y Zoom 100x", puntos: 9.9 },
-        { nombre: "Pantalla Dynamic AMOLED 2X", puntos: 9.9 },
-        { nombre: "Batería y Autonomía", puntos: 9.3 },
-      ],
       tiendas: [
         { nombre: "Samsung Official Store", precio: 5196000, envioGratis: true },
         { nombre: "Amazon Prime", precio: 5076000, envioGratis: true },
@@ -842,12 +826,6 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
           titulo: "CONECTIVIDAD & RESISTENCIA",
           descripcion: "Wi-Fi 7 · Bluetooth 5.4 · NFC · USB 3.2 Gen 1 · OxygenOS 15 basado en Android 15.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento Snapdragon 8 Elite", puntos: 9.8 },
-        { nombre: "Fotografía Hasselblad Gen 5", puntos: 9.7 },
-        { nombre: "Pantalla Oriental OLED 2K", puntos: 9.8 },
-        { nombre: "Batería y Autonomía (6000mAh)", puntos: 9.9 },
       ],
       tiendas: [
         { nombre: "OnePlus Oficial", precio: 3596000, envioGratis: true },
@@ -1436,12 +1414,6 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
           titulo: "CONECTIVIDAD & RESISTENCIA IP68",
           descripcion: "5G · Wi-Fi 6 · Bluetooth 5.4 · NFC · IP68 · Xiaomi HyperOS.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento Dimensity 9300+", puntos: 9.8 },
-        { nombre: "Fotografía y Óptica Leica", puntos: 9.6 },
-        { nombre: "Pantalla AMOLED 144Hz", puntos: 9.7 },
-        { nombre: "Batería y Carga 120W+50W", puntos: 9.5 },
       ],
       tiendas: [
         { nombre: "Xiaomi Store Oficial", precio: 2396000, envioGratis: true },

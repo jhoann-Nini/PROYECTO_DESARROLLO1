@@ -81,6 +81,16 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("normaliza el registro OnePlus 13 y elimina el nombre de modelo inexistente y el benchmark no respaldado", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 207);
+    expect(producto?.nombre).toBe("OnePlus 13 5G");
+    expect(producto?.especificaciones).toContain("16GB RAM · 512GB");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("50MP teleobjetivo") && seccion.descripcion.includes("50MP ultra gran angular"))).toBe(true);
+  });
+
   it("corrige Redmi Note 14 Pro+ a 12GB físicos/512GB y elimina datos técnicos falsos", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107);
     expect(producto?.especificaciones).toContain("12GB RAM física · 512GB");

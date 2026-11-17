@@ -376,14 +376,11 @@ const galaxyA55Fuente = "samsung-galaxy-a55-5g";
 const galaxyA55Variante = "8gb-256gb-co";
 const galaxyA55 = crearFicha(
   "moviles",
-  "verificado",
-  [{
-    id: galaxyA55Variante,
-    modelo: "Samsung Galaxy A55 5G",
-    ram: "8 GB",
-    almacenamiento: "256 GB",
-    mercado: "Colombia",
-  }],
+  "parcial",
+  [
+    { id: "8gb-128gb", modelo: "Samsung Galaxy A55 5G", ram: "8 GB", almacenamiento: "128 GB", mercado: "Colombia · SKU SM-A556ELBLLTC" },
+    { id: "8gb-256gb", modelo: "Samsung Galaxy A55 5G", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia · configuración de lanzamiento" },
+  ],
   [
     atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480 · CPU de ocho núcleos", galaxyA55Fuente),
     atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super AMOLED FHD+", galaxyA55Fuente),
@@ -391,7 +388,7 @@ const galaxyA55 = crearFicha(
     atributo("resolucion", "Resolución", "pantalla", "2340 × 1080 píxeles", galaxyA55Fuente),
     atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, galaxyA55Fuente, "Hz"),
     atributo("ram", "Memoria RAM", "memoria", 8, galaxyA55Fuente, "GB"),
-    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, galaxyA55Fuente, "GB"),
+    atributo("almacenamiento", "Capacidades documentadas", "almacenamiento", "128 GB o 256 GB según SKU/mercado; el registro del catálogo no identifica cuál", galaxyA55Fuente),
     atributo("almacenamiento_expandible", "Expansión por microSD", "almacenamiento", "Hasta 1 TB", galaxyA55Fuente),
     atributo("camara_principal", "Cámara principal", "camaras", 50, galaxyA55Fuente, "mpx"),
     atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, galaxyA55Fuente, "mpx"),
@@ -417,9 +414,9 @@ const galaxyA55 = crearFicha(
     metrica("peso", "Peso", "diseno", 213, "g", galaxyA55Fuente),
   ],
   [
-    fuente("samsung-a55-newsroom-co", "Samsung Newsroom Colombia — Galaxy A55 5G, lanzamiento y especificaciones", "https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos", galaxyA55Variante, "Fuente regional oficial: variante de lanzamiento 8 GB + 256 GB, pantalla, cámaras, batería, Android 14/One UI 6.1 e IP67.", "2026-11-17"),
-    fuente("samsung-a55-specs-co", "Samsung Colombia — Galaxy A55 5G, especificaciones del modelo SM-A556", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-iceblue-128gb-sm-a556elblltc/", galaxyA55Variante, "Fuente oficial para dimensiones, peso, pantalla, cámaras, conectividad, batería y USB. La página de producto enlazada corresponde a una variante 8 GB/128 GB; no se usa para determinar la capacidad de la variante de catálogo.", "2026-11-17"),
-    fuente("samsung-a55-exynos", "Samsung Electronics — 2024 Half-year Business Report", "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2024_Half_Interim_Report.pdf", galaxyA55Variante, "Documento corporativo identifica Exynos 1480 y plataforma Android 14/One UI 6.1.", "2026-11-17"),
+    fuente("samsung-a55-newsroom-co", "Samsung Newsroom Colombia — Galaxy A55 5G, lanzamiento y especificaciones", "https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos", "8gb-256gb", "Fuente regional oficial: variante de lanzamiento 8 GB + 256 GB, pantalla, cámaras, batería, Android 14/One UI 6.1 e IP67.", "2026-11-17"),
+    fuente("samsung-a55-specs-co", "Samsung Colombia — Galaxy A55 5G, especificaciones del modelo SM-A556", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-iceblue-128gb-sm-a556elblltc/", "8gb-128gb", "Fuente oficial para dimensiones, peso, pantalla, cámaras, conectividad, batería y USB. La página de producto enlazada corresponde a una variante 8 GB/128 GB; no se usa para determinar la capacidad de la variante de catálogo.", "2026-11-17"),
+    fuente("samsung-a55-exynos", "Samsung Electronics — 2024 Half-year Business Report", "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2024_Half_Interim_Report.pdf", null, "Documento corporativo identifica Exynos 1480 y plataforma Android 14/One UI 6.1.", "2026-11-17"),
   ],
 );
 

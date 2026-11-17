@@ -768,7 +768,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB LPDDR5X · 512GB UFS 4.0.",
+          descripcion: "16GB RAM LPDDR5X · 1TB Almacenamiento interno UFS 4.0.",
         },
         {
           icono: "📸",
@@ -786,7 +786,12 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
           descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · One UI 7 con 7 años de actualizaciones.",
         },
       ],
-
+      metricas: [
+        { nombre: "Rendimiento y Potencia", puntos: 9.9 },
+        { nombre: "Fotografía y Zoom 100x", puntos: 9.9 },
+        { nombre: "Pantalla Dynamic AMOLED 2X", puntos: 9.9 },
+        { nombre: "Batería y Autonomía", puntos: 9.3 },
+      ],
       tiendas: [
         { nombre: "Samsung Official Store", precio: 5196000, envioGratis: true },
         { nombre: "Amazon Prime", precio: 5076000, envioGratis: true },

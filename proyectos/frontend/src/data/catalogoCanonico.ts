@@ -3,6 +3,7 @@ import type {
   DispositivoKimovil,
   Producto,
 } from "@/types/producto";
+import { obtenerCreditoImagenProducto } from "./creditosImagenes";
 import {
   DISPOSITIVOS_DESEADOS,
   DISPOSITIVOS_VENDIDOS,
@@ -39,7 +40,7 @@ export interface VarianteProductoCanonico {
   pantalla?: string | null;
 }
 
-export type EstadoImagenCanonica = "pendiente" | "sin_imagen";
+export type EstadoImagenCanonica = "pendiente" | "verificada" | "sin_imagen";
 
 export interface ImagenProductoCanonico {
   url: string | null;
@@ -47,6 +48,9 @@ export interface ImagenProductoCanonico {
   referenciaOrigen: string;
   licencia: string | null;
   atribucion: string | null;
+  paginaFuente: string | null;
+  urlLicencia: string | null;
+  cambios: string | null;
   estadoVerificacion: EstadoImagenCanonica;
 }
 
@@ -248,14 +252,18 @@ function imagenDeRegistro(
     }
   }
 
+  const credito = obtenerCreditoImagenProducto(url);
+
   return {
     url,
     proveedor,
     referenciaOrigen: `${referenciaOrigen.coleccion}:${referenciaOrigen.idRegistro}`,
-    // No se atribuye una licencia ni autoría sin metadatos de la imagen concreta.
-    licencia: null,
-    atribucion: null,
-    estadoVerificacion: url ? "pendiente" : "sin_imagen",
+    licencia: credito?.licencia ?? null,
+    atribucion: credito?.autor ?? null,
+    paginaFuente: credito?.paginaFuente ?? null,
+    urlLicencia: credito?.urlLicencia ?? null,
+    cambios: credito?.cambios ?? null,
+    estadoVerificacion: !url ? "sin_imagen" : credito ? "verificada" : "pendiente",
   };
 }
 
@@ -288,6 +296,9 @@ export function obtenerProductoCanonico(
         referenciaOrigen: "sin_referencia",
         licencia: null,
         atribucion: null,
+        paginaFuente: null,
+        urlLicencia: null,
+        cambios: null,
         estadoVerificacion: "sin_imagen" as const,
       };
 

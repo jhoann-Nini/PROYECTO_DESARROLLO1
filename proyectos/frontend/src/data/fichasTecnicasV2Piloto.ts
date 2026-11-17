@@ -815,15 +815,6 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
-  if (n.includes("iphone 15 pro max")) return iphone15ProMax;
-  if (n.includes("s25 ultra")) return samsungGalaxyS25Ultra;
-  if (n.includes("oneplus 13")) return oneplus13;
-  if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
-  if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
-  if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
-  if (n.includes("galaxy a55")) return samsungGalaxyA55;
-  if (n.includes("iphone 13")) return appleIphone13;
-  if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
   return null;
 }
 

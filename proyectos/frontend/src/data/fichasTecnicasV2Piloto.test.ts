@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(13); // Samsung S24 tiene dos fichas; A55 y OnePlus incluyen variantes en una misma ficha.
+    expect(fichas).toHaveLength(15); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -40,6 +40,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.xiaomiRedmiNote14ProPlus12_512.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.oneplus13_16_512.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone15ProMax256.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS25Ultra12_1tb.estado_verificacion).toBe("verificado");
   });
 
   it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
@@ -72,6 +74,34 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("verifica iPhone 15 Pro Max 256GB con ficha oficial Apple Colombia", () => {
+    const iphone = FICHAS_TECNICAS_V2_PILOTO.appleIphone15ProMax256;
+    expect(iphone.variantes[0]).toMatchObject({ id: "256gb", almacenamiento: "256 GB" });
+    expect(iphone.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("A17 Pro") }),
+      expect.objectContaining({ clave: "camara_principal", valor: 48 }),
+      expect.objectContaining({ clave: "teleobjetivo_5x", valor: 12 }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 29 }),
+      expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
+    ]));
+    expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-co/111828");
+  });
+
+  it("verifica Galaxy S25 Ultra 12GB/1TB con Samsung Colombia", () => {
+    const s25 = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS25Ultra12_1tb;
+    expect(s25.variantes[0]).toMatchObject({ id: "12gb-1tb", ram: "12 GB", almacenamiento: "1 TB" });
+    expect(s25.variantes).toHaveLength(3);
+    expect(s25.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Snapdragon 8 Elite") }),
+      expect.objectContaining({ clave: "ram", valor: 12 }),
+      expect.objectContaining({ clave: "almacenamiento", valor: 1 }),
+      expect.objectContaining({ clave: "camara_principal", valor: 200 }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 5000 }),
+      expect.objectContaining({ clave: "resistencia", valor: "IP68" }),
+    ]));
+    expect(s25.fuentes.map((f) => f.url)).toContain("https://www.samsung.com/co/smartphones/galaxy-s25-ultra/buy/?modelCode=SM-S938BZTULTC");
   });
 
   it("verifica OnePlus 13 16GB/512GB con especificaciones oficiales", () => {
@@ -183,6 +213,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     const iphone = normalizarDesdeProducto({ ...base, idProducto: 907, nombre: "Apple iPhone 13 (128GB)" });
     const redmi = normalizarDesdeProducto({ ...base, idProducto: 908, nombre: "Xiaomi Redmi Note 14 Pro+ 5G" });
     const oneplus = normalizarDesdeProducto({ ...base, idProducto: 909, nombre: "OnePlus 13 5G" });
+    const iphone15 = normalizarDesdeProducto({ ...base, idProducto: 910, nombre: "iPhone 15 Pro Max (256GB)" });
+    const s25 = normalizarDesdeProducto({ ...base, idProducto: 911, nombre: "Samsung Galaxy S25 Ultra" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -197,6 +229,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(iphone.variantes[0]?.id).toBe("128gb");
     expect(redmi.variantes[0]?.id).toBe("12gb-512gb-co");
     expect(oneplus.variantes[0]?.id).toBe("16gb-512gb");
+    expect(iphone15.variantes[0]?.id).toBe("256gb");
+    expect(s25.variantes[0]?.id).toBe("12gb-1tb");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -242,6 +276,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     const iphone = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 104);
     const redmi = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 107);
     const oneplus = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 207);
+    const iphone15 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 201);
+    const s25 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 206);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
@@ -251,5 +287,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(iphone!).variantes[0]?.id).toBe("128gb");
     expect(normalizarDesdeKimovil(redmi!).variantes[0]?.id).toBe("12gb-512gb-co");
     expect(normalizarDesdeKimovil(oneplus!).variantes[0]?.id).toBe("16gb-512gb");
+    expect(normalizarDesdeKimovil(iphone15!).variantes[0]?.id).toBe("256gb");
+    expect(normalizarDesdeKimovil(s25!).variantes[0]?.id).toBe("12gb-1tb");
   });
 });

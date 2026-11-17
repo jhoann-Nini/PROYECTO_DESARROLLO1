@@ -186,7 +186,7 @@ Esta actualización documental describe el estado del código integrado en `main
 
 ## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
 
-El lote de trabajo amplía la cobertura controlada a **doce modelos** (catorce variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+El lote de trabajo amplía la cobertura controlada a **doce modelos** (quince variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
 
 | Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|

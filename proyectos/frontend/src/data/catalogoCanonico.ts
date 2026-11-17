@@ -48,6 +48,7 @@ export interface ImagenProductoCanonico {
   referenciaOrigen: string;
   paginaOrigen: string | null;
   autor: string | null;
+  fuente: string | null;
   licencia: string | null;
   licenciaUrl: string | null;
   atribucion: string | null;
@@ -261,10 +262,11 @@ function imagenDeRegistro(
     referenciaOrigen: `${referenciaOrigen.coleccion}:${referenciaOrigen.idRegistro}`,
     paginaOrigen: atribucion?.paginaOrigen ?? null,
     autor: atribucion?.autor ?? null,
+    fuente: atribucion?.fuente ?? null,
     licencia: atribucion?.licencia ?? null,
     licenciaUrl: atribucion?.urlLicencia ?? null,
     atribucion: atribucion
-      ? `${atribucion.autor} · Wikimedia Commons · ${atribucion.licencia}`
+      ? `${atribucion.autor} · ${atribucion.fuente} · ${atribucion.licencia}`
       : null,
     cambios: atribucion?.cambios ?? null,
     estadoVerificacion: atribucion ? "verificada" : url ? "pendiente" : "sin_imagen",
@@ -300,6 +302,7 @@ export function obtenerProductoCanonico(
         referenciaOrigen: "sin_referencia",
         paginaOrigen: null,
         autor: null,
+        fuente: null,
         licencia: null,
         licenciaUrl: null,
         atribucion: null,

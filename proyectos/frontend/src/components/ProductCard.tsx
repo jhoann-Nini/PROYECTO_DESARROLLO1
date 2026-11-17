@@ -49,7 +49,7 @@ export default function ProductCard({
             src={producto.imagen!}
             alt={`Fotografía de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
-            className={`h-full w-full object-contain transition-transform duration-300 ${imagenSinDerivados ? "" : "group-hover:scale-105"}`}
+            className={`h-full w-full object-contain ${imagenSinDerivados ? "" : "transition-transform duration-300 group-hover:scale-105"}`}
             loading="lazy"
           />
         ) : (

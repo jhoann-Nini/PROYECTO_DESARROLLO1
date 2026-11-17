@@ -418,7 +418,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-25%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thehelpfulbuyer.com/assets/products/xm5.jpg",
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "auriculares",
@@ -1470,7 +1470,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 1,
     nombreCategoria: "Móviles",
     nombreMarca: "Nothing",
-    imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/37/Nothing-Design-Event-Tokyo-2024-07-05_028.jpg",
     precioReferencia: 1516000,
     estado: true,
     caracteristicas: {

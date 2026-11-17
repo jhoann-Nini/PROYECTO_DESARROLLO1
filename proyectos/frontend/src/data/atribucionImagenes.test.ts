@@ -5,14 +5,15 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra cuatro fotografías con procedencia y licencia CC BY-SA 4.0", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(4);
+  it("registra seis fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(6);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
-      expect(imagen.urlImagen).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
-      expect(imagen.paginaOrigen).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+      expect(imagen.urlImagen).toMatch(/^https:\/\//);
+      expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
+      expect(imagen.fuente.trim()).not.toBe("");
       expect(imagen.autor.trim()).not.toBe("");
-      expect(imagen.licencia).toBe("CC BY-SA 4.0");
-      expect(imagen.urlLicencia).toBe("https://creativecommons.org/licenses/by-sa/4.0/");
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(imagen.licencia);
+      expect(imagen.urlLicencia).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
       expect(imagen.cambios.trim()).not.toBe("");
     }
   });
@@ -21,6 +22,19 @@ describe("atribuciones de imágenes del catálogo", () => {
     expect(obtenerAtribucionImagen(ATRIBUCIONES_IMAGENES[0].urlImagen)?.autor).toBe("Dinkun Chen");
     expect(obtenerAtribucionImagen("https://images.unsplash.com/foto-generica")).toBeNull();
     expect(obtenerAtribucionImagen(null)).toBeNull();
+  });
+
+  it("registra Nothing Phone (2a) Special Edition con CC BY 4.0", () => {
+    const special = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "RuinDig/Yuki Uchida");
+    expect(special?.licencia).toBe("CC BY 4.0");
+    expect(special?.nota).toContain("no acredita");
+  });
+
+  it("mantiene intacta la fotografía Sony bajo CC BY-ND 2.0", () => {
+    const sony = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.fuente === "Flickr");
+    expect(sony?.licencia).toBe("CC BY-ND 2.0");
+    expect(sony?.titulo).toBe("SONY Noise Canceling Headphone WH-1000XM5");
+    expect(sony?.cambios).toContain("sin modificaciones");
   });
 
   it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {

@@ -94,6 +94,17 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía de un iPhone 13 blanco; no verifica por sí sola la capacidad de 128 GB.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:OnePlus_13_back.jpg",
+    autor: "Maksdroider",
+    fuente: "Wikimedia Commons",
+    titulo: "OnePlus 13 back.jpg",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Vista trasera del OnePlus 13 en acabado Black Eclipse; el registro no fija color y la imagen se utiliza como representación del modelo.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

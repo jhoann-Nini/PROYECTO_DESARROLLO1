@@ -26,6 +26,25 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     }
   });
 
+  it("solo marca verificadas las configuraciones respaldadas por fuentes oficiales", () => {
+    expect(FICHAS_TECNICAS_V2_PILOTO.nothingPhone2aSpecialEdition.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS24Ultra256.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS24Ultra512.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.oneplusPad2.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.appleIpadPro11M4.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.nothingEar2.estado_verificacion).toBe("parcial");
+    expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
+  });
+
+  it("conserva el país real del MTM Lenovo y no confunde EET con un país", () => {
+    expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.variantes[0]).toMatchObject({
+      sku: "21JK0005RI",
+      mercado: "Rumania (región EET)",
+    });
+  });
+
   it("asocia las fichas V2 a los cuatro productos mock", () => {
     const ids = [1, 3, 5, 6];
     const productos = PRODUCTOS_MOCK.filter((producto) => ids.includes(producto.idProducto));

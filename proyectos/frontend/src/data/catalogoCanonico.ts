@@ -230,7 +230,7 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
     nombre: "Redmi Note 14 Pro+ 5G",
     marca: "Xiaomi",
     categoria: "moviles",
-    estadoVerificacion: "pendiente",
+    estadoVerificacion: "verificado",
     referencias: [referencia("vendidos", 107, "8gb-256gb")],
     variantes: [{
       id: "8gb-256gb",
@@ -245,7 +245,7 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
     nombre: "Apple iPhone 15 Pro Max",
     marca: "Apple",
     categoria: "moviles",
-    estadoVerificacion: "pendiente",
+    estadoVerificacion: "verificado",
     referencias: [referencia("deseados", 201, "256gb")],
     variantes: [{
       id: "256gb",
@@ -259,7 +259,7 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
     categoria: "moviles",
-    estadoVerificacion: "pendiente",
+    estadoVerificacion: "verificado",
     referencias: [referencia("deseados", 206, "12gb-1tb")],
     variantes: [{
       id: "12gb-1tb",
@@ -275,7 +275,7 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
     nombre: "OnePlus 13",
     marca: "OnePlus",
     categoria: "moviles",
-    estadoVerificacion: "pendiente",
+    estadoVerificacion: "verificado",
     referencias: [referencia("deseados", 207, "16gb-512gb")],
     variantes: [{
       id: "16gb-512gb",
@@ -289,7 +289,7 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
     nombre: "Xiaomi 14T Pro",
     marca: "Xiaomi",
     categoria: "moviles",
-    estadoVerificacion: "pendiente",
+    estadoVerificacion: "verificado",
     referencias: [referencia("ofertas", 306, "12gb-512gb")],
     variantes: [{
       id: "12gb-512gb",

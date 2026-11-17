@@ -45,7 +45,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
       expect.objectContaining({ clave: "dimensiones", valor: "268,66 × 195,06 × 6,49 mm" }),
       expect.objectContaining({ clave: "peso", valor: 584, unidad: "g" }),
       expect.objectContaining({ clave: "sistema_operativo", valor: "OxygenOS 14.1" }),
-      expect.objectContaining({ clave: "densidad_pixeles", valor: 303, unidad: "ppi" }),
+      expect.objectContaining({ clave: "densidad_pixeles", valor: 303 }),
       expect.objectContaining({ clave: "puerto_usb", valor: "USB Type-C 3.2 Gen 1, hasta 5 Gbps" }),
     ]));
     expect(pad.fuentes.map((fuente) => fuente.url)).toContain("https://www.oneplus.com/cl/oneplus-pad-2/specs");

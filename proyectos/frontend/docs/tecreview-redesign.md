@@ -213,11 +213,17 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   datos; las celdas ausentes muestran «Sin dato». No se usa una plantilla fija
   de móviles ni datos simulados. Reglas y formatos:
   [`comparador-filas-por-categoria.md`](comparador-filas-por-categoria.md).
-- Favoritos usa `localStorage` con la clave `tecreview:favoritos`, normaliza
-  ids enteros positivos, evita duplicados y admite hasta 100 productos. Se
-  sincroniza entre pestañas con `storage` y dentro de la misma pestaña con el
-  evento `tecreview:favoritos:cambio`. No requiere sesión ni backend y no se
-  sincroniza entre dispositivos.
+- Favoritos exige una sesión activa de Supabase: sin sesión no se hidratan ni
+  se escriben favoritos y el botón abre `AuthModal`. Con sesión, se guardan por
+  cuenta en `localStorage` con `tecreview:favoritos:<idSesion>`, se normalizan
+  ids enteros positivos, se evitan duplicados y se admiten hasta 100 productos.
+  La clave anónima histórica `tecreview:favoritos` se elimina. Se sincroniza
+  entre pestañas con `storage` y dentro de la misma pestaña con el evento
+  `tecreview:favoritos:cambio`; el botón anuncia cuando la lista está llena. No
+  se sincroniza entre dispositivos y el ranking de «más deseados» se presenta
+  como favoritos vinculados a una cuenta, sin alimentarse con la lista local.
+  Detalle y propuesta de sincronización:
+  [`favoritos-revision.md`](favoritos-revision.md).
 - `/favoritos` cruza los ids guardados con el catálogo real, muestra los
   productos disponibles y avisa cuántos ya no aparecen; no inventa datos.
 - El tema se persiste en `tecreview:tema`; tampoco se sincroniza entre
@@ -459,7 +465,7 @@ aplicación rota.
 - [x] `/resenas` lista reseñas reales, permite buscar, filtrar por producto y ordenar por fecha; publicar exige sesión.
 - [x] Las estrellas de `/resenas` salen de rankings o `valoracion-stats`; no se derivan de una reseña.
 - [x] `/blog` y `/blog/[slug]` sirven cuatro artículos estáticos, sin autores, métricas ni datos inventados.
-- [x] `/favoritos` persiste en `tecreview:favoritos`, permite quitar y vaciar, y se sincroniza dentro de la pestaña y entre pestañas.
+- [x] `/favoritos` exige sesión, persiste por cuenta en `localStorage`, permite quitar y vaciar, y se sincroniza dentro de la pestaña y entre pestañas.
 - [x] `/favoritos` avisa de los ids guardados que ya no aparecen en el catálogo real.
 - [x] `/perfil` usa la sesión de Supabase y `/api/usuarios/me`, muestra rol, fecha, estado y reseñas propias, y permite cerrar sesión.
 - [x] Sin sesión, `/perfil` ofrece `AuthModal`; con rol administrador abre el panel.
@@ -477,8 +483,9 @@ aplicación rota.
 
 ### Desviaciones registradas del Bloque F
 
-1. Favoritos es local y admite hasta 100 ids; no se sincroniza entre
-   dispositivos ni se asocia a la cuenta.
+1. Favoritos es local por cuenta autenticada (`tecreview:favoritos:<idSesion>`)
+   y admite hasta 100 ids; no se sincroniza entre dispositivos. Sin sesión no
+   se hidrata ni se guarda nada y la clave anónima histórica se elimina.
 2. El tema también es local; no se sincroniza entre dispositivos.
 3. El blog es contenido estático en el repositorio. No hay CMS, autores ni
    métricas de lectura inventadas.
@@ -923,6 +930,10 @@ aplicación rota.
    ajustables con datos reales.
 8. 404 del detalle: resuelto con `notFound()` en el Server Component. La doble
    consulta del producto queda como deuda técnica aceptada.
+9. Favoritos entre dispositivos: evaluado en
+   [`favoritos-revision.md`](favoritos-revision.md); requiere aprobación para
+   crear tabla, entidad JPA y endpoints. El flujo actual exige sesión y usa una
+   caché local por cuenta; no hay favoritos anónimos.
 
 ---
 

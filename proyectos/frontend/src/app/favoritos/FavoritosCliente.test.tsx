@@ -11,6 +11,7 @@ import type {
   CategoriaResponse,
   MarcaResponse,
   Producto,
+  UsuarioSesion,
 } from "@/types/producto";
 
 vi.mock("@/services/api", async (importOriginal) => {
@@ -29,14 +30,72 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
 }));
 
+const sesionMock = vi.hoisted(() => ({
+  usuario: null as UsuarioSesion | null,
+  cargando: false,
+  error: null as string | null,
+  establecerUsuario: vi.fn(),
+  limpiarError: vi.fn(),
+  cerrarSesion: vi.fn(),
+  reintentar: vi.fn(),
+}));
+
+vi.mock("@/hooks/useSesionTecReview", () => ({
+  useSesionTecReview: () => sesionMock,
+}));
+
+vi.mock("@/components/AuthModal", () => ({
+  default: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div role="dialog" aria-label="Autenticación" /> : null,
+}));
+
+const authMock = vi.hoisted(() => ({
+  sesion: { user: { id: "user-1" } } as { user: { id: string } } | null,
+  observadores: [] as Array<
+    (evento: string, sesion: { user: { id: string } } | null) => void
+  >,
+  unsubscribe: vi.fn(),
+}));
+
+vi.mock("@/lib/supabase/client", () => ({
+  createClient: () => ({
+    auth: {
+      getSession: async () => ({
+        data: { session: authMock.sesion },
+        error: null,
+      }),
+      onAuthStateChange: (
+        callback: (
+          evento: string,
+          sesion: { user: { id: string } } | null,
+        ) => void,
+      ) => {
+        authMock.observadores.push(callback);
+        return {
+          data: { subscription: { unsubscribe: authMock.unsubscribe } },
+        };
+      },
+    },
+  }),
+}));
+
 import {
   ApiError,
   obtenerCategorias,
   obtenerMarcas,
   obtenerProductos,
 } from "@/services/api";
-import { CLAVE_FAVORITOS } from "@/data/favoritos";
+import { CLAVE_FAVORITOS, claveFavoritos } from "@/data/favoritos";
 import FavoritosCliente from "./FavoritosCliente";
+
+const CLAVE_USUARIO = claveFavoritos("user-1");
+
+const USUARIO: UsuarioSesion = {
+  id: "user-1",
+  nombre: "Ana Torres",
+  usuario: "ana",
+  email: "ana@tecreview.com",
+};
 
 const mockProductos = vi.mocked(obtenerProductos);
 const mockCategorias = vi.mocked(obtenerCategorias);
@@ -87,6 +146,11 @@ describe("FavoritosCliente", () => {
     localStorage.clear();
     vi.clearAllMocks();
     configurarExito();
+    sesionMock.usuario = USUARIO;
+    sesionMock.cargando = false;
+    sesionMock.error = null;
+    authMock.sesion = { user: { id: "user-1" } };
+    authMock.observadores.length = 0;
   });
 
   afterEach(() => {
@@ -113,8 +177,49 @@ describe("FavoritosCliente", () => {
     ).toBeDefined();
   });
 
+  it("exige sesión y aclara que los favoritos no se sincronizan entre dispositivos", async () => {
+    render(<FavoritosCliente />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Aún no tienes productos favoritos."),
+      ).toBeDefined();
+    });
+
+    expect(
+      screen.getByText(
+        /solo puedes ver y administrar tus favoritos con la sesión iniciada/i,
+      ),
+    ).toBeDefined();
+    expect(
+      screen.getByText(/no se sincronizan entre dispositivos/i),
+    ).toBeDefined();
+  });
+
+  it("no muestra favoritos sin sesión y no consulta el catálogo", async () => {
+    sesionMock.usuario = null;
+    authMock.sesion = null;
+    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([2]));
+
+    render(<FavoritosCliente />);
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Inicia sesión para ver tus favoritos",
+      }),
+    ).toBeDefined();
+    expect(screen.queryByText("iPhone 16")).toBeNull();
+    expect(mockProductos).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(localStorage.getItem(CLAVE_FAVORITOS)).toBeNull();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+    expect(screen.getByRole("dialog")).toBeDefined();
+  });
+
   it("muestra solo los productos guardados y conserva el orden", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([2, 1]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([2, 1]));
 
     render(<FavoritosCliente />);
 
@@ -131,7 +236,7 @@ describe("FavoritosCliente", () => {
   });
 
   it("permite quitar un favorito con el corazón de la tarjeta", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([1]));
 
     render(<FavoritosCliente />);
 
@@ -150,11 +255,11 @@ describe("FavoritosCliente", () => {
         screen.getByText("Aún no tienes productos favoritos."),
       ).toBeDefined();
     });
-    expect(localStorage.getItem(CLAVE_FAVORITOS)).toBeNull();
+    expect(localStorage.getItem(CLAVE_USUARIO)).toBeNull();
   });
 
   it("vacía la lista completa", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1, 2]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([1, 2]));
 
     render(<FavoritosCliente />);
 
@@ -175,7 +280,7 @@ describe("FavoritosCliente", () => {
   });
 
   it("filtra los favoritos por categoría", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1, 4]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([1, 4]));
 
     render(<FavoritosCliente />);
 
@@ -192,7 +297,7 @@ describe("FavoritosCliente", () => {
   });
 
   it("ordena los favoritos por precio sin cambiar la selección guardada", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([4, 1, 2]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([4, 1, 2]));
 
     render(<FavoritosCliente />);
 
@@ -210,13 +315,13 @@ describe("FavoritosCliente", () => {
       expect.stringContaining("iPhone 16"),
       expect.stringContaining("iPad Air"),
     ]);
-    expect(JSON.parse(localStorage.getItem(CLAVE_FAVORITOS) ?? "[]")).toEqual([
+    expect(JSON.parse(localStorage.getItem(CLAVE_USUARIO) ?? "[]")).toEqual([
       4, 1, 2,
     ]);
   });
 
   it("muestra un vacío por filtros y permite quitarlos", async () => {
-    localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([1]));
 
     render(<FavoritosCliente />);
 

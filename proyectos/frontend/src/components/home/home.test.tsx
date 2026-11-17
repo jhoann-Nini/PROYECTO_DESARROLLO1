@@ -539,7 +539,9 @@ describe("RankingsHome", () => {
         "Aún no hay reseñas registradas para los productos en la plataforma.",
       ),
     ).toBeDefined();
-    expect(screen.getByText("Sin listas de deseos registradas")).toBeDefined();
+    expect(
+      screen.getByText("Sin favoritos vinculados a una cuenta"),
+    ).toBeDefined();
   });
 
   it("sintetiza la ficha con descripción truncada y métrica compacta", () => {

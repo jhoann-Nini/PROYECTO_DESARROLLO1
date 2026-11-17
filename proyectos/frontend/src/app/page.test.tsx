@@ -1050,11 +1050,13 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       await waitFor(() => {
-        expect(screen.getByText("Sin listas de deseos registradas")).toBeDefined();
+        expect(
+          screen.getByText("Sin favoritos vinculados a una cuenta"),
+        ).toBeDefined();
       });
 
       expect(
-        screen.getByText(/La funcionalidad de listas de deseos y favoritos estará disponible/i)
+        screen.getByText(/Los favoritos de este navegador son locales/i)
       ).toBeDefined();
 
       // Verificar que NO se inventaron productos ficticios

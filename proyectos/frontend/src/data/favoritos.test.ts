@@ -3,6 +3,8 @@ import {
   CLAVE_FAVORITOS,
   MAX_FAVORITOS,
   alternarIdFavorito,
+  claveFavoritos,
+  eliminarFavoritosLegados,
   guardarIdsFavoritos,
   leerIdsFavoritos,
   normalizarIdsFavoritos,
@@ -81,5 +83,35 @@ describe("favoritos", () => {
     const original = [1, 2, 3];
     expect(quitarIdFavorito(original, 2)).toEqual([1, 3]);
     expect(original).toEqual([1, 2, 3]);
+  });
+
+  it("genera una clave por cuenta sin reutilizar la clave anónima", () => {
+    expect(claveFavoritos("user-1")).toBe("tecreview:favoritos:user-1");
+    expect(claveFavoritos("user-1")).not.toBe(CLAVE_FAVORITOS);
+  });
+
+  it("lee y guarda con una clave de cuenta explícita", () => {
+    const storage = crearStorage();
+    const clave = claveFavoritos("user-1");
+
+    guardarIdsFavoritos(storage, [4, 5], clave);
+    expect(storage.getItem(clave)).toBe("[4,5]");
+    expect(storage.getItem(CLAVE_FAVORITOS)).toBeNull();
+    expect(leerIdsFavoritos(storage, clave)).toEqual([4, 5]);
+
+    guardarIdsFavoritos(storage, [], clave);
+    expect(storage.getItem(clave)).toBeNull();
+  });
+
+  it("elimina la clave heredada de favoritos anónimos", () => {
+    const storage = crearStorage({
+      [CLAVE_FAVORITOS]: JSON.stringify([1]),
+      [claveFavoritos("user-1")]: JSON.stringify([2]),
+    });
+
+    eliminarFavoritosLegados(storage);
+
+    expect(storage.getItem(CLAVE_FAVORITOS)).toBeNull();
+    expect(storage.getItem(claveFavoritos("user-1"))).toBe("[2]");
   });
 });

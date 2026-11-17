@@ -286,10 +286,10 @@ export default function RankingsHome({
 
         <ColumnaRanking
           titulo="Los más deseados."
-          subtitulo="Listas de deseos y favoritos de usuarios"
+          subtitulo="Favoritos vinculados a una cuenta"
           cantidad={masDeseados.length}
           cargando={cargandoMasDeseados}
-          mensajeCargando="Consultando listas de deseos..."
+          mensajeCargando="Consultando favoritos de cuentas..."
           error={errorMasDeseados}
           onReintentar={onReintentarMasDeseados}
           etiquetaReintento="Reintentar deseos"
@@ -313,12 +313,12 @@ export default function RankingsHome({
               </div>
               <p className="mb-1 text-xs font-semibold text-[var(--color-ink)]">
                 {vacioDeseos
-                  ? "Sin listas de deseos registradas"
+                  ? "Sin favoritos vinculados a una cuenta"
                   : "No se encontraron dispositivos con este filtro"}
               </p>
               <p className="max-w-xs text-xs leading-relaxed text-[var(--color-subtle)]">
                 {vacioDeseos
-                  ? "La funcionalidad de listas de deseos y favoritos estará disponible en una fase posterior. Actualmente la plataforma no muestra datos ficticios."
+                  ? "Los favoritos de este navegador son locales y no alimentan este ranking. La sincronización entre dispositivos aún no está habilitada."
                   : "Prueba con otro término de búsqueda."}
               </p>
             </div>

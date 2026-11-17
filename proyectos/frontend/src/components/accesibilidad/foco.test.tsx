@@ -35,6 +35,18 @@ vi.mock("@/hooks/useSesionTecReview", () => ({
   useSesionTecReview: () => sesionMock,
 }));
 
+vi.mock("@/hooks/useFavoritos", () => ({
+  useFavoritos: () => ({
+    ids: [1],
+    hidratado: true,
+    autenticado: true,
+    alternar: vi.fn(),
+    quitar: vi.fn(),
+    limpiar: vi.fn(),
+    contiene: vi.fn(),
+  }),
+}));
+
 vi.mock("@/components/AuthModal", () => ({
   default: () => null,
 }));
@@ -295,6 +307,7 @@ describe("Auditoría de foco visible", () => {
   });
 
   it("la vista de favoritos mantiene foco visible", async () => {
+    sesionMock.usuario = USUARIO;
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([1]));
 
     const { container } = render(<FavoritosCliente />);

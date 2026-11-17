@@ -59,6 +59,16 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
     Optional<ReporteResena> findByIdConDetalles(@Param("idReporte") Long idReporte);
 
     /**
+     * Obtiene y bloquea los reportes de una reseña en un orden estable para resolverlos en lote.
+     * El bloqueo se adquiere antes del bloqueo de la reseña para mantener un orden consistente
+     * con la resolución individual de reportes.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})
+    @Query("SELECT r FROM ReporteResena r WHERE r.resena.idResena = :idResena ORDER BY r.fechaCreacion ASC, r.idReporte ASC")
+    List<ReporteResena> findByResenaIdForUpdate(@Param("idResena") Long idResena);
+
+    /**
      * Obtiene los reportes de una reseña específica ordenados descendentemente.
      */
     @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})

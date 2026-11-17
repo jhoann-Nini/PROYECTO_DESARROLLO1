@@ -357,7 +357,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-22%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/34/OnePlusPad2.jpg",
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "tablets",
@@ -582,7 +582,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     descuento: "-22%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/e/e7/SAMSUNG_Galaxy_S24_Ultra.jpg",
     tipo: "deseado",
     chipInfo: "Snapdragon 8 Gen 3 · 200MP",
     detalleSpecs: {
@@ -874,7 +874,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     precio: 3996000,
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/8/87/About_iPad_Pro_11-inch_%28M4%29.jpg",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "tablets",
@@ -1060,7 +1060,7 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
     tendencia: "sube",
     cambioRanking: 1,
     vendedor: "Vendido por Samsung Store Colombia Oficial",
-    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/e/e7/SAMSUNG_Galaxy_S24_Ultra.jpg",
     tipo: "oferta",
     detalleSpecs: {
       categoriaTipo: "moviles",
@@ -1221,7 +1221,7 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
     descuento: "-22%",
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/34/OnePlusPad2.jpg",
     tipo: "oferta",
     detalleSpecs: {
       categoriaTipo: "tablets",
@@ -1490,7 +1490,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 1,
     nombreCategoria: "Auriculares",
     nombreMarca: "Nothing",
-    imagen: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/8/84/Nothing_ear2_%28cropped%29.jpg",
     precioReferencia: 596000,
     estado: true,
     caracteristicas: {
@@ -1510,7 +1510,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 5,
     nombreCategoria: "Tablets",
     nombreMarca: "OnePlus",
-    imagen: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/3/34/OnePlusPad2.jpg",
     precioReferencia: 2196000,
     estado: true,
     caracteristicas: {

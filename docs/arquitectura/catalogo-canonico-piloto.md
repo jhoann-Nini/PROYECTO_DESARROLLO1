@@ -40,6 +40,7 @@ En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, App
 | `samsung-galaxy-a55-5g` | Samsung Galaxy A55 5G | vendidos:102 (8 GB RAM; capacidad exacta pendiente entre 128/256 GB) |
 | `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
 | `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
+| `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -185,13 +186,14 @@ Esta actualización documental describe el estado del código integrado en `main
 
 ## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
 
-El lote de trabajo amplía la cobertura controlada a **once modelos** (trece variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+El lote de trabajo amplía la cobertura controlada a **doce modelos** (catorce variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
 
 | Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|
 | Samsung Galaxy A55 5G | `parcial` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Samsung Colombia documenta 8/128 GB y 8/256 GB; el registro vendido:102 solo indica 8 GB de RAM, por lo que no se asigna una capacidad a ciegas. |
 | Apple iPhone 13 — 128 GB | `verificado` | CC BY-SA 4.0, autor Kskhh | Ficha técnica oficial Apple y fotografía del modelo; el registro identifica 128 GB. |
 | Xiaomi Redmi Note 14 Pro+ 5G — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigieron datos heredados incorrectos: RAM física 12 GB LPDDR4X, UFS 2.2, batería 5110 mAh, cámara frontal 20 MP y carga 120 W. Se eliminó el benchmark no respaldado y se distingue RAM virtual de RAM física. |
+| OnePlus 13 5G — 16 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigió el nombre inexistente «OnePlus 13 Pro» a OnePlus 13; se alineó con la variante oficial 16/512 y se eliminó el benchmark no documentado. |
 
 Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
 

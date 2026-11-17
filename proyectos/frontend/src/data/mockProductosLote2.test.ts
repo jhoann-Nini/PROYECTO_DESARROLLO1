@@ -46,6 +46,15 @@ describe("registros comerciales — lote 2", () => {
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });
 
+  it("usa una imagen licenciada del acabado negro de Nothing Ear (a)", () => {
+    const producto = ULTIMAS_OFERTAS.find((item) => item.id === 301);
+    expect(producto?.nombre).toBe("Nothing Ear (a) Black Edition");
+    expect(producto?.imagen).toContain("Nothing-Tokyo-2024-04-18_151.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
+  });
+
   it("documenta Xiaomi 14T Pro 12 GB/512 GB y la imagen exacta", () => {
     const producto = ULTIMAS_OFERTAS.find((item) => item.id === 306);
     expect(producto?.especificaciones).toContain("12GB RAM · 512GB");

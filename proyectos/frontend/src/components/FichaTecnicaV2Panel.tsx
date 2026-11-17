@@ -64,7 +64,17 @@ export default function FichaTecnicaV2Panel({ ficha }: { ficha: FichaTecnicaV2 }
               <div key={m.clave + "-" + i} className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2.5 text-xs last:border-b-0">
                 <div>
                   <p className="font-medium text-[var(--color-ink)]">{m.nombre}</p>
-                  <p className="text-[10px] text-[var(--color-subtle)]">{m.grupo} · {esMetricaComparableAutomaticamente(m) ? "Comparable automáticamente" : m.comparable ? "Pendiente de metodología" : "Solo informativa"}</p>
+                  <p className="text-[10px] text-[var(--color-subtle)]">
+                    <span>{m.grupo}</span>
+                    {" · "}
+                    <span>
+                      {esMetricaComparableAutomaticamente(m)
+                        ? "Comparable automáticamente"
+                        : m.comparable
+                          ? "Pendiente de metodología"
+                          : "Solo informativa"}
+                    </span>
+                  </p>
                 </div>
                 <span className="font-semibold text-[var(--color-ink)]">{valor(m.valor, m.unidad)}</span>
               </div>

@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra ocho fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(8);
+  it("registra nueve fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(9);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,13 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra OnePlus 13 Black Eclipse con CC BY-SA 4.0", () => {
+    const oneplus = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Maksdroider");
+    expect(oneplus?.licencia).toBe("CC BY-SA 4.0");
+    expect(oneplus?.titulo).toBe("OnePlus 13 back.jpg");
+    expect(oneplus?.nota).toContain("Black Eclipse");
   });
 
   it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {

@@ -319,7 +319,7 @@ const nothingEar2 = crearFicha(
   [{
     id: earVariante,
     modelo: "Nothing Ear (2)",
-    color: "Transparent White",
+    identificador: "Transparent White",
   }],
   [
     atributo("transductores", "Transductor", "audio", 11.6, earFuente, "mm"),

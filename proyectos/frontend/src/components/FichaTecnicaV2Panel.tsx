@@ -4,7 +4,7 @@ import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
 import { esMetricaComparableAutomaticamente } from "@/types/fichaTecnica";
 
 export default function FichaTecnicaV2Panel({ ficha }: { ficha: FichaTecnicaV2 }) {
-  const fuentes = new Map(ficha.fuentes.map((fuente) => [fuente.id, fuente]));
+  const fuentes = new Map(ficha.fuentes.map((fuente) => [fuente.id, fuente] as const));
   const estado = {
     pendiente: "Pendiente de verificación",
     parcial: "Verificación parcial",

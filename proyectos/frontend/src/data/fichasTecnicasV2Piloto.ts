@@ -468,7 +468,7 @@ const iphone13 = crearFicha(
 );
 
 
-const redmiNote14Fuente = "xiaomi-redmi-note14proplus-co-specs";
+const redmiNote14Fuente = "xiaomi-redmi-note14proplus-global-specs";
 const redmiNote14NoMicrosdFuente = "xiaomi-redmi-note14proplus-storage";
 const redmiNote14Variante = "12gb-512gb-co";
 const redmiNote14ProPlus = crearFicha(
@@ -522,8 +522,8 @@ const redmiNote14ProPlus = crearFicha(
     metrica("carga_rapida", "Carga HyperCharge", "bateria", 120, "W", redmiNote14Fuente),
   ],
   [
-    fuente("xiaomi-redmi-note14proplus-co-buy", "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, variante 12 GB + 512 GB", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/buy/?gid=4223712110", redmiNote14Variante, "La tienda oficial colombiana identifica explícitamente la variante Lavender Purple de 12 GB + 512 GB.", "2026-11-17"),
-    fuente(redmiNote14Fuente, "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, especificaciones", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/specs/", redmiNote14Variante, "Ficha oficial de chipset, memoria, almacenamiento, pantalla, cámaras, batería, resistencia y conectividad.", "2026-11-17"),
+    fuente("xiaomi-redmi-note14proplus-co-terms", "Xiaomi Colombia — términos promocionales que identifican Redmi Note 14 Pro+ 5G 12 GB + 512 GB", "https://www.mi.com/co/support/terms/tc-para-cupones-202509/", redmiNote14Variante, "Documento oficial regional que incluye expresamente Redmi Note 14 Pro+ 5G 12 GB + 512 GB entre las variantes colombianas.", "2026-11-17"),
+    fuente(redmiNote14Fuente, "Xiaomi Global — Redmi Note 14 Pro+ 5G, especificaciones", "https://www.mi.com/global/product/redmi-note-14-pro-plus-5g/specs/", redmiNote14Variante, "Ficha oficial enumera 8+256, 12+256 y 12+512 GB LPDDR4X/UFS 2.2, además de chipset, pantalla, cámaras, batería, resistencia y conectividad.", "2026-11-17"),
     fuente("xiaomi-redmi-note14proplus-memory-extension", "Xiaomi Support — Redmi Note 14 Pro+ 5G, extensión de memoria", "https://www.mi.com/es/support/faq/details/KA-757974/", null, "Confirma que la extensión crea RAM adicional utilizando espacio del almacenamiento interno; no debe confundirse con RAM física.", "2026-11-17"),
     fuente(redmiNote14NoMicrosdFuente, "Xiaomi Support — Redmi Note 14 Pro+ 5G, almacenamiento expandible", "https://www.mi.com/global/support/faq/details/KA-524687/", null, "Xiaomi confirma que el modelo no admite expansión mediante tarjeta microSD.", "2026-11-17"),
   ],

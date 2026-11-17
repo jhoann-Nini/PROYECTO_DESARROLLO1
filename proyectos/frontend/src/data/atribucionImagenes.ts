@@ -145,6 +145,17 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Se utiliza la miniatura de 960 px generada por Wikimedia Commons; sin otras modificaciones.",
     nota: "Fotografía del Xiaomi 14T Pro en acabado Titan Blue; la configuración 12 GB/512 GB se verifica por separado con Xiaomi Colombia.",
   },
+
+  {
+    urlImagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Nothing-Tokyo-2024-04-18_151.jpg/960px-Nothing-Tokyo-2024-04-18_151.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Nothing-Tokyo-2024-04-18_151.jpg",
+    autor: "RuinDig/Yuki Uchida",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by/4.0/",
+    cambios: "Se utiliza la miniatura de 960 px generada por Wikimedia Commons; sin otras modificaciones.",
+    nota: "Fotografía de exhibición del estuche negro de Nothing Ear (a); el acabado Black también se confirma en el selector oficial de Nothing.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

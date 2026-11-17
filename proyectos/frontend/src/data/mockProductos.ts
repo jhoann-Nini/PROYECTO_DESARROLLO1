@@ -52,7 +52,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Galaxy A55 5G",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "Exynos 1480 · 5000 mAh · Super AMOLED 120Hz · 8GB RAM",
+    especificaciones: "Exynos 1480 · 8GB RAM · 256GB · Super AMOLED 6,6 pulgadas 120Hz · 5000mAh",
     puntuacion: 8.8,
     precio: 1589000, // $ 1.589.000 COP
     precioOriginal: 1800000,
@@ -61,11 +61,9 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     cambioRanking: 0,
     imagen: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Samsung_Galaxy_A55_5G_2024.jpg",
     tipo: "vendido",
-    chipInfo: "Exynos 1480 · 50MP",
+    chipInfo: "Samsung Exynos 1480",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "715,000 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -126,7 +124,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "iPhone 13 (128GB)",
     marca: "Apple",
     categoria: "moviles",
-    especificaciones: "A15 Bionic · Super Retina XDR · iOS 18 · Modo Cine",
+    especificaciones: "Apple A15 Bionic · Super Retina XDR OLED 6,1 pulgadas · Cámara dual 12MP · 128GB",
     puntuacion: 8.6,
     precio: 2649000, // $ 2.649.000 COP
     precioOriginal: 2999000,
@@ -135,11 +133,9 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     cambioRanking: 3,
     imagen: "https://upload.wikimedia.org/wikipedia/commons/3/3c/IPhone_13.jpg",
     tipo: "vendido",
-    chipInfo: "Apple A15 Bionic · 12MP",
+    chipInfo: "Apple A15 Bionic",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "4,750 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -772,7 +768,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB RAM LPDDR5X · 1TB Almacenamiento interno UFS 4.0.",
+          descripcion: "16GB LPDDR5X · 512GB UFS 4.0.",
         },
         {
           icono: "📸",
@@ -790,12 +786,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
           descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · One UI 7 con 7 años de actualizaciones.",
         },
       ],
-      metricas: [
-        { nombre: "Rendimiento y Potencia", puntos: 9.9 },
-        { nombre: "Fotografía y Zoom 100x", puntos: 9.9 },
-        { nombre: "Pantalla Dynamic AMOLED 2X", puntos: 9.9 },
-        { nombre: "Batería y Autonomía", puntos: 9.3 },
-      ],
+
       tiendas: [
         { nombre: "Samsung Official Store", precio: 5196000, envioGratis: true },
         { nombre: "Amazon Prime", precio: 5076000, envioGratis: true },
@@ -805,15 +796,15 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 207,
     ranking: 3,
-    nombre: "OnePlus 13 Pro 5G",
+    nombre: "OnePlus 13 5G",
     marca: "OnePlus",
     categoria: "moviles",
-    especificaciones: "16GB RAM · 512GB · Hasselblad Gen 5 · 6000mAh",
+    especificaciones: "16GB LPDDR5X · 512GB UFS 4.0 · Snapdragon 8 Elite · Pantalla QHD+ 120Hz · 6000mAh",
     puntuacion: 9.6,
     precio: 3596000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "moviles",

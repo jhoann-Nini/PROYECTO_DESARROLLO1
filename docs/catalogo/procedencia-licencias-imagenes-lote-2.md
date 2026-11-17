@@ -2,7 +2,7 @@
 
 Fecha de consulta: 17 de noviembre de 2026.
 
-Este lote incorpora nueve modelos adicionales al catálogo canónico. Dos de ellos reutilizan imágenes que ya tenían atribución registrada en el PR #120; los otros siete incorporan nuevas imágenes en este lote. Cada ficha técnica usa fuentes de fabricante para el modelo y variante indicados. La imagen tiene su propio registro de procedencia y licencia: la verificación de una no sustituye a la otra.
+Este lote incorpora diez modelos adicionales al catálogo canónico. Dos de ellos reutilizan imágenes que ya tenían atribución registrada en el PR #120; los otros ocho incorporan nuevas imágenes en este lote. Cada ficha técnica usa fuentes de fabricante para el modelo y variante indicados. La imagen tiene su propio registro de procedencia y licencia: la verificación de una no sustituye a la otra.
 
 ## Imágenes incorporadas
 
@@ -17,6 +17,7 @@ Este lote incorpora nueve modelos adicionales al catálogo canónico. Dos de ell
 | Samsung Galaxy A55 5G | Captainmorlypogi1959 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_A55_5G_2024.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Imagen ya incorporada y atribuida en PR #120; modelo A55 5G |
 | Apple iPhone 13 | Kskhh | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:IPhone_13.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Imagen ya incorporada y atribuida en PR #120; no acredita por sí sola 128 GB |
 | Xiaomi 14 Ultra | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Shibuya-Tokyo---2024-08-28_066.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Miniatura de 960 px generada por Commons; fotografía del acabado negro en exposición, sin inferir color del registro |
+| Redmi Note 13 Pro+ 5G | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Shibuya-Tokyo---2024-08-28_059.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Miniatura de 960 px generada por Commons; fotografía de la unidad blanca en exhibición, sin inferir color del registro |
 
 ## Fuentes técnicas primarias
 
@@ -30,6 +31,7 @@ Este lote incorpora nueve modelos adicionales al catálogo canónico. Dos de ell
 | Nothing Ear (a) · Black | [Nothing — Ear (a), selector Black y especificaciones](https://nothing.tech/products/ear-a?Colour=Black) | Acabado Black, transductor de 11 mm, LDAC, ANC de hasta 45 dB, Bluetooth 5.3, autonomía y resistencia |
 | Samsung Galaxy A55 5G · 8 GB/256 GB | [Samsung Colombia](https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-navy-256gb-sm-a556ezkmltc/) · [Newsroom Colombia](https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos) · [Exynos Showcase](https://semiconductor.samsung.com/processor/showcase/smartphone/) | 8 GB RAM, 256 GB, Exynos 1480, pantalla, cámaras, batería, IP67, conectividad y política de actualizaciones |
 | Xiaomi 14 Ultra · 16 GB/512 GB | [Xiaomi Global — especificaciones](https://www.mi.com/global/product/xiaomi-14-ultra/specs/) · [Xiaomi Colombia — FAQ](https://www.mi.com/co/support/faq/details/KA-110997/) | Snapdragon 8 Gen 3, 16 GB LPDDR5X, 512 GB UFS 4.0, cámaras Leica, batería 5.000 mAh, carga 90 W/80 W y dimensiones |
+| Redmi Note 13 Pro+ 5G · 12 GB/512 GB | [Xiaomi Colombia — especificaciones](https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/specs/) · [Xiaomi Colombia — compra 12 GB/512 GB](https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/buy/?gid=4223706821&ml=3472&mr=m) | Dimensity 7200-Ultra, 12 GB LPDDR5, 512 GB UFS 3.1, cámaras 200/8/2 MP, batería 5.000 mAh, carga 120 W e IP68 |
 | iPhone 13 · 128 GB | [Apple Colombia — iPhone 13](https://support.apple.com/es-co/111872) | 128 GB, A15 Bionic, pantalla, cámaras, conectividad, autonomía y dimensiones |
 
 ## Correcciones de coherencia aplicadas

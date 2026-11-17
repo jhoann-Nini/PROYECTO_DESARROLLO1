@@ -222,6 +222,56 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
   },
 ];
 
+/** Productos adicionales incorporados después del piloto inicial. */
+export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
+  {
+    id: "samsung-galaxy-a55-5g",
+    nombre: "Samsung Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 102, "8gb-256gb")],
+    variantes: [{
+      id: "8gb-256gb",
+      nombre: "8 GB RAM · 256 GB",
+      ram: "8 GB",
+      almacenamiento: "256 GB",
+      mercado: "Colombia",
+    }],
+  },
+  {
+    id: "apple-iphone-13",
+    nombre: "Apple iPhone 13",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 104, "128gb")],
+    variantes: [{
+      id: "128gb",
+      nombre: "128 GB",
+      almacenamiento: "128 GB",
+    }],
+  },
+  {
+    id: "oneplus-13",
+    nombre: "OnePlus 13",
+    marca: "OnePlus",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 207, "16gb-512gb")],
+    variantes: [{
+      id: "16gb-512gb",
+      nombre: "16 GB RAM · 512 GB",
+      ram: "16 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+    }],
+  },
+];
+
+export const CATALOGO_CANONICO_REGISTRADO: readonly ProductoCanonico[] = [
+  ...CATALOGO_CANONICO_PILOTO,
+  ...CATALOGO_CANONICO_ADICIONAL,
+];
 function buscarRegistro(
   origen: ReferenciaProductoCanonico,
 ): DispositivoKimovil | Producto | null {
@@ -276,7 +326,7 @@ function imagenDeRegistro(
 export function obtenerProductoCanonico(
   id: string,
 ): ProductoCanonicoResuelto | null {
-  const producto = CATALOGO_CANONICO_PILOTO.find((item) => item.id === id);
+  const producto = CATALOGO_CANONICO_REGISTRADO.find((item) => item.id === id);
   if (!producto) return null;
 
   const registros = producto.referencias
@@ -326,12 +376,12 @@ export function obtenerCatalogoCanonicoPiloto(): ProductoCanonicoResuelto[] {
 /**
  * Comprueba integridad referencial del piloto sin alterar los datos originales.
  */
-export function validarCatalogoCanonicoPiloto(): string[] {
+function validarProductosCanonicos(productos: readonly ProductoCanonico[]): string[] {
   const errores: string[] = [];
   const ids = new Set<string>();
   const referenciasUsadas = new Set<string>();
 
-  for (const producto of CATALOGO_CANONICO_PILOTO) {
+  for (const producto of productos) {
     if (ids.has(producto.id)) {
       errores.push(`ID canónico duplicado: ${producto.id}`);
     }
@@ -357,4 +407,25 @@ export function validarCatalogoCanonicoPiloto(): string[] {
   }
 
   return errores;
+}
+
+/** Mantiene la validación del subconjunto inicial de ocho modelos. */
+export function validarCatalogoCanonicoPiloto(): string[] {
+  return validarProductosCanonicos(CATALOGO_CANONICO_PILOTO);
+}
+
+/** Valida todos los productos que ya están incorporados al registro canónico. */
+export function validarCatalogoCanonicoRegistrado(): string[] {
+  return validarProductosCanonicos(CATALOGO_CANONICO_REGISTRADO);
+}
+
+/** Devuelve el conjunto registrado actualmente: piloto más fichas adicionales. */
+export function obtenerCatalogoCanonicoRegistrado(): ProductoCanonicoResuelto[] {
+  return CATALOGO_CANONICO_REGISTRADO.map((producto) => {
+    const resuelto = obtenerProductoCanonico(producto.id);
+    if (!resuelto) {
+      throw new Error(`No se pudo resolver el producto canónico: ${producto.id}`);
+    }
+    return resuelto;
+  });
 }

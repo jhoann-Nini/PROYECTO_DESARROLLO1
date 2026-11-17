@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
@@ -36,6 +37,7 @@ export default function TarjetaProducto({
   const esLista = variante === "lista";
   const tieneImagen =
     Boolean(producto.imagen) && producto.imagen !== null && !errorImagen;
+  const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
   const specs = [
     producto.especificaciones.pantalla,
     producto.especificaciones.procesador,
@@ -84,7 +86,7 @@ export default function TarjetaProducto({
               alt={`Fotografía de ${producto.nombre}`}
               onError={() => setErrorImagen(true)}
               loading="lazy"
-              className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+              className={`h-full w-full object-contain transition-transform duration-300 ${imagenSinDerivados ? "" : "group-hover:scale-[1.03]"}`}
             />
           ) : (
             <ProductImagePlaceholder

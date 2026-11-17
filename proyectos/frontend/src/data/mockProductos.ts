@@ -811,48 +811,42 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     cambioRanking: 0,
     imagen: "https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg",
     tipo: "deseado",
+    chipInfo: "Qualcomm Snapdragon 8 Elite",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,820,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & RENDIMIENTO VISUAL",
-          descripcion: "6.82'' BOE X2 Oriental OLED 2K (3168x1440) · 120Hz LTPO · 4500 nits pico · DisplayMate A++.",
+          descripcion: "6,82 pulgadas ProXDR LTPO 4.1 · 3168 × 1440 · 1–120Hz dinámicos · 1600 nits HBM / 4500 nits pico · Ceramic Guard.",
         },
         {
           icono: "⚡",
           titulo: "PROCESADOR FLAGSHIP",
-          descripcion: "Qualcomm Snapdragon 8 Elite (3nm TSMC) Octa-Core con sistema de refrigeración Cryo-velocity.",
+          descripcion: "Qualcomm Snapdragon 8 Elite · CPU Oryon hasta 4,32GHz · GPU Adreno 830.",
         },
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB LPDDR5X · 512GB UFS 4.0 con optimización Trinity Engine.",
+          descripcion: "16GB LPDDR5X · 512GB UFS 4.0.",
         },
         {
           icono: "📸",
-          titulo: "CÁMARAS HASSELBLAD GEN 5",
-          descripcion: "50MP Sony LYT-808 OIS + 50MP Periscopio 3X + 50MP Ultra Gran Angular con calibración de color Hasselblad.",
+          titulo: "SISTEMA DE CÁMARAS",
+          descripcion: "50MP Sony LYT-808 principal con OIS + 50MP Sony LYT-600 teleobjetivo 3× con OIS + 50MP ultra gran angular 120° + frontal 32MP Sony IMX615.",
         },
         {
           icono: "🔋",
-          titulo: "BATERÍA GLACIAL & CARGA",
-          descripcion: "6000 mAh Glacial Battery de silicio · Carga ultrarrápida 100W SUPERVOOC + 50W AIRVOOC inalámbrica.",
+          titulo: "BATERÍA Y CARGA",
+          descripcion: "6000mAh típica · 100W SUPERVOOC por cable · 50W AIRVOOC inalámbrica.",
         },
         {
           icono: "🌐",
-          titulo: "CONECTIVIDAD & RESISTENCIA",
-          descripcion: "Certificación IP68/IP69 contra agua y chorros a alta presión · Wi-Fi 7 · Bluetooth 5.4 · OxygenOS 15.",
+          titulo: "CONECTIVIDAD Y SOFTWARE",
+          descripcion: "5G · Wi-Fi 7 · Bluetooth 5.4 · NFC · USB-C 3.2 Gen 1 · Doble Nano-SIM · OxygenOS 15 basado en Android 15.",
         },
       ],
-      metricas: [
-        { nombre: "Rendimiento Snapdragon 8 Elite", puntos: 9.8 },
-        { nombre: "Fotografía Hasselblad Gen 5", puntos: 9.7 },
-        { nombre: "Pantalla Oriental OLED 2K", puntos: 9.8 },
-        { nombre: "Batería y Autonomía (6000mAh)", puntos: 9.9 },
-      ],
+
       tiendas: [
         { nombre: "OnePlus Oficial", precio: 3596000, envioGratis: true },
         { nombre: "Amazon Prime", precio: 3596000, envioGratis: true },

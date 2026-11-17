@@ -39,7 +39,9 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 
 ## Pendientes del grupo piloto
 
-Las imágenes de Lenovo ThinkPad E14 Gen 5 y Apple MacBook Pro 16 pulgadas M3 Max
-siguen pendientes de una fuente con licencia y correspondencia de modelo
-comprobadas. No se reemplazan por fotografías genéricas ni por imágenes oficiales
-copiadas sin permiso.
+Las imágenes de Lenovo ThinkPad E14 Gen 5 (MTM 21JK0005RI) y Apple MacBook Pro
+16 pulgadas M3 Max (48 GB/1 TB) siguen pendientes de una fotografía con licencia
+reutilizable y correspondencia de modelo comprobadas. Se retiraron las URLs
+genéricas de Unsplash que no representaban esos equipos; la interfaz muestra el
+marcador de imagen sin fotografía hasta conseguir una fuente autorizada. No se
+copian imágenes oficiales del fabricante sin permiso.

@@ -33,6 +33,7 @@ describe("atribuciones de imágenes del catálogo", () => {
   it("mantiene intacta la fotografía Sony bajo CC BY-ND 2.0", () => {
     const sony = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.fuente === "Flickr");
     expect(sony?.licencia).toBe("CC BY-ND 2.0");
+    expect(sony?.titulo).toBe("SONY Noise Canceling Headphone WH-1000XM5");
     expect(sony?.cambios).toContain("sin modificaciones");
   });
 

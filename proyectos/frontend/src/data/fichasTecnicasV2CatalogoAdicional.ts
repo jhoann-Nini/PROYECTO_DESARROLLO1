@@ -165,7 +165,6 @@ const iphone13 = crearFicha(
     id: iphone13Variante,
     modelo: "Apple iPhone 13",
     almacenamiento: "128 GB",
-    identificador: "128 GB",
   }],
   [
     atributo("procesador", "Chip", "rendimiento", "Apple A15 Bionic", iphone13Fuente),
@@ -198,7 +197,6 @@ const iphone13 = crearFicha(
   ],
   [
     metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, "in", iphone13Fuente),
-    metrica("densidad_pixeles", "Densidad de píxeles", "pantalla", 460, "ppi", iphone13Fuente),
     metrica("almacenamiento", "Almacenamiento", "almacenamiento", 128, "GB", iphone13Fuente),
   ],
   [
@@ -247,7 +245,7 @@ const oneplus13 = crearFicha(
     atributo("carga_rapida", "Carga por cable", "bateria", 100, oneplus13Fuente, "W"),
     atributo("carga_inalambrica", "Carga inalámbrica", "bateria", 50, oneplus13Fuente, "W"),
     atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "OxygenOS 15 basado en Android 15", oneplus13Fuente),
-    atributo("conectividad_celular", "Conectividad celular", "conectividad", "5G SA/NSA", oneplus13Fuente),
+    atributo("conectividad_celular", "Conectividad celular", "conectividad", "5G", oneplus13Fuente),
     atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7 · 2×2 MIMO", oneplus13Fuente),
     atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", oneplus13Fuente),
     atributo("nfc", "NFC", "conectividad", true, oneplus13Fuente),

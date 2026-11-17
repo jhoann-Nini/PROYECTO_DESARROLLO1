@@ -418,7 +418,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-25%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://live.staticflickr.com/65535/52436931175_943f2b71ef.jpg",
+    imagen: "https://thehelpfulbuyer.com/assets/products/xm5.jpg",
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "auriculares",

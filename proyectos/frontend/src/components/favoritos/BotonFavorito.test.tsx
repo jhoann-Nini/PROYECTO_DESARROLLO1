@@ -172,6 +172,7 @@ describe("BotonFavorito", () => {
   it("no guarda favoritos anónimos y pide iniciar sesión", async () => {
     authMock.sesion = null;
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([9]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([4]));
 
     render(<BotonFavorito idProducto={4} nombreProducto="Producto 4" />);
 
@@ -189,6 +190,6 @@ describe("BotonFavorito", () => {
       "Inicia sesión para guardar productos en favoritos.",
     );
     expect(localStorage.getItem(CLAVE_FAVORITOS)).toBeNull();
-    expect(localStorage.getItem(CLAVE_USUARIO)).toBeNull();
+    expect(JSON.parse(localStorage.getItem(CLAVE_USUARIO) ?? "[]")).toEqual([4]);
   });
 });

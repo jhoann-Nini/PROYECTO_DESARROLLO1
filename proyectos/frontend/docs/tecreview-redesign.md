@@ -931,9 +931,9 @@ aplicación rota.
 8. 404 del detalle: resuelto con `notFound()` en el Server Component. La doble
    consulta del producto queda como deuda técnica aceptada.
 9. Favoritos entre dispositivos: evaluado en
-   [`favoritos-revision.md`](favoritos-revision.md); requiere aprobación para
-   crear tabla, entidad JPA y endpoints. El flujo actual exige sesión y usa una
-   caché local por cuenta; no hay favoritos anónimos.
+   [`favoritos-revision.md`](favoritos-revision.md) y no aprobado por ahora.
+   El flujo actual exige sesión y usa una caché local por cuenta; no hay
+   favoritos anónimos ni cambios de backend, JPA o base de datos.
 
 ---
 

@@ -82,9 +82,13 @@ export function normalizarIdsFavoritos(valor: unknown): number[] {
   return ids;
 }
 
+/**
+ * Lee la lista de una cuenta. La clave es obligatoria para que ningún llamador
+ * pueda leer por accidente la clave anónima histórica.
+ */
 export function leerIdsFavoritos(
   storage: Pick<Storage, "getItem"> | null,
-  clave: string = CLAVE_FAVORITOS,
+  clave: string,
 ): number[] {
   if (!storage) return [];
 
@@ -97,10 +101,14 @@ export function leerIdsFavoritos(
   }
 }
 
+/**
+ * Guarda la lista de una cuenta. La clave es obligatoria para impedir
+ * escrituras accidentales en la clave anónima histórica.
+ */
 export function guardarIdsFavoritos(
   storage: Pick<Storage, "setItem" | "removeItem"> | null,
   ids: number[],
-  clave: string = CLAVE_FAVORITOS,
+  clave: string,
 ): void {
   if (!storage) return;
 

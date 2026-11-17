@@ -38,19 +38,21 @@ describe("favoritos", () => {
 
   it("lee y guarda la lista en el almacenamiento", () => {
     const storage = crearStorage();
+    const clave = claveFavoritos("user-1");
 
-    guardarIdsFavoritos(storage, [7, 8]);
-    expect(storage.getItem(CLAVE_FAVORITOS)).toBe("[7,8]");
-    expect(leerIdsFavoritos(storage)).toEqual([7, 8]);
+    guardarIdsFavoritos(storage, [7, 8], clave);
+    expect(storage.getItem(clave)).toBe("[7,8]");
+    expect(leerIdsFavoritos(storage, clave)).toEqual([7, 8]);
 
-    guardarIdsFavoritos(storage, []);
-    expect(storage.getItem(CLAVE_FAVORITOS)).toBeNull();
-    expect(leerIdsFavoritos(storage)).toEqual([]);
+    guardarIdsFavoritos(storage, [], clave);
+    expect(storage.getItem(clave)).toBeNull();
+    expect(leerIdsFavoritos(storage, clave)).toEqual([]);
   });
 
   it("devuelve una lista vacía si el JSON es inválido", () => {
-    const storage = crearStorage({ [CLAVE_FAVORITOS]: "{no-json" });
-    expect(leerIdsFavoritos(storage)).toEqual([]);
+    const clave = claveFavoritos("user-1");
+    const storage = crearStorage({ [clave]: "{no-json" });
+    expect(leerIdsFavoritos(storage, clave)).toEqual([]);
   });
 
   it("alterna un id: agrega, quita y rechaza ids inválidos", () => {

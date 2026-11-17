@@ -228,6 +228,41 @@ describe("useFavoritos", () => {
     expect(screen.getByTestId("autenticado").textContent).toBe("false");
   });
 
+  it("no muestra los favoritos de la cuenta anterior al cambiar de cuenta", async () => {
+    localStorage.setItem(claveFavoritos("user-1"), JSON.stringify([1]));
+    localStorage.setItem(claveFavoritos("user-2"), JSON.stringify([2]));
+
+    render(<Harness />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("1");
+    });
+
+    act(() => {
+      authMock.sesion = null;
+      for (const observador of authMock.observadores) {
+        observador("SIGNED_OUT", null);
+      }
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("");
+    });
+
+    act(() => {
+      authMock.sesion = { user: { id: "user-2" } };
+      for (const observador of authMock.observadores) {
+        observador("SIGNED_IN", authMock.sesion);
+      }
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("2");
+    });
+    expect(screen.getByTestId("autenticado").textContent).toBe("true");
+    expect(JSON.parse(localStorage.getItem(CLAVE_USUARIO) ?? "[]")).toEqual([1]);
+  });
+
   it("aísla los favoritos por cuenta", async () => {
     localStorage.setItem(claveFavoritos("user-1"), JSON.stringify([1]));
     localStorage.setItem(claveFavoritos("user-2"), JSON.stringify([2]));

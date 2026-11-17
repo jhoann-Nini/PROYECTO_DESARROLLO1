@@ -200,6 +200,7 @@ describe("FavoritosCliente", () => {
     sesionMock.usuario = null;
     authMock.sesion = null;
     localStorage.setItem(CLAVE_FAVORITOS, JSON.stringify([2]));
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify([2]));
 
     render(<FavoritosCliente />);
 
@@ -213,6 +214,7 @@ describe("FavoritosCliente", () => {
     await waitFor(() => {
       expect(localStorage.getItem(CLAVE_FAVORITOS)).toBeNull();
     });
+    expect(JSON.parse(localStorage.getItem(CLAVE_USUARIO) ?? "[]")).toEqual([2]);
 
     fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
     expect(screen.getByRole("dialog")).toBeDefined();

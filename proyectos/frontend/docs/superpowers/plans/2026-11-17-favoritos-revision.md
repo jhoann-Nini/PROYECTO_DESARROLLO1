@@ -4,7 +4,7 @@
 
 **Goal:** Implementar la mejora 5 con sesión obligatoria: solo las cuentas autenticadas pueden agregar, consultar o quitar favoritos; los visitantes deben iniciar sesión y no se guardan favoritos anónimos. Evaluar la persistencia entre dispositivos sin modificar backend, JPA ni base de datos sin aprobación.
 
-**Architecture:** `useFavoritos` comprueba la sesión de Supabase con `getSession()` y `onAuthStateChange`. Sin sesión no hidrata ni escribe. Con sesión, persiste en `localStorage` con una clave por cuenta (`tecreview:favoritos:<idSesion>`) y elimina la clave anónima heredada `tecreview:favoritos`. `BotonFavorito` abre `AuthModal` sin sesión y `/favoritos` exige `useSesionTecReview`. La sincronización entre dispositivos se documenta como propuesta sujeta a aprobación; no se crean tablas, entidades, repositorios, servicios ni endpoints.
+**Architecture:** `useFavoritos` comprueba la sesión de Supabase con `getSession()` y `onAuthStateChange`. Sin sesión no hidrata ni escribe. Con sesión, persiste en `localStorage` con una clave por cuenta (`tecreview:favoritos:<idSesion>`) y elimina la clave anónima heredada `tecreview:favoritos`. `BotonFavorito` abre `AuthModal` sin sesión y `/favoritos` exige `useSesionTecReview`. La sincronización entre dispositivos fue evaluada y no aprobada por ahora; no se crean tablas, entidades, repositorios, servicios ni endpoints.
 
 **Tech Stack:** Next.js 16.3.5, React 19, TypeScript, Vitest, Testing Library.
 
@@ -67,7 +67,7 @@
 
 - [x] Documentar estado actual, hallazgos, cambios, pruebas y límites.
 - [x] Documentar la evaluación entre dispositivos: tabla, entidad, repositorio, servicio, endpoints, fusión y riesgos.
-- [x] Marcar la propuesta como pendiente de aprobación; no implementarla.
+- [x] Marcar la propuesta como no aprobada por ahora; no implementarla.
 - [x] Ejecutar `npm test`, `npx tsc --noEmit`, `npm run lint`, `npm run build`.
 - [x] Revisar `git status`, `git diff`, `git diff --check`.
 - [x] Preparar commit local Conventional Commits con solo esta mejora y detenerse para revisión del usuario.
@@ -75,7 +75,9 @@
 ## Registro
 
 - Se mantiene la rama autorizada y se ejecuta inline.
-- No se adelanta la implementación entre dispositivos: requiere aprobación de BD/JPA/backend.
+- El usuario no aprobó la sincronización entre dispositivos ni cambios de backend, JPA o base de datos; el alcance se queda en la caché local por cuenta autenticada.
+- No se adelanta la implementación entre dispositivos: requiere una aprobación futura explícita de BD/JPA/backend.
 - Los favoritos de invitado se retiraron; la alternativa local-first ahora es una caché por cuenta autenticada.
+- Se reforzó la prueba de cierre de sesión y cambio de cuenta en el mismo dispositivo, y la clave de lectura/escritura pasó a ser obligatoria.
 - RED→GREEN: fallaron primero la falta de aviso/límite, la ausencia de clave por cuenta, el acceso sin sesión en `/favoritos`, el copy de sesión obligatoria y el texto del ranking; las pruebas selectivas de favoritos y home quedaron verdes.
-- La suite completa quedó en 772 pruebas correctas; `npx tsc --noEmit` y `npm run lint` pasan.
+- La suite completa quedó en 773 pruebas correctas; `npx tsc --noEmit` y `npm run lint` pasan.

@@ -2,9 +2,9 @@
 
 Mejora 5. Los favoritos exigen una sesión activa: los visitantes deben iniciar
 sesión para agregar, consultar o quitar productos y no se guardan favoritos
-anónimos en el navegador. No se modificaron backend, JPA ni base de datos. La
-sincronización real entre dispositivos sigue siendo una propuesta pendiente de
-aprobación.
+anónimos en el navegador. No se modificaron backend, JPA ni base de datos. El
+usuario decidió no aprobar por ahora la sincronización entre dispositivos, por
+lo que el alcance queda en favoritos locales asociados a la cuenta autenticada.
 
 ## Alcance
 
@@ -33,6 +33,9 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
   hook. No se migran favoritos anónimos a una cuenta.
 - Los favoritos se guardan por cuenta con
   `tecreview:favoritos:<idSesion>`, donde `idSesion` es el UID de Supabase.
+- Las funciones de lectura y escritura exigen una clave de cuenta explícita;
+  solo `eliminarFavoritosLegados` toca la clave anónima, y únicamente para
+  borrarla.
 - La sesión se comprueba con `getSession()` y se mantiene al día con
   `onAuthStateChange`. `/favoritos` además valida la sesión con
   `useSesionTecReview` y `/api/usuarios/me`, igual que el perfil.
@@ -40,7 +43,9 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
 ## Estado implementado
 
 - `useFavoritos` expone `autenticado` e hidrata solo la clave de la cuenta
-  activa. Si la sesión se cierra, la lista visible queda vacía.
+  activa. Si la sesión se cierra, la lista visible queda vacía; si después entra
+  otra cuenta en el mismo navegador, solo se carga la lista de esa cuenta y
+  nunca se reutiliza la anterior.
 - `alternar` devuelve el motivo `sin-sesion` cuando no hay cuenta activa y no
   modifica el almacenamiento.
 - La sesión se sincroniza entre pestañas con el evento `storage` y dentro de la
@@ -103,12 +108,16 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
 
 | Opción | Ventajas | Costos y riesgos | Decisión |
 |---|---|---|---|
-| Mantener solo `localStorage` por cuenta | Sin backend, sin migraciones, privacidad por navegador y funcionamiento sin conexión. | No hay sincronización entre dispositivos ni recuperación al cambiar de navegador. | Comportamiento actual. |
-| Favoritos por usuario en el backend con caché local por cuenta | Sincronización real entre dispositivos para cuentas; conserva la respuesta local y el límite actual. | Requiere tabla, migración, entidad JPA, repositorio, servicio, endpoints, reglas de fusión y pruebas de integración. | **Recomendada, pendiente de aprobación.** |
+| Mantener solo `localStorage` por cuenta | Sin backend, sin migraciones, privacidad por navegador y funcionamiento sin conexión. | No hay sincronización entre dispositivos ni recuperación al cambiar de navegador. | Comportamiento actual y alcance aprobado. |
+| Favoritos por usuario en el backend con caché local por cuenta | Sincronización real entre dispositivos para cuentas; conserva la respuesta local y el límite actual. | Requiere tabla, migración, entidad JPA, repositorio, servicio, endpoints, reglas de fusión y pruebas de integración. | **No aprobada por ahora.** |
 | Tabla de Supabase consultada directamente desde el frontend | Menos código Spring. | Rompe la arquitectura de API, duplica reglas de autorización y expone la tabla al cliente. | Rechazada. |
 | Sincronización con un servicio externo o almacenamiento en la nube del navegador | Podría evitar backend propio. | Dependencia nueva, privacidad, disponibilidad y poca integración con la cuenta TecReview. | Rechazada. |
 
-### Propuesta recomendada si se aprueba
+### Propuesta para una aprobación futura (no aprobada)
+
+El usuario no aprobó esta propuesta en esta iteración. Se conserva solo como
+referencia por si más adelante se decide sincronizar los favoritos entre
+dispositivos; no se implementó ningún cambio de backend, JPA ni base de datos.
 
 1. **Base de datos:** migración `012_favoritos.sql` con una tabla
    `public.favorito`:
@@ -141,7 +150,7 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
    selección de una sesión anterior en el mismo navegador; migrar solo cuando
    el usuario acepte la fusión.
 
-### Riesgos y decisiones pendientes
+### Riesgos y decisiones si se retoma la propuesta
 
 - Orden de la lista al fusionar dos dispositivos.
 - Cómo tratar la caché local de una cuenta cuando la lista remota cambió en otro
@@ -157,7 +166,8 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
 - `src/data/favoritos.test.ts`: claves por cuenta, lectura y escritura con clave
   explícita, y eliminación de la clave anónima heredada.
 - `src/hooks/useFavoritos.test.tsx`: hidratación por cuenta, persistencia,
-  rechazo sin sesión (`sin-sesion`), cierre de sesión, aislamiento entre cuentas
+  rechazo sin sesión (`sin-sesion`), cierre de sesión, cambio de cuenta en el
+  mismo dispositivo sin reutilizar la lista anterior, aislamiento entre cuentas
   y sincronización entre pestañas e instancias.
 - `src/components/favoritos/BotonFavorito.test.tsx`: guardar, quitar,
   `aria-pressed`, límite de 100, apertura de `AuthModal` sin sesión y ausencia
@@ -173,7 +183,7 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
 
 ## Verificación
 
-- `npm test`: 772 pruebas en 63 archivos, todas correctas.
+- `npm test`: 773 pruebas en 63 archivos, todas correctas.
 - `npx tsc --noEmit`: sin errores.
 - `npm run lint`: sin errores.
 - `npm run build`: exitoso.
@@ -181,7 +191,9 @@ migraciones del backend para evaluar la persistencia entre dispositivos.
 
 ## Límites
 
-- La sincronización entre dispositivos no está implementada.
+- La sincronización entre dispositivos no está implementada ni aprobada por
+  ahora.
 - El aviso de almacenamiento bloqueado o lleno sigue siendo una limitación
   conocida, no una funcionalidad nueva.
-- La propuesta de backend requiere aprobación y una ejecución separada.
+- La propuesta de backend no fue aprobada; si se retoma, requiere una ejecución
+  separada con autorización explícita para tocar backend, JPA y base de datos.

@@ -480,7 +480,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-18%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
+    imagen: null,
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "laptops",
@@ -933,7 +933,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     precio: 5996000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
+    imagen: "",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "laptops",

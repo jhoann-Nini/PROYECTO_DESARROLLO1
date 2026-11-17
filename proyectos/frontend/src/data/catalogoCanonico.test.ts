@@ -163,6 +163,7 @@ describe("catálogo canónico piloto", () => {
       expect.objectContaining({ coleccion: "deseados", idRegistro: 207, varianteId: "16gb-512gb" }),
     ]);
     expect(onePlus13?.nombre).toBe("OnePlus 13");
+    expect((onePlus13?.registros[0] as { nombre?: string } | undefined)?.nombre).toBe("OnePlus 13 5G");
     expect(CATALOGO_CANONICO_REGISTRADO.some((item) => item.nombre.includes("OnePlus 13 Pro"))).toBe(false);
   });
 

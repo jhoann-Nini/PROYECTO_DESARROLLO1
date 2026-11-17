@@ -99,12 +99,26 @@ describe("catálogo canónico piloto", () => {
     );
   });
 
-  it("marca las imágenes externas actuales como pendientes y no inventa licencia o atribución", () => {
+  it("solo verifica imágenes con licencia y atribución comprobadas", () => {
     const catalogo = obtenerCatalogoCanonicoPiloto();
+    const verificadas = catalogo.filter((producto) => producto.imagen.estadoVerificacion === "verificada");
 
-    for (const producto of catalogo) {
+    expect(verificadas.map((producto) => producto.id).sort()).toEqual([
+      "apple-ipad-pro-11-m4",
+      "oneplus-pad-2",
+      "samsung-galaxy-s24-ultra",
+    ]);
+
+    for (const producto of verificadas) {
       expect(producto.imagen.url).toMatch(/^https:\/\//);
-      expect(producto.imagen.estadoVerificacion).toBe("pendiente");
+      expect(producto.imagen.licencia).toBe("CC BY-SA 4.0");
+      expect(producto.imagen.atribucion).toBeTruthy();
+      expect(producto.imagen.paginaFuente).toMatch(/^https:\/\//);
+      expect(producto.imagen.urlLicencia).toBe("https://creativecommons.org/licenses/by-sa/4.0/");
+      expect(producto.imagen.cambios).toBe("Sin modificaciones.");
+    }
+
+    for (const producto of catalogo.filter((item) => item.imagen.estadoVerificacion === "pendiente")) {
       expect(producto.imagen.licencia).toBeNull();
       expect(producto.imagen.atribucion).toBeNull();
     }

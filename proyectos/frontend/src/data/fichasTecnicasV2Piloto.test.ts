@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(12); // Samsung S24 tiene dos variantes comerciales.
+    expect(fichas).toHaveLength(13); // Samsung S24 y Galaxy A55 tienen variantes separadas.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -39,6 +39,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.xiaomiRedmiNote14ProPlus12_512.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.oneplus13_16_512.estado_verificacion).toBe("verificado");
   });
 
   it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
@@ -71,6 +72,21 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("verifica OnePlus 13 16GB/512GB con especificaciones oficiales", () => {
+    const oneplus = FICHAS_TECNICAS_V2_PILOTO.oneplus13_16_512;
+    expect(oneplus.variantes[0]).toMatchObject({ id: "16gb-512gb", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" });
+    expect(oneplus.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Snapdragon 8 Elite") }),
+      expect.objectContaining({ clave: "camara_teleobjetivo", valor: 50 }),
+      expect.objectContaining({ clave: "camara_ultra_gran_angular", valor: 50 }),
+      expect.objectContaining({ clave: "camara_frontal", valor: 32 }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 6000 }),
+      expect.objectContaining({ clave: "carga_inalambrica", valor: 50 }),
+      expect.objectContaining({ clave: "resistencia", valor: "IP68 e IP69" }),
+    ]));
+    expect(oneplus.fuentes[0]?.url).toBe("https://www.oneplus.com/mx/13/specs");
   });
 
   it("verifica Redmi Note 14 Pro+ 12GB/512GB con Xiaomi Colombia y distingue RAM virtual", () => {
@@ -166,6 +182,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const a55 = normalizarDesdeProducto({ ...base, idProducto: 906, nombre: "Samsung Galaxy A55 5G" });
     const iphone = normalizarDesdeProducto({ ...base, idProducto: 907, nombre: "Apple iPhone 13 (128GB)" });
     const redmi = normalizarDesdeProducto({ ...base, idProducto: 908, nombre: "Xiaomi Redmi Note 14 Pro+ 5G" });
+    const oneplus = normalizarDesdeProducto({ ...base, idProducto: 909, nombre: "OnePlus 13 5G" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -179,6 +196,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(a55.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone.variantes[0]?.id).toBe("128gb");
     expect(redmi.variantes[0]?.id).toBe("12gb-512gb-co");
+    expect(oneplus.variantes[0]?.id).toBe("16gb-512gb");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -223,6 +241,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const a55 = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 102);
     const iphone = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 104);
     const redmi = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 107);
+    const oneplus = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 207);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
@@ -231,5 +250,6 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(a55!).variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(normalizarDesdeKimovil(iphone!).variantes[0]?.id).toBe("128gb");
     expect(normalizarDesdeKimovil(redmi!).variantes[0]?.id).toBe("12gb-512gb-co");
+    expect(normalizarDesdeKimovil(oneplus!).variantes[0]?.id).toBe("16gb-512gb");
   });
 });

@@ -75,7 +75,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     expect(ficha.variantes[0].ram).toBeUndefined();
     expect(ficha.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "teleobjetivo", valor: expect.stringContaining("tetraprisma") }),
-      expect.objectContaining({ clave: "autonomia_video", valor: 29, unidad: "h" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 29, unidad: "h" }),
     ]));
   });
 

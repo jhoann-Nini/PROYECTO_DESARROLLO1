@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
-  it("define exactamente once productos y cubre las cuatro categorías", () => {
-    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(11);
-    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(11);
+  it("define exactamente doce productos y cubre las cuatro categorías", () => {
+    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(12);
+    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(12);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.categoria))).toEqual(
       new Set(["moviles", "tablets", "laptops", "auriculares"]),
     );
@@ -79,10 +79,12 @@ describe("catálogo canónico piloto", () => {
     const a55 = obtenerProductoCanonico("samsung-galaxy-a55-5g");
     const iphone = obtenerProductoCanonico("apple-iphone-13");
     const redmi = obtenerProductoCanonico("xiaomi-redmi-note-14-pro-plus-5g");
+    const oneplus = obtenerProductoCanonico("oneplus-13");
     expect(a55?.referencias[0]).toMatchObject({ coleccion: "vendidos", idRegistro: 102, varianteId: null });
     expect(a55?.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone?.referencias[0].varianteId).toBe("128gb");
     expect(redmi?.referencias[0].varianteId).toBe("12gb-512gb-co");
+    expect(oneplus?.referencias[0].varianteId).toBe("16gb-512gb");
   });
 
   it("no fusiona Nothing Phone (2a) Plus con Special Edition", () => {
@@ -120,7 +122,7 @@ describe("catálogo canónico piloto", () => {
     const iphone = obtenerProductoCanonico("apple-iphone-13");
     const redmi = obtenerProductoCanonico("xiaomi-redmi-note-14-pro-plus-5g");
 
-    for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi]) {
+    for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi, oneplus]) {
       expect(producto?.imagen.url).toMatch(/^https:\/\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
       expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(producto?.imagen.licencia);
@@ -137,6 +139,7 @@ describe("catálogo canónico piloto", () => {
     expect(a55?.imagen.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.imagen.licencia).toBe("CC BY-SA 4.0");
     expect(redmi?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(oneplus?.imagen.licencia).toBe("CC BY-SA 4.0");
 
     const pendientes = [
       obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5"),

@@ -289,22 +289,20 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Redmi Note 14 Pro+ 5G",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "16GB RAM · 512GB · Snapdragon 7s Gen 3 · 200MP OIS",
+    especificaciones: "8GB RAM · 256GB · Snapdragon 7s Gen 3 · 200MP OIS",
     puntuacion: 9.1,
     precio: 1276000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/4/40/Redmi_Note_14_ProPlus.jpg?utm_campaign=index&utm_content=original&utm_source=commons.wikimedia.org",
     tipo: "vendido",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "810,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & RENDIMIENTO VISUAL",
-          descripcion: "6.67'' Curved OLED 1.5K (2712x1220) · 120Hz · Dolby Vision · Cristal Corning Gorilla Victus 2.",
+          descripcion: "6.67'' CrystalRes AMOLED 1.5K (2712x1220) · hasta 120Hz · 3000 nits · Dolby Vision · Gorilla Glass Victus 2.",
         },
         {
           icono: "⚡",
@@ -314,29 +312,29 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB LPDDR5X · 512GB Almacenamiento UFS 3.1 con expansión virtual.",
+          descripcion: "8GB LPDDR4X · 256GB UFS 2.2.",
         },
         {
           icono: "📸",
           titulo: "SISTEMA DE CÁMARAS",
-          descripcion: "200MP Samsung HP3 OIS + 8MP Ultra Gran Angular + 2MP Macro + 32MP Cámara Frontal.",
+          descripcion: "200MP principal OIS + 8MP ultra gran angular + 2MP macro · frontal 20MP.",
         },
         {
           icono: "🔋",
           titulo: "BATERÍA Y CARGA RÁPIDA",
-          descripcion: "6200 mAh Silicon-Carbon de última tecnología · Carga Turbo 90W HyperCharge.",
+          descripcion: "5110 mAh típicos · HyperCharge de 120W.",
         },
         {
           icono: "🌐",
           titulo: "PROTECCIÓN & CONECTIVIDAD",
-          descripcion: "Certificación IP68/IP69K contra agua y polvo · 5G Dual · Wi-Fi 6 · Bluetooth 5.4 · NFC.",
+          descripcion: "Certificación IP68 · 5G · Wi-Fi 6/6E · Bluetooth 5.4 · NFC.",
         },
       ],
       metricas: [
         { nombre: "Rendimiento (CPU / GPU)", puntos: 9.0 },
         { nombre: "Fotografía y Cámaras 200MP", puntos: 9.5 },
         { nombre: "Pantalla Curva OLED", puntos: 9.3 },
-        { nombre: "Batería y Autonomía (6200mAh)", puntos: 9.8 },
+        { nombre: "Batería y Autonomía (5110mAh)", puntos: 9.8 },
       ],
       tiendas: [
         { nombre: "Amazon Prime", precio: 1276000, envioGratis: true },
@@ -546,13 +544,11 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     descuento: "-12%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/f/fa/IPhone_15_Pro_Max_2024.jpg?utm_campaign=index&utm_content=original&utm_source=commons.wikimedia.org",
     tipo: "deseado",
     chipInfo: "Apple A17 Pro · 48MP ProRAW",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "7,450 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -747,22 +743,20 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "16GB RAM · 1TB · Snapdragon 8 Elite · Titanio Black",
+    especificaciones: "12GB RAM · 1TB · Snapdragon 8 Elite for Galaxy · Titanio negro",
     puntuacion: 9.8,
     precio: 5196000,
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Samsung_Galaxy_S25_Ultra_2025_%282%29.jpg/960px-Samsung_Galaxy_S25_Ultra_2025_%282%29.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,790,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & PANEL ANTIRREFLEJO",
-          descripcion: "6.9'' Dynamic LTPO AMOLED 2X QHD+ · 1-120Hz · 2600 nits · Vidrio Gorilla Armor antirreflejante.",
+          descripcion: "6.9'' Dynamic AMOLED 2X QHD+ · 1-120Hz · Vision Booster · Corning Gorilla Armor 2 antirreflejos.",
         },
         {
           icono: "⚡",
@@ -772,7 +766,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB RAM LPDDR5X · 1TB Almacenamiento interno UFS 4.0.",
+          descripcion: "12GB RAM · 1TB de almacenamiento.",
         },
         {
           icono: "📸",
@@ -782,12 +776,12 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "🔋",
           titulo: "BATERÍA Y CARGA",
-          descripcion: "5000 mAh · Carga rápida 45W por cable + 15W Inalámbrica Fast Wireless Charge.",
+          descripcion: "5000 mAh típicos · carga por cable de hasta 45W · carga inalámbrica Fast Wireless Charging 2.0.",
         },
         {
           icono: "🌐",
           titulo: "CONECTIVIDAD & SOPORTE",
-          descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · One UI 7 con 7 años de actualizaciones.",
+          descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · Android 15 con One UI 7 · 7 generaciones de actualizaciones del sistema y 7 años de seguridad.",
         },
       ],
       metricas: [
@@ -805,25 +799,23 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
   {
     id: 207,
     ranking: 3,
-    nombre: "OnePlus 13 Pro 5G",
+    nombre: "OnePlus 13",
     marca: "OnePlus",
     categoria: "moviles",
-    especificaciones: "16GB RAM · 512GB · Hasselblad Gen 5 · 6000mAh",
+    especificaciones: "16GB RAM · 512GB · Snapdragon 8 Elite · Cámara Hasselblad de 5.ª generación",
     puntuacion: 9.6,
     precio: 3596000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg?utm_campaign=index&utm_content=original&utm_source=commons.wikimedia.org",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,820,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & RENDIMIENTO VISUAL",
-          descripcion: "6.82'' BOE X2 Oriental OLED 2K (3168x1440) · 120Hz LTPO · 4500 nits pico · DisplayMate A++.",
+          descripcion: "6.82'' ProXDR LTPO 4.1 · QHD+ 3168x1440 · 1-120Hz · 1600 nits HBM / 4500 nits máximo.",
         },
         {
           icono: "⚡",
@@ -833,22 +825,22 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB LPDDR5X · 512GB UFS 4.0 con optimización Trinity Engine.",
+          descripcion: "16GB LPDDR5X · 512GB UFS 4.0.",
         },
         {
           icono: "📸",
-          titulo: "CÁMARAS HASSELBLAD GEN 5",
-          descripcion: "50MP Sony LYT-808 OIS + 50MP Periscopio 3X + 50MP Ultra Gran Angular con calibración de color Hasselblad.",
+          titulo: "CÁMARAS HASSELBLAD DE 5.ª GENERACIÓN",
+          descripcion: "50MP Sony LYT-808 OIS + 50MP teleobjetivo 3X + 50MP ultra gran angular · cámara Hasselblad de 5.ª generación.",
         },
         {
           icono: "🔋",
           titulo: "BATERÍA GLACIAL & CARGA",
-          descripcion: "6000 mAh Glacial Battery de silicio · Carga ultrarrápida 100W SUPERVOOC + 50W AIRVOOC inalámbrica.",
+          descripcion: "6000 mAh típicos (doble celda) · 100W SUPERVOOC por cable + 50W AIRVOOC inalámbrica.",
         },
         {
           icono: "🌐",
           titulo: "CONECTIVIDAD & RESISTENCIA",
-          descripcion: "Certificación IP68/IP69 contra agua y chorros a alta presión · Wi-Fi 7 · Bluetooth 5.4 · OxygenOS 15.",
+          descripcion: "Wi-Fi 7 · Bluetooth 5.4 · NFC · USB 3.2 Gen 1 · OxygenOS 15 basado en Android 15.",
         },
       ],
       metricas: [
@@ -1402,19 +1394,17 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
     nombre: "Xiaomi 14T Pro 5G Leica",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "Dimensity 9300+ · Óptica Leica Summilux · 144Hz AMOLED",
+    especificaciones: "12GB RAM · 512GB · Dimensity 9300+ · Óptica Leica Summilux · 144Hz AMOLED",
     puntuacion: 9.5,
     precio: 2396000,
     precioOriginal: 3196000,
     descuento: "-25%",
     tendencia: "sube",
     cambioRanking: 3,
-    imagen: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Xiaomi_14T_Pro.jpg/960px-Xiaomi_14T_Pro.jpg?utm_campaign=index&utm_content=thumbnail&utm_source=commons.wikimedia.org",
     tipo: "oferta",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,100,000 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -1439,12 +1429,12 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
         {
           icono: "🔋",
           titulo: "BATERÍA Y HYPERCHARGE DUAL",
-          descripcion: "5000 mAh · Carga rápida 120W por cable (100% en 19 min) + 50W Carga Inalámbrica inalámbrica rápida.",
+          descripcion: "5000 mAh típicos · HyperCharge de 120W por cable + carga inalámbrica de 50W.",
         },
         {
           icono: "🌐",
           titulo: "CONECTIVIDAD & RESISTENCIA IP68",
-          descripcion: "5G · Wi-Fi 7 · Bluetooth 5.4 · NFC · Certificación IP68 sumergible · Xiaomi HyperOS con Android 14.",
+          descripcion: "5G · Wi-Fi 6 · Bluetooth 5.4 · NFC · IP68 · Xiaomi HyperOS.",
         },
       ],
       metricas: [

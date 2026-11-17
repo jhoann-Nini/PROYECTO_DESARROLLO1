@@ -591,6 +591,47 @@ const xiaomi14TPro = crearFicha(
   ],
 );
 
+
+const nothingEarAFuente = "nothing-ear-a-black";
+const nothingEarAVariante = "black";
+const nothingEarABlack = crearFicha(
+  "auriculares",
+  "verificado",
+  [{
+    id: nothingEarAVariante,
+    modelo: "Nothing Ear (a)",
+    color: "Black",
+  }],
+  [
+    atributo("tipo", "Tipo de auricular", "audio", "Intraauricular inalámbrico true wireless", nothingEarAFuente),
+    atributo("driver", "Transductor", "audio", "Dinámico de 11 mm · diafragma PMI + TPU", nothingEarAFuente),
+    atributo("certificacion_audio", "Audio de alta resolución", "audio", "Hi-Res Audio · LDAC", nothingEarAFuente),
+    atributo("codecs", "Códecs Bluetooth", "audio", "AAC · SBC · LDAC", nothingEarAFuente),
+    atributo("cancelacion_ruido", "Cancelación activa de ruido", "audio", "Smart ANC adaptativa hasta 45 dB · modo transparencia", nothingEarAFuente),
+    atributo("microfonos", "Micrófonos", "audio", "3 por auricular · Clear Voice Technology", nothingEarAFuente),
+    atributo("bluetooth", "Versión Bluetooth", "conectividad", "Bluetooth 5.3 · conexión dual", nothingEarAFuente),
+    atributo("autonomia_sin_anc", "Reproducción sin ANC", "bateria", "Hasta 9,5 h los auriculares · 42,5 h con estuche", nothingEarAFuente),
+    atributo("autonomia_anc", "Reproducción con ANC", "bateria", "Hasta 5,5 h los auriculares · 24,5 h con estuche", nothingEarAFuente),
+    atributo("carga_rapida", "Carga rápida", "bateria", "10 minutos de carga para hasta 10 horas de reproducción (ANC desactivado)", nothingEarAFuente),
+    atributo("bateria_auricular", "Capacidad de batería por auricular", "bateria", 46, nothingEarAFuente, "mAh"),
+    atributo("bateria_estuche", "Capacidad de batería del estuche", "bateria", 500, nothingEarAFuente, "mAh"),
+    atributo("puerto_carga", "Puerto de carga", "conectividad", "USB Type-C · sin carga inalámbrica", nothingEarAFuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP54 auriculares · IPX2 estuche", nothingEarAFuente),
+    atributo("peso_auricular", "Peso por auricular", "dimensiones", 4.8, nothingEarAFuente, "g"),
+    atributo("peso_estuche", "Peso del estuche", "dimensiones", 39.6, nothingEarAFuente, "g"),
+    atributo("dimensiones_auricular", "Dimensiones de cada auricular", "dimensiones", "30,9 × 21,7 × 24,3 mm", nothingEarAFuente),
+    atributo("dimensiones_estuche", "Dimensiones del estuche", "dimensiones", "47,6 × 63,3 × 22,7 mm", nothingEarAFuente),
+    atributo("aplicacion", "Aplicación y funciones", "software", "Nothing X · ecualizador personalizable · Bass Enhance · modo baja latencia · ChatGPT en teléfonos Nothing compatibles", nothingEarAFuente),
+  ],
+  [
+    metrica("autonomia_sin_anc", "Reproducción sin ANC con estuche", "bateria", 42.5, "h", nothingEarAFuente),
+    metrica("autonomia_anc", "Reproducción con ANC con estuche", "bateria", 24.5, "h", nothingEarAFuente),
+  ],
+  [
+    fuente("nothing-ear-a-black", "Nothing — Ear (a), variante Black y especificaciones oficiales", "https://nothing.tech/products/ear-a?Colour=Black", nothingEarAVariante, "La página oficial permite seleccionar el acabado Black y publica transductor, códecs, ANC, autonomía, Bluetooth, micrófonos, resistencia, dimensiones y pesos."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -606,6 +647,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   oneplus13: oneplus13,
   redmiNote14ProPlus: redmiNote14ProPlus,
   xiaomi14TPro: xiaomi14TPro,
+  nothingEarABlack: nothingEarABlack,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -636,6 +678,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("oneplus 13")) return oneplus13;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
   if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
+  if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
   return null;
 }
 
@@ -668,6 +711,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return redmiNote14ProPlus;
     case 306:
       return xiaomi14TPro;
+    case 301:
+      return nothingEarABlack;
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
@@ -681,6 +726,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("oneplus 13")) return oneplus13;
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
       if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
+      if (n.includes("nothing ear (a)") || n.includes("nothing ear a")) return nothingEarABlack;
       return null;
     }
   }

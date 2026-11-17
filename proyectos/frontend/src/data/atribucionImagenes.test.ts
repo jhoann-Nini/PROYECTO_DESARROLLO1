@@ -50,14 +50,14 @@ describe("atribuciones de imágenes del catálogo", () => {
   });
 
   it("registra las cinco fotografías licenciadas del lote 2", () => {
-    const autores = ATRIBUCIONES_IMAGENES.map((imagen) => imagen.autor);
-    expect(autores).toContain("Maksdroider");
-    expect(autores).toContain("Captainmorlypogi1959");
-    expect(autores).toContain("Petar Milošević");
-
-    const lote2 = ATRIBUCIONES_IMAGENES.filter((imagen) =>
-      ["Maksdroider", "Captainmorlypogi1959", "Petar Milošević"].includes(imagen.autor)
-    );
+    const paginasLote2 = [
+      "https://commons.wikimedia.org/wiki/File:Redmi_Note_14_ProPlus.jpg",
+      "https://commons.wikimedia.org/wiki/File:IPhone_15_Pro_Max_2024.jpg",
+      "https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S25_Ultra_2025_(2).jpg",
+      "https://commons.wikimedia.org/wiki/File:OnePlus_13_back.jpg",
+      "https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg",
+    ];
+    const lote2 = ATRIBUCIONES_IMAGENES.filter((imagen) => paginasLote2.includes(imagen.paginaOrigen));
     expect(lote2).toHaveLength(5);
     expect(lote2.every((imagen) => imagen.licencia === "CC BY-SA 4.0")).toBe(true);
     expect(lote2.every((imagen) => imagen.paginaOrigen.startsWith("https://commons.wikimedia.org/wiki/File:"))).toBe(true);

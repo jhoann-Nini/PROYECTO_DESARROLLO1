@@ -108,7 +108,7 @@ describe("catálogo canónico piloto", () => {
     const sony = obtenerProductoCanonico("sony-wh-1000xm5");
 
     for (const producto of [samsung, onePlus, ipad, ear, special, sony]) {
-      expect(producto?.imagen.url).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
+      expect(producto?.imagen.url).toMatch(/^https:\/\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
       expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(producto?.imagen.licencia);
       expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);

@@ -94,6 +94,16 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía de un iPhone 13 blanco; no verifica por sí sola la capacidad de 128 GB.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/4/40/Redmi_Note_14_ProPlus.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Redmi_Note_14_ProPlus.jpg",
+    autor: "Maksdroider",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía del Redmi Note 14 Pro+ 5G en acabado Lavender Purple; el registro del catálogo no especifica color.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

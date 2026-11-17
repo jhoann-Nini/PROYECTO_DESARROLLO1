@@ -299,6 +299,19 @@ export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
       mercado: "Colombia",
     }],
   },
+  {
+    id: "nothing-ear-a-black",
+    nombre: "Nothing Ear (a)",
+    marca: "Nothing",
+    categoria: "auriculares",
+    estadoVerificacion: "verificado",
+    referencias: [referencia("ofertas", 301, "black")],
+    variantes: [{
+      id: "black",
+      nombre: "Black",
+      color: "Black",
+    }],
+  },
 ];
 
 function buscarRegistro(

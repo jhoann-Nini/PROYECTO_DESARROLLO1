@@ -1202,7 +1202,7 @@ describe("FichaTecnicaModal — integración del contrato FichaTecnicaV2", () =>
     expect(screen.getByText("SKU-V2-256")).toBeDefined();
     expect(screen.getByText("Colombia")).toBeDefined();
     expect(screen.getByText("Diagonal de pantalla")).toBeDefined();
-    expect(screen.getByText("6.8 in")).toBeDefined();
+    expect(screen.getByText("6.8 in", { selector: "span" })).toBeDefined();
     expect(screen.getByText("Capacidad de batería")).toBeDefined();
     expect(screen.getByText("Comparable automáticamente")).toBeDefined();
     expect(screen.getByText("Geekbench 6")).toBeDefined();

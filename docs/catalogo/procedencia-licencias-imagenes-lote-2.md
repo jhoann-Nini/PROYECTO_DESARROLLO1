@@ -2,7 +2,7 @@
 
 Fecha de consulta: 17 de noviembre de 2026.
 
-Este lote incorpora cinco modelos adicionales al catálogo canónico. Cada ficha técnica usa fuentes de fabricante para el modelo y variante indicados. La imagen tiene su propio registro de procedencia y licencia: la verificación de una no sustituye a la otra.
+Este lote incorpora seis modelos adicionales al catálogo canónico. Cada ficha técnica usa fuentes de fabricante para el modelo y variante indicados. La imagen tiene su propio registro de procedencia y licencia: la verificación de una no sustituye a la otra.
 
 ## Imágenes incorporadas
 
@@ -13,6 +13,7 @@ Este lote incorpora cinco modelos adicionales al catálogo canónico. Cada ficha
 | Samsung Galaxy S25 Ultra | Captainmorlypogi1959 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S25_Ultra_2025_(2).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Se usa la miniatura de 960 px de Wikimedia Commons; la variante 12 GB/1 TB se verifica por separado con Samsung |
 | OnePlus 13 | Maksdroider | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:OnePlus_13_back.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía de la parte trasera en Black Eclipse; no se infiere la configuración de memoria a partir de la imagen |
 | Xiaomi 14T Pro | Petar Milošević | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Se usa la miniatura de 960 px de Wikimedia Commons; muestra el acabado Titan Blue |
+| Nothing Ear (a) Black | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing-Tokyo-2024-04-18_151.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Fotografía de exhibición del estuche negro; color Black confirmado también en el selector oficial de Nothing |
 
 ## Fuentes técnicas primarias
 
@@ -23,6 +24,7 @@ Este lote incorpora cinco modelos adicionales al catálogo canónico. Cada ficha
 | Galaxy S25 Ultra · 12 GB/1 TB | [Samsung Newsroom Colombia](https://news.samsung.com/co/la-serie-samsung-galaxy-s25-establece-el-estandar-del-smartphone-con-ia-convirtiendolo-en-un-verdadero-companero-de-ia) | La tabla regional confirma 12 GB + 1 TB; también pantalla, cámaras, batería, conectividad, IP68 y soporte |
 | OnePlus 13 · 16 GB/512 GB | [OnePlus México — especificaciones](https://www.oneplus.com/mx/13/specs) | 16 GB LPDDR5X, 512 GB UFS 4.0, Snapdragon 8 Elite, 6.000 mAh y especificación regional de carga 100 W/50 W |
 | Xiaomi 14T Pro · 12 GB/512 GB | [Xiaomi Colombia — especificaciones](https://www.mi.com/co/product/xiaomi-14t-pro/specs/) | 12 GB LPDDR5X, 512 GB UFS 4.0, Dimensity 9300+, batería típica 5.000 mAh y carga 120 W/50 W |
+| Nothing Ear (a) · Black | [Nothing — Ear (a), selector Black y especificaciones](https://nothing.tech/products/ear-a?Colour=Black) | Acabado Black, transductor de 11 mm, LDAC, ANC de hasta 45 dB, Bluetooth 5.3, autonomía y resistencia |
 
 ## Correcciones de coherencia aplicadas
 

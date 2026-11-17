@@ -49,7 +49,7 @@ describe("atribuciones de imágenes del catálogo", () => {
     expect(iphone?.nota).toContain("128 GB");
   });
 
-  it("registra las cinco fotografías licenciadas del lote 2", () => {
+  it("registra las seis fotografías licenciadas del lote 2", () => {
     const paginasLote2 = [
       "https://commons.wikimedia.org/wiki/File:Redmi_Note_14_ProPlus.jpg",
       "https://commons.wikimedia.org/wiki/File:IPhone_15_Pro_Max_2024.jpg",

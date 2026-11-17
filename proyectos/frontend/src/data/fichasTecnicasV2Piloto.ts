@@ -466,6 +466,64 @@ const iphone13 = crearFicha(
   ],
 );
 
+
+const redmiNote14Fuente = "xiaomi-redmi-note14proplus-co-specs";
+const redmiNote14Variante = "12gb-512gb-co";
+const redmiNote14ProPlus = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: redmiNote14Variante,
+    modelo: "Xiaomi Redmi Note 14 Pro+ 5G",
+    ram: "12 GB LPDDR4X",
+    almacenamiento: "512 GB UFS 2.2",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 7s Gen 3 · 4 nm · CPU octa-core hasta 2,5 GHz · GPU Adreno", redmiNote14Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "CrystalRes AMOLED · Dolby Vision · HDR10+", redmiNote14Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, redmiNote14Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles (1.5K)", redmiNote14Fuente),
+    atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, redmiNote14Fuente, "Hz"),
+    atributo("brillo_maximo", "Brillo máximo de pico", "pantalla", 3000, redmiNote14Fuente, "nits"),
+    atributo("profundidad_color", "Profundidad de color", "pantalla", 12, redmiNote14Fuente, "bits"),
+    atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus 2", redmiNote14Fuente),
+    atributo("ram", "Memoria RAM física", "memoria", 12, redmiNote14Fuente, "GB LPDDR4X"),
+    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, redmiNote14Fuente, "GB UFS 2.2"),
+    atributo("extension_ram", "Extensión de memoria", "memoria", "Admite extensión de RAM virtual usando espacio de almacenamiento; no equivale a RAM física", redmiNote14Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", 200, redmiNote14Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 8, redmiNote14Fuente, "mpx"),
+    atributo("camara_macro", "Cámara macro", "camaras", 2, redmiNote14Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 20, redmiNote14Fuente, "mpx"),
+    atributo("estabilizacion", "Estabilización cámara principal", "camaras", "Óptica (OIS)", redmiNote14Fuente),
+    atributo("apertura_principal", "Apertura cámara principal", "camaras", "f/1.65", redmiNote14Fuente),
+    atributo("video", "Grabación de vídeo trasera", "camaras", "4K a 24/30 fps", redmiNote14Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5110, redmiNote14Fuente, "mAh"),
+    atributo("carga_rapida", "Carga HyperCharge", "bateria", 120, redmiNote14Fuente, "W"),
+    atributo("dimensiones", "Dimensiones según acabado", "diseno", "162,53 × 74,67 mm; grosor 8,75 mm (otros acabados) o 8,85 mm (Lavender Purple)", redmiNote14Fuente),
+    atributo("peso", "Peso según acabado", "diseno", "210,14 g (otros acabados) o 205,13 g (Lavender Purple)", redmiNote14Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", redmiNote14Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G", redmiNote14Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6/6E; disponibilidad 6E según región", redmiNote14Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", redmiNote14Fuente),
+    atributo("nfc", "NFC", "conectividad", true, redmiNote14Fuente),
+    atributo("sim", "Configuración SIM", "conectividad", "Dual nano-SIM o nano-SIM + eSIM, según región/operador", redmiNote14Fuente),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", redmiNote14Fuente),
+    atributo("almacenamiento_expandible", "Expansión microSD", "almacenamiento", false, redmiNote14Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", redmiNote14Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", redmiNote14Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5110, "mAh", redmiNote14Fuente),
+    metrica("carga_rapida", "Carga HyperCharge", "bateria", 120, "W", redmiNote14Fuente),
+  ],
+  [
+    fuente("xiaomi-redmi-note14proplus-co-buy", "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, variante 12 GB + 512 GB", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/buy/?gid=4223712110", redmiNote14Variante, "La tienda oficial colombiana identifica explícitamente la variante Lavender Purple de 12 GB + 512 GB.", "2026-11-17"),
+    fuente(redmiNote14Fuente, "Xiaomi Colombia — Redmi Note 14 Pro+ 5G, especificaciones", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/specs/", redmiNote14Variante, "Ficha oficial de chipset, memoria, almacenamiento, pantalla, cámaras, batería, resistencia y conectividad.", "2026-11-17"),
+    fuente("xiaomi-redmi-note14proplus-memory-extension", "Xiaomi Support — Redmi Note 14 Pro+ 5G, extensión de memoria", "https://www.mi.com/es/support/faq/details/KA-757974/", null, "Confirma que la extensión crea RAM adicional utilizando espacio del almacenamiento interno; no debe confundirse con RAM física.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -478,6 +536,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
   appleIphone13_128: iphone13,
+  xiaomiRedmiNote14ProPlus12_512: redmiNote14ProPlus,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -495,6 +554,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
 ): FichaTecnicaV2 | null {
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
+  if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
   if (n.includes("nothing ear 2")) return nothingEar2;
@@ -514,6 +574,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   nombre: string,
 ): FichaTecnicaV2 | null {
   switch (id) {
+    case 107:
+      return redmiNote14ProPlus;
     case 102:
       return galaxyA55;
     case 104:
@@ -533,6 +595,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return sonyWh1000Xm5;
     default: {
       const n = normalizarNombre(nombre);
+      if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
       if (n.includes("galaxy a55")) return galaxyA55;
       if (n.includes("iphone 13") && n.includes("128")) return iphone13;
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;

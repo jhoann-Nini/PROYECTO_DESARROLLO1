@@ -59,13 +59,14 @@ function fuente(
   url: string,
   varianteId: string | null = null,
   observaciones: string | null = null,
+  fechaConsulta: string = CONSULTA,
 ): FuenteFichaV2 {
   return {
     id,
     tipo: "fabricante",
     nombre,
     url,
-    fecha_consulta: CONSULTA,
+    fecha_consulta: fechaConsulta,
     varianteId,
     observaciones,
   };
@@ -370,6 +371,103 @@ const sonyWh1000Xm5 = crearFicha(
   ],
 );
 
+
+const galaxyA55Fuente = "samsung-galaxy-a55-5g";
+const galaxyA55Variante = "8gb-256gb-co";
+const galaxyA55 = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: galaxyA55Variante,
+    modelo: "Samsung Galaxy A55 5G",
+    ram: "8 GB",
+    almacenamiento: "256 GB",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Samsung Exynos 1480 · CPU de ocho núcleos", galaxyA55Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super AMOLED FHD+", galaxyA55Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.6, galaxyA55Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2340 × 1080 píxeles", galaxyA55Fuente),
+    atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, galaxyA55Fuente, "Hz"),
+    atributo("ram", "Memoria RAM", "memoria", 8, galaxyA55Fuente, "GB"),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, galaxyA55Fuente, "GB"),
+    atributo("almacenamiento_expandible", "Expansión por microSD", "almacenamiento", "Hasta 1 TB", galaxyA55Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", 50, galaxyA55Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, galaxyA55Fuente, "mpx"),
+    atributo("camara_macro", "Cámara macro", "camaras", 5, galaxyA55Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 32, galaxyA55Fuente, "mpx"),
+    atributo("estabilizacion", "Estabilización de cámara principal", "camaras", "Óptica (OIS)", galaxyA55Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, galaxyA55Fuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable", "bateria", 25, galaxyA55Fuente, "W"),
+    atributo("dimensiones", "Dimensiones", "diseno", "161,1 × 77,4 × 8,2 mm", galaxyA55Fuente),
+    atributo("peso", "Peso", "diseno", 213, galaxyA55Fuente, "g"),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP67", galaxyA55Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6 (802.11ax)", galaxyA55Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", galaxyA55Fuente),
+    atributo("nfc", "NFC", "conectividad", true, galaxyA55Fuente),
+    atributo("usb", "Interfaz USB", "conectividad", "USB Type-C 2.0", galaxyA55Fuente),
+    atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "Android 14 · One UI 6.1", galaxyA55Fuente),
+    atributo("seguridad", "Seguridad", "software", "Samsung Knox Vault", galaxyA55Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.6, "in", galaxyA55Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", galaxyA55Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", galaxyA55Fuente),
+    metrica("peso", "Peso", "diseno", 213, "g", galaxyA55Fuente),
+  ],
+  [
+    fuente("samsung-a55-newsroom-co", "Samsung Newsroom Colombia — Galaxy A55 5G, lanzamiento y especificaciones", "https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos", galaxyA55Variante, "Fuente regional oficial: variante de lanzamiento 8 GB + 256 GB, pantalla, cámaras, batería, Android 14/One UI 6.1 e IP67.", "2026-11-17"),
+    fuente("samsung-a55-specs-co", "Samsung Colombia — Galaxy A55 5G, especificaciones del modelo SM-A556", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-iceblue-128gb-sm-a556elblltc/", galaxyA55Variante, "Fuente oficial para dimensiones, peso, pantalla, cámaras, conectividad, batería y USB. La página de producto enlazada corresponde a una variante 8 GB/128 GB; no se usa para determinar la capacidad de la variante de catálogo.", "2026-11-17"),
+    fuente("samsung-a55-exynos", "Samsung Electronics — 2024 Half-year Business Report", "https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2024_Half_Interim_Report.pdf", galaxyA55Variante, "Documento corporativo identifica Exynos 1480 y plataforma Android 14/One UI 6.1.", "2026-11-17"),
+  ],
+);
+
+const iphone13Fuente = "apple-iphone-13";
+const iphone13Variante = "128gb";
+const iphone13 = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: iphone13Variante,
+    modelo: "Apple iPhone 13",
+    almacenamiento: "128 GB",
+    mercado: null,
+  }],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A15 Bionic · CPU de 6 núcleos · GPU de 4 núcleos · Neural Engine de 16 núcleos", iphone13Fuente),
+    atributo("pantalla", "Pantalla", "pantalla", "Super Retina XDR · OLED", iphone13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, iphone13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2532 × 1170 píxeles", iphone13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 460, iphone13Fuente),
+    atributo("brillo_tipico", "Brillo máximo típico", "pantalla", 800, iphone13Fuente, "nits"),
+    atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1200, iphone13Fuente, "nits"),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 128, iphone13Fuente, "GB"),
+    atributo("camara_principal", "Cámara principal", "camaras", 12, iphone13Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, iphone13Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal TrueDepth", "camaras", 12, iphone13Fuente, "mpx"),
+    atributo("estabilizacion", "Estabilización de cámara principal", "camaras", "Óptica por desplazamiento del sensor", iphone13Fuente),
+    atributo("capacidad_video", "Grabación de vídeo", "camaras", "4K hasta 60 fps · Dolby Vision HDR hasta 4K a 60 fps", iphone13Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos en condiciones de laboratorio", iphone13Fuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "146,7 × 71,5 × 7,65 mm", iphone13Fuente),
+    atributo("peso", "Peso", "diseno", 174, iphone13Fuente, "g"),
+    atributo("red_movil", "Red móvil", "conectividad", "5G sub-6 GHz", iphone13Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6 (802.11ax)", iphone13Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.0", iphone13Fuente),
+    atributo("nfc", "NFC", "conectividad", true, iphone13Fuente),
+    atributo("conector", "Conector", "conectividad", "Lightning", iphone13Fuente),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 19, iphone13Fuente, "h"),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, "in", iphone13Fuente),
+    metrica("peso", "Peso", "diseno", 174, "g", iphone13Fuente),
+    metrica("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 19, "h", iphone13Fuente),
+  ],
+  [
+    fuente("apple-iphone-13-tech-specs", "Apple Support — iPhone 13, especificaciones técnicas", "https://support.apple.com/es-la/111872", iphone13Variante, "La fuente oficial enumera capacidad de 128 GB, chip, pantalla, cámaras, resistencia, dimensiones, peso y conectividad.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -380,6 +478,8 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleMacbookPro16M3Max: macbookPro16M3Max,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
+  samsungGalaxyA55: galaxyA55,
+  appleIphone13_128: iphone13,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -397,6 +497,8 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
 ): FichaTecnicaV2 | null {
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
+  if (n.includes("galaxy a55")) return galaxyA55;
+  if (n.includes("iphone 13") && n.includes("128")) return iphone13;
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
@@ -414,6 +516,10 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   nombre: string,
 ): FichaTecnicaV2 | null {
   switch (id) {
+    case 102:
+      return galaxyA55;
+    case 104:
+      return iphone13;
     case 202:
       return samsung256;
     case 300:
@@ -429,6 +535,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return sonyWh1000Xm5;
     default: {
       const n = normalizarNombre(nombre);
+      if (n.includes("galaxy a55")) return galaxyA55;
+      if (n.includes("iphone 13") && n.includes("128")) return iphone13;
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
       if (n.includes("s24 ultra")) return samsung256;
       if (n.includes("oneplus pad 2")) return oneplusPad2;

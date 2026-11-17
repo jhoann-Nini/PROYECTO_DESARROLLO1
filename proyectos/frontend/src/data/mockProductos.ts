@@ -531,42 +531,65 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
 ];
 
 export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
-  {
+    {
     id: 201,
     ranking: 1,
     nombre: "iPhone 15 Pro Max (256GB)",
     marca: "Apple",
     categoria: "moviles",
-    especificaciones: "A17 Pro 3nm · Teleobjetivo Tetraprisma 5X · Titanio Grado 5 · iOS 18",
+    especificaciones: "Apple A17 Pro · 256GB · pantalla OLED ProMotion 120Hz · cámara principal 48MP · titanio",
     puntuacion: 9.6,
-    precio: 5190000, // $ 5.190.000 COP
+    precio: 5190000,
     precioOriginal: 5900000,
     descuento: "-12%",
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/9/99/IPhone_15_Pro_Max.jpg",
     tipo: "deseado",
-    chipInfo: "Apple A17 Pro · 48MP ProRAW",
+    chipInfo: "Apple A17 Pro · cámara principal 48MP · teleobjetivo 5x",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "7,450 Puntos",
       secciones: [
         {
           icono: "📱",
-          titulo: "PANTALLA SUPER RETINA XDR PROMOTION",
-          descripcion: "6.7'' OLED con ProMotion 120Hz adaptativo · Dynamic Island · 2000 nits pico exterior.",
+          titulo: "PANTALLA SUPER RETINA XDR",
+          descripcion: "6.7'' OLED · 2796 × 1290 · 460 ppi · ProMotion adaptativo hasta 120Hz · 2000 nits pico exterior · Dynamic Island.",
+        },
+        {
+          icono: "⚡",
+          titulo: "CHIP Y RENDIMIENTO",
+          descripcion: "Apple A17 Pro · CPU de 6 núcleos · GPU de 6 núcleos · Neural Engine de 16 núcleos.",
+        },
+        {
+          icono: "💾",
+          titulo: "ALMACENAMIENTO",
+          descripcion: "256GB de almacenamiento interno.",
+        },
+        {
+          icono: "📸",
+          titulo: "SISTEMA DE CÁMARAS PRO",
+          descripcion: "48MP principal con OIS + 12MP ultra gran angular + teleobjetivo 12MP 2x + teleobjetivo tetraprisma 12MP 5x · frontal TrueDepth 12MP.",
+        },
+        {
+          icono: "🔋",
+          titulo: "BATERÍA Y CARGA",
+          descripcion: "Hasta 29 horas de reproducción de vídeo · hasta 25 horas de streaming · MagSafe/Qi2 hasta 15W.",
+        },
+        {
+          icono: "🌐",
+          titulo: "DISEÑO, RESISTENCIA Y CONECTIVIDAD",
+          descripcion: "Titanio · IP68 hasta 6m/30min · 5G · Wi-Fi 6E · Bluetooth 5.3 · USB-C con USB 3 hasta 10Gb/s.",
         },
       ],
       metricas: [
-        { nombre: "Rendimiento Global", puntos: 9.8 },
-        { nombre: "Cámaras y Zoom 5X", puntos: 9.7 },
+        { nombre: "Rendimiento A17 Pro", puntos: 9.8 },
+        { nombre: "Sistema de cámaras Pro 5x", puntos: 9.7 },
       ],
       tiendas: [
         { nombre: "Apple Colombia Store", precio: 5190000, envioGratis: true },
       ],
     },
-  },
+  },,
   {
     id: 202,
     ranking: 2,
@@ -739,67 +762,65 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
       ],
     },
   },
-  {
+    {
     id: 206,
     ranking: 2,
     nombre: "Samsung Galaxy S25 Ultra",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "16GB RAM · 1TB · Snapdragon 8 Elite · Titanio Black",
+    especificaciones: "12GB RAM · 1TB · Snapdragon 8 Elite for Galaxy · pantalla QHD+ 120Hz · cámara principal 200MP",
     puntuacion: 9.8,
     precio: 5196000,
     tendencia: "sube",
     cambioRanking: 1,
-    imagen: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Samsung_Galaxy_S25_Ultra_2025.jpg",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "2,790,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & PANEL ANTIRREFLEJO",
-          descripcion: "6.9'' Dynamic LTPO AMOLED 2X QHD+ · 1-120Hz · 2600 nits · Vidrio Gorilla Armor antirreflejante.",
+          descripcion: "6.9'' Dynamic AMOLED 2X QHD+ · 3120 × 1440 · 1–120Hz · Gorilla Armor 2 antirreflejo · Vision Booster.",
         },
         {
           icono: "⚡",
           titulo: "PROCESADOR FOR GALAXY",
-          descripcion: "Qualcomm Snapdragon 8 Elite for Galaxy overclockeado con NPU avanzada para Galaxy AI.",
+          descripcion: "Qualcomm Snapdragon 8 Elite for Galaxy · plataforma móvil optimizada para Galaxy AI.",
         },
         {
           icono: "💾",
           titulo: "MEMORIA RAM Y ALMACENAMIENTO",
-          descripcion: "16GB RAM LPDDR5X · 1TB Almacenamiento interno UFS 4.0.",
+          descripcion: "12GB RAM · 1TB de almacenamiento interno. Samsung Colombia ofrece también 12/256GB y 12/512GB.",
         },
         {
           icono: "📸",
           titulo: "SISTEMA CUÁDRUPLE DE CÁMARAS",
-          descripcion: "200MP OIS + 50MP Periscopio 5X + 50MP Ultra Gran Angular + 10MP Teleobjetivo 3X + S-Pen integrado.",
+          descripcion: "200MP principal OIS + 50MP ultra gran angular + 50MP teleobjetivo 5x OIS + 10MP teleobjetivo 3x OIS · frontal 12MP · S Pen integrado.",
         },
         {
           icono: "🔋",
           titulo: "BATERÍA Y CARGA",
-          descripcion: "5000 mAh · Carga rápida 45W por cable + 15W Inalámbrica Fast Wireless Charge.",
+          descripcion: "5000mAh típicos · carga por cable de 45W · carga inalámbrica rápida y Wireless PowerShare.",
         },
         {
           icono: "🌐",
           titulo: "CONECTIVIDAD & SOPORTE",
-          descripcion: "Chasis de Titanio Grado 5 · 5G · Wi-Fi 7 · Bluetooth 5.4 · One UI 7 con 7 años de actualizaciones.",
+          descripcion: "Titanium Black · IP68 · 5G · Wi-Fi 7 · Bluetooth 5.4 · One UI 7 basado en Android 15 · siete generaciones de actualizaciones de sistema operativo.",
         },
       ],
       metricas: [
-        { nombre: "Rendimiento y Potencia", puntos: 9.9 },
+        { nombre: "Rendimiento Snapdragon 8 Elite", puntos: 9.9 },
         { nombre: "Fotografía y Zoom 100x", puntos: 9.9 },
         { nombre: "Pantalla Dynamic AMOLED 2X", puntos: 9.9 },
-        { nombre: "Batería y Autonomía", puntos: 9.3 },
+        { nombre: "Batería y autonomía", puntos: 9.3 },
       ],
       tiendas: [
         { nombre: "Samsung Official Store", precio: 5196000, envioGratis: true },
         { nombre: "Amazon Prime", precio: 5076000, envioGratis: true },
       ],
     },
-  },
+  },,
     {
     id: 207,
     ranking: 3,

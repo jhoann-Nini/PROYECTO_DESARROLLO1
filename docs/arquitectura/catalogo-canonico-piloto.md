@@ -41,6 +41,8 @@ En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, App
 | `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
 | `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
 | `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
+| `apple-iphone-15-pro-max` | Apple iPhone 15 Pro Max | deseados:201 (256 GB) |
+| `samsung-galaxy-s25-ultra` | Samsung Galaxy S25 Ultra | deseados:206 (12 GB/1 TB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -186,7 +188,7 @@ Esta actualización documental describe el estado del código integrado en `main
 
 ## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
 
-El lote de trabajo amplía la cobertura controlada a **doce modelos** (quince variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+El lote de trabajo amplía la cobertura controlada a **catorce modelos** (diecinueve variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
 
 | Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|
@@ -194,6 +196,8 @@ El lote de trabajo amplía la cobertura controlada a **doce modelos** (quince va
 | Apple iPhone 13 — 128 GB | `verificado` | CC BY-SA 4.0, autor Kskhh | Ficha técnica oficial Apple y fotografía del modelo; el registro identifica 128 GB. |
 | Xiaomi Redmi Note 14 Pro+ 5G — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigieron datos heredados incorrectos: RAM física 12 GB LPDDR4X, UFS 2.2, batería 5110 mAh, cámara frontal 20 MP y carga 120 W. Se eliminó el benchmark no respaldado y se distingue RAM virtual de RAM física. |
 | OnePlus 13 5G — 16 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigió el nombre inexistente «OnePlus 13 Pro» a OnePlus 13; se alineó con la variante oficial 16/512 y se eliminó el benchmark no documentado. |
+| Apple iPhone 15 Pro Max — 256 GB | `verificado` | CC BY-SA 4.0, autor Kyu3 | Ficha Apple Colombia; se reemplazó la imagen genérica y se eliminó el benchmark Geekbench no respaldado. |
+| Samsung Galaxy S25 Ultra — 12 GB/1 TB | `verificado` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Se corrigió RAM de 16 a 12 GB según Samsung Colombia; se verificó la variante 1 TB y se eliminó el benchmark AnTuTu no respaldado. |
 
 Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
 

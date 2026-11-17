@@ -5,7 +5,11 @@ import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { idApiDeViewModel } from "@/data/productoViewModel";
 import { useState, useEffect, useMemo } from "react";
-import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
+import { normalizarFichaProducto, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
+import type { FichaNormalizada } from "@/data/specsHelper";
+import { normalizarFichaTecnicaV2 } from "@/data/normalizadorFicha";
+import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
+import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
 import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
 import {
   obtenerMiValoracion,
@@ -237,10 +241,63 @@ export default function FichaTecnicaModal({
     }
   };
 
+  const fichaTecnicaV2 = useMemo<FichaTecnicaV2 | null>(() => {
+    if (!producto) return null;
+    if ("origen" in producto) {
+      if (producto.fichaTecnicaV2) {
+        return normalizarFichaTecnicaV2(producto.fichaTecnicaV2, { categoriaPorDefecto: producto.categoria });
+      }
+      const caracteristicas = Object.fromEntries(Object.entries(producto.especificaciones).filter(([, valor]) => typeof valor === "string" && valor.trim().length > 0));
+      return normalizarFichaTecnicaV2(caracteristicas, { categoriaPorDefecto: producto.categoria });
+    }
+    return normalizarFichaTecnicaV2(producto);
+  }, [producto]);
+
+  const usaFichaV2 = useMemo(() => {
+    if (!producto) return false;
+    if ("origen" in producto) return true;
+    if ("caracteristicas" in producto) {
+      const raw = producto.caracteristicas;
+      return Boolean(raw && typeof raw === "object" && !Array.isArray(raw) && raw.version_esquema === 2);
+    }
+    return false;
+  }, [producto]);
+
   const ficha = useMemo(() => {
     if (!producto) return null;
+    if ("origen" in producto) {
+      const secciones = (fichaTecnicaV2?.atributos ?? []).map((atributo) => ({
+        icono: INFO_CATEGORIAS[producto.categoria].icono,
+        titulo: atributo.nombre.toUpperCase(),
+        descripcion: String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
+      }));
+      const fichaViewModel: FichaNormalizada = {
+        categoriaTipo: producto.categoria,
+        categoriaEtiqueta: producto.categoriaEtiqueta,
+        categoriaIcono: INFO_CATEGORIAS[producto.categoria].icono,
+        marca: producto.marca,
+        nombre: producto.nombre,
+        precio: producto.precioCOP,
+        imagen: producto.imagen || "",
+        puntuacionGlobal: null,
+        resumen: "",
+        secciones,
+        metricas: [],
+        benchmark: null,
+        tiendas: [],
+        tieneEspecificacionesReales: secciones.length > 0,
+        datosTecnicos: producto.datosFichaTecnica,
+      };
+      return fichaViewModel;
+    }
+    if (usaFichaV2 && "caracteristicas" in producto) {
+      const caracteristicas = Object.fromEntries((fichaTecnicaV2?.atributos ?? []).map((atributo) => [
+        atributo.clave, String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
+      ]));
+      return normalizarFichaProducto({ ...(producto as Producto), caracteristicas });
+    }
     return normalizarFichaProducto(producto as unknown as Producto | DispositivoKimovil);
-  }, [producto]);
+  }, [producto, fichaTecnicaV2, usaFichaV2]);
 
   const pestanasSpecs = useMemo(() => {
     if (!ficha || !ficha.secciones || ficha.secciones.length === 0) return [];
@@ -504,7 +561,9 @@ export default function FichaTecnicaModal({
                 <p className="mt-2 border-l-2 border-[var(--color-brand-blue)]/60 pl-3 text-sm leading-relaxed text-[var(--color-subtle)]">
                   {ficha.resumen}
                 </p>
-                {ficha.datosTecnicos && (
+                {usaFichaV2 && fichaTecnicaV2 && <FichaTecnicaV2Panel ficha={fichaTecnicaV2} />}
+
+                {!usaFichaV2 && ficha.datosTecnicos && (
                   <section
                     aria-label="Datos técnicos verificados"
                     className="mt-4 space-y-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"

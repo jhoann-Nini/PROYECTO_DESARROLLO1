@@ -39,6 +39,49 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     }
   });
 
+  it("resuelve también productos API por nombre sin inferir una variante ambigua", () => {
+    const base = {
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    };
+    const s24 = normalizarDesdeProducto({
+      ...base,
+      idProducto: 901,
+      nombre: "Samsung Galaxy S24 Ultra 512GB",
+    });
+    const ipad = normalizarDesdeProducto({
+      ...base,
+      idProducto: 902,
+      nombre: "Apple iPad Pro 11 pulgadas M4",
+    });
+    const mac = normalizarDesdeProducto({
+      ...base,
+      idProducto: 903,
+      nombre: "Apple MacBook Pro 16 pulgadas M3 Max",
+    });
+    const sony = normalizarDesdeProducto({
+      ...base,
+      idProducto: 904,
+      nombre: "Sony WH-1000XM5",
+    });
+    const samsungAmbiguo = normalizarDesdeProducto({
+      ...base,
+      idProducto: 905,
+      nombre: "Samsung Galaxy S24 Ultra",
+    });
+
+    expect(s24.variantes[0]?.id).toBe("512gb");
+    expect(ipad.variantes[0]?.id).toBe("16gb-1tb");
+    expect(mac.variantes[0]?.id).toBe("48gb-1tb");
+    expect(sony.fuentes[0]?.url).toContain("sony.com");
+    expect(samsungAmbiguo.variantes).toEqual([]);
+    expect(samsungAmbiguo.fuentes).toEqual([]);
+  });
+
   it("distingue las variantes de 256 GB y 512 GB del Galaxy S24 Ultra", () => {
     const s24_256 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 202);
     const s24_512 = ULTIMAS_OFERTAS.find((producto) => producto.id === 300);

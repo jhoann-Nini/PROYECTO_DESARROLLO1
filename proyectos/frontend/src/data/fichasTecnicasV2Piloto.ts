@@ -182,7 +182,7 @@ function crearSamsung(almacenamiento: "256" | "512"): FichaTecnicaV2 {
     [
       fuente("samsung-s24-ultra-specs", "Samsung — Galaxy S24 Series B2B Specification Sheet", "https://images.samsung.com/is/content/samsung/assets/us/2401/business/mobile/phones/galaxy/Galaxy_S24_Series_B2B_Spec_Sheet.pdf", varianteId, "La hoja oficial enumera 12 GB RAM y opciones de 256 GB, 512 GB y 1 TB para S24 Ultra."),
       fuente("samsung-s24-ultra-co", "Samsung Colombia — Galaxy S24 Ultra", "https://www.samsung.com/co/smartphones/galaxy-s24-ultra/specs/", varianteId, "Página oficial regional de especificaciones; la disponibilidad de colores y opciones puede variar por mercado."),
-      fuente("samsung-s24-ultra-business", "Samsung Colombia — Galaxy S24 Ultra, ficha empresarial", "https://www.samsung.com/co/business/smartphones/galaxy-s/galaxy-s24-ultra-sm-s928bzvultc/", varianteId, "Fuente oficial regional para cámaras, resolución, dimensiones, peso, conectividad y protección. El peso mmWave/Sub6 varía por mercado."),
+      fuente("samsung-s24-ultra-business", "Samsung Colombia — Galaxy S24 Ultra, ficha empresarial", "https://www.samsung.com/co/business/smartphones/galaxy-s/galaxy-s24-ultra-sm-s928bzvultc/", null, "Fuente oficial regional de modelo para cámaras, resolución, dimensiones, peso, conectividad y protección. No se usa para distinguir la capacidad de almacenamiento. El peso mmWave/Sub6 varía por mercado."),
     ],
   );
 }

@@ -298,7 +298,7 @@ const macbookPro16M3Max = crearFicha(
     atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, macFuente, "Hz"),
     atributo("energia_bateria", "Energía de batería", "bateria", 100, macFuente, "Wh"),
     atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, macFuente, "h"),
-    atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", 400, macFuente, "GB"),
+    atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", "400 GB/s", macFuente),
   ],
   [
     metrica("ram", "Memoria unificada", "memoria", 48, "GB", macFuente),
@@ -324,7 +324,7 @@ const nothingEar2 = crearFicha(
   [
     atributo("transductores", "Transductor", "audio", 11.6, earFuente, "mm"),
     atributo("diafragma", "Diafragma", "audio", "Graphene + PU (poliuretano)", earFuente),
-    atributo("cancelacion_ruido", "Cancelación activa de ruido máxima declarada", "audio", 40, earFuente, "dB"),
+    atributo("cancelacion_ruido", "Cancelación activa de ruido máxima declarada", "audio", "Hasta 40 dB", earFuente),
     atributo("codecs", "Códecs Bluetooth", "conectividad", "AAC, SBC, LHDC", earFuente),
     atributo("bateria_auriculares", "Autonomía de auriculares (ANC desactivado)", "bateria", "Hasta 6.3 h", earFuente),
     atributo("bateria_estuche", "Autonomía total con estuche (ANC desactivado)", "bateria", "Hasta 36 h", earFuente),
@@ -333,7 +333,7 @@ const nothingEar2 = crearFicha(
   ],
   [
     metrica("tamano_transductor", "Diámetro del transductor", "audio", 11.6, "mm", earFuente),
-    metrica("cancelacion_ruido", "Cancelación activa de ruido máxima declarada", "audio", 40, "dB" as UnidadCanonica, earFuente),
+    
   ],
   [
     fuente("nothing-ear-2", "Nothing — Ear (2), technical details", "https://checkout-us.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones técnicas; el color Transparent White se conserva de la variante registrada y requiere cotejo independiente."),

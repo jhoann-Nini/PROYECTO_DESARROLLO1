@@ -17,10 +17,11 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack,
     FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55,
     FICHAS_TECNICAS_V2_PILOTO.appleIphone13,
+    FICHAS_TECNICAS_V2_PILOTO.xiaomi14Ultra,
   ];
 
   it("mantiene las seis fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
-    expect(fichas).toHaveLength(8);
+    expect(fichas).toHaveLength(9);
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.estado_verificacion).toBe("verificado");
@@ -127,6 +128,20 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     ]));
   });
 
+  it("verifica Xiaomi 14 Ultra 16 GB/512 GB con fuentes de Xiaomi", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.xiaomi14Ultra;
+    expect(ficha.variantes[0]).toMatchObject({
+      id: "16gb-512gb",
+      modelo: "Xiaomi 14 Ultra",
+      ram: "16 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Snapdragon 8 Gen 3") }),
+      expect.objectContaining({ clave: "carga_rapida", valor: expect.stringContaining("90 W") }),
+    ]));
+  });
+
   it("asocia cada ficha a su registro original sin cambiar sus IDs", () => {
     const iphone = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201)!;
     const s25 = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206)!;
@@ -136,6 +151,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     const earA = ULTIMAS_OFERTAS.find((item) => item.id === 301)!;
     const a55 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 102)!;
     const iphone13 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 104)!;
+    const xiaomi14Ultra = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204)!;
 
     expect(normalizarDesdeKimovil(iphone).variantes[0]?.id).toBe("256gb");
     expect(normalizarDesdeKimovil(s25).variantes[0]?.id).toBe("12gb-1tb");
@@ -145,5 +161,6 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     expect(normalizarDesdeKimovil(earA).variantes[0]?.id).toBe("black");
     expect(normalizarDesdeKimovil(a55).variantes[0]?.id).toBe("8gb-256gb");
     expect(normalizarDesdeKimovil(iphone13).variantes[0]?.id).toBe("128gb");
+    expect(normalizarDesdeKimovil(xiaomi14Ultra).variantes[0]?.id).toBe("16gb-512gb");
   });
 });

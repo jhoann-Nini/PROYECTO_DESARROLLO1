@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra seis fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(6);
+  it("registra ocho fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(8);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -35,6 +35,18 @@ describe("atribuciones de imágenes del catálogo", () => {
     expect(sony?.licencia).toBe("CC BY-ND 2.0");
     expect(sony?.titulo).toBe("SONY Noise Canceling Headphone WH-1000XM5");
     expect(sony?.cambios).toContain("sin modificaciones");
+  });
+
+  it("registra Samsung Galaxy A55 5G con CC BY-SA 4.0", () => {
+    const a55 = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Captainmorlypogi1959");
+    expect(a55?.licencia).toBe("CC BY-SA 4.0");
+    expect(a55?.paginaOrigen).toContain("Samsung_Galaxy_A55_5G_2024");
+  });
+
+  it("registra iPhone 13 con CC BY-SA 4.0", () => {
+    const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
+    expect(iphone?.licencia).toBe("CC BY-SA 4.0");
+    expect(iphone?.nota).toContain("128 GB");
   });
 
   it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {

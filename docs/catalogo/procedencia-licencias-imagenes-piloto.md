@@ -17,6 +17,7 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 | Sony WH-1000XM5 (Silver) | HS You | [Flickr](https://www.flickr.com/photos/thebetterday4u/52436931175/) | [CC BY-ND 2.0](https://creativecommons.org/licenses/by-nd/2.0/) | Título original: “SONY Noise Canceling Headphone WH-1000XM5”; archivo original sin modificaciones, mostrado a menor tamaño |
 | Samsung Galaxy A55 5G | Captainmorlypogi1959 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_A55_5G_2024.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía del modelo en exhibición; original sin modificaciones |
 | Apple iPhone 13 | Kskhh | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:IPhone_13.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía de un iPhone 13 blanco; original sin modificaciones |
+| Redmi Note 14 Pro+ 5G | Maksdroider | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Redmi_Note_14_ProPlus.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía del modelo en acabado Lavender Purple; original sin modificaciones |
 
 ## Cumplimiento
 

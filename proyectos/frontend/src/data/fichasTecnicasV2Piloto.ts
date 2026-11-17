@@ -193,6 +193,12 @@ const oneplusPad2 = crearFicha(
     atributo("camara_frontal", "Cámara frontal", "camaras", 8, oneplusFuente, "mpx"),
     atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7", oneplusFuente),
     atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", oneplusFuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "268,66 × 195,06 × 6,49 mm", oneplusFuente),
+    atributo("peso", "Peso", "diseno", 584, oneplusFuente, "g"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "OxygenOS 14.1", oneplusFuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 303, oneplusFuente, "ppi"),
+    atributo("brillo", "Brillo", "pantalla", "600 nits (HBM 900 nits)", oneplusFuente),
+    atributo("puerto_usb", "Puerto USB", "conectividad", "USB Type-C 3.2 Gen 1, hasta 5 Gbps", oneplusFuente),
   ],
   [
     metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 12.1, "in", oneplusFuente),
@@ -201,7 +207,8 @@ const oneplusPad2 = crearFicha(
     metrica("energia_bateria", "Energía de batería", "bateria", 36.99, "Wh", oneplusFuente),
   ],
   [
-    fuente("oneplus-pad-2", "OnePlus — Pad 2 specifications", "https://www.oneplus.com/us/oneplus-pad-2/specs", oneplusVariante, "La ficha oficial estadounidense publica 12 GB RAM, 256 GB UFS 3.1 y las especificaciones técnicas asociadas."),
+    fuente("oneplus-pad-2", "OnePlus — Pad 2 specifications (US)", "https://www.oneplus.com/us/oneplus-pad-2/specs", oneplusVariante, "La ficha oficial estadounidense respalda la variante comercial de 12 GB RAM y 256 GB UFS 3.1."),
+    fuente("oneplus-pad-2-cl", "OnePlus Chile — Pad 2, especificaciones", "https://www.oneplus.com/cl/oneplus-pad-2/specs", oneplusVariante, "Fuente oficial regional en español para pantalla, dimensiones, peso, sistema, batería, cámaras, conectividad y puerto USB. Se usa como referencia técnica y no como prueba del mercado de venta de la variante."),
   ],
 );
 

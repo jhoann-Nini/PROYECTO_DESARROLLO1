@@ -220,6 +220,85 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 109)],
     variantes: [],
   },
+
+];
+
+/** Lote 2 de identidades canónicas: se incorpora sin alterar los ocho registros piloto. */
+export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
+  {
+    id: "redmi-note-14-pro-plus-5g",
+    nombre: "Redmi Note 14 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 107, "8gb-256gb")],
+    variantes: [{
+      id: "8gb-256gb",
+      nombre: "8 GB RAM · 256 GB · Colombia",
+      ram: "8 GB LPDDR4X",
+      almacenamiento: "256 GB UFS 2.2",
+      mercado: "Colombia",
+    }],
+  },
+  {
+    id: "apple-iphone-15-pro-max",
+    nombre: "Apple iPhone 15 Pro Max",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 201, "256gb")],
+    variantes: [{
+      id: "256gb",
+      nombre: "256 GB",
+      almacenamiento: "256 GB",
+      mercado: "Colombia",
+    }],
+  },
+  {
+    id: "samsung-galaxy-s25-ultra",
+    nombre: "Samsung Galaxy S25 Ultra",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 206, "12gb-1tb")],
+    variantes: [{
+      id: "12gb-1tb",
+      nombre: "12 GB RAM · 1 TB · Titanio negro · Colombia",
+      ram: "12 GB",
+      almacenamiento: "1 TB",
+      color: "Titanio negro",
+      mercado: "Colombia",
+    }],
+  },
+  {
+    id: "oneplus-13",
+    nombre: "OnePlus 13",
+    marca: "OnePlus",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 207, "16gb-512gb")],
+    variantes: [{
+      id: "16gb-512gb",
+      nombre: "16 GB RAM · 512 GB",
+      ram: "16 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+    }],
+  },
+  {
+    id: "xiaomi-14t-pro",
+    nombre: "Xiaomi 14T Pro",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("ofertas", 306, "12gb-512gb")],
+    variantes: [{
+      id: "12gb-512gb",
+      nombre: "12 GB RAM · 512 GB · Colombia",
+      ram: "12 GB LPDDR5X",
+      almacenamiento: "512 GB UFS 4.0",
+      mercado: "Colombia",
+    }],
+  },
 ];
 
 function buscarRegistro(
@@ -276,7 +355,8 @@ function imagenDeRegistro(
 export function obtenerProductoCanonico(
   id: string,
 ): ProductoCanonicoResuelto | null {
-  const producto = CATALOGO_CANONICO_PILOTO.find((item) => item.id === id);
+  const producto = [...CATALOGO_CANONICO_PILOTO, ...CATALOGO_CANONICO_ADICIONAL]
+    .find((item) => item.id === id);
   if (!producto) return null;
 
   const registros = producto.referencias
@@ -323,38 +403,45 @@ export function obtenerCatalogoCanonicoPiloto(): ProductoCanonicoResuelto[] {
   });
 }
 
-/**
- * Comprueba integridad referencial del piloto sin alterar los datos originales.
- */
-export function validarCatalogoCanonicoPiloto(): string[] {
+export function obtenerCatalogoCanonicoCompleto(): ProductoCanonicoResuelto[] {
+  return [...CATALOGO_CANONICO_PILOTO, ...CATALOGO_CANONICO_ADICIONAL].map((producto) => {
+    const resuelto = obtenerProductoCanonico(producto.id);
+    if (!resuelto) {
+      throw new Error(`No se pudo resolver el producto canónico: ${producto.id}`);
+    }
+    return resuelto;
+  });
+}
+
+function validarProductosCanonicos(productos: readonly ProductoCanonico[]): string[] {
   const errores: string[] = [];
   const ids = new Set<string>();
   const referenciasUsadas = new Set<string>();
 
-  for (const producto of CATALOGO_CANONICO_PILOTO) {
-    if (ids.has(producto.id)) {
-      errores.push(`ID canónico duplicado: ${producto.id}`);
-    }
+  for (const producto of productos) {
+    if (ids.has(producto.id)) errores.push(`ID canónico duplicado: ${producto.id}`);
     ids.add(producto.id);
-
     const variantes = new Set(producto.variantes.map((variante) => variante.id));
+
     for (const origen of producto.referencias) {
       const clave = `${origen.coleccion}:${origen.idRegistro}`;
-      if (referenciasUsadas.has(clave)) {
-        errores.push(`Referencia de origen asignada más de una vez: ${clave}`);
-      }
+      if (referenciasUsadas.has(clave)) errores.push(`Referencia de origen asignada más de una vez: ${clave}`);
       referenciasUsadas.add(clave);
-
-      if (!buscarRegistro(origen)) {
-        errores.push(`No existe el registro de origen: ${clave}`);
-      }
+      if (!buscarRegistro(origen)) errores.push(`No existe el registro de origen: ${clave}`);
       if (origen.varianteId && !variantes.has(origen.varianteId)) {
-        errores.push(
-          `La referencia ${clave} apunta a una variante inexistente: ${origen.varianteId}`,
-        );
+        errores.push(`La referencia ${clave} apunta a una variante inexistente: ${origen.varianteId}`);
       }
     }
   }
-
   return errores;
+}
+
+/** Comprueba integridad referencial de los ocho productos piloto. */
+export function validarCatalogoCanonicoPiloto(): string[] {
+  return validarProductosCanonicos(CATALOGO_CANONICO_PILOTO);
+}
+
+/** Comprueba integridad referencial del piloto y del lote 2. */
+export function validarCatalogoCanonicoCompleto(): string[] {
+  return validarProductosCanonicos([...CATALOGO_CANONICO_PILOTO, ...CATALOGO_CANONICO_ADICIONAL]);
 }

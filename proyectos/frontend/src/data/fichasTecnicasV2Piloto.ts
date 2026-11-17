@@ -370,6 +370,227 @@ const sonyWh1000Xm5 = crearFicha(
   ],
 );
 
+
+const iphone15Fuente = "apple-iphone-15-pro-max";
+const iphone15Variante = "256gb";
+const iphone15ProMax = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: iphone15Variante,
+    modelo: "iPhone 15 Pro Max",
+    almacenamiento: "256 GB",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A17 Pro · CPU de 6 núcleos · GPU de 6 núcleos · Neural Engine de 16 núcleos", iphone15Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Super Retina XDR OLED · Dynamic Island · pantalla siempre activa", iphone15Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.7, iphone15Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2796 × 1290 píxeles", iphone15Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "460 ppi", iphone15Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", "ProMotion adaptativo hasta 120 Hz", iphone15Fuente),
+    atributo("brillo", "Brillo máximo", "pantalla", "1000 nits típico · 1600 nits HDR · 2000 nits en exteriores", iphone15Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, iphone15Fuente, "GB"),
+    atributo("camara_principal", "Cámara principal", "camaras", "48 MP · 24 mm · apertura ƒ/1.78 · estabilización óptica por desplazamiento de sensor", iphone15Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "12 MP · 13 mm · campo de visión 120°", iphone15Fuente),
+    atributo("teleobjetivo", "Teleobjetivo", "camaras", "12 MP · tetraprisma · zoom óptico 5x", iphone15Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "TrueDepth 12 MP · ƒ/1.9", iphone15Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos en condiciones de laboratorio", iphone15Fuente),
+    atributo("conectividad", "Conectividad inalámbrica", "conectividad", "5G · Wi-Fi 6E · Bluetooth 5.3 · NFC", iphone15Fuente),
+    atributo("puertos", "Puerto", "conectividad", "USB-C · USB 3 hasta 10 Gb/s · DisplayPort", iphone15Fuente),
+    atributo("energia_bateria", "Autonomía de reproducción de vídeo", "bateria", 29, iphone15Fuente, "h"),
+    atributo("autonomia_streaming", "Autonomía de vídeo en streaming", "bateria", 25, iphone15Fuente, "h"),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "MagSafe hasta 15 W · Qi2 hasta 15 W", iphone15Fuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "159,9 × 76,7 × 8,25 mm", iphone15Fuente),
+    atributo("peso", "Peso", "dimensiones", 221, iphone15Fuente, "g"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "iOS", iphone15Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.7, "in", iphone15Fuente),
+    metrica("autonomia_video", "Reproducción de vídeo", "bateria", 29, "h", iphone15Fuente),
+  ],
+  [
+    fuente("apple-iphone-15-pro-max", "Apple Support Colombia — iPhone 15 Pro Max, especificaciones técnicas", "https://support.apple.com/es-co/111828", iphone15Variante, "La página oficial enumera 256 GB como capacidad comercial y respalda pantalla, chip, cámaras, conectividad, batería, dimensiones y peso."),
+  ],
+);
+
+const s25UltraFuente = "samsung-galaxy-s25-ultra";
+const s25UltraVariante = "12gb-1tb";
+const samsungGalaxyS25Ultra = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: s25UltraVariante,
+    modelo: "Samsung Galaxy S25 Ultra",
+    ram: "12 GB",
+    almacenamiento: "1 TB",
+    color: "Titanio negro",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 8 Elite for Galaxy", s25UltraFuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Dynamic AMOLED 2X · QHD+ · Vision Booster", s25UltraFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.9, s25UltraFuente, "in"),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", "Adaptativa de 1 a 120 Hz", s25UltraFuente),
+    atributo("ram", "Memoria RAM", "memoria", 12, s25UltraFuente, "GB"),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 1, s25UltraFuente, "TB"),
+    atributo("camara_principal", "Cámara gran angular", "camaras", "200 MP · OIS · F1.7", s25UltraFuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "50 MP · F1.9 · campo de visión 120°", s25UltraFuente),
+    atributo("teleobjetivo", "Cámaras teleobjetivo", "camaras", "50 MP con zoom óptico 5x y OIS · 10 MP con zoom óptico 3x y OIS", s25UltraFuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "12 MP · F2.2", s25UltraFuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, s25UltraFuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable", "bateria", "Hasta 65% en unos 30 minutos con adaptador de 45 W", s25UltraFuente),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 7 · Bluetooth 5.4", s25UltraFuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · inmersión hasta 1,5 m durante 30 minutos en condiciones de laboratorio", s25UltraFuente),
+    atributo("sistema_operativo", "Sistema operativo de lanzamiento", "software", "Android 15 · One UI 7", s25UltraFuente),
+    atributo("actualizaciones", "Soporte de software anunciado", "software", "7 generaciones de actualizaciones del sistema operativo y 7 años de seguridad", s25UltraFuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "162,8 × 77,6 × 8,2 mm", s25UltraFuente),
+    atributo("peso", "Peso", "dimensiones", 218, s25UltraFuente, "g"),
+    atributo("materiales", "Materiales del marco", "diseno", "Titanio", s25UltraFuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.9, "in", s25UltraFuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", s25UltraFuente),
+  ],
+  [
+    fuente("samsung-galaxy-s25-ultra-co", "Samsung Newsroom Colombia — Galaxy S25 Ultra, especificaciones", "https://news.samsung.com/co/la-serie-samsung-galaxy-s25-establece-el-estandar-del-smartphone-con-ia-convirtiendolo-en-un-verdadero-companero-de-ia", s25UltraVariante, "La tabla oficial confirma 12 GB + 1 TB para la variante, además de pantalla, cámaras, batería, dimensiones, peso, conectividad, IP68 y soporte de software."),
+  ],
+);
+
+const oneplus13Fuente = "oneplus-13";
+const oneplus13Variante = "16gb-512gb";
+const oneplus13 = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: oneplus13Variante,
+    modelo: "OnePlus 13",
+    ram: "16 GB LPDDR5X",
+    almacenamiento: "512 GB UFS 4.0",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 8 Elite · CPU Oryon hasta 4,32 GHz · GPU Adreno 830", oneplus13Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "ProXDR LTPO 4.1 · Ceramic Guard · 10 bits", oneplus13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.82, oneplus13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "3168 × 1440 píxeles (QHD+)", oneplus13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "510 ppi", oneplus13Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", "LTPO dinámico de 1 a 120 Hz", oneplus13Fuente),
+    atributo("brillo", "Brillo HBM / máximo", "pantalla", "1600 / 4500 nits", oneplus13Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 16, oneplus13Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5X", oneplus13Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, oneplus13Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 4.0", oneplus13Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "50 MP Sony LYT-808 · OIS · ƒ/1.6", oneplus13Fuente),
+    atributo("teleobjetivo", "Teleobjetivo", "camaras", "50 MP Sony LYT-600 · zoom óptico 3x · OIS", oneplus13Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "50 MP · campo de visión 120°", oneplus13Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "32 MP Sony IMX615", oneplus13Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 6000, oneplus13Fuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable e inalámbrica", "bateria", "100 W SUPERVOOC · 50 W AIRVOOC (especificación regional de México)", oneplus13Fuente),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 7 · Bluetooth 5.4 · NFC", oneplus13Fuente),
+    atributo("puertos", "Puerto USB", "conectividad", "USB Type-C · USB 3.2 Gen 1", oneplus13Fuente),
+    atributo("sistema_operativo", "Sistema operativo de lanzamiento", "software", "OxygenOS 15 basado en Android 15", oneplus13Fuente),
+    atributo("dimensiones", "Dimensiones (Black Eclipse)", "dimensiones", "162,9 × 76,5 × 8,5 mm", oneplus13Fuente),
+    atributo("peso", "Peso (Black Eclipse)", "dimensiones", 213, oneplus13Fuente, "g"),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.82, "in", oneplus13Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 6000, "mAh", oneplus13Fuente),
+  ],
+  [
+    fuente("oneplus-13-mx", "OnePlus México — OnePlus 13, especificaciones oficiales", "https://www.oneplus.com/mx/13/specs", oneplus13Variante, "La página regional confirma 16 GB + 512 GB, cámara, pantalla, conectividad y carga de 100 W/50 W. Las potencias pueden variar por mercado."),
+  ],
+);
+
+const redmi14Fuente = "redmi-note-14-pro-plus";
+const redmi14Variante = "8gb-256gb";
+const redmiNote14ProPlus = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: redmi14Variante,
+    modelo: "REDMI Note 14 Pro+ 5G",
+    ram: "8 GB LPDDR4X",
+    almacenamiento: "256 GB UFS 2.2",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 7s Gen 3 · 4 nm · CPU octa-core hasta 2,5 GHz · GPU Adreno", redmi14Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "CrystalRes AMOLED · Dolby Vision · HDR10+", redmi14Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, redmi14Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles (1.5K)", redmi14Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", 120, redmi14Fuente, "Hz"),
+    atributo("brillo", "Brillo máximo", "pantalla", 3000, redmi14Fuente, "nits"),
+    atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus 2", redmi14Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 8, redmi14Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR4X", redmi14Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, redmi14Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 2.2", redmi14Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "200 MP · OIS · ƒ/1.65 · sensor de 1/1,4 pulgadas", redmi14Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "8 MP · ƒ/2.2", redmi14Fuente),
+    atributo("camara_macro", "Cámara macro", "camaras", "2 MP · ƒ/2.4", redmi14Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "20 MP · ƒ/2.2", redmi14Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5110, redmi14Fuente, "mAh"),
+    atributo("carga_rapida", "Carga rápida", "bateria", 120, redmi14Fuente, "W"),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 6/6E · Bluetooth 5.4 · NFC · Dual SIM", redmi14Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", redmi14Fuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "162,53 × 74,67 × 8,75–8,85 mm según color", redmi14Fuente),
+    atributo("peso", "Peso", "dimensiones", "205,13–210,14 g según color", redmi14Fuente),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", redmi14Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", redmi14Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5110, "mAh", redmi14Fuente),
+  ],
+  [
+    fuente("redmi-note-14-pro-plus-co", "Xiaomi Colombia — REDMI Note 14 Pro+ 5G, especificaciones oficiales", "https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/specs/", redmi14Variante, "La página regional confirma la variante 8 GB + 256 GB y las especificaciones de pantalla, cámaras, batería, conectividad y resistencia."),
+  ],
+);
+
+const xiaomi14tFuente = "xiaomi-14t-pro";
+const xiaomi14tVariante = "12gb-512gb";
+const xiaomi14TPro = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: xiaomi14tVariante,
+    modelo: "Xiaomi 14T Pro",
+    ram: "12 GB LPDDR5X",
+    almacenamiento: "512 GB UFS 4.0",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "MediaTek Dimensity 9300+ · 4 nm · GPU Immortalis-G720 MC12", xiaomi14tFuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "AMOLED · Dolby Vision · HDR10+", xiaomi14tFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, xiaomi14tFuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles", xiaomi14tFuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "446 ppi", xiaomi14tFuente),
+    atributo("tasa_refresco", "Frecuencia de actualización máxima", "pantalla", 144, xiaomi14tFuente, "Hz"),
+    atributo("brillo", "Brillo máximo", "pantalla", 4000, xiaomi14tFuente, "nits"),
+    atributo("ram", "Memoria RAM", "memoria", 12, xiaomi14tFuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5X", xiaomi14tFuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, xiaomi14tFuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 4.0", xiaomi14tFuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "50 MP Leica · sensor Light Fusion 900 · OIS · ƒ/1.6", xiaomi14tFuente),
+    atributo("teleobjetivo", "Teleobjetivo", "camaras", "50 MP Leica · equivalente a 60 mm", xiaomi14tFuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "12 MP Leica · campo de visión 120°", xiaomi14tFuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "32 MP · ƒ/2.0", xiaomi14tFuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, xiaomi14tFuente, "mAh"),
+    atributo("carga_rapida", "Carga por cable e inalámbrica", "bateria", "120 W HyperCharge · 50 W inalámbrica", xiaomi14tFuente),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 6 · Bluetooth 5.4 · NFC", xiaomi14tFuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", xiaomi14tFuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "160,4 × 75,1 × 8,39 mm", xiaomi14tFuente),
+    atributo("peso", "Peso", "dimensiones", 209, xiaomi14tFuente, "g"),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", xiaomi14tFuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", xiaomi14tFuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", xiaomi14tFuente),
+  ],
+  [
+    fuente("xiaomi-14t-pro-co", "Xiaomi Colombia — Xiaomi 14T Pro, especificaciones oficiales", "https://www.mi.com/co/product/xiaomi-14t-pro/specs/", xiaomi14tVariante, "La página regional confirma variantes 12 GB/512 GB, Dimensity 9300+, pantalla, cámaras, batería, conectividad, IP68 y dimensiones."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -380,6 +601,11 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleMacbookPro16M3Max: macbookPro16M3Max,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
+  appleIphone15ProMax: iphone15ProMax,
+  samsungGalaxyS25Ultra: samsungGalaxyS25Ultra,
+  oneplus13: oneplus13,
+  redmiNote14ProPlus: redmiNote14ProPlus,
+  xiaomi14TPro: xiaomi14TPro,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -405,6 +631,11 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
+  if (n.includes("iphone 15 pro max")) return iphone15ProMax;
+  if (n.includes("s25 ultra")) return samsungGalaxyS25Ultra;
+  if (n.includes("oneplus 13")) return oneplus13;
+  if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
   return null;
 }
 
@@ -427,6 +658,16 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return macbookPro16M3Max;
     case 109:
       return sonyWh1000Xm5;
+    case 201:
+      return iphone15ProMax;
+    case 206:
+      return samsungGalaxyS25Ultra;
+    case 207:
+      return oneplus13;
+    case 107:
+      return redmiNote14ProPlus;
+    case 306:
+      return xiaomi14TPro;
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
@@ -435,6 +676,11 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
       if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
       if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
+      if (n.includes("iphone 15 pro max")) return iphone15ProMax;
+      if (n.includes("s25 ultra")) return samsungGalaxyS25Ultra;
+      if (n.includes("oneplus 13")) return oneplus13;
+      if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("xiaomi 14t pro")) return xiaomi14TPro;
       return null;
     }
   }

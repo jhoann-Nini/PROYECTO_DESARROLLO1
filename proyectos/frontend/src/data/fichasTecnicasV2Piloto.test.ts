@@ -49,7 +49,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     ]));
     expect(a55.estado_verificacion).toBe("parcial");
     expect(a55.atributos).toEqual(expect.arrayContaining([
-      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("el registro del catálogo no identifica cuál") }),
+      expect.objectContaining({ clave: "almacenamiento_128gb", valor: 128, fuenteId: "samsung-a55-specs-co" }),
+      expect.objectContaining({ clave: "almacenamiento_256gb", valor: 256, fuenteId: "samsung-a55-newsroom-co" }),
     ]));
     expect(a55.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "procesador", valor: "Samsung Exynos 1480 · CPU de ocho núcleos" }),

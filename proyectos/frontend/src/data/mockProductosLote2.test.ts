@@ -13,6 +13,7 @@ describe("registros comerciales — lote 2", () => {
     expect(producto?.imagen).toContain("Redmi_Note_14_ProPlus.jpg");
     expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
     expect(producto?.detalleSpecs?.secciones?.some((item) =>
       item.descripcion.includes("5110 mAh") && item.descripcion.includes("120W")
     )).toBe(true);

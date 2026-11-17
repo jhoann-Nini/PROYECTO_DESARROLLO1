@@ -104,25 +104,27 @@ describe("catálogo canónico piloto", () => {
     const onePlus = obtenerProductoCanonico("oneplus-pad-2");
     const ipad = obtenerProductoCanonico("apple-ipad-pro-11-m4");
     const ear = obtenerProductoCanonico("nothing-ear-2");
+    const special = obtenerProductoCanonico("nothing-phone-2a-special-edition");
+    const sony = obtenerProductoCanonico("sony-wh-1000xm5");
 
-    for (const producto of [samsung, onePlus, ipad, ear]) {
+    for (const producto of [samsung, onePlus, ipad, ear, special, sony]) {
       expect(producto?.imagen.url).toMatch(/^https:\/\/upload\.wikimedia\.org\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
-      expect(producto?.imagen.licencia).toBe("CC BY-SA 4.0");
-      expect(producto?.imagen.licenciaUrl).toBe("https://creativecommons.org/licenses/by-sa/4.0/");
-      expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(producto?.imagen.licencia);
+      expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
+      expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\//);
       expect(producto?.imagen.autor).not.toBeNull();
       expect(producto?.imagen.atribucion).not.toBeNull();
     }
 
     expect(ear?.imagen.cambios).toContain("archivo recortado");
     expect(ear?.imagen.estadoVerificacion).toBe("verificada");
+    expect(special?.imagen.licencia).toBe("CC BY 4.0");
+    expect(sony?.imagen.licencia).toBe("CC BY-ND 2.0");
 
     const pendientes = [
-      obtenerProductoCanonico("nothing-phone-2a-special-edition"),
       obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5"),
       obtenerProductoCanonico("apple-macbook-pro-16-m3-max"),
-      obtenerProductoCanonico("sony-wh-1000xm5"),
     ];
 
     for (const producto of pendientes) {

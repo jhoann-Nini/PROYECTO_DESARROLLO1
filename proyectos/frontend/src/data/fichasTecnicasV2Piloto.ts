@@ -487,7 +487,7 @@ const redmiNote14ProPlus = crearFicha(
     atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles (1.5K)", redmiNote14Fuente),
     atributo("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, redmiNote14Fuente, "Hz"),
     atributo("brillo_maximo", "Brillo máximo de pico", "pantalla", 3000, redmiNote14Fuente, "nits"),
-    atributo("profundidad_color", "Profundidad de color", "pantalla", 12, redmiNote14Fuente, "bits"),
+    atributo("profundidad_color", "Profundidad de color", "pantalla", "12 bits", redmiNote14Fuente),
     atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus 2", redmiNote14Fuente),
     atributo("ram", "Memoria RAM física", "memoria", 12, redmiNote14Fuente, "GB"),
     atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR4X", redmiNote14Fuente),

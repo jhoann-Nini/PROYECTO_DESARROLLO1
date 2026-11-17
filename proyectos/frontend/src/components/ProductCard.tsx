@@ -44,7 +44,7 @@ export default function ProductCard({
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
-            alt={`Fotografía oficial de ${producto.nombre}`}
+            alt={`Fotografía de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
             loading="lazy"

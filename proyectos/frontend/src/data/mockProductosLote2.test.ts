@@ -6,6 +6,15 @@ import {
 } from "./mockProductos";
 
 describe("registros comerciales — lote 2", () => {
+  it("sustituye la imagen genérica de Redmi Note 13 Pro+ y verifica 12 GB/512 GB", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
+    expect(producto?.especificaciones).toContain("12GB RAM · 512GB");
+    expect(producto?.imagen).toContain("Shibuya-Tokyo---2024-08-28_059.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
+  });
+
   it("reutiliza la imagen licenciada del Galaxy A55 y verifica 8 GB/256 GB", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 102);
     expect(producto?.especificaciones).toContain("8GB RAM · 256GB");

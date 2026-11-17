@@ -86,7 +86,7 @@ export default function TarjetaProducto({
               alt={`Fotografía de ${producto.nombre}`}
               onError={() => setErrorImagen(true)}
               loading="lazy"
-              className={`h-full w-full object-contain transition-transform duration-300 ${imagenSinDerivados ? "" : "group-hover:scale-[1.03]"}`}
+              className={`h-full w-full object-contain ${imagenSinDerivados ? "" : "transition-transform duration-300 group-hover:scale-[1.03]"}`}
             />
           ) : (
             <ProductImagePlaceholder

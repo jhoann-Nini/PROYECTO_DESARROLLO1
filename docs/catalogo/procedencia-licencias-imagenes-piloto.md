@@ -14,7 +14,7 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 | Apple iPad Pro 11 pulgadas M4 | メイド理世 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:About_iPad_Pro_11-inch_(M4).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Original sin modificaciones |
 | Nothing Ear (2) | Ganesh Mohan T | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing_ear2_(cropped).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Se usa el archivo recortado publicado por el autor, sin modificaciones adicionales |
 | Nothing Phone (2a) Special Edition | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing-Design-Event-Tokyo-2024-07-05_028.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Original sin modificaciones; fotografía de la edición especial en exhibición |
-| Sony WH-1000XM5 (Silver) | HS You | [Flickr](https://www.flickr.com/photos/thebetterday4u/52436931175/) | [CC BY-ND 2.0](https://creativecommons.org/licenses/by-nd/2.0/) | Archivo original sin modificaciones; se muestra a menor tamaño en la interfaz |
+| Sony WH-1000XM5 (Silver) | HS You | [Flickr](https://www.flickr.com/photos/thebetterday4u/52436931175/) | [CC BY-ND 2.0](https://creativecommons.org/licenses/by-nd/2.0/) | Título original: “SONY Noise Canceling Headphone WH-1000XM5”; archivo original sin modificaciones, mostrado a menor tamaño |
 
 ## Cumplimiento
 

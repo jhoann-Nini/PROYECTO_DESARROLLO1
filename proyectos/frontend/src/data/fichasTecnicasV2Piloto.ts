@@ -136,7 +136,7 @@ const nothingPhone = crearFicha(
   ],
 );
 
-const samsungFuente = "samsung-s24-ultra";
+const samsungFuente = "samsung-s24-ultra-specs";
 function crearSamsung(almacenamiento: "256" | "512"): FichaTecnicaV2 {
   const varianteId = `${almacenamiento}gb`;
   return crearFicha(
@@ -258,7 +258,7 @@ const ipadPro11M4 = crearFicha(
     atributo("almacenamiento", "Almacenamiento", "almacenamiento", 1, ipadFuente, "TB"),
     atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1600, ipadFuente, "nits"),
     atributo("brillo_sdr", "Brillo máximo SDR", "pantalla", 1000, ipadFuente, "nits"),
-    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 264, ipadFuente, "puntos"),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "264 ppi", ipadFuente),
     atributo("contraste", "Relación de contraste", "pantalla", "2.000.000:1", ipadFuente),
     atributo("camara_trasera", "Cámara trasera gran angular", "camaras", 12, ipadFuente, "mpx"),
     atributo("camara_frontal", "Cámara frontal TrueDepth horizontal", "camaras", 12, ipadFuente, "mpx"),

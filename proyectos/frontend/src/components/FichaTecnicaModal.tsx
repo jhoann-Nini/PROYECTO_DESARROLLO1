@@ -20,6 +20,7 @@ import {
   type ValoracionPublicaStats,
 } from "@/services/api";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import CreditoImagenProducto from "@/components/CreditoImagenProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
@@ -423,6 +424,7 @@ export default function FichaTecnicaModal({
                   {precioFormateado}
                 </span>
               </div>
+              <CreditoImagenProducto url={ficha.imagen} />
 
               {/* Evaluación Global y Técnica */}
               <div className="rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">

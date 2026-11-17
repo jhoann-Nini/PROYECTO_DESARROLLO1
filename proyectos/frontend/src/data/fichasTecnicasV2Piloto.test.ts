@@ -14,7 +14,7 @@ import {
   normalizarDesdeProducto,
 } from "@/data/normalizadorFicha";
 
-describe("fichas técnicas V2 de los ocho productos piloto", () => {
+describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
     expect(fichas).toHaveLength(12); // Samsung S24 tiene dos variantes comerciales.

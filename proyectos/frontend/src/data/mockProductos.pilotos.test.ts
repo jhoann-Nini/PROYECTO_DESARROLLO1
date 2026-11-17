@@ -81,6 +81,24 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("completa iPhone 15 Pro Max 256GB con imagen exacta y elimina benchmark sin fuente", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201);
+    expect(producto?.nombre).toBe("iPhone 15 Pro Max (256GB)");
+    expect(producto?.especificaciones).toContain("A17 Pro");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/9/99/IPhone_15_Pro_Max.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+  });
+
+  it("corrige Galaxy S25 Ultra a 12GB RAM/1TB según Samsung Colombia y elimina benchmark sin fuente", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206);
+    expect(producto?.especificaciones).toContain("12GB RAM · 1TB");
+    expect(producto?.especificaciones).not.toContain("16GB RAM");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/1/1e/Samsung_Galaxy_S25_Ultra_2025.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+  });
+
   it("normaliza el registro OnePlus 13 y elimina el nombre de modelo inexistente y el benchmark no respaldado", () => {
     const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 207);
     expect(producto?.nombre).toBe("OnePlus 13 5G");

@@ -81,6 +81,17 @@ describe("fichas técnicas de los ocho productos piloto", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("corrige Redmi Note 14 Pro+ a 12GB físicos/512GB y elimina datos técnicos falsos", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107);
+    expect(producto?.especificaciones).toContain("12GB RAM física · 512GB");
+    expect(producto?.especificaciones).toContain("UFS 2.2");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/40/Redmi_Note_14_ProPlus.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5110mAh") && seccion.descripcion.includes("120W"))).toBe(true);
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("20MP") && seccion.descripcion.includes("cámara frontal"))).toBe(true);
+  });
+
   it("no presenta -42dB como benchmark verificado del Sony WH-1000XM5", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 109);
     expect(producto?.nombre).toContain("Sony WH-1000XM5");

@@ -209,7 +209,7 @@ const ipadFuente = "apple-ipad-pro-m4";
 const ipadVariante = "16gb-1tb";
 const ipadPro11M4 = crearFicha(
   "tablets",
-  "verificado",
+  "parcial",
   [{
     id: ipadVariante,
     modelo: "Apple iPad Pro de 11 pulgadas (M4)",
@@ -241,7 +241,7 @@ const lenovoFuente = "lenovo-psref-21jk0005ri";
 const lenovoVariante = "16gb-512gb";
 const thinkpadE14Gen5 = crearFicha(
   "laptops",
-  "verificado",
+  "parcial",
   [{
     id: lenovoVariante,
     modelo: "ThinkPad E14 Gen 5 Intel",
@@ -281,7 +281,7 @@ const macFuente = "apple-macbook-pro-m3-max";
 const macVariante = "48gb-1tb";
 const macbookPro16M3Max = crearFicha(
   "laptops",
-  "verificado",
+  "parcial",
   [{
     id: macVariante,
     modelo: "MacBook Pro de 16 pulgadas (noviembre de 2023)",
@@ -392,6 +392,11 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
+  if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
+  if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
+  if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
+  if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
+  if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
   return null;
 }
 

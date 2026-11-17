@@ -64,7 +64,7 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
      * con la resolución individual de reportes.
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph(attributePaths = {"resena", "resena.producto", "resena.usuario", "usuario"})
+    @EntityGraph(attributePaths = {"usuario"})
     @Query("SELECT r FROM ReporteResena r WHERE r.resena.idResena = :idResena ORDER BY r.fechaCreacion ASC, r.idReporte ASC")
     List<ReporteResena> findByResenaIdForUpdate(@Param("idResena") Long idResena);
 

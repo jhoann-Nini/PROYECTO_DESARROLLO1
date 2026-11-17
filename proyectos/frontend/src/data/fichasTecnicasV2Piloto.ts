@@ -674,7 +674,9 @@ const samsungGalaxyA55 = crearFicha(
     metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", a55Fuente),
   ],
   [
-    fuente("samsung-galaxy-a55-colombia", "Samsung Colombia — Galaxy A55 5G, especificaciones oficiales", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-lemon-128gb-sm-a556ezylltc/", a55Variante, "La página regional confirma 8 GB de RAM, disponibilidad de 256 GB, Exynos 1480, pantalla, cámaras, batería, IP67, Wi-Fi 6, Bluetooth 5.3 y peso."),
+    fuente("samsung-galaxy-a55-colombia", "Samsung Colombia — Galaxy A55 5G 256 GB, especificaciones", "https://www.samsung.com/co/smartphones/galaxy-a/galaxy-a55-5g-awesome-navy-256gb-sm-a556ezkmltc/", a55Variante, "La página regional confirma 8 GB de RAM y 256 GB, además de pantalla, cámaras, batería, IP67, Wi-Fi 6, Bluetooth 5.3, dimensiones y peso."),
+    fuente("samsung-a55-newsroom-co", "Samsung Newsroom Colombia — Galaxy A55 5G", "https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos", a55Variante, "Confirma la variante 8 GB + 256 GB, batería, cámaras, IP67, cuatro generaciones de Android/One UI y cinco años de seguridad."),
+    fuente("samsung-exynos-showcase", "Samsung Semiconductor — Exynos Processor Showcase", "https://semiconductor.samsung.com/processor/showcase/smartphone/", a55Variante, "Identifica el Galaxy A55 5G como equipo equipado con Exynos 1480."),
   ],
 );
 

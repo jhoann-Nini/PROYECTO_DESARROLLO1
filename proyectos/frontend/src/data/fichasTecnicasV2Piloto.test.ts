@@ -61,6 +61,25 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(ear.fuentes[0]?.url).toBe("https://checkout-es.nothing.tech/products/ear-2");
   });
 
+  it("incluye las especificaciones ampliadas del ThinkPad y MacBook con fuentes oficiales", () => {
+    const lenovo = FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5;
+    const mac = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
+    expect(lenovo.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "graficos", valor: "Intel Iris Xe Graphics" }),
+      expect.objectContaining({ clave: "frecuencia_pantalla", valor: 60, unidad: "Hz" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "camara" }),
+      expect.objectContaining({ clave: "sistema_operativo", valor: "Sin sistema operativo preinstalado" }),
+    ]));
+    expect(mac.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "brillo_hdr", valor: 1600, unidad: "nits" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "conectividad_inalambrica", valor: "Wi-Fi 6E · Bluetooth 5.3" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 99.6, unidad: "Wh" }),
+      expect.objectContaining({ clave: "peso", valor: 2.16, unidad: "kg" }),
+    ]));
+  });
+
   it("conserva el país real del MTM Lenovo y no confunde EET con un país", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.variantes[0]).toMatchObject({
       sku: "21JK0005RI",

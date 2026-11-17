@@ -429,4 +429,117 @@ Criterios validados:
 - **Pruebas de integración web y seguridad:** `com.example.backend.controller.GeneralRateLimitingIntegrationTest` (6 pruebas aprobadas al 100%).
 - **Regresión total del backend:** 365 pruebas ejecutadas, 0 fallos, 0 errores (`BUILD SUCCESS`).
 
+---
 
+## S2-77: Pruebas 403 (TEC-154 / TEC-128)
+
+### 1. Alcance y objetivo
+Verificar de manera exhaustiva las políticas de autorización basadas en roles de Spring Security y las reglas de inmutabilidad asociadas a la historia **TEC-128 (HU-S2-15 — Tienda verificada)** mediante la subtarea **TEC-154 (S2-77: Pruebas 403)**.
+
+El objetivo principal es asegurar el principio de denegación por defecto (*Fail-Closed*): cualquier usuario o entidad que intente realizar operaciones de creación, edición, eliminación o gestión administrativa sobre tiendas/establecimientos sin contar con el rol verificado en base de datos correspondiente debe ser rechazado inmediatamente con HTTP `403 Forbidden` (o `401 Unauthorized` si es anónimo), garantizando la completa inmutabilidad de los datos en el servidor.
+
+Criterios validados:
+1. **Creación de tiendas (`POST /api/establecimientos`):** Denegada con `403 Forbidden` para usuarios registrados, moderadores, representantes de establecimientos, cuentas suspendidas/inactivas, tokens válidos de Supabase sin registro en la tabla `public.usuario` e intentos de elevación de privilegios mediante claims falsos de JWT.
+2. **Actualización administrativa (`PUT /api/establecimientos/{id}`):** Denegada con `403 Forbidden` para usuarios registrados, moderadores, representantes de tiendas ajenas/globales y cuentas suspendidas. La tienda objetivo conserva todos sus atributos originales intactos.
+3. **Eliminación lógica (`DELETE /api/establecimientos/{id}`):** Denegada con `403 Forbidden` para usuarios no administradores. El estado lógico de la tienda permanece inalterado (`estado = true`).
+4. **Rutas contextuales de representante (`/api/representante/**`):** Denegadas con `403 Forbidden` para usuarios ordinarios, moderadores, representantes con asignación de rol revocada (`usuario_rol.estado = false`) y representantes con cuenta suspendida.
+5. **Rutas de administración de roles y usuarios (`/api/admin/**`):** Denegadas con `403 Forbidden` para usuarios ordinarios, moderadores y representantes.
+6. **Inmutabilidad y Fail-Closed:** Ante cada solicitud 403 rechazada, no se insertan nuevos registros, no se modifican columnas existentes y no se alteran estados booleanos en base de datos.
+7. **Contraste positivo:** Un usuario con rol `Administrador` activo y verificado en base de datos puede ejecutar con éxito `POST` (201 Created), `PUT` (200 OK) y `DELETE` (204 No Content).
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Endpoint | Actor / Rol Evaluado | Escenario | Resultado esperado | Resultado obtenido | Estado |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: |
+| **S2-77-01** | `POST /api/establecimientos` | Anónimo (sin token) | Petición sin cabecera Authorization | `401 Unauthorized`, BD intacta | HTTP 401 | **APROBADO** |
+| **S2-77-02** | `POST /api/establecimientos` | Usuario registrado estándar | Intento de alta de tienda | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-03** | `POST /api/establecimientos` | Moderador | Intento de alta de tienda | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-04** | `POST /api/establecimientos` | Representante de establecimiento | Intento de alta de tienda global | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-05** | `POST /api/establecimientos` | Administrador inactivo/suspendido | Cuenta con `estado = false` | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-06** | `POST /api/establecimientos` | Token sin usuario en BD | Sub válido pero sin fila en `usuario` | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-07** | `POST /api/establecimientos` | Usuario registrado con spoofing | JWT con claim `role: Administrador` | `403 Forbidden`, BD intacta | HTTP 403 | **APROBADO** |
+| **S2-77-08** | `PUT /api/establecimientos/{id}` | Anónimo (sin token) | Intento de modificación sin token | `401 Unauthorized`, tienda intacta | HTTP 401 | **APROBADO** |
+| **S2-77-09** | `PUT /api/establecimientos/{id}` | Usuario registrado estándar | Intento de modificar datos de tienda | `403 Forbidden`, tienda intacta | HTTP 403 | **APROBADO** |
+| **S2-77-10** | `PUT /api/establecimientos/{id}` | Moderador | Intento de modificar datos de tienda | `403 Forbidden`, tienda intacta | HTTP 403 | **APROBADO** |
+| **S2-77-11** | `PUT /api/establecimientos/{id}` | Representante de establecimiento | Modificación en ruta administrativa global | `403 Forbidden`, tienda intacta | HTTP 403 | **APROBADO** |
+| **S2-77-12** | `PUT /api/establecimientos/{id}` | Administrador inactivo/suspendido | Cuenta con `estado = false` | `403 Forbidden`, tienda intacta | HTTP 403 | **APROBADO** |
+| **S2-77-13** | `DELETE /api/establecimientos/{id}` | Anónimo (sin token) | Intento de borrado sin token | `401 Unauthorized`, estado = true | HTTP 401 | **APROBADO** |
+| **S2-77-14** | `DELETE /api/establecimientos/{id}` | Usuario registrado estándar | Intento de desactivar tienda | `403 Forbidden`, estado = true | HTTP 403 | **APROBADO** |
+| **S2-77-15** | `DELETE /api/establecimientos/{id}` | Moderador | Intento de desactivar tienda | `403 Forbidden`, estado = true | HTTP 403 | **APROBADO** |
+| **S2-77-16** | `DELETE /api/establecimientos/{id}` | Representante de establecimiento | Intento de desactivación administrativa | `403 Forbidden`, estado = true | HTTP 403 | **APROBADO** |
+| **S2-77-17** | `DELETE /api/establecimientos/{id}` | Administrador inactivo/suspendido | Cuenta con `estado = false` | `403 Forbidden`, estado = true | HTTP 403 | **APROBADO** |
+| **S2-77-18** | `GET /api/representante/establecimientos` | Usuario registrado estándar | Intento de listar tiendas de representante | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-19** | `GET /api/representante/establecimientos` | Moderador | Intento de listar tiendas de representante | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-20** | `GET /api/representante/establecimientos` | Representante con rol revocado | `usuario_rol.estado = false` | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-21** | `GET /api/representante/establecimientos` | Representante con cuenta inactiva | `usuario.estado = false` | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-22** | `PUT /api/representante/establecimientos/{id}` | Usuario registrado estándar | Intento de actualizar tienda por ruta rep | `403 Forbidden`, tienda intacta | HTTP 403 | **APROBADO** |
+| **S2-77-23** | `GET /api/admin/roles` | Usuario registrado estándar | Intento de consultar roles del sistema | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-24** | `GET /api/admin/usuarios` | Moderador | Intento de consultar usuarios admin | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-25** | `POST /api/admin/representantes` | Representante de establecimiento | Intento de autoasignar o asignar representante | `403 Forbidden` | HTTP 403 | **APROBADO** |
+| **S2-77-26** | `POST /api/establecimientos` | Administrador activo | Creación legítima de tienda | `201 Created`, estado = true | HTTP 201 | **APROBADO** |
+| **S2-77-27** | `PUT /api/establecimientos/{id}` | Administrador activo | Actualización legítima de tienda | `200 OK`, datos modificados | HTTP 200 | **APROBADO** |
+| **S2-77-28** | `DELETE /api/establecimientos/{id}` | Administrador activo | Eliminación lógica de tienda | `204 No Content`, estado = false | HTTP 204 | **APROBADO** |
+
+### 3. Cobertura de pruebas
+- **Pruebas de integración de seguridad y control 403:** `com.example.backend.controller.TiendaVerificada403IntegrationTest` (28 pruebas aprobadas al 100% en 8.6 segundos).
+- **Regresión total del backend:** **409 pruebas ejecutadas, 0 fallos, 0 errores** (`BUILD SUCCESS` en 39.5 segundos).
+
+
+
+## HU-S2-13 / TEC-139: Pruebas 401 y 403 de todos los endpoints nuevos
+
+### 1. Alcance y objetivo
+Verificar exhaustivamente la seguridad perimetral y los controles de acceso basados en roles (RBAC) para todos los endpoints introducidos en el Sprint 2:
+- **HTTP 401 Unauthorized:** Solicitudes sin cabecera `Authorization` o con credenciales anónimas.
+- **HTTP 403 Forbidden:** Solicitudes de usuarios autenticados sin los permisos, roles o asignaciones requeridas (usuarios estándar, representantes de tienda accediendo a moderación, moderadores accediendo a administración de roles, o restricciones de integridad de negocio como el intento de auto-reportar la propia reseña).
+- **Contraste positivo (200 OK / 201 Created):** Comprobación de que las solicitudes con roles autorizados se procesan satisfactoriamente.
+
+### 2. Matriz de pruebas y resultados
+
+| ID | Endpoint | Método | Perfil / Condición | Código Esperado | Código Obtenido | Estado |
+| :--- | :--- | :---: | :--- | :---: | :---: | :---: |
+| **S2-13-01** | `/api/resenas/{id}/reportes` | `POST` | Anónimo (sin token) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-02** | `/api/resenas/{id}/reportes` | `POST` | Autor de la reseña (autorreporte) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-03** | `/api/reportes/resenas/{id}` | `POST` | Anónimo (ruta alterna) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-04** | `/api/reportes` | `POST` | Anónimo (ID en payload) | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-05** | `/api/reportes/mis-reportes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-06** | `/api/moderacion/reportes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-07** | `/api/moderacion/reportes` | `GET` | Usuario estándar (sin rol) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-08** | `/api/moderacion/reportes` | `GET` | Representante de tienda | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-09** | `/api/moderacion/resenas/reportadas` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-10** | `/api/moderacion/resenas/reportadas` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-11** | `/api/moderacion/resenas/pendientes` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-12** | `/api/moderacion/resenas/pendientes` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-13** | `/api/moderacion/reportes/{id}/estado` | `PATCH` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-14** | `/api/moderacion/reportes/{id}/estado` | `PATCH` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-15** | `/api/moderacion/reportes/{id}/historial` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-16** | `/api/moderacion/reportes/{id}/historial` | `GET` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-17** | `/api/moderacion/resenas/{id}/ocultar` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-18** | `/api/moderacion/resenas/{id}/ocultar` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-19** | `/api/moderacion/resenas/{id}/ocultar` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-20** | `/api/moderacion/resenas/{id}/ocultar` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-21** | `/api/moderacion/resenas/{id}/publicar` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-22** | `/api/moderacion/resenas/{id}/publicar` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-23** | `/api/moderacion/resenas/{id}/publicar` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-24** | `/api/moderacion/resenas/{id}/publicar` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-25** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-26** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-27** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `PUT` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-28** | `/api/moderacion/resenas/{id}/rechazar-reportes` | `PUT` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-29** | `/api/admin/usuarios` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-30** | `/api/admin/usuarios` | `GET` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-31** | `/api/admin/roles` | `GET` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-32** | `/api/admin/roles` | `POST` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-33** | `/api/admin/roles` | `DELETE` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-34** | `/api/admin/representantes` | `POST` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-35** | `/api/admin/representantes` | `DELETE` | Moderador (sin rol Admin) | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-36** | `/api/establecimientos` | `POST` | Anónimo | `401 Unauthorized` | `401 Unauthorized` | **APROBADO** |
+| **S2-13-37** | `/api/establecimientos` | `POST` | Usuario estándar | `403 Forbidden` | `403 Forbidden` | **APROBADO** |
+| **S2-13-38** | `/api/resenas/{id}/reportes` | `POST` | Usuario autenticado (reseña ajena) | `201 Created` | `201 Created` | **APROBADO** |
+| **S2-13-39** | `/api/moderacion/reportes` | `GET` | Moderador activo | `200 OK` | `200 OK` | **APROBADO** |
+| **S2-13-40** | `/api/admin/usuarios` | `GET` | Administrador activo | `200 OK` | `200 OK` | **APROBADO** |
+
+### 3. Cobertura y ejecución
+- **Clase de prueba:** `com.example.backend.controller.EndpointsNuevos401y403IntegrationTest`.
+- **Total pruebas ejecutadas:** 40 pruebas automatizadas, 0 fallos, 0 errores (100% éxito).
+- **Tiempo de ejecución:** ~12.43 s en entorno H2 / Spring Security MockMvc.

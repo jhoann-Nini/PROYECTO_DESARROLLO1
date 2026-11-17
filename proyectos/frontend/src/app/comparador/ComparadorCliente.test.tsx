@@ -32,6 +32,7 @@ import {
 } from "@/services/api";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
 import { CLAVE_COMPARADOS_RECIENTES } from "@/data/comparadosRecientes";
+import * as hookComparador from "@/hooks/useComparador";
 import ComparadorCliente from "./ComparadorCliente";
 
 const mockProductos = vi.mocked(obtenerProductos);
@@ -600,5 +601,56 @@ describe("ComparadorCliente", () => {
     expect(
       screen.queryByRole("region", { name: "Comparados recientemente" }),
     ).toBeNull();
+  });
+
+  describe("HA-03: Presentación no navegable de productos mock en ComparadorCliente", () => {
+    it("renderiza un span no navegable (sin etiqueta <a>) en la cabecera cuando el producto tiene ID negativo", async () => {
+      vi.spyOn(hookComparador, "useComparador").mockReturnValue({
+        ids: [-15],
+        recientes: [],
+        hidratado: true,
+        validado: true,
+        idCategoria: 1,
+        seleccionDepurada: false,
+        limpiar: vi.fn(),
+        quitar: vi.fn(),
+        agregar: vi.fn(() => ({ agregado: true, ids: [-15], motivo: "agregado" as const })),
+        contiene: () => true,
+      });
+
+      configurarExito([crearProducto(-15, { nombre: "Dispositivo Mock Comparado" })]);
+
+      render(<ComparadorCliente />);
+
+      const tabla = await screen.findByRole("table", { name: "Comparación de productos" });
+      expect(within(tabla).queryByRole("link", { name: "Dispositivo Mock Comparado" })).toBeNull();
+      const spanTitulo = within(tabla).getByText("Dispositivo Mock Comparado");
+      expect(spanTitulo.tagName.toLowerCase()).toBe("span");
+    });
+
+    it("renderiza un contenedor no navegable en comparados recientes si el producto tiene ID negativo", async () => {
+      vi.spyOn(hookComparador, "useComparador").mockReturnValue({
+        ids: [],
+        recientes: [-15],
+        hidratado: true,
+        validado: true,
+        idCategoria: null,
+        seleccionDepurada: false,
+        limpiar: vi.fn(),
+        quitar: vi.fn(),
+        agregar: vi.fn(() => ({ agregado: true, ids: [] as number[], motivo: "agregado" as const })),
+        contiene: () => false,
+      });
+
+      configurarExito([crearProducto(-15, { nombre: "Mock Reciente" })]);
+
+      render(<ComparadorCliente />);
+
+      const region = await screen.findByRole("region", {
+        name: "Comparados recientemente",
+      });
+      expect(within(region).queryByRole("link", { name: /Mock Reciente/i })).toBeNull();
+      expect(within(region).getByText("Mock Reciente")).toBeDefined();
+    });
   });
 });

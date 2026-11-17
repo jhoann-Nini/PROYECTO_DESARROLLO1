@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import RatingStars from "./RatingStars";
@@ -94,6 +95,10 @@ export default function TarjetaProducto({
             />
           )}
         </button>
+        <AtribucionImagenProducto
+          src={producto.imagen}
+          className="absolute bottom-1 left-1 right-1 rounded bg-[var(--color-paper)]/90 px-1 py-0.5"
+        />
 
         {tienePosicion && (
           <span className="absolute left-2 top-2 rounded-md bg-[var(--color-brand-solid)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-solid)] shadow-[var(--shadow-paper)]">

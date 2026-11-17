@@ -137,6 +137,11 @@ export default function ComparadorCliente() {
   }, [productos, busqueda, catalogo, idCategoria]);
 
   function agregarProducto(producto: ProductoViewModel) {
+    const categoriaActual = seleccionados[0]?.categoria;
+    if (categoriaActual && categoriaActual !== producto.categoria) {
+      setAviso("Solo puedes comparar productos de la misma categoría. Quita los productos actuales para cambiar de categoría.");
+      return;
+    }
     const resultado = agregar(producto.idProducto);
 
     if (resultado.motivo === "categoria-incompatible") {
@@ -297,6 +302,9 @@ export default function ComparadorCliente() {
             {resultadosSelector.map((producto) => {
               const seleccionado = ids.includes(producto.idProducto);
               const lleno = ids.length >= MAX_COMPARADOR && !seleccionado;
+              const categoriaIncompatible = Boolean(
+                seleccionados[0] && seleccionados[0].categoria !== producto.categoria && !seleccionado,
+              );
 
               return (
                 <li
@@ -332,7 +340,9 @@ export default function ComparadorCliente() {
                       ? "En el comparador"
                       : lleno
                         ? "Límite alcanzado"
-                        : "Agregar"}
+                        : categoriaIncompatible
+                          ? "Otra categoría"
+                          : "Agregar"}
                   </button>
                 </li>
               );
@@ -432,12 +442,18 @@ export default function ComparadorCliente() {
                         scope="col"
                         className="min-w-44 p-3 align-top"
                       >
-                        <Link
-                          href={`/productos/${producto.idProducto}`}
-                          className={`line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
-                        >
-                          {producto.nombre}
-                        </Link>
+                        {producto.idProducto > 0 ? (
+                          <Link
+                            href={`/productos/${producto.idProducto}`}
+                            className={`line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                          >
+                            {producto.nombre}
+                          </Link>
+                        ) : (
+                          <span className="line-clamp-2 font-semibold text-[var(--color-ink)]">
+                            {producto.nombre}
+                          </span>
+                        )}
                         <p className="mt-1 text-xs font-normal text-[var(--color-subtle)]">
                           {producto.marca}
                         </p>
@@ -564,17 +580,30 @@ export default function ComparadorCliente() {
           <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {productosRecientes.map((producto) => (
               <li key={producto.idProducto}>
-                <Link
-                  href={`/productos/${producto.idProducto}`}
-                  className={`block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
-                >
-                  <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
-                    {producto.nombre}
-                  </span>
-                  <span className="mt-1 block text-xs text-[var(--color-subtle)]">
-                    {producto.marca} · {producto.categoriaEtiqueta}
-                  </span>
-                </Link>
+                {producto.idProducto > 0 ? (
+                  <Link
+                    href={`/productos/${producto.idProducto}`}
+                    className={`block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  >
+                    <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                      {producto.nombre}
+                    </span>
+                    <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                      {producto.marca} · {producto.categoriaEtiqueta}
+                    </span>
+                  </Link>
+                ) : (
+                  <div
+                    className="block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3"
+                  >
+                    <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                      {producto.nombre}
+                    </span>
+                    <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                      {producto.marca} · {producto.categoriaEtiqueta}
+                    </span>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

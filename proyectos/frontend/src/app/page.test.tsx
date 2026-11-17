@@ -1144,6 +1144,40 @@ describe("Página principal / (Home)", () => {
         expect(mockPush).toHaveBeenCalledWith("/productos/204");
       });
     });
+
+    it("no navega a rutas de detalle si un elemento de ranking contiene un id negativo, cero o no seguro", async () => {
+      mockPush.mockClear();
+      const mejorValorados: ProductoMejorValorado[] = [
+        {
+          idProducto: -15,
+          nombre: "Dispositivo Ranking Mock",
+          descripcion: "Mock ranking",
+          precioReferencia: 1500000,
+          idCategoria: 1,
+          idMarca: 1,
+          imagen: null,
+          promedioPuntuacion: 4.8,
+          cantidadValoraciones: 5,
+          posicionRanking: 1,
+          caracteristicas: {},
+        },
+      ];
+
+      mockObtenerMejorValorados.mockResolvedValueOnce(mejorValorados);
+
+      render(<Home />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Dispositivo Ranking Mock")).toBeDefined();
+      });
+
+      const btnFicha = screen.getByRole("button", {
+        name: "Ver ficha de Dispositivo Ranking Mock",
+      });
+      fireEvent.click(btnFicha);
+
+      expect(mockPush).not.toHaveBeenCalled();
+    });
   });
 
   describe("35. Navegación por categorías a páginas dedicadas", () => {

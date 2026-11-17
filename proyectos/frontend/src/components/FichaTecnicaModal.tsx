@@ -2,8 +2,14 @@
 "use client";
 
 import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
+import type { ProductoViewModel } from "@/data/productoViewModel";
+import { idApiDeViewModel } from "@/data/productoViewModel";
 import { useState, useEffect, useMemo } from "react";
-import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
+import { normalizarFichaProducto, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
+import type { FichaNormalizada } from "@/data/specsHelper";
+import { normalizarFichaTecnicaV2 } from "@/data/normalizadorFicha";
+import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
+import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
 import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
 import {
   obtenerMiValoracion,
@@ -14,11 +20,12 @@ import {
   type ValoracionPublicaStats,
 } from "@/services/api";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
 interface FichaTecnicaModalProps {
-  producto: DispositivoKimovil | Producto | null;
+  producto: DispositivoKimovil | Producto | ProductoViewModel | null;
   onClose: () => void;
   usuarioSesion?: UsuarioSesion | null;
   onPedirLogin?: () => void;
@@ -70,27 +77,38 @@ export default function FichaTecnicaModal({
     [nuevaResenaTexto],
   );
 
-  const idProducto = useMemo(() => {
+  const idProductoApi = useMemo<number | null>(() => {
     if (!producto) return null;
-    if ("idProducto" in producto && typeof producto.idProducto === "number") {
-      return producto.idProducto;
+    if ("origen" in producto) {
+      if (producto.origen === "mock" || producto.origen === "ranking") return null;
+      return idApiDeViewModel(producto as ProductoViewModel);
     }
-    if ("id" in producto && typeof (producto as DispositivoKimovil).id === "number") {
-      return (producto as DispositivoKimovil).id;
+    if ("idProducto" in producto && typeof producto.idProducto === "number") {
+      if (Number.isSafeInteger(producto.idProducto) && producto.idProducto > 0) {
+        return producto.idProducto;
+      }
     }
     return null;
   }, [producto]);
 
+  const claveProductoUnica = useMemo(() => {
+    if (!producto) return null;
+    if ("idGlobal" in producto && producto.idGlobal) return producto.idGlobal;
+    if ("idProducto" in producto) return `prod:${producto.idProducto}`;
+    if ("id" in producto) return `kimovil:${(producto as DispositivoKimovil).id}`;
+    return null;
+  }, [producto]);
+
   // Resetear estados locales durante el render cuando cambia el producto (patrón recomendado por React)
-  const [prevIdProducto, setPrevIdProducto] = useState(idProducto);
-  if (idProducto !== prevIdProducto) {
-    setPrevIdProducto(idProducto);
+  const [prevClaveProducto, setPrevClaveProducto] = useState(claveProductoUnica);
+  if (claveProductoUnica !== prevClaveProducto) {
+    setPrevClaveProducto(claveProductoUnica);
     setPuntuacionSeleccionada(0);
     setPuntuacionActual(null);
     setHoverEstrella(0);
     setErrorImagenUrl(null);
     setResenasProducto([]);
-    setCargandoResenas(Boolean(idProducto));
+    setCargandoResenas(Boolean(idProductoApi));
     setErrorCargaResenas("");
     setNuevaResenaTexto("");
     setErrorResena("");
@@ -99,11 +117,11 @@ export default function FichaTecnicaModal({
     setPestanaSeleccionada(null);
   }
 
-  // Cargar valoración de estrellas previa del usuario
+  // Cargar valoración de estrellas previa del usuario (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (usuarioSesion && idProducto) {
-      obtenerMiValoracion(idProducto)
+    if (usuarioSesion && idProductoApi) {
+      obtenerMiValoracion(idProductoApi)
         .then((val) => {
           if (montado && val) {
             setPuntuacionActual(val.puntuacion);
@@ -114,13 +132,13 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [usuarioSesion, idProducto]);
+  }, [usuarioSesion, idProductoApi]);
 
-  // Cargar estadísticas públicas de valoración comunitaria
+  // Cargar estadísticas públicas de valoración comunitaria (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (idProducto) {
-      obtenerValoracionStats(idProducto)
+    if (idProductoApi) {
+      obtenerValoracionStats(idProductoApi)
         .then((stats) => {
           if (montado) setValoracionStats(stats);
         })
@@ -131,13 +149,13 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [idProducto]);
+  }, [idProductoApi]);
 
-  // Cargar reseñas comunitarias escritas del producto
+  // Cargar reseñas comunitarias escritas del producto (únicamente para productos de API)
   useEffect(() => {
     let montado = true;
-    if (idProducto) {
-      obtenerResenas(idProducto)
+    if (idProductoApi) {
+      obtenerResenas(idProductoApi)
         .then((datos) => {
           if (montado) {
             setResenasProducto(datos);
@@ -159,7 +177,7 @@ export default function FichaTecnicaModal({
     return () => {
       montado = false;
     };
-  }, [idProducto]);
+  }, [idProductoApi]);
 
   const manejarGuardarResena = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,8 +185,10 @@ export default function FichaTecnicaModal({
       setErrorResena("Debes iniciar sesión para publicar una opinión.");
       return;
     }
-    if (!idProducto) {
-      setErrorResena("No se pudo identificar el código del dispositivo a reseñar.");
+    if (!idProductoApi) {
+      setErrorResena(
+        "Las opiniones y valoraciones solo están disponibles para productos registrados en el catálogo."
+      );
       return;
     }
     if (puntuacionSeleccionada !== 0 && (puntuacionSeleccionada < 1 || puntuacionSeleccionada > 5)) {
@@ -193,7 +213,7 @@ export default function FichaTecnicaModal({
 
     try {
       const res = await crearResena({
-        idProducto,
+        idProducto: idProductoApi,
         comentario: nuevaResenaTexto.trim(),
         ...(puntuacionSeleccionada > 0 ? { puntuacion: puntuacionSeleccionada } : {}),
       });
@@ -204,8 +224,8 @@ export default function FichaTecnicaModal({
       setPuntuacionSeleccionada(0);
       setExitoResena("¡Tu opinión ha sido publicada con éxito!");
       setResenasProducto((prev) => [res, ...prev.filter((r) => r.idResena !== res.idResena)]);
-      if (idProducto) {
-        obtenerValoracionStats(idProducto)
+      if (idProductoApi) {
+        obtenerValoracionStats(idProductoApi)
           .then((st) => setValoracionStats(st))
           .catch(() => {});
       }
@@ -222,10 +242,63 @@ export default function FichaTecnicaModal({
     }
   };
 
+  const fichaTecnicaV2 = useMemo<FichaTecnicaV2 | null>(() => {
+    if (!producto) return null;
+    if ("origen" in producto) {
+      if (producto.fichaTecnicaV2) {
+        return normalizarFichaTecnicaV2(producto.fichaTecnicaV2, { categoriaPorDefecto: producto.categoria });
+      }
+      const caracteristicas = Object.fromEntries(Object.entries(producto.especificaciones).filter(([, valor]) => typeof valor === "string" && valor.trim().length > 0));
+      return normalizarFichaTecnicaV2(caracteristicas, { categoriaPorDefecto: producto.categoria });
+    }
+    return normalizarFichaTecnicaV2(producto);
+  }, [producto]);
+
+  const usaFichaV2 = useMemo(() => {
+    if (!producto) return false;
+    if ("origen" in producto) return true;
+    if ("caracteristicas" in producto) {
+      const raw = producto.caracteristicas;
+      return Boolean(raw && typeof raw === "object" && !Array.isArray(raw) && raw.version_esquema === 2);
+    }
+    return false;
+  }, [producto]);
+
   const ficha = useMemo(() => {
     if (!producto) return null;
-    return normalizarFichaProducto(producto);
-  }, [producto]);
+    if ("origen" in producto) {
+      const secciones = (fichaTecnicaV2?.atributos ?? []).map((atributo) => ({
+        icono: INFO_CATEGORIAS[producto.categoria].icono,
+        titulo: atributo.nombre.toUpperCase(),
+        descripcion: String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
+      }));
+      const fichaViewModel: FichaNormalizada = {
+        categoriaTipo: producto.categoria,
+        categoriaEtiqueta: producto.categoriaEtiqueta,
+        categoriaIcono: INFO_CATEGORIAS[producto.categoria].icono,
+        marca: producto.marca,
+        nombre: producto.nombre,
+        precio: producto.precioCOP,
+        imagen: producto.imagen || "",
+        puntuacionGlobal: null,
+        resumen: "",
+        secciones,
+        metricas: [],
+        benchmark: null,
+        tiendas: [],
+        tieneEspecificacionesReales: secciones.length > 0,
+        datosTecnicos: producto.datosFichaTecnica,
+      };
+      return fichaViewModel;
+    }
+    if (usaFichaV2 && "caracteristicas" in producto) {
+      const caracteristicas = Object.fromEntries((fichaTecnicaV2?.atributos ?? []).map((atributo) => [
+        atributo.clave, String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
+      ]));
+      return normalizarFichaProducto({ ...(producto as Producto), caracteristicas });
+    }
+    return normalizarFichaProducto(producto as unknown as Producto | DispositivoKimovil);
+  }, [producto, fichaTecnicaV2, usaFichaV2]);
 
   const pestanasSpecs = useMemo(() => {
     if (!ficha || !ficha.secciones || ficha.secciones.length === 0) return [];
@@ -342,6 +415,7 @@ export default function FichaTecnicaModal({
                     tamano="lg"
                   />
                 )}
+                <AtribucionImagenProducto src={ficha.imagen} className="absolute bottom-10 left-3 right-3 rounded bg-[var(--color-paper)]/90 px-2 py-1" />
 
                 <span className="absolute left-3 top-3 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)] backdrop-blur">
                   {ficha.marca}
@@ -489,6 +563,133 @@ export default function FichaTecnicaModal({
                 <p className="mt-2 border-l-2 border-[var(--color-brand-blue)]/60 pl-3 text-sm leading-relaxed text-[var(--color-subtle)]">
                   {ficha.resumen}
                 </p>
+                {usaFichaV2 && fichaTecnicaV2 && <FichaTecnicaV2Panel ficha={fichaTecnicaV2} />}
+
+                {!usaFichaV2 && ficha.datosTecnicos && (
+                  <section
+                    aria-label="Datos técnicos verificados"
+                    className="mt-4 space-y-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] pb-3">
+                      <div>
+                        <h3 className="text-sm font-semibold text-[var(--color-ink)]">Ficha técnica detallada</h3>
+                        <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">Datos declarados para esta variante del producto</p>
+                      </div>
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                          ficha.datosTecnicos.estado_verificacion === "verificado"
+                            ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                            : ficha.datosTecnicos.estado_verificacion === "requiere_revision"
+                              ? "border-amber-300 bg-amber-50 text-amber-800"
+                              : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)]"
+                        }`}
+                      >
+                        {ficha.datosTecnicos.estado_verificacion === "requiere_revision"
+                          ? "Requiere revisión"
+                          : ficha.datosTecnicos.estado_verificacion === "verificado"
+                            ? "Verificado"
+                            : ficha.datosTecnicos.estado_verificacion === "parcial"
+                              ? "Verificación parcial"
+                              : "Pendiente de verificación"}
+                      </span>
+                    </div>
+
+                    {ficha.datosTecnicos.variante && (
+                      <div>
+                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Variante / identificación</h4>
+                        <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {([
+                            ["Modelo", ficha.datosTecnicos.variante.modelo],
+                            ["SKU", ficha.datosTecnicos.variante.sku],
+                            ["Mercado", ficha.datosTecnicos.variante.mercado],
+                            ["RAM", ficha.datosTecnicos.variante.ram],
+                            ["Almacenamiento", ficha.datosTecnicos.variante.almacenamiento],
+                            ["Conectividad", ficha.datosTecnicos.variante.conectividad],
+                            ["Identificador", ficha.datosTecnicos.variante.identificador],
+                          ] as const).filter(([, value]) => Boolean(value)).map(([label, value]) => (
+                            <div key={label} className="flex items-start justify-between gap-3 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs">
+                              <dt className="text-[var(--color-subtle)]">{label}</dt>
+                              <dd className="text-right font-medium text-[var(--color-ink)]">{value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    )}
+
+                    {ficha.datosTecnicos.metricasComparables.length > 0 && (
+                      <div>
+                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Métricas técnicas comparables</h4>
+                        <div className="overflow-hidden rounded-md border border-[var(--color-hairline)]">
+                          {ficha.datosTecnicos.metricasComparables.map((metrica) => (
+                            <div key={metrica.clave} className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2.5 text-xs last:border-b-0">
+                              <div>
+                                <p className="font-medium text-[var(--color-ink)]">{metrica.nombre}</p>
+                                <p className="text-[10px] text-[var(--color-subtle)]">{metrica.grupo}{metrica.comparable ? " · Comparable" : " · Solo informativa"}</p>
+                              </div>
+                              <span className="font-semibold tabular-nums text-[var(--color-ink)]">
+                                {typeof metrica.valor === "boolean" ? (metrica.valor ? "Sí" : "No") : String(metrica.valor)}{metrica.unidad ? ` ${metrica.unidad}` : ""}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {ficha.datosTecnicos.benchmarks.length > 0 && (
+                      <div>
+                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Resultados de benchmarks</h4>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {ficha.datosTecnicos.benchmarks.map((benchmark, index) => (
+                            <article key={`${benchmark.nombre}-${benchmark.prueba ?? ""}-${index}`} className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3">
+                              <p className="text-xs font-semibold text-[var(--color-ink)]">{benchmark.nombre}</p>
+                              <p className="mt-1 text-lg font-semibold tabular-nums text-[var(--color-brand-blue)]">{benchmark.valor}{benchmark.unidad ? ` ${benchmark.unidad}` : ""}</p>
+                              {(benchmark.prueba || benchmark.version || benchmark.fecha) && (
+                                <p className="mt-1 text-[10px] leading-relaxed text-[var(--color-subtle)]">
+                                  {[benchmark.prueba, benchmark.version ? `Versión ${benchmark.version}` : null, benchmark.fecha].filter(Boolean).join(" · ")}
+                                </p>
+                              )}
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {ficha.datosTecnicos.fuentes.length > 0 && (
+                      <div>
+                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Fuentes y verificación</h4>
+                        <ul className="space-y-2">
+                          {ficha.datosTecnicos.fuentes.map((fuente, index) => (
+                            <li key={fuente.id ?? `${fuente.nombre}-${index}`} className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2.5 text-xs">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <span className="font-medium text-[var(--color-ink)]">{fuente.nombre}</span>
+                                <span className="rounded-full bg-[var(--color-canvas)] px-2 py-0.5 text-[10px] capitalize text-[var(--color-subtle)]">{fuente.tipo}</span>
+                              </div>
+                              {(fuente.vendedor || fuente.fecha_consulta) && (
+                                <p className="mt-1 text-[10px] text-[var(--color-subtle)]">
+                                  {[fuente.vendedor ? `Vendedor: ${fuente.vendedor}` : null, fuente.fecha_consulta ? `Consulta: ${fuente.fecha_consulta}` : null].filter(Boolean).join(" · ")}
+                                </p>
+                              )}
+                              {fuente.variante && <p className="mt-1 text-[10px] text-[var(--color-subtle)]">Variante: {fuente.variante}</p>}
+                              {fuente.observaciones && <p className="mt-1 text-[11px] text-[var(--color-subtle)]">{fuente.observaciones}</p>}
+                              {fuente.url && (
+                                <a href={fuente.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block font-medium text-[var(--color-brand-blue)] underline underline-offset-2">
+                                  Consultar fuente
+                                </a>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {!ficha.datosTecnicos.variante &&
+                      ficha.datosTecnicos.metricasComparables.length === 0 &&
+                      ficha.datosTecnicos.benchmarks.length === 0 &&
+                      ficha.datosTecnicos.fuentes.length === 0 && (
+                        <p className="text-xs text-[var(--color-subtle)]">Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.</p>
+                      )}
+                  </section>
+                )}
               </div>
 
               {/* Barra de pestañas que incluye especificaciones de hardware y opiniones de la comunidad */}
@@ -555,9 +756,9 @@ export default function FichaTecnicaModal({
                         <span aria-hidden="true">💬</span>
                         <span>Opiniones de la comunidad ({resenasProducto.length})</span>
                       </h4>
-                      {idProducto && (
+                      {idProductoApi && (
                         <span className="text-[10px] text-[var(--color-subtle)]">
-                          Ref #{idProducto}
+                          Ref #{idProductoApi}
                         </span>
                       )}
                     </div>
@@ -625,7 +826,11 @@ export default function FichaTecnicaModal({
                     <span className="mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
                       Publicar una opinión sobre este dispositivo
                     </span>
-                    {!usuarioSesion ? (
+                    {!idProductoApi ? (
+                      <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 text-center text-xs text-[var(--color-subtle)]">
+                        Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo.
+                      </div>
+                    ) : !usuarioSesion ? (
                       <div className="flex flex-col items-center justify-between gap-3 text-xs sm:flex-row">
                         <p className="text-[var(--color-subtle)]">
                           Debes iniciar sesión para publicar una opinión en la comunidad.

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FormEvent } from "react";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
@@ -51,6 +52,8 @@ function crearVista(
     caracteristicas: [],
     textoBusqueda: "samsung galaxy s24 ultra",
     ...overrides,
+    datosFichaTecnica:
+      overrides.datosFichaTecnica ?? normalizarDatosFichaTecnica(null),
   };
 }
 

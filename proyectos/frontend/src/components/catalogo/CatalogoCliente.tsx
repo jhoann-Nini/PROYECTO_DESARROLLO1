@@ -213,7 +213,15 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
   }
 
   function abrirDetalle(vista: ProductoViewModel) {
-    router.push(`/productos/${vista.idProducto}`);
+    const idDestino =
+      typeof vista.idApi === "number" && Number.isSafeInteger(vista.idApi) && vista.idApi > 0
+        ? vista.idApi
+        : typeof vista.idProducto === "number" && Number.isSafeInteger(vista.idProducto) && vista.idProducto > 0
+          ? vista.idProducto
+          : null;
+    if (idDestino) {
+      router.push(`/productos/${idDestino}`);
+    }
   }
 
   return (

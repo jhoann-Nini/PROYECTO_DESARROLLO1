@@ -566,7 +566,9 @@ export default function Home() {
 
   const irAlDetalle = useCallback(
     (idProducto: number) => {
-      router.push(`/productos/${idProducto}`);
+      if (typeof idProducto === "number" && Number.isSafeInteger(idProducto) && idProducto > 0) {
+        router.push(`/productos/${idProducto}`);
+      }
     },
     [router],
   );

@@ -25,7 +25,7 @@ describe("Componente ProductCard — Manejo de imágenes y placeholder", () => {
   it("renderiza la etiqueta img normalmente si el producto tiene una imagen válida", () => {
     render(<ProductCard producto={baseProducto} />);
 
-    const img = screen.getByRole("img", { name: /Fotografía oficial de Samsung Galaxy S24 Ultra/i });
+    const img = screen.getByRole("img", { name: /Fotografía de Samsung Galaxy S24 Ultra/i });
     expect(img).toBeDefined();
     expect(img.getAttribute("src")).toBe("https://example.com/s24.png");
     // No debe mostrar el placeholder
@@ -58,7 +58,7 @@ describe("Componente ProductCard — Manejo de imágenes y placeholder", () => {
   it("conmuta al ProductImagePlaceholder cuando falla la carga remota de la imagen (evento onError)", () => {
     render(<ProductCard producto={baseProducto} />);
 
-    const img = screen.getByRole("img", { name: /Fotografía oficial de Samsung Galaxy S24 Ultra/i });
+    const img = screen.getByRole("img", { name: /Fotografía de Samsung Galaxy S24 Ultra/i });
     expect(img).toBeDefined();
 
     // Disparamos el error de carga de red/404

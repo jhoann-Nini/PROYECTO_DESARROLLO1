@@ -18,10 +18,11 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55,
     FICHAS_TECNICAS_V2_PILOTO.appleIphone13,
     FICHAS_TECNICAS_V2_PILOTO.xiaomi14Ultra,
+    FICHAS_TECNICAS_V2_PILOTO.redmiNote13ProPlus,
   ];
 
   it("mantiene las seis fichas válidas, con fuentes y sin benchmarks no respaldados", () => {
-    expect(fichas).toHaveLength(9);
+    expect(fichas).toHaveLength(10);
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.estado_verificacion).toBe("verificado");
@@ -142,6 +143,21 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     ]));
   });
 
+  it("verifica Redmi Note 13 Pro+ 12 GB/512 GB para Colombia", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.redmiNote13ProPlus;
+    expect(ficha.variantes[0]).toMatchObject({
+      id: "12gb-512gb",
+      modelo: "Redmi Note 13 Pro+ 5G",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Dimensity 7200-Ultra") }),
+      expect.objectContaining({ clave: "carga_rapida", valor: 120, unidad: "W" }),
+    ]));
+  });
+
   it("asocia cada ficha a su registro original sin cambiar sus IDs", () => {
     const iphone = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201)!;
     const s25 = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206)!;
@@ -152,6 +168,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     const a55 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 102)!;
     const iphone13 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 104)!;
     const xiaomi14Ultra = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204)!;
+    const redmi13 = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101)!;
 
     expect(normalizarDesdeKimovil(iphone).variantes[0]?.id).toBe("256gb");
     expect(normalizarDesdeKimovil(s25).variantes[0]?.id).toBe("12gb-1tb");
@@ -162,5 +179,6 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
     expect(normalizarDesdeKimovil(a55).variantes[0]?.id).toBe("8gb-256gb");
     expect(normalizarDesdeKimovil(iphone13).variantes[0]?.id).toBe("128gb");
     expect(normalizarDesdeKimovil(xiaomi14Ultra).variantes[0]?.id).toBe("16gb-512gb");
+    expect(normalizarDesdeKimovil(redmi13).variantes[0]?.id).toBe("12gb-512gb");
   });
 });

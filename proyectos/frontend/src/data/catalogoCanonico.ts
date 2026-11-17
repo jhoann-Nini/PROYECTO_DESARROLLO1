@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto controlado de ocho modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de once modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -220,6 +220,42 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 109)],
     variantes: [],
   },
+
+  {
+    id: "samsung-galaxy-a55-5g",
+    nombre: "Samsung Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 102)],
+    variantes: [
+      { id: "8gb-128gb", nombre: "8 GB RAM · 128 GB", ram: "8 GB", almacenamiento: "128 GB", mercado: "Colombia · SKU SM-A556ELBLLTC" },
+      { id: "8gb-256gb", nombre: "8 GB RAM · 256 GB", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia · configuración de lanzamiento" },
+    ],
+  },
+  {
+    id: "apple-iphone-13",
+    nombre: "Apple iPhone 13",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 104, "128gb")],
+    variantes: [
+      { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
+    ],
+  },
+  {
+    id: "xiaomi-redmi-note-14-pro-plus-5g",
+    nombre: "Xiaomi Redmi Note 14 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 107, "12gb-512gb-co")],
+    variantes: [
+      { id: "12gb-512gb-co", nombre: "12 GB RAM · 512 GB", ram: "12 GB LPDDR4X", almacenamiento: "512 GB UFS 2.2", mercado: "Colombia" },
+    ],
+  },
+
 ];
 
 function buscarRegistro(

@@ -12,7 +12,6 @@ import {
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import { filtrarProductos } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
-import { PRODUCTOS_MOCK } from "@/data/mockProductos";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { obtenerProductos } from "@/services/api";
 import type { CategoriaDispositivo, Producto } from "@/types/producto";
@@ -23,7 +22,7 @@ const CATEGORIAS: { valor: FiltroCategoria; etiqueta: string }[] = [
   { valor: "todos", etiqueta: "Todos" },
   { valor: "moviles", etiqueta: "Celulares" },
   { valor: "tablets", etiqueta: "Tablets" },
-  { valor: "laptops", etiqueta: "Portátiles / PC" },
+  { valor: "laptops", etiqueta: "Portátiles" },
   { valor: "auriculares", etiqueta: "Auriculares" },
 ];
 
@@ -143,20 +142,13 @@ export default function PanelBusquedaModal({
     obtenerProductos<Producto>()
       .then((datos) => {
         if (!activo) return;
-        const base = datos.length > 0 ? datos : PRODUCTOS_MOCK;
         setProductosInternos(
-          construirCatalogo({ productos: base, categorias: [], marcas: [] }),
+          construirCatalogo({ productos: datos, categorias: [], marcas: [] }),
         );
       })
       .catch(() => {
         if (!activo) return;
-        setProductosInternos(
-          construirCatalogo({
-            productos: PRODUCTOS_MOCK,
-            categorias: [],
-            marcas: [],
-          }),
-        );
+        setProductosInternos([]);
       })
       .finally(() => {
         if (activo) setCargandoInterno(false);

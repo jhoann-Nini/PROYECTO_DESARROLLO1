@@ -36,11 +36,24 @@ public class Resena {
   @Column(name = "oculta_por_reportes", nullable = false)
   private Boolean ocultaPorReportes = false;
 
+  // Moderación automática (TEC-97)
   @Enumerated(EnumType.STRING)
   @Column(name = "estado_moderacion", nullable = false, length = 20)
   private EstadoModeracion estadoModeracion = EstadoModeracion.PUBLICADA;
 
-  // Getters y setters
+  // Ocultamiento manual por moderación
+  @Column(name = "oculta_por_moderacion", nullable = false)
+  private Boolean ocultaPorModeracion = false;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "moderada_por")
+  private Usuario moderadaPor;
+
+  @Column(name = "fecha_moderacion")
+  private LocalDateTime fechaModeracion;
+
+  @Column(name = "motivo_moderacion", columnDefinition = "TEXT")
+  private String motivoModeracion;
 
   public Long getIdResena() {
     return idResena;
@@ -112,5 +125,37 @@ public class Resena {
 
   public void setEstadoModeracion(EstadoModeracion estadoModeracion) {
     this.estadoModeracion = estadoModeracion;
+  }
+
+  public Boolean getOcultaPorModeracion() {
+    return ocultaPorModeracion;
+  }
+
+  public void setOcultaPorModeracion(Boolean ocultaPorModeracion) {
+    this.ocultaPorModeracion = ocultaPorModeracion;
+  }
+
+  public Usuario getModeradaPor() {
+    return moderadaPor;
+  }
+
+  public void setModeradaPor(Usuario moderadaPor) {
+    this.moderadaPor = moderadaPor;
+  }
+
+  public LocalDateTime getFechaModeracion() {
+    return fechaModeracion;
+  }
+
+  public void setFechaModeracion(LocalDateTime fechaModeracion) {
+    this.fechaModeracion = fechaModeracion;
+  }
+
+  public String getMotivoModeracion() {
+    return motivoModeracion;
+  }
+
+  public void setMotivoModeracion(String motivoModeracion) {
+    this.motivoModeracion = motivoModeracion;
   }
 }

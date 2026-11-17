@@ -96,9 +96,9 @@ backend/
 | Comparación      | GET    | `/api/comparador`                  | Público            |
 | Establecimientos | GET    | `/api/establecimientos`            | Público            |
 | Establecimiento  | GET    | `/api/establecimientos/{id}`       | Público            |
-| Establecimiento  | POST   | `/api/establecimientos`            | Autorizado         |
-| Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Autorizado         |
-| Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Autorizado         |
+| Establecimiento  | POST   | `/api/establecimientos`            | Administrador      |
+| Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Administrador      |
+| Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Administrador      |
 
 # 3. Arquitectura de la API
 
@@ -242,35 +242,57 @@ Permite consultar la información detallada de un producto.
 
 POST /api/productos
 
-Este endpoint será utilizado por los usuarios autorizados para registrar productos.
+Este endpoint es de uso exclusivo para usuarios autorizados con el rol **Administrador**.
 
-Ejemplo:
+### Requisitos y Criterios de Validación (TEC-117):
+1. **Solo un administrador escribe:** Requiere token Bearer de Supabase Auth correspondiente a un usuario activo con rol activo `Administrador`.
+   - Solicitudes no autenticadas retornan `401 Unauthorized`.
+   - Solicitudes de usuarios con cualquier otro rol (ej. `Usuario registrado`, `Moderador`, `Tienda`) retornan `403 Forbidden`.
+2. **Los enlaces deben empezar por http o https:** El campo `imagen`, si no es nulo o vacío, debe iniciar con `http://` o `https://`. Protocolos ajenos (ej. `ftp://`, `javascript:`) o rutas de texto plano retornan `400 Bad Request` con el mensaje:
+   `"Los enlaces deben empezar por http o https"`
+3. **El precio no puede ser negativo:** El campo `precioReferencia` debe ser un número decimal mayor o igual a `0.0`. Valores negativos retornan `400 Bad Request` con el mensaje:
+   `"El precio no puede ser negativo"`
 
+Ejemplo de solicitud válida:
+
+```json
 {
   "nombre": "Samsung Galaxy A55",
   "descripcion": "Teléfono inteligente",
   "idMarca": 2,
   "idCategoria": 1,
-  "imagen": null,
+  "imagen": "https://images.unsplash.com/photo-example.jpg",
   "precioReferencia": 1500000
 }
+```
 
-El backend deberá validar los datos antes de almacenarlos.
+El backend valida los datos mediante Bean Validation antes de persistirlos.
 
 ## 7.4 Actualizar producto
 
 PUT /api/productos/{id}
 
+Permite modificar la información de un producto existente.
+
+### Requisitos y Criterios de Validación (TEC-117):
+- **Solo un administrador escribe:** Requiere rol activo `Administrador` (`401` si no autenticado, `403` si no es administrador).
+- **Validaciones:** Aplican los mismos criterios que en la creación:
+  - Enlaces de imagen deben iniciar con `http://` o `https://` (`400 Bad Request`).
+  - `precioReferencia` no puede ser negativo (`400 Bad Request`).
+
 Ejemplo:
 
 PUT /api/productos/1
 
-Permite modificar la información de un producto.
+## 7.5 Eliminar producto
 
-7.5 Eliminar producto
 DELETE /api/productos/{id}
 
-Permite eliminar un producto cuando el usuario tenga los permisos correspondientes.
+Permite realizar la eliminación lógica (`estado=false`) de un producto existente.
+
+### Requisitos de Seguridad (TEC-117):
+- Requiere rol activo `Administrador`. Usuarios sin este rol son rechazados con `403 Forbidden` y usuarios anónimos con `401 Unauthorized`.
+- Responde `204 No Content` al completarse exitosamente.
 
 ---
 
@@ -600,33 +622,94 @@ La estructura definitiva dependerá de las características que se definan para 
 
 La comparación no requiere necesariamente una tabla COMPARACION en la base de datos, ya que puede generarse mediante consultas sobre los productos.
 
- 1. Establecimientos
+## 18. Establecimientos
 
 TecnoReview también contempla información sobre establecimientos relacionados con productos tecnológicos.
 
-18.1 Consultar establecimientos
-GET /api/establecimientos
-18.2 Consultar un establecimiento
-GET /api/establecimientos/{id}
-18.3 Crear establecimiento
-POST /api/establecimientos
+### 18.1 Consultar establecimientos
 
-Ejemplo:
+`GET /api/establecimientos`
 
+- **Acceso:** público, sin JWT.
+- **Respuesta `200 OK`:** arreglo de `EstablecimientoResponse` con los establecimientos activos, ordenados por nombre.
+- No incluye establecimientos inactivos.
+
+### 18.2 Consultar un establecimiento
+
+`GET /api/establecimientos/{id}`
+
+- **Acceso:** público, sin JWT.
+- **`200 OK`:** `EstablecimientoResponse` si el establecimiento está activo.
+- **`404 Not Found`:** si no existe o está inactivo.
+
+### 18.3 Crear establecimiento
+
+`POST /api/establecimientos`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- **Cuerpo (`EstablecimientoUpdateRequest`):**
+
+```json
 {
   "nombre": "Tienda Tecnológica",
-  "direccion": "Dirección del establecimiento",
-  "telefono": "0000000000"
+  "direccion": "Carrera 10 # 20-30",
+  "telefono": "3001234567",
+  "correo": "tienda@ejemplo.com",
+  "descripcion": "Tienda de tecnología",
+  "latitud": 4.08,
+  "longitud": -76.19
 }
+```
 
-Los campos definitivos se establecerán durante la implementación.
+- `nombre` es obligatorio y admite hasta 150 caracteres.
+- `direccion` admite hasta 255 caracteres; `telefono`, hasta 30.
+- `correo` debe tener formato válido y hasta 150 caracteres.
+- `latitud` debe estar entre -90 y 90; `longitud`, entre -180 y 180.
+- El establecimiento se crea activo (`estado = true`).
+- **`201 Created`:** `EstablecimientoResponse` del recurso creado.
+- **`400 Bad Request`:** errores de validación.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+- Las asignaciones de representantes se gestionan con los endpoints administrativos existentes.
 
-18.4 Actualizar establecimiento
-PUT /api/establecimientos/{id}
-18.5 Eliminar establecimiento
-DELETE /api/establecimientos/{id}
+### 18.4 Actualizar establecimiento
 
-La operación deberá estar protegida mediante autorización.
+`PUT /api/establecimientos/{id}`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- Usa el mismo cuerpo y validaciones que la creación.
+- No modifica `estado` ni las asignaciones de representantes.
+- **`200 OK`:** `EstablecimientoResponse` actualizado.
+- **`404 Not Found`:** establecimiento inexistente.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+### 18.5 Eliminar establecimiento
+
+`DELETE /api/establecimientos/{id}`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- La eliminación es lógica: marca `estado = false` y conserva el registro y las asignaciones históricas.
+- **`204 No Content`:** establecimiento desactivado.
+- **`409 Conflict`:** el establecimiento ya está inactivo.
+- **`404 Not Found`:** establecimiento inexistente.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+### Respuesta de establecimiento
+
+```json
+{
+  "idEstablecimiento": 1,
+  "nombre": "Tienda Tecnológica",
+  "direccion": "Carrera 10 # 20-30",
+  "telefono": "3001234567",
+  "correo": "tienda@ejemplo.com",
+  "descripcion": "Tienda de tecnología",
+  "latitud": 4.08,
+  "longitud": -76.19,
+  "estado": true
+}
+```
+
+**Nota:** las rutas `/api/representante/establecimientos` siguen siendo el mecanismo para que una cuenta con rol Representante consulte y actualice únicamente sus establecimientos asignados. El Administrador conserva alcance global en esas rutas.
 
  1. Productos y establecimientos
 
@@ -1049,6 +1132,106 @@ El backend actual documenta e implementa el registro de reportes en `POST /api/r
 
 En concreto, el enum Java actual usa `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`; los scripts SQL históricos 006/007 usan esos mismos estados. No equivalen a `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO` del contrato aprobado. La API actual solo expone registro y consulta de reportes propios; no implementa aún las transiciones ni la resolución administrativa. Esta brecha queda identificada para la fase de implementación.
 
+---
+
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes` o su alias `POST /api/reportes/resenas/{idResena}`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, motivo 'otro' sin descripción requerida, o ausencia de `idResena` al consumir `POST /api/reportes`.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
+
+
+---
+
+# 27. Endpoint para reportar reseñas (S2-39)
+
+Permite a los usuarios autenticados reportar una reseña que consideren inapropiada, fraudulenta o fuera de lugar. La identidad del reportante se extrae exclusivamente del JWT de Supabase (Zero-Trust); cualquier campo `idUsuario` o `estado` enviado en el cuerpo es ignorado por el backend.
+
+- **Método y ruta canónica:** `POST /api/resenas/{idResena}/reportes`
+- **Rutas aliases:**
+  - `POST /api/reportes/resenas/{idResena}`
+  - `POST /api/reportes` (con `idResena` en el cuerpo JSON)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo usuarios autenticados activos pueden reportar.
+
+### Reglas de negocio (Migración 006):
+1. **Autenticación obligatoria:** Usuarios anónimos reciben `401 Unauthorized`.
+2. **Prohibición de autorreporte:** Un usuario no puede reportar sus propias reseñas (`403 Forbidden: "No puedes reportar tu propia reseña."`).
+3. **Unicidad de reporte:** Un usuario solo puede reportar una vez una misma reseña (`409 Conflict: "Ya has reportado esta reseña previamente."`).
+4. **Reseña activa requerida:** No se pueden reportar reseñas inexistentes o eliminadas lógicamente (`404 Not Found`).
+5. **Motivos válidos:** `spam`, `lenguaje-ofensivo`, `falso`, `otro`. Cualquier otro valor devuelve `400 Bad Request`.
+6. **Descripción condicional:** Si el motivo es `otro`, el campo `descripcion` es obligatorio y no puede consistir únicamente en espacios en blanco (`400 Bad Request`). En los demás motivos, es opcional.
+7. **Estado inicial:** Todo reporte creado inicia estrictamente con `estado = PENDIENTE`.
+8. **Inmutabilidad:** Los campos `id_resena` e `id_usuario` son inmutables una vez persistidos.
+
+### Cuerpo de la solicitud (Payload):
+```json
+{
+  "idResena": 15,
+  "motivo": "spam",
+  "descripcion": "Enlaces a tiendas externas sospechosas"
+}
+```
+*(Nota: `idResena` es obligatorio al consumir `POST /api/reportes`; es opcional u omitible al consumir `POST /api/resenas/{idResena}/reportes`).*
+
+### Respuestas:
+- `201 Created`:
+  ```json
+  {
+    "idReporte": 42,
+    "idResena": 15,
+    "motivo": "spam",
+    "descripcion": "Enlaces a tiendas externas sospechosas",
+    "estado": "PENDIENTE",
+    "fechaCreacion": "2026-11-11T01:25:00"
+  }
+  ```
+- `400 Bad Request`: Motivo inválido, o motivo 'otro' sin descripción requerida.
+- `401 Unauthorized`: Token JWT ausente o inválido.
+- `403 Forbidden`: Intento de autoreporte o usuario suspendido.
+- `404 Not Found`: Reseña inexistente o eliminada lógicamente por su autor.
+- `409 Conflict`: El usuario ya reportó previamente la reseña especificada.
 
 ---
 
@@ -1111,4 +1294,205 @@ Cuerpo opcional: `{"motivo":"Fin de representación"}`.
 - `409 Conflict`: operación duplicada, recurso inactivo o intento de retirar el último administrador.
 - `201 Created` / `204 No Content`: operación exitosa.
 
-**Migraciones requeridas:** ejecutar primero `src/main/resources/db/migration/008_multirole_y_representantes.sql` y después `009_auditoria_asignaciones.sql`, únicamente tras validarlas en una base de pruebas PostgreSQL. Estas migraciones no han sido ejecutadas en Supabase.
+**Migraciones:** `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` ya fueron aplicadas y validadas por el equipo según `usuarios-y-roles.md`. No deben volver a ejecutarse.
+
+---
+
+# Consultas administrativas de apoyo (Fase 1)
+
+Estas consultas son de solo lectura y permiten localizar cuentas y conocer el catálogo de roles antes de usar los endpoints de asignación. Todas requieren un JWT de Supabase válido y una asignación activa del rol `Administrador`.
+
+## Listar o buscar usuarios
+
+`GET /api/admin/usuarios`
+
+- **Parámetro opcional:** `correo`. Si se envía, filtra por coincidencia parcial sin distinguir mayúsculas.
+- **Respuesta `200 OK`:** arreglo de `UsuarioAdminResponse`, ordenado por nombre:
+
+```json
+[
+  {
+    "idUsuario": 12,
+    "nombre": "María López",
+    "correo": "maria@ejemplo.com",
+    "rol": "Usuario registrado",
+    "activo": true,
+    "fechaRegistro": "2026-11-13T10:15:00",
+    "roles": ["Usuario registrado"]
+  }
+]
+```
+
+- `roles` contiene únicamente las asignaciones activas, ordenadas alfabéticamente.
+- `rol` conserva el rol principal por compatibilidad y toma el primer elemento de `roles`; si no hay roles activos, vale `"Sin roles activos"`.
+- No expone contraseña, `password` ni `supabaseUid`.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+## Listar roles
+
+`GET /api/admin/roles`
+
+- **Respuesta `200 OK`:** arreglo de `RolResponse`, ordenado por nombre:
+
+```json
+[
+  { "idRol": 1, "nombre": "Administrador", "descripcion": "Administración global" },
+  { "idRol": 2, "nombre": "Usuario registrado", "descripcion": "Participación en la comunidad" }
+]
+```
+
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+**Pendiente para una iteración posterior:** los endpoints para listar asignaciones activas por usuario o establecimiento y para leer el historial de auditoría. Esta iteración no los implementa.
+
+---
+
+# 28. Moderación de reseñas y consulta de reportes (S2-42)
+
+Esta sección describe los endpoints del módulo de moderación para listar reseñas pendientes y reportadas, así como la consulta plana de reportes de moderación.
+
+## 28.1 Listar reseñas reportadas
+
+Permite a moderadores y administradores activos consultar la cola de reseñas que han acumulado reportes, ordenadas prioritariamente por cantidad de reportes pendientes y, en empate, por total de reportes.
+
+- **Método y ruta:** `GET /api/moderacion/resenas/reportadas`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para usuarios activos con rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
+- **Parámetros de consulta (Query Params):**
+  - `estado` (opcional, `EstadoReporte`): Criterio de selección de reseñas. Filtra la cola para incluir únicamente reseñas que posean al menos un reporte en el estado especificado (`PENDIENTE`, `EN_REVISION`, `ACEPTADO`, `RECHAZADO`), sin falsear las métricas globales de la reseña.
+  - `oculta` (opcional, `Boolean`): Filtra por `ocultaPorReportes` (`true` o `false`).
+  - `idProducto` (opcional, `Long`): Filtra reseñas asociadas al producto especificado.
+- **Criterio de ordenamiento determinista:**
+  Las reseñas se ordenan priorizando: 1) Mayor cantidad de reportes pendientes (`reportesPendientes` DESC); 2) En empate, mayor cantidad de reportes totales (`totalReportes` DESC); 3) En persistencia de empate, desempate determinista por identificador de reseña (`idResena` DESC).
+- **Semántica de campos en la respuesta:**
+  - `totalReportes`: Cantidad total de reportes asociados a la reseña, independientemente del filtro aplicado.
+  - `reportesPendientes`: Cantidad real de reportes en estado `PENDIENTE` asociados a la reseña.
+  - `reportes`: Historial completo de reportes asociados a la reseña, proporcionando el contexto íntegro de moderación para la toma de decisiones.
+- **Códigos de respuesta:**
+  - `200 OK`: Lista JSON con objetos `ResenaReportadaResponse`:
+    ```json
+    [
+      {
+        "idResena": 1,
+        "idProducto": 10,
+        "nombreProducto": "Smartphone Pro",
+        "idAutor": 5,
+        "nombreAutor": "Usuario Autor",
+        "comentario": "Texto de la reseña reportada...",
+        "puntuacion": 1,
+        "fechaCreacion": "2026-11-10T20:00:00",
+        "estado": true,
+        "ocultaPorReportes": false,
+        "totalReportes": 2,
+        "reportesPendientes": 2,
+        "reportes": [
+          {
+            "idReporte": 101,
+            "idUsuarioReportante": 8,
+            "nombreReportante": "Usuario Reportante",
+            "motivo": "spam",
+            "descripcion": "Publicidad encubierta",
+            "estado": "PENDIENTE",
+            "fechaCreacion": "2026-11-10T21:00:00"
+          }
+        ]
+      }
+    ]
+    ```
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Usuario inactivo, suspendido o sin rol activo de `Moderador` o `Administrador` (por ejemplo, `Usuario registrado`, `Representante de establecimiento` o rol revocado).
+
+## 28.2 Listar reseñas con reportes pendientes (atajo)
+
+- **Método y ruta:** `GET /api/moderacion/resenas/pendientes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `oculta` (opcional), `idProducto` (opcional).
+- **Comportamiento:** Retorna las reseñas con al menos un reporte en estado `PENDIENTE`.
+
+## 28.3 Consulta plana de reportes de moderación
+
+- **Método y ruta:** `GET /api/moderacion/reportes`
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). Solo accesible para `Moderador` o `Administrador` activos.
+- **Parámetros:** `estado` (opcional, `EstadoReporte`, valor por defecto: `PENDIENTE`). Si no se envía el parámetro, conserva la compatibilidad con la bandeja de moderación base de Fase 2 filtrando por reportes pendientes.
+- **Respuesta `200 OK`:** Lista de `ReporteResenaResponse` (`idReporte`, `idResena`, `motivo`, `descripcion`, `estado`, `fechaCreacion`).
+
+
+---
+
+# 29. Acciones operativas de moderación de reseñas (S2-43)
+
+Esta sección describe las acciones operativas de moderación sobre reseñas y reportes: **Ocultar**, **Publicar** y **Rechazar**.
+Todos los endpoints operan exclusivamente bajo la raíz `/api/moderacion/**`.
+
+**Reglas de autorización:**
+- Accesibles para usuarios con cuenta activa y asignación activa de rol `Moderador` o `Administrador` en la tabla multirrol `usuario_rol`.
+- Denegadas (`403 Forbidden`) para `Usuario registrado`, `Representante de establecimiento` y usuarios inactivos o suspendidos.
+- Prohibición estricta de conflicto de interés: un moderador o administrador no puede moderar sus propias reseñas ni resolver reportes propios (`403 Forbidden`).
+- Máquina de estados estricta (Migraciones 007, 010 y 011): un reporte debe encontrarse en estado `EN_REVISION` para ser resuelto (`RECHAZADO` o `ACEPTADO`). Los reportes en estado `PENDIENTE` no pueden ser rechazados directamente (`409 Conflict`).
+- Independencia de flags: las acciones manuales operan exclusivamente sobre `ocultaPorModeracion`. El ocultamiento automático por reportes (`ocultaPorReportes`) y el borrado lógico del autor permanecen independientes.
+
+## 29.1 Ocultar reseña
+Establece `ocultaPorModeracion = true`, `moderadaPor = actor`, `fechaModeracion = ahora` y `motivoModeracion = motivo`. Registra de manera transaccional un evento de auditoría inmutable en `resena_moderacion_auditoria` (`accion = 'OCULTAR'`).
+
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/ocultar` (alias: `POST /api/moderacion/resenas/{idResena}/ocultar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Contenido ofensivo verificado por moderación"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: true`.
+  - `400 Bad Request`: Identificador inválido o motivo mayor a 2000 caracteres.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin rol activo de moderación, cuenta suspendida o intento de automoderación.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Reseña ya oculta manualmente o reseña eliminada previamente por su autor.
+
+## 29.2 Publicar reseña (restaurar visibilidad manual)
+Restaura la visibilidad manual (`ocultaPorModeracion = false`, `moderadaPor = null`, `fechaModeracion = null`, `motivoModeracion = null`). Registra transaccionalmente un evento en `resena_moderacion_auditoria` (`accion = 'RESTAURAR'`). No altera `ocultaPorReportes`.
+
+- **Métodos y ruta:** `PUT /api/moderacion/resenas/{idResena}/publicar` (alias: `POST /api/moderacion/resenas/{idResena}/publicar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reseña verificada y legítima tras revisión"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` con `ocultaPorModeracion: false`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o automoderación.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: La reseña no estaba oculta manualmente, o fue eliminada por su autor impidiendo su republicación.
+
+## 29.3 Rechazar reporte individual
+Actualiza el estado de un reporte específico en `EN_REVISION` a `RECHAZADO`. Registra transaccionalmente la decisión en `reporte_resena_decision_auditoria`. Recalcula los reportes activos no rechazados de la reseña: si bajan de 3, restablece automáticamente `ocultaPorReportes = false`.
+
+- **Métodos y ruta:** `PUT /api/moderacion/reportes/{idReporte}/rechazar` (alias: `POST /api/moderacion/reportes/{idReporte}/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` responsable o `Administrador` activo.
+- **Cuerpo (opcional):**
+  ```json
+  {
+    "motivo": "Reporte infundado tras verificar el producto"
+  }
+  ```
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ReporteResenaResponse` con `estado: "RECHAZADO"`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Moderador no responsable asignado, cuenta suspendida o conflicto de interés (actor reportante o autor).
+  - `404 Not Found`: Reporte inexistente.
+  - `409 Conflict`: Reporte en estado `PENDIENTE` (debe pasar a `EN_REVISION` primero) o reporte ya finalizado.
+
+## 29.4 Rechazar reportes de una reseña en lote
+Marca los reportes en estado `EN_REVISION` de una reseña como `RECHAZADO`, registrando su evento de decisión individual para cada reporte en `reporte_resena_decision_auditoria`. Si los reportes no rechazados quedan por debajo del umbral de 3 y la reseña sigue activa, restablece `ocultaPorReportes = false`.
+
+- **Métodos y rutas:** `PUT /api/moderacion/resenas/{idResena}/rechazar-reportes` (alias: `/rechazar`)
+- **Autenticación:** Requerida (`Bearer <token_jwt>`). `Moderador` o `Administrador` activo.
+- **Códigos de respuesta:**
+  - `200 OK`: Retorna `ResenaReportadaResponse` actualizado con los reportes en `RECHAZADO`.
+  - `401 Unauthorized`: Token ausente o inválido.
+  - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o autor de la reseña.
+  - `404 Not Found`: Reseña inexistente.
+  - `409 Conflict`: Si existen reportes todavía en estado `PENDIENTE` que requieren revisión previa.

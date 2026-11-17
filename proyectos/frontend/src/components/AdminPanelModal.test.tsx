@@ -31,6 +31,14 @@ vi.mock("@/services/api", async () => {
   };
 });
 
+vi.mock("@/components/admin/AdminUsuariosRoles", () => ({
+  default: () => <div data-testid="admin-usuarios-roles" />,
+}));
+
+vi.mock("@/components/admin/AdminEstablecimientos", () => ({
+  default: () => <div data-testid="admin-establecimientos" />,
+}));
+
 describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   const adminUser: UsuarioSesion = {
     id: "admin-1",
@@ -107,6 +115,46 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         />,
       );
       expect(screen.queryByRole("dialog")).toBeNull();
+    });
+  });
+
+  describe("Administración de usuarios y roles", () => {
+    it("muestra la pestaña de usuarios y roles y su contenido", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      fireEvent.click(
+        screen.getByRole("tab", { name: /Usuarios y roles/i }),
+      );
+
+      expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
+    });
+  });
+
+  describe("Administración de establecimientos", () => {
+    it("muestra la pestaña de establecimientos y su contenido", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      fireEvent.click(
+        screen.getByRole("tab", { name: /Establecimientos/i }),
+      );
+
+      expect(screen.getByTestId("admin-establecimientos")).toBeDefined();
     });
   });
 
@@ -1116,6 +1164,160 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
         await screen.findByText(/No tienes permisos de administrador para exportar el catálogo de productos/i),
       ).toBeDefined();
       expect(api.dispararDescargaArchivo).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("TEC-117: Criterios de validación de productos", () => {
+    it("muestra error si la URL de imagen no empieza por http o https", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Nothing Phone (2)");
+      fireEvent.click(screen.getByRole("button", { name: /\+ Nuevo Producto/i }));
+
+      fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
+        target: { value: "Producto Enlace Invalido" },
+      });
+      fireEvent.change(screen.getByLabelText(/Categoría/i), {
+        target: { value: "1" },
+      });
+      fireEvent.change(screen.getByLabelText(/Marca/i), {
+        target: { value: "10" },
+      });
+      fireEvent.change(screen.getByLabelText(/Precio de Referencia/i), {
+        target: { value: "500" },
+      });
+      fireEvent.change(screen.getByLabelText(/URL de Imagen/i), {
+        target: { value: "ftp://servidor.com/foto.jpg" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
+
+      expect(await screen.findByText("Los enlaces deben empezar por http o https.")).toBeDefined();
+      expect(api.crearProducto).not.toHaveBeenCalled();
+    });
+
+    it("muestra error si la URL de imagen no tiene protocolo (ruta relativa o texto)", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Nothing Phone (2)");
+      fireEvent.click(screen.getByRole("button", { name: /\+ Nuevo Producto/i }));
+
+      fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
+        target: { value: "Producto Sin Protocolo" },
+      });
+      fireEvent.change(screen.getByLabelText(/Categoría/i), {
+        target: { value: "1" },
+      });
+      fireEvent.change(screen.getByLabelText(/Marca/i), {
+        target: { value: "10" },
+      });
+      fireEvent.change(screen.getByLabelText(/URL de Imagen/i), {
+        target: { value: "imagen.png" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
+
+      expect(await screen.findByText("Los enlaces deben empezar por http o https.")).toBeDefined();
+      expect(api.crearProducto).not.toHaveBeenCalled();
+    });
+
+    it("muestra error si el precio de referencia es negativo", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Nothing Phone (2)");
+      fireEvent.click(screen.getByRole("button", { name: /\+ Nuevo Producto/i }));
+
+      fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
+        target: { value: "Producto Precio Negativo" },
+      });
+      fireEvent.change(screen.getByLabelText(/Categoría/i), {
+        target: { value: "1" },
+      });
+      fireEvent.change(screen.getByLabelText(/Marca/i), {
+        target: { value: "10" },
+      });
+      fireEvent.change(screen.getByLabelText(/Precio de Referencia/i), {
+        target: { value: "-10" },
+      });
+      fireEvent.change(screen.getByLabelText(/URL de Imagen/i), {
+        target: { value: "https://ejemplo.com/foto.jpg" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
+
+      expect(await screen.findByText("El precio no puede ser negativo.")).toBeDefined();
+      expect(api.crearProducto).not.toHaveBeenCalled();
+    });
+
+    it("permite guardar exitosamente cuando la URL empieza por http o https y el precio no es negativo", async () => {
+      const nuevoProducto: ProductoResponse = {
+        idProducto: 200,
+        nombre: "Producto Valido",
+        descripcion: "",
+        idCategoria: 1,
+        idMarca: 10,
+        imagen: "https://ejemplo.com/foto.jpg",
+        precioReferencia: 0,
+        estado: true,
+      };
+      vi.mocked(api.crearProducto).mockResolvedValue(nuevoProducto);
+
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Nothing Phone (2)");
+      fireEvent.click(screen.getByRole("button", { name: /\+ Nuevo Producto/i }));
+
+      fireEvent.change(screen.getByLabelText(/Nombre del Producto/i), {
+        target: { value: "Producto Valido" },
+      });
+      fireEvent.change(screen.getByLabelText(/Categoría/i), {
+        target: { value: "1" },
+      });
+      fireEvent.change(screen.getByLabelText(/Marca/i), {
+        target: { value: "10" },
+      });
+      fireEvent.change(screen.getByLabelText(/Precio de Referencia/i), {
+        target: { value: "0" },
+      });
+      fireEvent.change(screen.getByLabelText(/URL de Imagen/i), {
+        target: { value: "https://ejemplo.com/foto.jpg" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /Crear Producto/i }));
+
+      await waitFor(() => {
+        expect(api.crearProducto).toHaveBeenCalledWith(
+          expect.objectContaining({
+            nombre: "Producto Valido",
+            imagen: "https://ejemplo.com/foto.jpg",
+            precioReferencia: 0,
+          }),
+        );
+      });
     });
   });
 });

@@ -62,6 +62,23 @@ public class Usuario {
         establecimientos.add(vinculacion);
     }
 
+    public boolean tieneRol(String nombreRol) {
+        if (roles != null && !roles.isEmpty()) {
+            boolean tieneEnRoles = roles.stream()
+                    .filter(ur -> Boolean.TRUE.equals(ur.getEstado()))
+                    .map(UsuarioRol::getRol)
+                    .anyMatch(r -> r != null && nombreRol.equalsIgnoreCase(r.getNombre()));
+            if (tieneEnRoles) {
+                return true;
+            }
+        }
+        return rol != null && nombreRol.equalsIgnoreCase(rol.getNombre());
+    }
+
+    public boolean esModeradorOAdmin() {
+        return tieneRol("Moderador") || tieneRol("Administrador");
+    }
+
     public Long getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
     public String getNombre() { return nombre; }

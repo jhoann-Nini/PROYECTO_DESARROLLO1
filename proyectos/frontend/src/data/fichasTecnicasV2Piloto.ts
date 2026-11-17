@@ -588,6 +588,105 @@ const oneplus13 = crearFicha(
   ],
 );
 
+
+const iphone15Fuente = "apple-iphone-15-pro-max-co";
+const iphone15ProMax = crearFicha(
+  "moviles",
+  "verificado",
+  [{ id: "256gb", modelo: "Apple iPhone 15 Pro Max", almacenamiento: "256 GB", mercado: "Colombia" }],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A17 Pro · CPU de 6 núcleos · GPU de 6 núcleos · Neural Engine de 16 núcleos", iphone15Fuente),
+    atributo("pantalla", "Pantalla", "pantalla", "Super Retina XDR · OLED · Dynamic Island", iphone15Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.7, iphone15Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2796 × 1290 píxeles", iphone15Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "460 ppi", iphone15Fuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", "ProMotion adaptativo hasta 120 Hz", iphone15Fuente),
+    atributo("brillo_tipico", "Brillo máximo típico", "pantalla", 1000, iphone15Fuente, "nits"),
+    atributo("brillo_hdr", "Brillo pico HDR", "pantalla", 1600, iphone15Fuente, "nits"),
+    atributo("brillo_exterior", "Brillo pico exterior", "pantalla", 2000, iphone15Fuente, "nits"),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 256, iphone15Fuente, "GB"),
+    atributo("camara_principal", "Cámara principal", "camaras", 48, iphone15Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, iphone15Fuente, "mpx"),
+    atributo("teleobjetivo_2x", "Teleobjetivo 2x", "camaras", 12, iphone15Fuente, "mpx"),
+    atributo("teleobjetivo_5x", "Teleobjetivo 5x tetraprisma", "camaras", 12, iphone15Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal TrueDepth", "camaras", 12, iphone15Fuente, "mpx"),
+    atributo("estabilizacion", "Estabilización cámara principal", "camaras", "Óptica por desplazamiento del sensor de segunda generación", iphone15Fuente),
+    atributo("video", "Grabación de vídeo", "camaras", "4K hasta 60 fps · Dolby Vision HDR · ProRes", iphone15Fuente),
+    atributo("capacidad_bateria", "Reproducción de vídeo (máximo declarado)", "bateria", 29, iphone15Fuente, "h"),
+    atributo("streaming_video", "Streaming de vídeo (máximo declarado)", "bateria", 25, iphone15Fuente, "h"),
+    atributo("dimensiones", "Dimensiones", "diseno", "159,9 × 76,7 × 8,25 mm", iphone15Fuente),
+    atributo("peso", "Peso", "diseno", 221, iphone15Fuente, "g"),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos", iphone15Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G sub-6 GHz", iphone15Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6E", iphone15Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", iphone15Fuente),
+    atributo("nfc", "NFC", "conectividad", true, iphone15Fuente),
+    atributo("usb", "USB-C", "conectividad", "USB 3 hasta 10 Gb/s · DisplayPort", iphone15Fuente),
+    atributo("sim", "SIM", "conectividad", "Nano-SIM + eSIM en modelos internacionales compatibles", iphone15Fuente),
+    atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "iOS 17", iphone15Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.7, "in", iphone15Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", iphone15Fuente),
+    metrica("capacidad_bateria", "Reproducción de vídeo (máximo declarado)", "bateria", 29, "h", iphone15Fuente),
+    metrica("peso", "Peso", "diseno", 221, "g", iphone15Fuente),
+  ],
+  [
+    fuente(iphone15Fuente, "Apple Support Colombia — iPhone 15 Pro Max, especificaciones técnicas", "https://support.apple.com/es-co/111828", "256gb", "Fuente primaria oficial para variante, chip, pantalla, cámaras, batería, dimensiones, peso, resistencia y conectividad.", "2026-11-17"),
+  ],
+);
+
+const samsungS25Fuente = "samsung-s25-ultra-co-specs";
+const samsungS25BuyFuente = "samsung-s25-ultra-co-buy";
+const samsungS25Ultra = crearFicha(
+  "moviles",
+  "verificado",
+  [
+    { id: "12gb-1tb", modelo: "Samsung Galaxy S25 Ultra", ram: "12 GB", almacenamiento: "1 TB", mercado: "Colombia" },
+    { id: "12gb-512gb", modelo: "Samsung Galaxy S25 Ultra", ram: "12 GB", almacenamiento: "512 GB", mercado: "Colombia" },
+    { id: "12gb-256gb", modelo: "Samsung Galaxy S25 Ultra", ram: "12 GB", almacenamiento: "256 GB", mercado: "Colombia" },
+  ],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 8 Elite for Galaxy", samsungS25Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "Dynamic AMOLED 2X · Gorilla Armor 2 antirreflejo", samsungS25Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.9, samsungS25Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "3120 × 1440 píxeles (QHD+)", samsungS25Fuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", "Adaptativa de 1 a 120 Hz", samsungS25Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 12, samsungS25Fuente, "GB"),
+    atributo("almacenamiento", "Almacenamiento de la variante del catálogo", "almacenamiento", 1, samsungS25Fuente, "TB"),
+    atributo("camara_principal", "Cámara principal", "camaras", 200, samsungS25Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 50, samsungS25Fuente, "mpx"),
+    atributo("teleobjetivo_5x", "Teleobjetivo 5x", "camaras", 50, samsungS25Fuente, "mpx"),
+    atributo("teleobjetivo_3x", "Teleobjetivo 3x", "camaras", 10, samsungS25Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 12, samsungS25Fuente, "mpx"),
+    atributo("estabilizacion", "Estabilización óptica", "camaras", "OIS en cámara principal y teleobjetivos", samsungS25Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, samsungS25Fuente, "mAh"),
+    atributo("carga_cable", "Carga por cable", "bateria", 45, samsungS25Fuente, "W"),
+    atributo("dimensiones", "Dimensiones", "diseno", "162,8 × 77,6 × 8,2 mm", samsungS25Fuente),
+    atributo("peso", "Peso", "diseno", 218, samsungS25Fuente, "g"),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", samsungS25Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G", samsungS25Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7", samsungS25Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", samsungS25Fuente),
+    atributo("nfc", "NFC", "conectividad", true, samsungS25Fuente),
+    atributo("usb", "USB-C", "conectividad", "USB 3.2 Gen 1", samsungS25Fuente),
+    atributo("s_pen", "S Pen", "diseno", "Integrado en el dispositivo", samsungS25Fuente),
+    atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "Android 15 · One UI 7", samsungS25Fuente),
+    atributo("soporte_actualizaciones", "Soporte de actualizaciones", "software", "Siete generaciones de actualizaciones del sistema operativo y siete años de seguridad", samsungS25Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.9, "in", samsungS25Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", samsungS25Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", samsungS25Fuente),
+    metrica("peso", "Peso", "diseno", 218, "g", samsungS25Fuente),
+  ],
+  [
+    fuente(samsungS25BuyFuente, "Samsung Colombia — Galaxy S25 Ultra, variantes 12 GB y almacenamiento", "https://www.samsung.com/co/smartphones/galaxy-s25-ultra/buy/?modelCode=SM-S938BZTULTC", "12gb-1tb", "La tienda oficial colombiana lista 256/512 GB/1 TB, todas con 12 GB de RAM; el registro deseado:206 corresponde a 1 TB.", "2026-11-17"),
+    fuente(samsungS25Fuente, "Samsung Colombia — Galaxy S25 Ultra, especificaciones y tabla técnica", "https://www.samsung.com/co/smartphones/galaxy-s25-ultra/specs/", "12gb-1tb", "Fuente primaria para pantalla, cámaras, dimensiones, peso, batería, conectividad, S Pen y software.", "2026-11-17"),
+    fuente("samsung-s25-ultra-newsroom-co", "Samsung Newsroom Colombia — serie Galaxy S25, tabla de especificaciones", "https://news.samsung.com/co/la-serie-samsung-galaxy-s25-establece-el-estandar-del-smartphone-con-ia-convirtiendolo-en-un-verdadero-companero-de-ia", "12gb-1tb", "Confirma cámara, pantalla, memoria 12GB + 1TB, batería y carga.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -602,6 +701,8 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleIphone13_128: iphone13,
   xiaomiRedmiNote14ProPlus12_512: redmiNote14ProPlus,
   oneplus13_16_512: oneplus13,
+  appleIphone15ProMax256: iphone15ProMax,
+  samsungGalaxyS25Ultra12_1tb: samsungS25Ultra,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -620,6 +721,8 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
+  if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;
   if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
@@ -640,6 +743,10 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   nombre: string,
 ): FichaTecnicaV2 | null {
   switch (id) {
+    case 201:
+      return iphone15ProMax;
+    case 206:
+      return samsungS25Ultra;
     case 207:
       return oneplus13;
     case 107:
@@ -664,6 +771,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
+      if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;
       if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
       if (n.includes("galaxy a55")) return galaxyA55;
       if (n.includes("iphone 13") && n.includes("128")) return iphone13;

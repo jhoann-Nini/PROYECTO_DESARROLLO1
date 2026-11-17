@@ -104,6 +104,16 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía del Redmi Note 14 Pro+ 5G en acabado Lavender Purple; el registro del catálogo no especifica color.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:OnePlus_13_back.jpg",
+    autor: "Maksdroider",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía de la parte trasera del OnePlus 13 en acabado Black Eclipse; el registro del catálogo no especifica color.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

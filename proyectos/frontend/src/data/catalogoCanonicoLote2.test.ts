@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico — lote 2", () => {
-  it("incorpora nueve modelos sin alterar las ocho identidades piloto", () => {
-    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(9);
-    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(17);
+  it("incorpora diez modelos sin alterar las ocho identidades piloto", () => {
+    expect(CATALOGO_CANONICO_ADICIONAL).toHaveLength(10);
+    expect(obtenerCatalogoCanonicoCompleto()).toHaveLength(18);
   });
 
   it("conserva IDs originales y variantes comerciales verificadas por fabricante", () => {
@@ -49,6 +49,11 @@ describe("catálogo canónico — lote 2", () => {
       ram: "16 GB LPDDR5X",
       almacenamiento: "512 GB UFS 4.0",
     });
+    expect(obtenerProductoCanonico("redmi-note-13-pro-plus-5g")?.variantes[0]).toMatchObject({
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
   });
 
   it("verifica imagen y licencia para los seis modelos del lote", () => {
@@ -62,6 +67,7 @@ describe("catálogo canónico — lote 2", () => {
       "samsung-galaxy-a55-5g",
       "apple-iphone-13",
       "xiaomi-14-ultra",
+      "redmi-note-13-pro-plus-5g",
     ];
     for (const id of ids) {
       const producto = obtenerProductoCanonico(id);

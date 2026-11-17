@@ -315,7 +315,7 @@ const macbookPro16M3Max = crearFicha(
     atributo("brillo_sdr", "Brillo SDR", "pantalla", 600, macFuente, "nits"),
     atributo("brillo_xdr", "Brillo sostenido XDR", "pantalla", 1000, macFuente, "nits"),
     atributo("brillo_hdr", "Pico de brillo HDR", "pantalla", 1600, macFuente, "nits"),
-    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 254, macFuente, "puntos"),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "254 ppi", macFuente),
     atributo("camara", "Cámara", "multimedia", "FaceTime HD 1080p", macFuente),
     atributo("audio", "Audio", "multimedia", "Sistema de seis altavoces con woofers de cancelación de fuerza · tres micrófonos · salida 3,5 mm", macFuente),
     atributo("conectividad_inalambrica", "Conectividad inalámbrica", "conectividad", "Wi-Fi 6E · Bluetooth 5.3", macFuente),
@@ -333,7 +333,7 @@ const macbookPro16M3Max = crearFicha(
     metrica("ram", "Memoria unificada", "memoria", 48, "GB", macFuente),
     metrica("almacenamiento", "Almacenamiento", "almacenamiento", 1, "TB", macFuente),
     metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 16.2, "in", macFuente),
-    metrica("energia_bateria", "Energía de batería", "bateria", 100, "Wh", macFuente),
+    metrica("energia_bateria", "Energía de batería", "bateria", 99.6, "Wh", macFuente),
   ],
   [
     fuente("apple-macbook-pro-m3-max", "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023)", "https://support.apple.com/es-la/117737", macVariante, "La ficha oficial respalda la configuración probada M3 Max CPU 16/GPU 40, memoria unificada de 48 GB y SSD de 1 TB; también pantalla, conectividad, puertos, cámara, audio, dimensiones, peso y batería."),

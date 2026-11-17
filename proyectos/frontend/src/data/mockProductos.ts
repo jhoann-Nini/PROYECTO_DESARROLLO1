@@ -52,7 +52,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Galaxy A55 5G",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "Exynos 1480 · 5000 mAh · Super AMOLED 120Hz · 8GB RAM",
+    especificaciones: "8GB RAM · 256GB · Exynos 1480 · Super AMOLED 120Hz · 5000mAh",
     puntuacion: 8.8,
     precio: 1589000, // $ 1.589.000 COP
     precioOriginal: 1800000,
@@ -64,20 +64,12 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     chipInfo: "Exynos 1480 · 50MP",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "715,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA SUPER AMOLED",
           descripcion: "6.6'' Super AMOLED FHD+ · 120Hz · Vision Booster · Gorilla Glass Victus+.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento", puntos: 8.7 },
-        { nombre: "Pantalla", puntos: 9.1 },
-        { nombre: "Batería", puntos: 9.2 },
-        { nombre: "Cámaras", puntos: 8.6 },
       ],
       tiendas: [
         { nombre: "Samsung Store Colombia", precio: 1589000, envioGratis: true },
@@ -126,7 +118,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "iPhone 13 (128GB)",
     marca: "Apple",
     categoria: "moviles",
-    especificaciones: "A15 Bionic · Super Retina XDR · iOS 18 · Modo Cine",
+    especificaciones: "128GB · A15 Bionic · Super Retina XDR · cámara dual de 12MP",
     puntuacion: 8.6,
     precio: 2649000, // $ 2.649.000 COP
     precioOriginal: 2999000,
@@ -138,18 +130,12 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     chipInfo: "Apple A15 Bionic · 12MP",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "4,750 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA SUPER RETINA XDR",
           descripcion: "6.1'' OLED Super Retina XDR · HDR10 · Dolby Vision · Ceramic Shield.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento iOS", puntos: 9.2 },
-        { nombre: "Calidad de Cámaras", puntos: 8.9 },
       ],
       tiendas: [
         { nombre: "iShop Colombia", precio: 2649000, envioGratis: true },

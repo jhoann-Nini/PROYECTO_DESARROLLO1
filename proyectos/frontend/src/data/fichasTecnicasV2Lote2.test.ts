@@ -92,7 +92,7 @@ describe("fichas técnicas V2 — lote 2 de móviles", () => {
 
   it("verifica Nothing Ear (a) Black con las especificaciones de Nothing", () => {
     const ficha = FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack;
-    expect(ficha.variantes[0]).toMatchObject({ id: "black", modelo: "Nothing Ear (a)", color: "Black" });
+    expect(ficha.variantes[0]).toMatchObject({ id: "black", modelo: "Nothing Ear (a) · Black" });
     expect(ficha.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "cancelacion_ruido", valor: expect.stringContaining("45 dB") }),
       expect.objectContaining({ clave: "autonomia_sin_anc", valor: expect.stringContaining("42,5 h") }),

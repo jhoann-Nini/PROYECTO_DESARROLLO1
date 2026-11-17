@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra quince fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(15);
+  it("registra dieciséis fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(16);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -58,11 +58,12 @@ describe("atribuciones de imágenes del catálogo", () => {
       "https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg",
       "https://commons.wikimedia.org/wiki/File:Nothing-Tokyo-2024-04-18_151.jpg",
       "https://commons.wikimedia.org/wiki/File:Shibuya-Tokyo---2024-08-28_066.jpg",
+      "https://commons.wikimedia.org/wiki/File:Shibuya-Tokyo---2024-08-28_059.jpg",
     ];
     const lote2 = ATRIBUCIONES_IMAGENES.filter((imagen) => paginasLote2.includes(imagen.paginaOrigen));
-    expect(lote2).toHaveLength(7);
+    expect(lote2).toHaveLength(8);
     expect(lote2.filter((imagen) => imagen.licencia === "CC BY-SA 4.0")).toHaveLength(5);
-    expect(lote2.filter((imagen) => imagen.licencia === "CC BY 4.0")).toHaveLength(2);
+    expect(lote2.filter((imagen) => imagen.licencia === "CC BY 4.0")).toHaveLength(3);
     expect(lote2.every((imagen) => imagen.paginaOrigen.startsWith("https://commons.wikimedia.org/wiki/File:"))).toBe(true);
   });
 

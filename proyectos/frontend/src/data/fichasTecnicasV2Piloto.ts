@@ -355,7 +355,7 @@ const macbookPro16M3Max = crearFicha(
     atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", "400 GB/s", macFuente),
     atributo("brillo_sdr", "Brillo SDR", "pantalla", 600, macFuente, "nits"),
     atributo("brillo_hdr", "Brillo XDR sostenido / pico HDR", "pantalla", "1000 nits sostenidos a pantalla completa / 1600 nits pico HDR", macFuente),
-    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", 254, macFuente, "puntos"),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "254 ppi", macFuente),
     atributo("camara", "Cámara", "camaras", "FaceTime HD 1080p", macFuente),
     atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6E (802.11ax)", macFuente),
     atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", macFuente),

@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 de los ocho productos piloto", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(11); // Samsung S24 tiene dos variantes comerciales.
+    expect(fichas).toHaveLength(12); // Samsung S24 tiene dos variantes comerciales.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -38,6 +38,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.xiaomiRedmiNote14ProPlus12_512.estado_verificacion).toBe("verificado");
   });
 
   it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
@@ -69,6 +70,21 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("verifica Redmi Note 14 Pro+ 12GB/512GB con Xiaomi Colombia y distingue RAM virtual", () => {
+    const redmi = FICHAS_TECNICAS_V2_PILOTO.xiaomiRedmiNote14ProPlus12_512;
+    expect(redmi.variantes[0]).toMatchObject({ id: "12gb-512gb-co", ram: "12 GB LPDDR4X", almacenamiento: "512 GB UFS 2.2" });
+    expect(redmi.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Snapdragon 7s Gen 3") }),
+      expect.objectContaining({ clave: "ram", valor: 12 }),
+      expect.objectContaining({ clave: "almacenamiento", valor: 512 }),
+      expect.objectContaining({ clave: "camara_frontal", valor: 20 }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 5110 }),
+      expect.objectContaining({ clave: "carga_rapida", valor: 120 }),
+      expect.objectContaining({ clave: "resistencia", valor: "IP68" }),
+    ]));
+    expect(redmi.fuentes.map((f) => f.url)).toContain("https://www.mi.com/co/product/redmi-note-14-pro-plus-5g/buy/?gid=4223712110");
   });
 
   it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {
@@ -145,6 +161,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     });
     const a55 = normalizarDesdeProducto({ ...base, idProducto: 906, nombre: "Samsung Galaxy A55 5G" });
     const iphone = normalizarDesdeProducto({ ...base, idProducto: 907, nombre: "Apple iPhone 13 (128GB)" });
+    const redmi = normalizarDesdeProducto({ ...base, idProducto: 908, nombre: "Xiaomi Redmi Note 14 Pro+ 5G" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -157,6 +174,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(sony.fuentes[0]?.url).toContain("sony.com");
     expect(a55.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone.variantes[0]?.id).toBe("128gb");
+    expect(redmi.variantes[0]?.id).toBe("12gb-512gb-co");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -200,6 +218,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     const sony = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 109);
     const a55 = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 102);
     const iphone = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 104);
+    const redmi = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 107);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
@@ -207,5 +226,6 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(normalizarDesdeKimovil(sony!).fuentes[0]?.url).toContain("sony.com");
     expect(normalizarDesdeKimovil(a55!).variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(normalizarDesdeKimovil(iphone!).variantes[0]?.id).toBe("128gb");
+    expect(normalizarDesdeKimovil(redmi!).variantes[0]?.id).toBe("12gb-512gb-co");
   });
 });

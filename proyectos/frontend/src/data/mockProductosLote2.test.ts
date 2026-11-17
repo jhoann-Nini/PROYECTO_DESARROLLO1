@@ -46,6 +46,16 @@ describe("registros comerciales — lote 2", () => {
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });
 
+  it("sustituye la imagen genérica de Xiaomi 14 Ultra y documenta 16 GB/512 GB", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204);
+    expect(producto?.nombre).toBe("Xiaomi 14 Ultra (16GB/512GB)");
+    expect(producto?.especificaciones).toContain("16GB RAM · 512GB");
+    expect(producto?.imagen).toContain("Shibuya-Tokyo---2024-08-28_066.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.metricas).toBeUndefined();
+  });
+
   it("corrige Galaxy S25 Ultra a 12 GB/1 TB para Colombia", () => {
     const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206);
     expect(producto?.especificaciones).toContain("12GB RAM · 1TB");

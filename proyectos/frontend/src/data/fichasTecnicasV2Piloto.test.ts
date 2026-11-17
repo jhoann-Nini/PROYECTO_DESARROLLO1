@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 de los ocho productos piloto", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(9); // Samsung tiene dos variantes comerciales.
+    expect(fichas).toHaveLength(11); // Samsung S24 tiene dos variantes comerciales.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -36,6 +36,32 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.nothingEar2.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
+  });
+
+  it("completa Galaxy A55 5G 8GB/256GB con fuentes oficiales de Samsung Colombia", () => {
+    const a55 = FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55;
+    expect(a55.variantes[0]).toMatchObject({ id: "8gb-256gb-co", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia" });
+    expect(a55.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: "Samsung Exynos 1480 · CPU de ocho núcleos" }),
+      expect.objectContaining({ clave: "camara_principal", valor: 50, unidad: "mpx" }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 5000, unidad: "mAh" }),
+      expect.objectContaining({ clave: "resistencia", valor: "IP67" }),
+    ]));
+    expect(a55.fuentes.map((f) => f.url)).toContain("https://news.samsung.com/co/galaxy-a55-5g-y-a35-5g-los-nuevos-equipos-de-la-serie-a-con-innovaciones-al-alcance-de-todos");
+  });
+
+  it("completa iPhone 13 de 128GB con especificaciones técnicas de Apple", () => {
+    const iphone = FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128;
+    expect(iphone.variantes[0]).toMatchObject({ id: "128gb", almacenamiento: "128 GB" });
+    expect(iphone.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("A15 Bionic") }),
+      expect.objectContaining({ clave: "resolucion", valor: "2532 × 1170 píxeles" }),
+      expect.objectContaining({ clave: "almacenamiento", valor: 128, unidad: "GB" }),
+      expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
+    ]));
+    expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
   });
 
   it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {
@@ -110,6 +136,8 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
       idProducto: 904,
       nombre: "Sony WH-1000XM5",
     });
+    const a55 = normalizarDesdeProducto({ ...base, idProducto: 906, nombre: "Samsung Galaxy A55 5G" });
+    const iphone = normalizarDesdeProducto({ ...base, idProducto: 907, nombre: "Apple iPhone 13 (128GB)" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -120,6 +148,8 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(ipad.variantes[0]?.id).toBe("16gb-1tb");
     expect(mac.variantes[0]?.id).toBe("48gb-1tb");
     expect(sony.fuentes[0]?.url).toContain("sony.com");
+    expect(a55.variantes[0]?.id).toBe("8gb-256gb-co");
+    expect(iphone.variantes[0]?.id).toBe("128gb");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -161,10 +191,14 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
   it("asocia las fichas oficiales de iPad Pro M4, Nothing Ear (2) y Sony WH-1000XM5", () => {
     const ipad = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 208);
     const sony = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 109);
+    const a55 = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 102);
+    const iphone = DISPOSITIVOS_VENDIDOS.find((producto) => producto.id === 104);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
     expect(normalizarDesdeProducto(ear!).variantes[0]?.id).toBe("transparent-white");
     expect(normalizarDesdeKimovil(sony!).fuentes[0]?.url).toContain("sony.com");
+    expect(normalizarDesdeKimovil(a55!).variantes[0]?.id).toBe("8gb-256gb-co");
+    expect(normalizarDesdeKimovil(iphone!).variantes[0]?.id).toBe("128gb");
   });
 });

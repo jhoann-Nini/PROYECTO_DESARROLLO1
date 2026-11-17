@@ -5,7 +5,8 @@ import { DispositivoKimovil, Producto, UsuarioSesion } from "@/types/producto";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { idApiDeViewModel } from "@/data/productoViewModel";
 import { useState, useEffect, useMemo } from "react";
-import { normalizarFichaProducto, formatearCOP } from "@/data/specsHelper";
+import { normalizarFichaProducto, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
+import type { FichaNormalizada } from "@/data/specsHelper";
 import { normalizarFichaTecnicaV2 } from "@/data/normalizadorFicha";
 import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
 import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
@@ -265,24 +266,29 @@ export default function FichaTecnicaModal({
   const ficha = useMemo(() => {
     if (!producto) return null;
     if ("origen" in producto) {
-      const caracteristicas = Object.fromEntries((fichaTecnicaV2?.atributos ?? []).map((atributo) => [
-        atributo.clave, String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
-      ]));
-      const idsCategoria = { moviles: 1, laptops: 2, tablets: 3, auriculares: 4 };
-      const productoPresentacion: Producto = {
-        idProducto: producto.idApi ?? producto.idProducto,
+      const secciones = (fichaTecnicaV2?.atributos ?? []).map((atributo) => ({
+        icono: INFO_CATEGORIAS[producto.categoria].icono,
+        titulo: atributo.nombre.toUpperCase(),
+        descripcion: String(atributo.valor) + (atributo.unidad ? " " + atributo.unidad : ""),
+      }));
+      const fichaViewModel: FichaNormalizada = {
+        categoriaTipo: producto.categoria,
+        categoriaEtiqueta: producto.categoriaEtiqueta,
+        categoriaIcono: INFO_CATEGORIAS[producto.categoria].icono,
+        marca: producto.marca,
         nombre: producto.nombre,
-        descripcion: producto.textoBusqueda || null,
-        idCategoria: idsCategoria[producto.categoria],
-        idMarca: 0,
-        nombreCategoria: producto.categoriaEtiqueta,
-        nombreMarca: producto.marca,
-        imagen: producto.imagen,
-        precioReferencia: producto.precioCOP,
-        estado: producto.disponible,
-        caracteristicas,
+        precio: producto.precioCOP,
+        imagen: producto.imagen || "",
+        puntuacionGlobal: null,
+        resumen: "",
+        secciones,
+        metricas: [],
+        benchmark: null,
+        tiendas: [],
+        tieneEspecificacionesReales: secciones.length > 0,
+        datosTecnicos: producto.datosFichaTecnica,
       };
-      return normalizarFichaProducto(productoPresentacion);
+      return fichaViewModel;
     }
     if (usaFichaV2 && "caracteristicas" in producto) {
       const caracteristicas = Object.fromEntries((fichaTecnicaV2?.atributos ?? []).map((atributo) => [

@@ -1499,7 +1499,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
       microfonos: "3 micrófonos por auricular con tecnología Clear Voice de reducción de eco y viento",
       bateria: "Hasta 36 horas con estuche de carga · 6.3 horas continuas · Carga rápida (10 min = 8 horas)",
       codecs: "Bluetooth 5.3 · Códec LHDC 5.0, AAC y SBC · Conexión dual multipunto simultánea",
-      software: "Nothing X App con ecualizador paramétrico de 8 bandas y calibración de perfil auditivo personal",
+      software: "Nothing X App con ecualizador avanzado y perfil de sonido personal",
     },
   },
   {

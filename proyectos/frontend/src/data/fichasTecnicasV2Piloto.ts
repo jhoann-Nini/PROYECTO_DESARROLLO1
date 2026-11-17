@@ -325,7 +325,8 @@ const nothingEar2 = crearFicha(
     atributo("transductores", "Transductor", "audio", 11.6, earFuente, "mm"),
     atributo("diafragma", "Diafragma", "audio", "Graphene + PU (poliuretano)", earFuente),
     atributo("cancelacion_ruido", "Cancelación activa de ruido máxima declarada", "audio", "Hasta 40 dB", earFuente),
-    atributo("codecs", "Códecs Bluetooth", "conectividad", "AAC, SBC, LHDC", earFuente),
+    atributo("codecs", "Códecs Bluetooth", "conectividad", "AAC, SBC, LHDC 5.0", earFuente),
+    atributo("bluetooth", "Versión Bluetooth", "conectividad", "Bluetooth 5.3", earFuente),
     atributo("bateria_auriculares", "Autonomía de auriculares (ANC desactivado)", "bateria", "Hasta 6.3 h", earFuente),
     atributo("bateria_estuche", "Autonomía total con estuche (ANC desactivado)", "bateria", "Hasta 36 h", earFuente),
     atributo("capacidad_bateria_auriculares", "Capacidad batería por auricular", "bateria", 33, earFuente, "mAh"),
@@ -336,7 +337,7 @@ const nothingEar2 = crearFicha(
     
   ],
   [
-    fuente("nothing-ear-2", "Nothing — Ear (2), technical details", "https://checkout-us.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones técnicas; el color Transparent White se conserva de la variante registrada y requiere cotejo independiente."),
+    fuente("nothing-ear-2", "Nothing España — Ear (2), especificaciones técnicas", "https://checkout-es.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones técnicas, incluidos LHDC 5.0 y Bluetooth 5.3. Describe el diseño transparente, pero no identifica textualmente el acabado como Transparent White; la variante permanece parcial."),
   ],
 );
 

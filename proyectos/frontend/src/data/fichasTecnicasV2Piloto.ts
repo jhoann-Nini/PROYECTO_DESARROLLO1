@@ -421,10 +421,9 @@ const samsungGalaxyS25Ultra = crearFicha(
   "verificado",
   [{
     id: s25UltraVariante,
-    modelo: "Samsung Galaxy S25 Ultra",
+    modelo: "Samsung Galaxy S25 Ultra · Titanio negro",
     ram: "12 GB",
     almacenamiento: "1 TB",
-    color: "Titanio negro",
     mercado: "Colombia",
   }],
   [
@@ -599,8 +598,7 @@ const nothingEarABlack = crearFicha(
   "verificado",
   [{
     id: nothingEarAVariante,
-    modelo: "Nothing Ear (a)",
-    color: "Black",
+    modelo: "Nothing Ear (a) · Black",
   }],
   [
     atributo("tipo", "Tipo de auricular", "audio", "Intraauricular inalámbrico true wireless", nothingEarAFuente),

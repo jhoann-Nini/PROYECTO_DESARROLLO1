@@ -227,6 +227,22 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
 export const CATALOGO_CANONICO_ADICIONAL: readonly ProductoCanonico[] = [
 
 
+
+  {
+    id: "redmi-note-13-pro-plus-5g",
+    nombre: "Redmi Note 13 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 101, "12gb-512gb")],
+    variantes: [{
+      id: "12gb-512gb",
+      nombre: "12 GB RAM · 512 GB · Colombia",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    }],
+  },
   {
     id: "xiaomi-14-ultra",
     nombre: "Xiaomi 14 Ultra",

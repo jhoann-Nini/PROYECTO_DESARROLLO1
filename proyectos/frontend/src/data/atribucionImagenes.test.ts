@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra diez fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(10);
+  it("registra doce fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(12);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,18 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra iPhone 15 Pro Max con CC BY-SA 4.0", () => {
+    const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kyu3");
+    expect(iphone?.licencia).toBe("CC BY-SA 4.0");
+    expect(iphone?.paginaOrigen).toContain("IPhone_15_Pro_Max");
+  });
+
+  it("registra Galaxy S25 Ultra con CC BY-SA 4.0", () => {
+    const s25 = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen.includes("Samsung_Galaxy_S25_Ultra_2025"));
+    expect(s25?.autor).toBe("Captainmorlypogi1959");
+    expect(s25?.licencia).toBe("CC BY-SA 4.0");
   });
 
   it("registra OnePlus 13 con CC BY-SA 4.0", () => {

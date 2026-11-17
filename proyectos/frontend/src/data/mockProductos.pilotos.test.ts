@@ -6,7 +6,7 @@ import {
   ULTIMAS_OFERTAS,
 } from "./mockProductos";
 
-describe("fichas técnicas de los ocho productos piloto", () => {
+describe("coherencia técnica e imágenes de productos del catálogo", () => {
   it("mantiene Nothing Phone (2a) Special Edition de 12GB/256GB", () => {
     const producto = PRODUCTOS_MOCK.find((item) => item.idProducto === 1);
     expect(producto?.nombre).toBe("Nothing Phone (2a) Special Edition");

@@ -51,6 +51,7 @@ import {
   obtenerFichaTecnicaV2PilotoParaKimovil,
   obtenerFichaTecnicaV2PilotoParaProducto,
 } from "./fichasTecnicasV2Piloto";
+import { obtenerFichaTecnicaV2CatalogoParaKimovil } from "./fichasTecnicasV2CatalogoAdicional";
 
 export {
   esMetricaComparableAutomaticamente,
@@ -1041,6 +1042,8 @@ export function normalizarDesdeKimovil(
   const categoria = detectarCategoria(dispositivo) as CategoriaFichaTecnica;
   const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
   if (fichaPiloto) return { ...fichaPiloto, categoria };
+  const fichaCatalogo = obtenerFichaTecnicaV2CatalogoParaKimovil(dispositivo.id, dispositivo.nombre);
+  if (fichaCatalogo) return { ...fichaCatalogo, categoria };
 
   const idClave = String(dispositivo.id);
   const idGlobal = contexto?.idGlobal ?? (idGlobalMock(idClave) ?? undefined);

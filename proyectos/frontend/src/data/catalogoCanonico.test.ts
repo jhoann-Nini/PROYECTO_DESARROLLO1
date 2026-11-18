@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
-  it("define exactamente diecisiete productos y cubre las cuatro categorías", () => {
-    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(17);
-    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(17);
+  it("define exactamente dieciocho productos y cubre las cuatro categorías", () => {
+    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(18);
+    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(18);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.categoria))).toEqual(
       new Set(["moviles", "tablets", "laptops", "auriculares"]),
     );
@@ -181,5 +181,18 @@ describe("catálogo canónico piloto", () => {
 
   it("devuelve null para un ID canónico desconocido", () => {
     expect(obtenerProductoCanonico("producto-inexistente")).toBeNull();
+  });
+  it("incorpora Redmi Note 13 Pro+ 5G como modelo distinto con variante colombiana identificada", () => {
+    const redmi = obtenerProductoCanonico("redmi-note-13-pro-plus-5g");
+    expect(redmi?.referencias).toEqual([
+      expect.objectContaining({ coleccion: "vendidos", idRegistro: 101, varianteId: "12gb-512gb" }),
+    ]);
+    expect(redmi?.variantes[0]).toMatchObject({
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
+    expect(redmi?.imagen.estadoVerificacion).toBe("sin_imagen");
+    expect(redmi?.imagen.url).toBeNull();
   });
 });

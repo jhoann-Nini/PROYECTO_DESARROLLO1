@@ -40,6 +40,7 @@ En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, App
 | `samsung-galaxy-a55-5g` | Samsung Galaxy A55 5G | vendidos:102 (8 GB RAM; capacidad exacta pendiente entre 128/256 GB) |
 | `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
 | `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
+| `redmi-note-13-pro-plus-5g` | Redmi Note 13 Pro+ 5G | vendidos:101 (12 GB/512 GB, Colombia; imagen pendiente) |
 | `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
 | `apple-iphone-15-pro-max` | Apple iPhone 15 Pro Max | deseados:201 (256 GB) |
 | `samsung-galaxy-s25-ultra` | Samsung Galaxy S25 Ultra | deseados:206 (12 GB/1 TB) |
@@ -211,7 +212,7 @@ Esta actualización documental describe el estado del código integrado en `main
 
 ## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
 
-El lote de trabajo amplía la cobertura controlada a **diecisiete modelos** (veintidós variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+El lote de trabajo amplía la cobertura controlada a **dieciocho modelos** (veintidós variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
 
 | Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|

@@ -155,6 +155,15 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });
+  it("mantiene Redmi Note 13 Pro+ 5G en 12 GB/512 GB sin benchmark ni imagen genérica", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
+    expect(producto?.especificaciones).toContain("12GB RAM");
+    expect(producto?.especificaciones).toContain("512GB");
+    expect(producto?.imagen).toBe("");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+  });
+
   it("no usa fotografías genéricas para Lenovo o MacBook cuando no hay licencia reutilizable", () => {
     const thinkpad = PRODUCTOS_MOCK.find((item) => item.idProducto === 6);
     const macbook = DISPOSITIVOS_DESEADOS.find((item) => item.id === 209);

@@ -1040,10 +1040,12 @@ export function normalizarDesdeKimovil(
   }
 
   const categoria = detectarCategoria(dispositivo) as CategoriaFichaTecnica;
-  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
-  if (fichaPiloto) return { ...fichaPiloto, categoria };
+  // Las fichas específicas del catálogo adicional deben prevalecer para sus IDs:
+  // el registro piloto del Galaxy A55 aún tiene estado parcial y varias variantes.
   const fichaCatalogo = obtenerFichaTecnicaV2CatalogoParaKimovil(dispositivo.id, dispositivo.nombre);
   if (fichaCatalogo) return { ...fichaCatalogo, categoria };
+  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
+  if (fichaPiloto) return { ...fichaPiloto, categoria };
 
   const idClave = String(dispositivo.id);
   const idGlobal = contexto?.idGlobal ?? (idGlobalMock(idClave) ?? undefined);

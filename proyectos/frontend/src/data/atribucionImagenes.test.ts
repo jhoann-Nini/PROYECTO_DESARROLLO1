@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra catorce fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(14);
+  it("registra quince fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(15);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,12 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra Xiaomi 14T Pro con CC BY-SA 4.0", () => {
+    const xiaomi14t = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen === "https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg");
+    expect(xiaomi14t?.autor).toBe("Petar Milošević");
+    expect(xiaomi14t?.licencia).toBe("CC BY-SA 4.0");
   });
 
   it("registra Nothing Ear (a) Black Edition con CC BY 4.0", () => {

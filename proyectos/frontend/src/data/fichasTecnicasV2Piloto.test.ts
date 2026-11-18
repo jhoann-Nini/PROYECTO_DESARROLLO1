@@ -197,7 +197,8 @@ describe("fichas técnicas V2 del catálogo", () => {
 
   it("verifica Nothing Ear (2) Transparent White con ficha oficial y evidencia de variante", () => {
     const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
-    expect(ear.estado_verificacion).toBe("parcial");
+    expect(ear.estado_verificacion).toBe("verificado");
+    expect(ear.variantes[0]).toMatchObject({ id: "transparent-white", identificador: "Transparent White" });
     expect(ear.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "codecs", valor: "AAC, SBC, LHDC 5.0" }),
       expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),

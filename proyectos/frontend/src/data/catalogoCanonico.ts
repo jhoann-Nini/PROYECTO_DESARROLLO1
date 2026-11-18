@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de catorce modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de quince modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -243,6 +243,15 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
     ],
+  },
+  {
+    id: "xiaomi-14-ultra",
+    nombre: "Xiaomi 14 Ultra",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 204, "16gb-512gb")],
+    variantes: [{ id: "16gb-512gb", nombre: "16 GB RAM · 512 GB", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" }],
   },
   {
     id: "apple-iphone-15-pro-max",

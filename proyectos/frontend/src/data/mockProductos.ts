@@ -589,7 +589,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         { nombre: "Apple Colombia Store", precio: 5190000, envioGratis: true },
       ],
     },
-  },,
+  },
   {
     id: 202,
     ranking: 2,
@@ -723,7 +723,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         { nombre: "Xiaomi Store Colombia", precio: 4950000, envioGratis: true },
       ],
     },
-  },,
+  },
   {
     id: 205,
     ranking: 5,
@@ -843,7 +843,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         { nombre: "Amazon Prime", precio: 5076000, envioGratis: true },
       ],
     },
-  },,
+  },
     {
     id: 207,
     ranking: 3,
@@ -902,7 +902,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
         { nombre: "Amazon Prime", precio: 3596000, envioGratis: true },
       ],
     },
-  },,
+  },
   {
     id: 208,
     ranking: 4,
@@ -1182,7 +1182,7 @@ export const ULTIMAS_OFERTAS: DispositivoKimovil[] = [
         { nombre: "Amazon Prime", precio: 316000, envioGratis: true },
       ],
     },
-  },,
+  },
   {
     id: 302,
     ranking: 2,

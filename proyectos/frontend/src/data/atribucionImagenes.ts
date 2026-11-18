@@ -154,6 +154,16 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía de exhibición del Nothing Ear (a) negro; corresponde al acabado Black Edition del registro.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/4/48/Xiaomi_14T_Pro.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg",
+    autor: "Petar Milošević",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY-SA 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía del Xiaomi 14T Pro en acabado Titan Blue; el registro del catálogo no especifica color.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

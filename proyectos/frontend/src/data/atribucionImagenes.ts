@@ -134,6 +134,16 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía de la parte trasera de un Galaxy S25 Ultra en exhibición; el registro del catálogo indica Titanium Black.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/e/e8/HK_%E4%B8%AD%E7%92%B0_Central_%E7%9A%87%E5%90%8E%E5%A4%A7%E9%81%93%E4%B8%AD_33_Queen%27s_Road_Central_shop_%E8%B1%90%E6%BE%A4%E9%9B%BB%E5%99%A8_Fortress_Store_%E6%89%8B%E6%A9%9F_smartphone_XiaoMi_14_Ultra_watch_May_2024_R12S_01.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:HK_%E4%B8%AD%E7%92%B0_Central_%E7%9A%87%E5%90%8E%E5%A4%A7%E9%81%93%E4%B8%AD_33_Queen%27s_Road_Central_shop_%E8%B1%90%E6%BE%A4%E9%9B%BB%E5%99%A8_Fortress_Store_%E6%89%8B%E6%A9%9F_smartphone_XiaoMi_14_Ultra_watch_May_2024_R12S_01.jpg",
+    autor: "DUSOAM 68 HNWUA",
+    fuente: "Wikimedia Commons",
+    licencia: "CC0 1.0",
+    urlLicencia: "https://creativecommons.org/publicdomain/zero/1.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía CC0 de un Xiaomi 14 Ultra en exhibición; la etiqueta de tienda muestra la configuración 16GB + 512GB.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

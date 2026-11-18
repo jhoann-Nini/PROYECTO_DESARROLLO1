@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de quince modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de dieciséis modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -243,6 +243,15 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
     ],
+  },
+  {
+    id: "nothing-ear-a-black",
+    nombre: "Nothing Ear (a) Black Edition",
+    marca: "Nothing",
+    categoria: "auriculares",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("ofertas", 301, "black")],
+    variantes: [{ id: "black", nombre: "Black Edition", color: "Black" }],
   },
   {
     id: "xiaomi-14-ultra",

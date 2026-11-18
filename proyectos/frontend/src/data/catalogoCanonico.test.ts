@@ -7,7 +7,7 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
-  it("define exactamente diecisiete productos y cubre las cuatro categorías", () => {
+  it("define exactamente dieciocho productos y cubre las cuatro categorías", () => {
     expect(CATALOGO_CANONICO_PILOTO).toHaveLength(18);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(18);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.categoria))).toEqual(

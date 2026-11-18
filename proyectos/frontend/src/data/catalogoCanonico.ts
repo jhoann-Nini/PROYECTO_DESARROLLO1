@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de dieciséis modelos. No se copian precios, puntuaciones ni
+ * Piloto ampliado de diecisiete modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -243,6 +243,15 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
     ],
+  },
+  {
+    id: "xiaomi-14t-pro",
+    nombre: "Xiaomi 14T Pro 5G Leica",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("ofertas", 306, "12gb-512gb-co")],
+    variantes: [{ id: "12gb-512gb-co", nombre: "12 GB RAM · 512 GB", ram: "12 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0", mercado: "Colombia" }],
   },
   {
     id: "nothing-ear-a-black",

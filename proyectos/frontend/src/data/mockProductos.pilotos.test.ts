@@ -81,6 +81,16 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("corrige Nothing Ear (a) Black Edition con imagen exacta y ficha oficial", () => {
+    const producto = ULTIMAS_OFERTAS.find((item) => item.id === 301);
+    expect(producto?.especificaciones).toContain("Driver 11mm");
+    expect(producto?.especificaciones).toContain("Bluetooth 5.3");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/41/Nothing-Tokyo-2024-04-18_151.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5.5h") && seccion.descripcion.includes("24.5h"))).toBe(true);
+  });
+
   it("completa Xiaomi 14 Ultra 16GB/512GB con ficha oficial y fotografía CC0", () => {
     const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204);
     expect(producto?.especificaciones).toContain("16GB RAM LPDDR5X · 512GB UFS 4.0");

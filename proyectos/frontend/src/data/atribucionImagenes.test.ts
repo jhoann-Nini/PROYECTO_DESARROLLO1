@@ -5,15 +5,15 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra nueve fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(9);
+  it("registra quince fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(15);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
       expect(imagen.fuente.trim()).not.toBe("");
       expect(imagen.autor.trim()).not.toBe("");
-      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(imagen.licencia);
-      expect(imagen.urlLicencia).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0", "CC0 1.0"]).toContain(imagen.licencia);
+      expect(imagen.urlLicencia).toMatch(/^https:\/\/creativecommons\.org\/(licenses|publicdomain)\//);
       expect(imagen.cambios.trim()).not.toBe("");
     }
   });
@@ -49,15 +49,53 @@ describe("atribuciones de imágenes del catálogo", () => {
     expect(iphone?.nota).toContain("128 GB");
   });
 
-  it("registra OnePlus 13 Black Eclipse con CC BY-SA 4.0", () => {
-    const oneplus = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Maksdroider");
+  it("registra Xiaomi 14T Pro con CC BY-SA 4.0", () => {
+    const xiaomi14t = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen === "https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg");
+    expect(xiaomi14t?.autor).toBe("Petar Milošević");
+    expect(xiaomi14t?.licencia).toBe("CC BY-SA 4.0");
+  });
+
+  it("registra Nothing Ear (a) Black Edition con CC BY 4.0", () => {
+    const earA = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen.includes("Nothing-Tokyo-2024-04-18_151"));
+    expect(earA?.autor).toBe("RuinDig/Yuki Uchida");
+    expect(earA?.licencia).toBe("CC BY 4.0");
+    expect(earA?.nota).toContain("acabado Black Edition");
+  });
+
+  it("registra Xiaomi 14 Ultra con licencia CC0 1.0", () => {
+    const xiaomi = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "DUSOAM 68 HNWUA");
+    expect(xiaomi?.licencia).toBe("CC0 1.0");
+    expect(xiaomi?.urlLicencia).toBe("https://creativecommons.org/publicdomain/zero/1.0/");
+    expect(xiaomi?.nota).toContain("16GB + 512GB");
+  });
+
+  it("registra iPhone 15 Pro Max con CC BY-SA 4.0", () => {
+    const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kyu3");
+    expect(iphone?.licencia).toBe("CC BY-SA 4.0");
+    expect(iphone?.paginaOrigen).toContain("IPhone_15_Pro_Max");
+  });
+
+  it("registra Galaxy S25 Ultra con CC BY-SA 4.0", () => {
+    const s25 = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen.includes("Samsung_Galaxy_S25_Ultra_2025"));
+    expect(s25?.autor).toBe("Captainmorlypogi1959");
+    expect(s25?.licencia).toBe("CC BY-SA 4.0");
+  });
+
+  it("registra OnePlus 13 con CC BY-SA 4.0", () => {
+    const oneplus = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Maksdroider" && imagen.paginaOrigen.includes("OnePlus_13_back"));
     expect(oneplus?.licencia).toBe("CC BY-SA 4.0");
-    expect(oneplus?.titulo).toBe("OnePlus 13 back.jpg");
     expect(oneplus?.nota).toContain("Black Eclipse");
   });
 
-  it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {
+  it("registra Redmi Note 14 Pro+ con CC BY-SA 4.0", () => {
+    const redmi = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Maksdroider");
+    expect(redmi?.licencia).toBe("CC BY-SA 4.0");
+    expect(redmi?.paginaOrigen).toContain("Redmi_Note_14_ProPlus");
+    expect(redmi?.nota).toContain("no especifica color");
+  });
+
+  it("documenta que la fotografía de Ear (2) muestra el acabado transparente blanco", () => {
     const ear = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Ganesh Mohan T");
-    expect(ear?.nota).toContain("no acredita");
+    expect(ear?.nota).toContain("Transparent White");
   });
 });

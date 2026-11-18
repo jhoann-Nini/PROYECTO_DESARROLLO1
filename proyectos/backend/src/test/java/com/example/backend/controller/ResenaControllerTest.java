@@ -39,6 +39,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.example.backend.entity.EstadoModeracion;
+
 class ResenaControllerTest {
 
     private MockMvc mockMvc;
@@ -84,7 +86,8 @@ class ResenaControllerTest {
                 "Excelente dispositivo calidad-precio.",
                 5,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
         );
 
         when(resenaService.listar(null)).thenReturn(List.of(response));
@@ -111,7 +114,9 @@ class ResenaControllerTest {
                 "Muy buena pantalla.",
                 4,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
+
         );
 
         when(resenaService.listar(15L)).thenReturn(List.of(response));
@@ -135,7 +140,8 @@ class ResenaControllerTest {
                 "Comentario de prueba.",
                 5,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
         );
 
         when(resenaService.crearOActualizar(any(ResenaRequest.class), any())).thenReturn(response);
@@ -161,7 +167,8 @@ class ResenaControllerTest {
                 "La mejor cámara del mercado.",
                 5,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
         );
 
         when(resenaService.crearOActualizar(any(ResenaRequest.class), any())).thenReturn(response);
@@ -235,7 +242,8 @@ class ResenaControllerTest {
                 "Comentario editado y mejorado.",
                 4,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
         );
 
         when(resenaService.actualizar(eq(5L), any(ResenaUpdateRequest.class), any())).thenReturn(response);
@@ -261,7 +269,8 @@ class ResenaControllerTest {
                 "Excelente tras actualizar.",
                 5,
                 LocalDateTime.now(),
-                true
+                true,
+                EstadoModeracion.PUBLICADA
         );
 
         when(resenaService.actualizar(eq(15L), eq(6L), any(ResenaUpdateRequest.class), any())).thenReturn(response);

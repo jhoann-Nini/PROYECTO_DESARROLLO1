@@ -144,6 +144,16 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     cambios: "Sin modificaciones.",
     nota: "Fotografía CC0 de un Xiaomi 14 Ultra en exhibición; la etiqueta de tienda muestra la configuración 16GB + 512GB.",
   },
+  {
+    urlImagen: "https://upload.wikimedia.org/wikipedia/commons/4/41/Nothing-Tokyo-2024-04-18_151.jpg",
+    paginaOrigen: "https://commons.wikimedia.org/wiki/File:Nothing-Tokyo-2024-04-18_151.jpg",
+    autor: "RuinDig/Yuki Uchida",
+    fuente: "Wikimedia Commons",
+    licencia: "CC BY 4.0",
+    urlLicencia: "https://creativecommons.org/licenses/by/4.0/",
+    cambios: "Sin modificaciones.",
+    nota: "Fotografía de exhibición del Nothing Ear (a) negro; corresponde al acabado Black Edition del registro.",
+  },
 ] as const;
 
 export function obtenerAtribucionImagen(

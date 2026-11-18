@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(16); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(17); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -43,6 +43,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone15ProMax256.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS25Ultra12_1tb.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.xiaomi14Ultra16_512.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack.estado_verificacion).toBe("verificado");
   });
 
   it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
@@ -75,6 +76,19 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("verifica Nothing Ear (a) Black Edition con especificaciones oficiales Nothing", () => {
+    const earA = FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack;
+    expect(earA.variantes[0]).toMatchObject({ id: "black", color: "Black Edition" });
+    expect(earA.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "driver", valor: 11, unidad: "mm" }),
+      expect.objectContaining({ clave: "anc", valor: expect.stringContaining("45 dB") }),
+      expect.objectContaining({ clave: "autonomia_total_anc_off", valor: 42.5 }),
+      expect.objectContaining({ clave: "autonomia_total_anc_on", valor: 24.5 }),
+      expect.objectContaining({ clave: "resistencia_auriculares", valor: "IP54" }),
+    ]));
+    expect(earA.fuentes[0]?.url).toContain("Colour=Black");
   });
 
   it("verifica Xiaomi 14 Ultra 16GB/512GB con ficha oficial Xiaomi", () => {
@@ -231,6 +245,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const iphone15 = normalizarDesdeProducto({ ...base, idProducto: 910, nombre: "iPhone 15 Pro Max (256GB)" });
     const s25 = normalizarDesdeProducto({ ...base, idProducto: 911, nombre: "Samsung Galaxy S25 Ultra" });
     const xiaomi14 = normalizarDesdeProducto({ ...base, idProducto: 912, nombre: "Xiaomi 14 Ultra (512GB)" });
+    const earA = normalizarDesdeProducto({ ...base, idProducto: 913, nombre: "Nothing Ear (a) Black Edition" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -248,6 +263,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(iphone15.variantes[0]?.id).toBe("256gb");
     expect(s25.variantes[0]?.id).toBe("12gb-1tb");
     expect(xiaomi14.variantes[0]?.id).toBe("16gb-512gb");
+    expect(earA.variantes[0]?.id).toBe("black");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -296,6 +312,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const iphone15 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 201);
     const s25 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 206);
     const xiaomi14 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 204);
+    const earA = ULTIMAS_OFERTAS.find((producto) => producto.id === 301);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
@@ -308,5 +325,6 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(iphone15!).variantes[0]?.id).toBe("256gb");
     expect(normalizarDesdeKimovil(s25!).variantes[0]?.id).toBe("12gb-1tb");
     expect(normalizarDesdeKimovil(xiaomi14!).variantes[0]?.id).toBe("16gb-512gb");
+    expect(normalizarDesdeKimovil(earA!).variantes[0]?.id).toBe("black");
   });
 });

@@ -81,9 +81,9 @@ Restaurar el ocultamiento manual solo cambia `oculta_por_moderacion`; no reviert
 
 Los nuevos historiales registran actor y fecha y están protegidos en PostgreSQL contra UPDATE, DELETE y TRUNCATE. La escritura de la reseña y su evento de auditoría se realiza en una misma transacción del backend. Las transiciones de reportes también persisten sus campos de responsable/fechas/notas y el evento de auditoría en una única transacción. La migración 010 actualiza el trigger de transición para validar asignaciones activas en `usuario_rol`, compatible con el modelo multirrol.
 
-## Validación pendiente
+## Validación y estado actual
 
-La implementación y las pruebas deben validarse localmente con Maven antes de considerar cerrada esta parte de Fase 2. La migración está preparada, pero no se ha ejecutado en Supabase ni en otra base de datos remota.
+La implementación y las pruebas automatizadas están incluidas en la rama principal. El CI del 18 de noviembre de 2026 terminó correctamente con 477 pruebas backend y 993 pruebas frontend aprobadas; también pasaron typecheck, lint y build. La validación remota de una instancia PostgreSQL concreta debe comprobarse por separado mediante public.schema_version y los objetos SQL del entorno.
 
 
 ---

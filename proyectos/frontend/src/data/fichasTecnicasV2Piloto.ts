@@ -965,6 +965,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   xiaomi14Ultra16_512: xiaomi14Ultra,
   nothingEarABlack: nothingEarABlack,
   xiaomi14tPro12_512: xiaomi14tPro,
+  redmiNote13ProPlus: redmiNote13ProPlus,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {

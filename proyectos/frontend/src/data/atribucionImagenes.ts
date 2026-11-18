@@ -50,7 +50,7 @@ export const ATRIBUCIONES_IMAGENES: readonly AtribucionImagenProducto[] = [
     licencia: "CC BY-SA 4.0",
     urlLicencia: "https://creativecommons.org/licenses/by-sa/4.0/",
     cambios: "Se utiliza el archivo recortado publicado por el autor, sin modificaciones adicionales.",
-    nota: "La fotografía representa el modelo Nothing Ear (2); no acredita por sí sola la variante comercial de color.",
+    nota: "Fotografía del diseño transparente blanco de Nothing Ear (2); coincide visualmente con Transparent White y Nothing lista Ear (2) White como variante oficial.",
   },
 
   {

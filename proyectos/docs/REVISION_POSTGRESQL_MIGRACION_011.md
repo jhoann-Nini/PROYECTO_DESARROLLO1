@@ -57,14 +57,9 @@ La migración toma bloqueos `SHARE ROW EXCLUSIVE` en tablas de usuarios, asignac
 
 No ejecutar directamente en producción sin revisar el plan de migración, el tamaño de las tablas y el impacto de los bloqueos.
 
-## Estado
+## Estado de implementación en el repositorio
 
-La migración está preparada en el repositorio en dos ubicaciones idénticas:
-
-- `proyectos/backend/src/main/resources/db/migration/011_integridad_multirole_y_auditoria_moderacion.sql`
-- `proyectos/docs/sql/011_integridad_multirole_y_auditoria_moderacion.sql`
-
-No se ha ejecutado en Supabase ni en otra base remota.
+La migración 011 está implementada y versionada en el backend y en su copia documental. Su presencia en el repositorio no permite afirmar el estado de aplicación en cada base de datos remota; para eso se debe consultar public.schema_version y verificar las funciones, columnas y triggers en la instancia correspondiente.
 
 
 ---

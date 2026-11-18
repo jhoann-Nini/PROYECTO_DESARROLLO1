@@ -68,6 +68,47 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     });
   });
 
+  it("documenta la configuración exacta Lenovo 21JK0005RI con los datos del PSREF", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5;
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      sku: "21JK0005RI",
+      mercado: "Rumania (región EET)",
+      ram: "16 GB DDR4-3200 (8 GB soldados + 8 GB SO-DIMM)",
+      almacenamiento: "512 GB SSD M.2 2242 PCIe 4.0 NVMe",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "graficos", valor: "Intel Iris Xe Graphics integrada" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 57, unidad: "Wh" }),
+      expect.objectContaining({ clave: "camara", valor: "FHD 1080p + IR híbrida con obturador de privacidad" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "seguridad" }),
+      expect.objectContaining({ clave: "dimensiones", valor: "313 × 219,3 × 17,99 mm" }),
+      expect.objectContaining({ clave: "peso", valor: 1.43, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI");
+  });
+
+  it("documenta la configuración exacta MacBook Pro 16 M3 Max de 48 GB y 1 TB", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      ram: "48 GB de memoria unificada",
+      almacenamiento: "1 TB SSD",
+      identificador: "M3 Max · CPU 16 núcleos (12 de rendimiento + 4 de eficiencia) · GPU 40 núcleos",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "resolucion", valor: "3456 × 2234 píxeles · 254 ppp" }),
+      expect.objectContaining({ clave: "brillo_hdr", valor: 1600, unidad: "nits" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 6E (802.11ax)" }),
+      expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),
+      expect.objectContaining({ clave: "camara", valor: "FaceTime HD 1080p" }),
+      expect.objectContaining({ clave: "peso", valor: 2.16, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.apple.com/es-co/117737");
+  });
+
   it("asocia las fichas V2 a los cuatro productos mock", () => {
     const ids = [1, 3, 5, 6];
     const productos = PRODUCTOS_MOCK.filter((producto) => ids.includes(producto.idProducto));

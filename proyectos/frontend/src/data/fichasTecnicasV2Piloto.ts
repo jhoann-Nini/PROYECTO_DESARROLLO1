@@ -746,7 +746,7 @@ const nothingEarAFuente = "nothing-ear-a-black-official";
 const nothingEarABlack = crearFicha(
   "auriculares",
   "verificado",
-  [{ id: "black", modelo: "Nothing Ear (a)", color: "Black Edition" }],
+  [{ id: "black", modelo: "Nothing Ear (a) Black Edition" }],
   [
     atributo("driver", "Transductor dinámico", "audio", 11, nothingEarAFuente, "mm"),
     atributo("diafragma", "Material del diafragma", "audio", "PMI + TPU", nothingEarAFuente),

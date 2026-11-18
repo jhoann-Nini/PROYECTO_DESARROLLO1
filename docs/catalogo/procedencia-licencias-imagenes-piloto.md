@@ -23,6 +23,7 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 | Samsung Galaxy S25 Ultra | Captainmorlypogi1959 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Samsung_Galaxy_S25_Ultra_2025.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía trasera del modelo en exhibición; original sin modificaciones |
 | Xiaomi 14 Ultra | DUSOAM 68 HNWUA | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:HK_%E4%B8%AD%E7%92%B0_Central_%E7%9A%87%E5%90%8E%E5%A4%A7%E9%81%93%E4%B8%AD_33_Queen%27s_Road_Central_shop_%E8%B1%90%E6%BE%A4%E9%9B%BB%E5%99%A8_Fortress_Store_%E6%89%8B%E6%A9%9F_smartphone_XiaoMi_14_Ultra_watch_May_2024_R12S_01.jpg) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Fotografía del modelo en exhibición; etiqueta visible con 16 GB + 512 GB; original sin modificaciones |
 | Nothing Ear (a) Black Edition | RuinDig/Yuki Uchida | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Nothing-Tokyo-2024-04-18_151.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Fotografía del acabado negro en exhibición; original sin modificaciones |
+| Xiaomi 14T Pro | Petar Milošević | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Xiaomi_14T_Pro.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | Fotografía propia del Xiaomi 14T Pro en acabado Titan Blue; original sin modificaciones |
 
 ## Cumplimiento
 

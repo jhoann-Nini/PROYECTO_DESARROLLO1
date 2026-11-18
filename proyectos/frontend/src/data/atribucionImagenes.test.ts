@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra doce fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(12);
+  it("registra trece fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(13);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,13 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra Xiaomi 14 Ultra con licencia CC0 1.0", () => {
+    const xiaomi = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "DUSOAM 68 HNWUA");
+    expect(xiaomi?.licencia).toBe("CC0 1.0");
+    expect(xiaomi?.urlLicencia).toBe("https://creativecommons.org/publicdomain/zero/1.0/");
+    expect(xiaomi?.nota).toContain("16GB + 512GB");
   });
 
   it("registra iPhone 15 Pro Max con CC BY-SA 4.0", () => {

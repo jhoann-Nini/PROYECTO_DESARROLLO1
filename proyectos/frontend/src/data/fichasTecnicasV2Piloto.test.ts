@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(18); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(19); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -392,5 +392,24 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(xiaomi14!).variantes[0]?.id).toBe("16gb-512gb");
     expect(normalizarDesdeKimovil(earA!).variantes[0]?.id).toBe("black");
     expect(normalizarDesdeKimovil(xiaomi14t!).variantes[0]?.id).toBe("12gb-512gb-co");
+  });
+  it("incorpora Redmi Note 13 Pro+ 5G de 12 GB/512 GB con fuentes oficiales", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.redmiNote13ProPlus;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      id: "12gb-512gb",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
+    expect(ficha.fuentes.map((fuente) => fuente.url)).toContain("https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/specs/");
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Dimensity 7200-Ultra") }),
+      expect.objectContaining({ clave: "camara_principal", valor: expect.stringContaining("200 MP") }),
+      expect.objectContaining({ clave: "carga_rapida", valor: 120, unidad: "W" }),
+    ]));
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
+    expect(normalizarDesdeKimovil(producto!).variantes[0]?.id).toBe("12gb-512gb");
   });
 });

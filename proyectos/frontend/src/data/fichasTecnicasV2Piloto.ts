@@ -897,6 +897,55 @@ const xiaomi14tPro = crearFicha(
   ],
 );
 
+const redmi13Fuente = "redmi-note-13-pro-plus";
+const redmi13Variante = "12gb-512gb";
+const redmiNote13ProPlus = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: redmi13Variante,
+    modelo: "Redmi Note 13 Pro+ 5G",
+    ram: "12 GB LPDDR5",
+    almacenamiento: "512 GB UFS 3.1",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "MediaTek Dimensity 7200-Ultra · 4 nm · CPU octa-core hasta 2,8 GHz · GPU Mali-G610", redmi13Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "CrystalRes Curved AMOLED · Dolby Vision · HDR10+", redmi13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, redmi13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles", redmi13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "446 ppi", redmi13Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", 120, redmi13Fuente, "Hz"),
+    atributo("brillo", "Brillo máximo", "pantalla", 1800, redmi13Fuente, "nits"),
+    atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus", redmi13Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 12, redmi13Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5", redmi13Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, redmi13Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 3.1", redmi13Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "200 MP · OIS · ƒ/1.65 · sensor de 1/1,4 pulgadas", redmi13Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "8 MP · ƒ/2.2", redmi13Fuente),
+    atributo("camara_macro", "Cámara macro", "camaras", "2 MP · ƒ/2.4", redmi13Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "16 MP · ƒ/2.4", redmi13Fuente),
+    atributo("video", "Grabación de vídeo trasera", "camaras", "4K a 24/30 fps · 1080p hasta 60 fps", redmi13Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, redmi13Fuente, "mAh"),
+    atributo("carga_rapida", "Carga rápida", "bateria", 120, redmi13Fuente, "W"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 19, redmi13Fuente, "h"),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 6 · Bluetooth 5.3 · NFC · Dual SIM nano SIM", redmi13Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", redmi13Fuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "161,4 × 74,2 × 8,9 mm", redmi13Fuente),
+    atributo("peso", "Peso", "dimensiones", 204.5, redmi13Fuente, "g"),
+    atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "MIUI 14", redmi13Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", redmi13Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", redmi13Fuente),
+  ],
+  [
+    fuente("redmi-note-13-pro-plus-co-specs", "Xiaomi Colombia — REDMI Note 13 Pro+ 5G, especificaciones", "https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/specs/", redmi13Variante, "La ficha oficial confirma procesador, pantalla, cámaras, batería, conectividad, IP68 y dimensiones."),
+    fuente("redmi-note-13-pro-plus-co-buy", "Xiaomi Colombia — REDMI Note 13 Pro+ 5G, variante 12 GB + 512 GB", "https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/buy/?gid=4223706821&ml=3472&mr=m", redmi13Variante, "La página de compra confirma la variante colombiana 12 GB + 512 GB y sus colores disponibles."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -973,6 +1022,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return oneplus13;
     case 107:
       return redmiNote14ProPlus;
+    case 101:
+      return redmiNote13ProPlus;
     case 102:
       return galaxyA55;
     case 104:

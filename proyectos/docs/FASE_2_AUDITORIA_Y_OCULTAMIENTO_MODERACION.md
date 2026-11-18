@@ -84,3 +84,14 @@ Los nuevos historiales registran actor y fecha y están protegidos en PostgreSQL
 ## Validación pendiente
 
 La implementación y las pruebas deben validarse localmente con Maven antes de considerar cerrada esta parte de Fase 2. La migración está preparada, pero no se ha ejecutado en Supabase ni en otra base de datos remota.
+
+
+---
+
+## Estado de implementación actualizado — 18 de noviembre de 2026
+
+El repositorio principal contiene las migraciones 010, 011 y 012. La migración 011 refuerza las reglas multirrol y exige que los cambios de moderación y sus eventos de auditoría queden correlacionados en la misma transacción. La migración 012 incorpora el estado independiente de moderación automática de reseñas (PUBLICADA / PENDIENTE), sin sustituir el ocultamiento por reportes ni el ocultamiento manual.
+
+El CI de main ejecutado el 18 de noviembre de 2026 finalizó correctamente: 477 pruebas backend y 993 pruebas frontend aprobadas; también pasaron typecheck, lint y build. Esta evidencia automatizada no equivale a una validación de migraciones contra una base remota de producción.
+
+Los scripts de migración están implementados y versionados en el repositorio. La aplicación efectiva en una instancia concreta debe comprobarse mediante public.schema_version y la inspección de sus objetos SQL.

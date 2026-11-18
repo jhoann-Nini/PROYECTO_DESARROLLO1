@@ -43,6 +43,7 @@ En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, App
 | `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
 | `apple-iphone-15-pro-max` | Apple iPhone 15 Pro Max | deseados:201 (256 GB) |
 | `samsung-galaxy-s25-ultra` | Samsung Galaxy S25 Ultra | deseados:206 (12 GB/1 TB) |
+| `xiaomi-14-ultra` | Xiaomi 14 Ultra | deseados:204 (16 GB/512 GB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -188,7 +189,7 @@ Esta actualización documental describe el estado del código integrado en `main
 
 ## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
 
-El lote de trabajo amplía la cobertura controlada a **catorce modelos** (diecinueve variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+El lote de trabajo amplía la cobertura controlada a **quince modelos** (veinte variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
 
 | Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|
@@ -198,6 +199,7 @@ El lote de trabajo amplía la cobertura controlada a **catorce modelos** (diecin
 | OnePlus 13 5G — 16 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigió el nombre inexistente «OnePlus 13 Pro» a OnePlus 13; se alineó con la variante oficial 16/512 y se eliminó el benchmark no documentado. |
 | Apple iPhone 15 Pro Max — 256 GB | `verificado` | CC BY-SA 4.0, autor Kyu3 | Ficha Apple Colombia; se reemplazó la imagen genérica y se eliminó el benchmark Geekbench no respaldado. |
 | Samsung Galaxy S25 Ultra — 12 GB/1 TB | `verificado` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Se corrigió RAM de 16 a 12 GB según Samsung Colombia; se verificó la variante 1 TB y se eliminó el benchmark AnTuTu no respaldado. |
+| Xiaomi 14 Ultra — 16 GB/512 GB | `verificado` | CC0 1.0, autor DUSOAM 68 HNWUA | Ficha oficial Xiaomi; fotografía en exhibición muestra etiqueta 16/512 y se documenta bajo dominio público CC0. |
 
 Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
 

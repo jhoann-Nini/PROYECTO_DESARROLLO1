@@ -56,14 +56,6 @@ public class ReporteResenaService {
     private final ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
-    public ReporteResenaService(
-            ReporteResenaRepository reporteResenaRepository,
-            ResenaRepository resenaRepository,
-            UsuarioService usuarioService,
-            ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository) {
-        this(reporteResenaRepository, resenaRepository, usuarioService, decisionAuditoriaRepository, null);
-    }
-
     @Autowired
     public ReporteResenaService(
             ReporteResenaRepository reporteResenaRepository,
@@ -441,15 +433,13 @@ public class ReporteResenaService {
         LocalDateTime ahora = LocalDateTime.now();
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
-        if (moderacionAuditoriaRepository != null) {
-            ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
-            evento.setResena(resena);
-            evento.setModerador(actor);
-            evento.setAccion("OCULTAR");
-            evento.setMotivo(motivo);
-            evento.setFechaEvento(ahora);
-            moderacionAuditoriaRepository.saveAndFlush(evento);
-        }
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion("OCULTAR");
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
 
         resena.setOcultaPorModeracion(true);
         resena.setModeradaPor(actor);
@@ -501,15 +491,13 @@ public class ReporteResenaService {
         LocalDateTime ahora = LocalDateTime.now();
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
-        if (moderacionAuditoriaRepository != null) {
-            ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
-            evento.setResena(resena);
-            evento.setModerador(actor);
-            evento.setAccion("RESTAURAR");
-            evento.setMotivo(motivo);
-            evento.setFechaEvento(ahora);
-            moderacionAuditoriaRepository.saveAndFlush(evento);
-        }
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion("RESTAURAR");
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
 
         resena.setOcultaPorModeracion(false);
         resena.setModeradaPor(null);

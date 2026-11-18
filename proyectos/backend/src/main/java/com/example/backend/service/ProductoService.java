@@ -34,7 +34,6 @@ public class ProductoService {
         this.marcaRepository = marcaRepository;
     }
 
-
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarActivos() {
         return productoRepository.findByEstadoTrue()
@@ -46,20 +45,19 @@ public class ProductoService {
 
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorCategoria(Long idCategoria) {
-        return productoRepository.findByCategoriaIdCategoriaAndEstadoTrue(idCategoria)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+      return productoRepository.findByCategoriaIdCategoriaAndEstadoTrue(idCategoria)
+        .stream()
+        .map(this::toResponse)
+        .toList();
     }
 
 
     @Transactional(readOnly = true)
     public List<ProductoResponse> listarPorMarca(Long idMarca) {
-
-        return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+      return productoRepository.findByMarcaIdMarcaAndEstadoTrue(idMarca)
+        .stream()
+        .map(this::toResponse)
+        .toList();
     }
 
 

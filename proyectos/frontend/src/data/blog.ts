@@ -1,3 +1,5 @@
+import type { CategoriaSlug } from "@/lib/categorias";
+
 export interface SeccionBlog {
   titulo: string;
   parrafos: string[];
@@ -7,7 +9,7 @@ export interface ArticuloBlog {
   slug: string;
   titulo: string;
   extracto: string;
-  categoriaSlug: "celulares" | "tablets" | "portatiles" | "auriculares";
+  categoriaSlug: CategoriaSlug;
   categoriaEtiqueta: string;
   fecha: string;
   secciones: SeccionBlog[];
@@ -47,7 +49,7 @@ export const ARTICULOS_BLOG: ArticuloBlog[] = [
         titulo: "Pantalla y batería: los datos que sí notas",
         parrafos: [
           "En pantalla, revisa tamaño, tecnología y resolución como un conjunto. Un panel grande con buena resolución puede consumir más energía; uno más pequeño puede ser más cómodo de usar con una mano.",
-          "En batería, los miliamperios (mAh) indican capacidad, pero no garantizan autonomía. La duración real depende del consumo del equipo, la pantalla y el uso. Si la ficha no registra un dato, TecReview lo muestra como ausente en lugar de completarlo.",
+          "En batería, los miliamperios-hora (mAh) indican capacidad, pero no garantizan autonomía. La duración real depende del consumo del equipo, la pantalla y el uso. Si la ficha no registra un dato, el comparador lo marca como «Sin dato» y la ficha del producto omite ese campo en lugar de completarlo.",
         ],
       },
       {
@@ -68,7 +70,8 @@ export const ARTICULOS_BLOG: ArticuloBlog[] = [
         titulo: "Cierra la comparación con precio y disponibilidad",
         parrafos: [
           "El precio de referencia y la disponibilidad son parte de la decisión. Un equipo con mejores especificaciones puede no estar disponible o superar tu presupuesto.",
-          "En TecReview puedes agregar hasta cuatro productos al comparador. La sugerencia que aparece es informativa y se basa en los datos registrados; no declara un ganador absoluto.",
+          "En TecReview puedes comparar hasta 4 productos de la misma categoría. Las filas técnicas se construyen con los datos registrados para esa categoría y, si un valor falta, aparece «Sin dato».",
+          "La sugerencia que aparece es informativa y se basa en los datos registrados; no declara un ganador absoluto.",
         ],
       },
     ],
@@ -111,7 +114,7 @@ export const ARTICULOS_BLOG: ArticuloBlog[] = [
       {
         titulo: "Qué buscar en la ficha de TecReview",
         parrafos: [
-          "Si la ficha registra capacidad y potencia de carga, úsalas para comparar equipos de la misma categoría. Si falta un dato, aparecerá como no registrado.",
+          "Si la ficha registra capacidad y potencia de carga, úsalas para comparar equipos de la misma categoría. En el comparador, un valor ausente se marca como «Sin dato»; la ficha del producto omite los campos sin información.",
           "La autonomía real solo puede evaluarse con pruebas reproducibles. Cuando no existen, es preferible decir que no hay dato antes que inventar una cifra.",
         ],
       },
@@ -199,7 +202,7 @@ export const ARTICULOS_BLOG: ArticuloBlog[] = [
       {
         titulo: "Cómo usar el catálogo",
         parrafos: [
-          "Compara los datos registrados de cada modelo y revisa las opiniones de la comunidad. Las estrellas provienen de valoraciones reales y se muestran por separado de las reseñas escritas.",
+          "Compara los datos registrados de cada modelo y revisa las opiniones de la comunidad en la sección Reseñas. El promedio de las valoraciones reales se muestra por separado del texto de las reseñas escritas.",
           "Si un dato no está en la ficha, no lo completes por lógica: consúltalo con el fabricante o espera a que se registre en el catálogo.",
         ],
       },
@@ -214,11 +217,11 @@ export function obtenerArticuloPorSlug(
 }
 
 /**
- * Calcula una estimación de lectura a partir del contenido real del artículo.
- * Es una referencia, no una métrica editorial inventada.
+ * Texto completo del artículo, usado para la estimación de lectura y para
+ * verificar que el contenido editorial conserve sus contratos.
  */
-export function calcularMinutosLectura(articulo: ArticuloBlog): number {
-  const texto = [
+export function textoArticulo(articulo: ArticuloBlog): string {
+  return [
     articulo.titulo,
     articulo.extracto,
     ...articulo.puntosClave,
@@ -227,7 +230,16 @@ export function calcularMinutosLectura(articulo: ArticuloBlog): number {
       ...seccion.parrafos,
     ]),
   ].join(" ");
+}
 
-  const palabras = texto.trim().split(/\s+/).filter(Boolean).length;
+/**
+ * Calcula una estimación de lectura a partir del contenido real del artículo.
+ * Es una referencia, no una métrica editorial inventada.
+ */
+export function calcularMinutosLectura(articulo: ArticuloBlog): number {
+  const palabras = textoArticulo(articulo)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
   return Math.max(1, Math.ceil(palabras / 200));
 }

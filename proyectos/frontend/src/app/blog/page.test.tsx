@@ -32,6 +32,41 @@ describe("Blog", () => {
     }
   });
 
+  it("enlaza todas las guías, la categoría destacada y el comparador", () => {
+    render(<BlogPage />);
+
+    for (const articulo of ARTICULOS_BLOG) {
+      const enlaces = screen.getAllByRole("link", { name: articulo.titulo });
+      expect(
+        enlaces.some(
+          (enlace) =>
+            enlace.getAttribute("href") === `/blog/${articulo.slug}`,
+        ),
+      ).toBe(true);
+    }
+
+    const destacado = ARTICULOS_BLOG[0];
+    expect(
+      screen
+        .getByRole("link", {
+          name: `Ver ${destacado.categoriaEtiqueta} en el catálogo →`,
+        })
+        .getAttribute("href"),
+    ).toBe(`/categorias/${destacado.categoriaSlug}`);
+    expect(
+      screen
+        .getByRole("link", { name: "Abrir comparador" })
+        .getAttribute("href"),
+    ).toBe("/comparador");
+  });
+
+  it("describe la ausencia de datos sin prometer un marcador en la ficha", () => {
+    render(<BlogPage />);
+
+    expect(screen.queryByText(/la muestra como ausente/i)).toBeNull();
+    expect(screen.getByText(/omite el campo/i)).toBeDefined();
+  });
+
   it("genera una ruta estática por artículo", () => {
     expect(generateStaticParams()).toEqual(
       ARTICULOS_BLOG.map((articulo) => ({ slug: articulo.slug })),
@@ -53,6 +88,33 @@ describe("Blog", () => {
     expect(screen.getByText(articulo.puntosClave[0])).toBeDefined();
     expect(screen.getByText("Puntos clave")).toBeDefined();
   });
+
+  it.each(ARTICULOS_BLOG)(
+    "enlaza categoría, comparador y reseñas desde $slug",
+    async (articulo) => {
+      const pagina = await ArticuloBlogPage({
+        params: Promise.resolve({ slug: articulo.slug }),
+      });
+
+      render(pagina);
+
+      expect(
+        screen
+          .getByRole("link", { name: `Ver ${articulo.categoriaEtiqueta}` })
+          .getAttribute("href"),
+      ).toBe(`/categorias/${articulo.categoriaSlug}`);
+      expect(
+        screen
+          .getByRole("link", { name: "Abrir comparador" })
+          .getAttribute("href"),
+      ).toBe("/comparador");
+      expect(
+        screen
+          .getByRole("link", { name: "Ver reseñas de la comunidad" })
+          .getAttribute("href"),
+      ).toBe("/resenas");
+    },
+  );
 
   it("devuelve notFound para un slug inexistente", async () => {
     await expect(

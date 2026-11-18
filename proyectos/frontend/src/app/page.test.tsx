@@ -1050,11 +1050,13 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
 
       await waitFor(() => {
-        expect(screen.getByText("Sin listas de deseos registradas")).toBeDefined();
+        expect(
+          screen.getByText("Sin favoritos vinculados a una cuenta"),
+        ).toBeDefined();
       });
 
       expect(
-        screen.getByText(/La funcionalidad de listas de deseos y favoritos estará disponible/i)
+        screen.getByText(/Los favoritos de este navegador son locales/i)
       ).toBeDefined();
 
       // Verificar que NO se inventaron productos ficticios
@@ -1254,7 +1256,7 @@ describe("Página principal / (Home)", () => {
       });
     });
 
-    it("2. Con un presupuesto de $4.000.000 COP, los productos más caros siguen siendo localizables en el catálogo general", async () => {
+    it("2. Mover el presupuesto no altera los destacados ni les añade badges de presupuesto", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1265,14 +1267,11 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
-      // El presupuesto por defecto es $4.000.000 COP.
-      // El producto más caro ($5.209.900) sigue visible y muestra su badge 'Supera presupuesto'
+      fireEvent.change(screen.getByRole("slider"), { target: { value: "200000" } });
+      const destacados = screen.getByRole("region", { name: "Destacados para ti." });
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
-      expect(screen.getAllByText("Supera presupuesto").length).toBeGreaterThanOrEqual(1);
-
-      // Y el producto económico ($289.900) muestra su badge '✓ En presupuesto'
       expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
-      expect(screen.getAllByText("✓ En presupuesto").length).toBeGreaterThanOrEqual(1);
+      expect(within(destacados).queryByText(/Supera presupuesto|En presupuesto|Presupuesto aplicado/)).toBeNull();
     });
 
     it("3. La búsqueda de 'Samsung Galaxy Tab S10 Ultra' permite localizar ese producto aunque su precio supere el presupuesto", async () => {
@@ -1382,7 +1381,7 @@ describe("Página principal / (Home)", () => {
       expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
     });
 
-    it("7. El filtro explícito de presupuesto oculta los productos que lo superan", async () => {
+    it("7. Confirmar el presupuesto abre el catálogo general sin filtrar destacados", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1395,26 +1394,13 @@ describe("Página principal / (Home)", () => {
         screen.getByRole("button", { name: "Filtrar por presupuesto" }),
       );
 
-      expect(
-        screen
-          .getByRole("button", { name: "Solo en presupuesto" })
-          .getAttribute("aria-pressed"),
-      ).toBe("true");
-
-      await waitFor(() => {
-        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
-      });
-      expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
-      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
-
-      // El catálogo original no se altera: al desactivar el filtro reaparecen.
-      fireEvent.click(
-        screen.getByRole("button", { name: "Solo en presupuesto" }),
-      );
+      expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=4000000");
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
     });
 
-    it("8. Los productos sin precio se conservan y se excluyen al activar el presupuesto", async () => {
+    it("8. Los destacados sin precio se conservan al confirmar el presupuesto", async () => {
       mockObtenerProductos.mockResolvedValueOnce([
         {
           idProducto: 90,
@@ -1441,12 +1427,11 @@ describe("Página principal / (Home)", () => {
         screen.getByRole("button", { name: "Filtrar por presupuesto" }),
       );
 
-      await waitFor(() => {
-        expect(screen.queryByText("Producto Sin Precio")).toBeNull();
-      });
+      expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=4000000");
+      expect(screen.getByText("Producto Sin Precio")).toBeDefined();
     });
 
-    it("9. Al soltar el slider aplica el presupuesto y desplaza la vista a destacados", async () => {
+    it("9. Al soltar el slider navega una vez con su valor COP sin desplazarse a destacados", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1461,21 +1446,38 @@ describe("Página principal / (Home)", () => {
       fireEvent.change(slider, { target: { value: "400000" } });
       fireEvent.pointerUp(slider);
 
-      expect(
-        screen
-          .getByRole("button", { name: "Solo en presupuesto" })
-          .getAttribute("aria-pressed"),
-      ).toBe("true");
+      fireEvent.mouseUp(slider);
+      expect(mockPush).toHaveBeenCalledTimes(1);
+      expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=400000");
+      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      expect(vi.mocked(Element.prototype.scrollIntoView)).not.toHaveBeenCalled();
+    });
 
-      await waitFor(() => {
-        expect(screen.queryByText("Samsung Galaxy Tab S10 Ultra")).toBeNull();
-        expect(screen.queryByText("Samsung Galaxy Tab S10+")).toBeNull();
-        expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
-      });
+    it("10. La confirmación no arrastra la búsqueda de home al catálogo por presupuesto", async () => {
+      mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
+      render(<Home />);
+      await screen.findByText("Samsung Galaxy Buds FE");
+      fireEvent.change(screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca, modelo o características/,
+      }), { target: { value: "Buds" } });
+      fireEvent.click(screen.getByRole("button", { name: "Filtrar por presupuesto" }));
+      expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=4000000");
+      expect((screen.getByRole("searchbox", {
+        name: /Buscar dispositivos por marca, modelo o características/,
+      }) as HTMLInputElement).value).toBe("Buds");
+    });
 
-      expect(
-        vi.mocked(Element.prototype.scrollIntoView),
-      ).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    it("11. El contador del presupuesto usa el catálogo general, no solo productos disponibles", async () => {
+      mockObtenerProductos.mockResolvedValueOnce([
+        { ...catalogoProductosPrueba[1], idProducto: 101, nombre: "Disponible económico" },
+        { ...catalogoProductosPrueba[1], idProducto: 102, nombre: "No disponible económico", estado: false },
+        { ...catalogoProductosPrueba[0], idProducto: 103, nombre: "Sin precio", precioReferencia: null },
+      ]);
+      render(<Home />);
+      await screen.findByText("Disponible económico");
+      expect(screen.getByText(/dentro del presupuesto/).textContent?.replace(/\s+/g, " ").trim())
+        .toBe("2 de 3 dentro del presupuesto");
     });
   });
 

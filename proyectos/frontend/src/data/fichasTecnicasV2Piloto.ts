@@ -395,8 +395,7 @@ const nothingEar2 = crearFicha(
   ],
   [
     metrica("tamano_transductor", "Diámetro del transductor", "audio", 11.6, "mm", earFuente),
-    metrica("autonomia_anc_off", "Autonomía total con ANC desactivada", "bateria", 36, "h", earFuente),
-    metrica("autonomia_anc_on", "Autonomía total con ANC activada", "bateria", 22.5, "h", earFuente),
+
   ],
   [
     fuente("nothing-ear-2", "Nothing España — Ear (2), especificaciones técnicas", "https://checkout-es.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones completas: audio, ANC, batería, dimensiones, resistencia y conectividad."),
@@ -416,6 +415,18 @@ const sonyWh1000Xm5 = crearFicha(
     atributo("respuesta_frecuencia", "Respuesta de frecuencia", "audio", "4 Hz – 40 000 Hz (operación activa)", sonyFuente),
     atributo("autonomia_anc", "Autonomía con cancelación de ruido", "bateria", 30, sonyFuente, "h"),
     atributo("autonomia_sin_anc", "Autonomía sin cancelación de ruido", "bateria", 40, sonyFuente, "h"),
+    atributo("peso", "Peso aproximado", "diseno", 250, sonyFuente, "g"),
+    atributo("respuesta_frecuencia_bluetooth", "Respuesta de frecuencia Bluetooth", "audio", "20 Hz–20 kHz (44,1 kHz); 20 Hz–40 kHz (LDAC 96 kHz/990 kbps)", sonyFuente),
+    atributo("impedancia", "Impedancia por cable", "audio", "48 Ω (encendido) / 16 Ω (apagado), a 1 kHz", sonyFuente),
+    atributo("sensibilidad", "Sensibilidad por cable", "audio", "102 dB/mW (encendido) / 100 dB/mW (apagado), a 1 kHz", sonyFuente),
+    atributo("conector", "Entrada analógica", "conectividad", "Minijack estéreo de 3,5 mm", sonyFuente),
+    atributo("cable", "Cable de audio", "accesorios", "Desmontable, conexión unilateral; minijack estéreo", sonyFuente),
+    atributo("carga", "Tiempo de carga", "bateria", 3.5, sonyFuente, "h"),
+    atributo("autonomia_llamadas", "Autonomía en comunicación", "bateria", "Hasta 24 h (NC ON) / 32 h (NC OFF)", sonyFuente),
+    atributo("dsee", "DSEE Extreme", "audio", true, sonyFuente),
+    atributo("modo_ambiente", "Modo de sonido ambiente", "audio", true, sonyFuente),
+    atributo("nc_optimizer", "Optimizador automático de cancelación", "audio", true, sonyFuente),
+    atributo("operacion_pasiva", "Funcionamiento pasivo por cable", "audio", true, sonyFuente),
   ],
   [
     metrica("autonomia_anc", "Autonomía con cancelación de ruido", "bateria", 30, "h", sonyFuente),

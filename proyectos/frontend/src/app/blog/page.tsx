@@ -166,17 +166,26 @@ export default function BlogPage() {
           Las guías no sustituyen los datos
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[var(--color-subtle)]">
-          Cuando una especificación no está registrada, TecReview la muestra
-          como ausente. No completamos fichas por lógica ni inventamos precios,
-          disponibilidad o valoraciones. Para decidir, revisa el producto en el
-          catálogo y contrástalo con el fabricante.
+          Cuando una especificación no está registrada, el comparador la marca
+          como «Sin dato» y la ficha omite el campo. No completamos fichas por
+          lógica ni inventamos precios, disponibilidad o valoraciones. Para
+          decidir, revisa el producto en el catálogo y contrástalo con el
+          fabricante.
         </p>
-        <Link
-          href="/productos"
-          className="mt-4 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
-        >
-          Explorar catálogo
-        </Link>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href="/productos"
+            className="inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+          >
+            Explorar catálogo
+          </Link>
+          <Link
+            href="/comparador"
+            className="inline-flex rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+          >
+            Abrir comparador
+          </Link>
+        </div>
       </section>
         </>
       )}

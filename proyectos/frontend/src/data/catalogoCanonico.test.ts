@@ -168,7 +168,8 @@ describe("catálogo canónico piloto", () => {
     ];
 
     for (const producto of pendientes) {
-      expect(producto?.imagen.estadoVerificacion).toBe("pendiente");
+      expect(producto?.imagen.estadoVerificacion).toBe("sin_imagen");
+      expect(producto?.imagen.url).toBeNull();
       expect(producto?.imagen.licencia).toBeNull();
       expect(producto?.imagen.atribucion).toBeNull();
     }

@@ -94,7 +94,7 @@ describe("atribuciones de imágenes del catálogo", () => {
     expect(redmi?.nota).toContain("no especifica color");
   });
 
-  it("advierte que la fotografía de Ear (2) no confirma la variante de color", () => {
+  it("documenta que la fotografía de Ear (2) muestra el acabado transparente blanco", () => {
     const ear = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Ganesh Mohan T");
     expect(ear?.nota).toContain("no acredita");
   });

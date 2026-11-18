@@ -665,42 +665,65 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
       ],
     },
   },
-  {
+    {
     id: 204,
     ranking: 4,
     nombre: "Xiaomi 14 Ultra (512GB)",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "Sensor Leica 1 pulgada LYT-900 · 90W HyperCharge · Cuádruple 50MP",
+    especificaciones: "16GB RAM LPDDR5X · 512GB UFS 4.0 · Snapdragon 8 Gen 3 · Leica quad 50MP",
     puntuacion: 9.3,
-    precio: 4950000, // $ 4.950.000 COP
+    precio: 4950000,
     precioOriginal: 5400000,
     descuento: "-8%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    imagen: "https://upload.wikimedia.org/wikipedia/commons/e/e8/HK_%E4%B8%AD%E7%92%B0_Central_%E7%9A%87%E5%90%8E%E5%A4%A7%E9%81%93%E4%B8%AD_33_Queen%27s_Road_Central_shop_%E8%B1%90%E6%BE%A4%E9%9B%BB%E5%99%A8_Fortress_Store_%E6%89%8B%E6%A9%9F_smartphone_XiaoMi_14_Ultra_watch_May_2024_R12S_01.jpg",
     tipo: "deseado",
-    chipInfo: "Snapdragon 8 Gen 3 · Ópticas Leica",
+    chipInfo: "Snapdragon 8 Gen 3 · ópticas Leica Summilux",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "DxOMark Calidad de Cámara",
-      benchmarkValor: "155 Puntos",
       secciones: [
         {
+          icono: "📱",
+          titulo: "PANTALLA WQHD+ AMOLED",
+          descripcion: "6.73'' AMOLED LTPO · 3200 × 1440 · 522 ppi · 1–120Hz · 3000 nits pico · 12 bits · Dolby Vision y HDR10+.",
+        },
+        {
+          icono: "⚡",
+          titulo: "PROCESADOR Y REFRIGERACIÓN",
+          descripcion: "Qualcomm Snapdragon 8 Gen 3 (4nm) · CPU hasta 3.3GHz · GPU Adreno · sistema Xiaomi Dual-Channel IceLoop.",
+        },
+        {
+          icono: "💾",
+          titulo: "MEMORIA Y ALMACENAMIENTO",
+          descripcion: "16GB LPDDR5X · 512GB UFS 4.0.",
+        },
+        {
           icono: "📸",
-          titulo: "ÓPTICAS LEICA SUMMILUX",
-          descripcion: "Cuádruple cámara de 50MP con sensor LYT-900 de 1 pulgada.",
+          titulo: "CUÁDRUPLE CÁMARA LEICA",
+          descripcion: "Principal Sony LYT-900 de 50MP y 1'' con apertura variable f/1.63–f/4.0 y OIS + teleobjetivo flotante 50MP 75mm OIS + periscopio 50MP 120mm OIS + ultra gran angular 50MP 12mm.",
+        },
+        {
+          icono: "🔋",
+          titulo: "BATERÍA Y CARGA",
+          descripcion: "5000mAh típicos · 90W HyperCharge por cable · 80W HyperCharge inalámbrica.",
+        },
+        {
+          icono: "🌐",
+          titulo: "DISEÑO Y CONECTIVIDAD",
+          descripcion: "IP68 · 5G · Wi-Fi 7 · Bluetooth 5.4 · NFC · USB-C · doble nano-SIM · Xiaomi HyperOS.",
         },
       ],
       metricas: [
-        { nombre: "Fotografía Profesional", puntos: 9.9 },
-        { nombre: "Rendimiento Snapdragon", puntos: 9.5 },
+        { nombre: "Fotografía Leica", puntos: 9.9 },
+        { nombre: "Rendimiento Snapdragon 8 Gen 3", puntos: 9.5 },
       ],
       tiendas: [
         { nombre: "Xiaomi Store Colombia", precio: 4950000, envioGratis: true },
       ],
     },
-  },
+  },,
   {
     id: 205,
     ranking: 5,

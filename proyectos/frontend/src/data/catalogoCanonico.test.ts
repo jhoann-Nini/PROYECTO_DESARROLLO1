@@ -126,6 +126,8 @@ describe("catálogo canónico piloto", () => {
     const iphone = obtenerProductoCanonico("apple-iphone-13");
     const redmi = obtenerProductoCanonico("xiaomi-redmi-note-14-pro-plus-5g");
     const oneplus = obtenerProductoCanonico("oneplus-13");
+    const iphone15 = obtenerProductoCanonico("apple-iphone-15-pro-max");
+    const s25 = obtenerProductoCanonico("samsung-galaxy-s25-ultra");
 
     for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi, oneplus, iphone15, s25]) {
       expect(producto?.imagen.url).toMatch(/^https:\/\//);

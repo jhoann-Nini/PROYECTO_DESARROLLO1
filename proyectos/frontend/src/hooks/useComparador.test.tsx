@@ -1,14 +1,22 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
 import { CLAVE_COMPARADOS_RECIENTES } from "@/data/comparadosRecientes";
 import { useComparador } from "./useComparador";
 
-function Harness() {
+const CATALOGO = [
+  ...[1, 2, 3, 4, 5, 6, 8, 9].map((idProducto) => ({
+    idProducto,
+    idCategoria: 10,
+  })),
+  { idProducto: 7, idCategoria: 20 },
+];
+
+function Harness({ catalogo = CATALOGO }: { catalogo?: typeof CATALOGO | null }) {
   const { ids, hidratado, agregar, quitar, limpiar, recientes } =
-    useComparador();
+    useComparador(catalogo);
   const [motivo, setMotivo] = useState("");
 
   return (
@@ -18,7 +26,7 @@ function Harness() {
       <span data-testid="hidratado">{String(hidratado)}</span>
       <span data-testid="motivo">{motivo}</span>
 
-      {[1, 2, 3, 4, 5, 6].map((id) => (
+      {[1, 2, 3, 4, 5, 6, 7].map((id) => (
         <button
           key={id}
           type="button"
@@ -49,6 +57,7 @@ describe("useComparador", () => {
   afterEach(() => {
     cleanup();
     localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it("hidrata los ids desde localStorage", async () => {
@@ -171,5 +180,78 @@ describe("useComparador", () => {
     await waitFor(() => {
       expect(screen.getByTestId("ids").textContent).toBe("9,8");
     });
+  });
+
+  it("rechaza otra categoría sin alterar selección ni recientes, y libera al vaciar", async () => {
+    render(<Harness />);
+    await waitFor(() => expect(screen.getByTestId("hidratado").textContent).toBe("true"));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar 7" }));
+    expect(screen.getByTestId("motivo").textContent).toBe("categoria-incompatible");
+    expect(screen.getByTestId("ids").textContent).toBe("1");
+    expect(screen.getByTestId("recientes").textContent).toBe("1");
+    fireEvent.click(screen.getByRole("button", { name: "Limpiar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar 7" }));
+    expect(screen.getByTestId("ids").textContent).toBe("7");
+  });
+
+  it("depura selecciones mixtas antiguas y cambios de otra pestaña", async () => {
+    localStorage.setItem(CLAVE_COMPARADOR, JSON.stringify([99, 7, 1]));
+    render(<Harness />);
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("7");
+      expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([7]);
+    });
+    localStorage.setItem(CLAVE_COMPARADOR, JSON.stringify([2, 7, 1]));
+    window.dispatchEvent(new StorageEvent("storage", { key: CLAVE_COMPARADOR }));
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("2,1");
+      expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([2, 1]);
+    });
+  });
+
+  it("no depura ni permite agregar hasta tener un catálogo verificado", async () => {
+    localStorage.setItem(CLAVE_COMPARADOR, JSON.stringify([7, 1]));
+    const { rerender } = render(<Harness catalogo={null} />);
+    await waitFor(() => expect(screen.getByTestId("hidratado").textContent).toBe("true"));
+    fireEvent.click(screen.getByRole("button", { name: "Agregar 2" }));
+    expect(screen.getByTestId("motivo").textContent).toBe("sin-validar");
+    expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([7, 1]);
+    rerender(<Harness />);
+    await waitFor(() => {
+      expect(screen.getByTestId("ids").textContent).toBe("7");
+      expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([7]);
+    });
+  });
+
+  it("no recupera productos incompatibles al quitar el primero durante una actualización del catálogo", async () => {
+    localStorage.setItem(CLAVE_COMPARADOR, "[1,2]");
+    const { result, rerender } = renderHook(
+      ({ catalogo }) => useComparador(catalogo),
+      { initialProps: { catalogo: CATALOGO } },
+    );
+    await waitFor(() => expect(result.current.validado).toBe(true));
+    const actualizado = CATALOGO.map((producto) =>
+      producto.idProducto === 2 ? { ...producto, idCategoria: 20 } : producto,
+    );
+    rerender({ catalogo: actualizado });
+    act(() => result.current.quitar(1));
+    await waitFor(() => expect(result.current.ids).toEqual([]));
+    expect(JSON.parse(localStorage.getItem(CLAVE_COMPARADOR) ?? "[]")).toEqual([]);
+  });
+
+  it("mantiene la regla en memoria con clics rápidos aunque falle localStorage", async () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("Almacenamiento bloqueado");
+    });
+    const { result } = renderHook(() => useComparador(CATALOGO));
+    await waitFor(() => expect(result.current.validado).toBe(true));
+    act(() => {
+      result.current.agregar(1);
+      result.current.agregar(2);
+      result.current.agregar(7);
+    });
+    expect(result.current.ids).toEqual([1, 2]);
+    expect(result.current.recientes).toEqual([2, 1]);
   });
 });

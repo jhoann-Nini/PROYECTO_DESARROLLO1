@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   CLAVE_COMPARADOR,
   agregarIdComparador,
   guardarIdsComparador,
   leerIdsComparador,
   quitarIdComparador,
+  validarSeleccionComparador,
+  type ProductoComparable,
   type ResultadoAgregarComparador,
 } from "@/data/comparador";
 import {
@@ -30,6 +32,9 @@ export interface UseComparadorResultado {
   ids: number[];
   recientes: number[];
   hidratado: boolean;
+  validado: boolean;
+  idCategoria: number | null;
+  seleccionDepurada: boolean;
   agregar: (id: number) => ResultadoAgregarComparador;
   quitar: (id: number) => void;
   limpiar: () => void;
@@ -40,10 +45,13 @@ export interface UseComparadorResultado {
  * Mantiene la selección del comparador en localStorage.
  * El ref evita perder clics rápidos antes de que React aplique el estado.
  */
-export function useComparador(): UseComparadorResultado {
+export function useComparador(
+  catalogo?: readonly ProductoComparable[] | null,
+): UseComparadorResultado {
   const [ids, setIds] = useState<number[]>([]);
   const [recientes, setRecientes] = useState<number[]>([]);
   const [hidratado, setHidratado] = useState(false);
+  const [seleccionDepurada, setSeleccionDepurada] = useState(false);
   const idsRef = useRef<number[]>([]);
   const recientesRef = useRef<number[]>([]);
 
@@ -74,9 +82,37 @@ export function useComparador(): UseComparadorResultado {
       setHidratado(true);
     });
 
+    return () => {
+      montado = false;
+    };
+  }, []);
+
+  const reconciliar = useCallback((actuales: number[]) => {
+    if (!catalogo) return actuales;
+    const validos = validarSeleccionComparador(actuales, catalogo);
+    if (actuales.join(",") !== validos.join(",")) {
+      guardarIdsComparador(obtenerStorage(), validos);
+      setSeleccionDepurada(true);
+    }
+    return validos;
+  }, [catalogo]);
+
+  useEffect(() => {
+    if (!hidratado || !catalogo) return;
+    let activo = true;
+    queueMicrotask(() => {
+      if (!activo) return;
+      const validos = reconciliar(idsRef.current);
+      idsRef.current = validos;
+      setIds(validos);
+    });
+    return () => { activo = false; };
+  }, [catalogo, hidratado, reconciliar]);
+
+  useEffect(() => {
     const alCambiarStorage = (event: StorageEvent) => {
       if (event.key === CLAVE_COMPARADOR || event.key === null) {
-        const actualizados = leerIdsComparador(obtenerStorage());
+        const actualizados = reconciliar(leerIdsComparador(obtenerStorage()));
         idsRef.current = actualizados;
         setIds(actualizados);
       }
@@ -90,36 +126,51 @@ export function useComparador(): UseComparadorResultado {
 
     window.addEventListener("storage", alCambiarStorage);
     return () => {
-      montado = false;
       window.removeEventListener("storage", alCambiarStorage);
     };
-  }, []);
+  }, [reconciliar]);
+
+  // Filtrar durante el render evita mostrar columnas incompatibles incluso
+  // antes de que la depuración persistida termine su microtarea.
+  const idsValidos = useMemo(
+    () => catalogo ? validarSeleccionComparador(ids, catalogo) : ids,
+    [catalogo, ids],
+  );
+  const idCategoria = catalogo?.find(
+    (producto) => producto.idProducto === idsValidos[0],
+  )?.idCategoria ?? null;
 
   const agregar = useCallback(
     (id: number) => {
-      const resultado = agregarIdComparador(idsRef.current, id);
+      if (!catalogo) {
+        return { ids: idsRef.current, agregado: false, motivo: "sin-validar" as const };
+      }
+      const resultado = agregarIdComparador(idsRef.current, id, catalogo);
       if (resultado.agregado) {
         aplicar(resultado.ids);
         aplicarRecientes(registrarComparado(recientesRef.current, id));
       }
       return resultado;
     },
-    [aplicar, aplicarRecientes],
+    [aplicar, aplicarRecientes, catalogo],
   );
 
   const quitar = useCallback(
-    (id: number) => aplicar(quitarIdComparador(idsRef.current, id)),
-    [aplicar],
+    (id: number) => aplicar(quitarIdComparador(reconciliar(idsRef.current), id)),
+    [aplicar, reconciliar],
   );
 
   const limpiar = useCallback(() => aplicar([]), [aplicar]);
 
-  const contiene = useCallback((id: number) => idsRef.current.includes(id), []);
+  const contiene = useCallback((id: number) => idsValidos.includes(id), [idsValidos]);
 
   return {
-    ids,
+    ids: idsValidos,
     recientes,
     hidratado,
+    validado: hidratado && catalogo != null,
+    idCategoria,
+    seleccionDepurada,
     agregar,
     quitar,
     limpiar,

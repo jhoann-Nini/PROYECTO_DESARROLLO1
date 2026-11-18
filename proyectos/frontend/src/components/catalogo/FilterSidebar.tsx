@@ -45,7 +45,7 @@ function alternar<T>(lista: T[], valor: T): T[] {
 
 function textoPrecio(valor: number, limite: number, esMinimo: boolean): string {
   if (esMinimo) return valor > limite ? String(valor) : "";
-  return valor < limite ? String(valor) : "";
+  return valor < Number.MAX_SAFE_INTEGER ? String(valor) : "";
 }
 
 export default function FilterSidebar({
@@ -161,6 +161,9 @@ export default function FilterSidebar({
     if (!rangoValido) return;
 
     const texto = precioMaxTexto.trim();
+    // Enfocar/salir (o confirmar el mismo texto) no debe normalizar ni ampliar
+    // un presupuesto externo situado fuera del rango de precios del catálogo.
+    if (texto === baseMaxTexto) return;
     if (texto === "") {
       setEdicionMax({ valor: "", base: baseMaxTexto });
       if (filtros.precioMax !== Number.MAX_SAFE_INTEGER) {

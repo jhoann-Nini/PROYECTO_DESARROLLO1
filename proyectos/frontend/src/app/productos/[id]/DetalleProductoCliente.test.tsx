@@ -19,6 +19,7 @@ vi.mock("@/services/api", async (importOriginal) => {
   return {
     ...actual,
     obtenerProductoPorId: vi.fn(),
+    obtenerProductos: vi.fn(),
     obtenerCategorias: vi.fn(),
     obtenerMarcas: vi.fn(),
     obtenerValoracionStats: vi.fn(),
@@ -57,6 +58,7 @@ import {
   obtenerMarcas,
   obtenerMiValoracion,
   obtenerProductoPorId,
+  obtenerProductos,
   obtenerResenas,
   obtenerValoracionStats,
 } from "@/services/api";
@@ -149,6 +151,7 @@ beforeEach(() => {
   mockCategorias.mockResolvedValue(CATEGORIAS);
   mockMarcas.mockResolvedValue(MARCAS);
   mockProducto.mockResolvedValue(PRODUCTO);
+  vi.mocked(obtenerProductos).mockResolvedValue([PRODUCTO]);
   mockStats.mockResolvedValue({
     idProducto: 204,
     promedioPuntuacion: 4.5,

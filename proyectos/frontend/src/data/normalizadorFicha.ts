@@ -1040,7 +1040,23 @@ export function normalizarDesdeKimovil(
   }
 
   const categoria = detectarCategoria(dispositivo) as CategoriaFichaTecnica;
+  const fichaCatalogo = obtenerFichaTecnicaV2CatalogoParaKimovil(dispositivo.id, dispositivo.nombre);
   const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
+
+  if (fichaCatalogo && fichaPiloto) {
+    const variantes =
+      fichaPiloto.variantes.length > fichaCatalogo.variantes.length
+        ? fichaPiloto.variantes
+        : fichaCatalogo.variantes;
+
+    return {
+      ...fichaCatalogo,
+      categoria,
+      variantes,
+    };
+  }
+
+  if (fichaCatalogo) return { ...fichaCatalogo, categoria };
   if (fichaPiloto) return { ...fichaPiloto, categoria };
   const fichaCatalogo = obtenerFichaTecnicaV2CatalogoParaKimovil(dispositivo.id, dispositivo.nombre);
   if (fichaCatalogo) return { ...fichaCatalogo, categoria };

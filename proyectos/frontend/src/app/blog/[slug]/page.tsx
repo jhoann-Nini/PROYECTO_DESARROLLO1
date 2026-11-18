@@ -157,6 +157,12 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
               >
                 Abrir comparador
               </Link>
+              <Link
+                href="/resenas"
+                className="rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+              >
+                Ver reseñas de la comunidad
+              </Link>
             </div>
           </footer>
         </article>

@@ -1,9 +1,35 @@
 export const CLAVE_FAVORITOS = "tecreview:favoritos";
+export const PREFIJO_CLAVE_FAVORITOS = "tecreview:favoritos:";
 export const MAX_FAVORITOS = 100;
 export const EVENTO_FAVORITOS = "tecreview:favoritos:cambio";
 
 export interface DetalleEventoFavoritos {
   ids: number[];
+  clave?: string;
+}
+
+/**
+ * Clave de almacenamiento propia de cada cuenta. Evita mezclar favoritos entre
+ * usuarios del mismo navegador y deja la clave histórica solo para migración.
+ */
+export function claveFavoritos(idSesion: string): string {
+  return `${PREFIJO_CLAVE_FAVORITOS}${idSesion}`;
+}
+
+/**
+ * Elimina la lista anónima que usaba la versión anterior. Los favoritos solo
+ * pueden existir mientras haya una sesión activa.
+ */
+export function eliminarFavoritosLegados(
+  storage: Pick<Storage, "removeItem"> | null,
+): void {
+  if (!storage) return;
+
+  try {
+    storage.removeItem(CLAVE_FAVORITOS);
+  } catch {
+    // El almacenamiento puede estar bloqueado; no se rompe la interfaz.
+  }
 }
 
 /**
@@ -11,12 +37,12 @@ export interface DetalleEventoFavoritos {
  * El evento `storage` solo se dispara en otras pestañas, por eso hace falta
  * este canal propio para que las tarjetas y la página se mantengan alineadas.
  */
-export function emitirCambioFavoritos(ids: number[]): void {
+export function emitirCambioFavoritos(ids: number[], clave?: string): void {
   if (typeof window === "undefined") return;
 
   window.dispatchEvent(
     new CustomEvent<DetalleEventoFavoritos>(EVENTO_FAVORITOS, {
-      detail: { ids: [...ids] },
+      detail: { ids: [...ids], clave },
     }),
   );
 }
@@ -24,7 +50,7 @@ export function emitirCambioFavoritos(ids: number[]): void {
 export interface ResultadoAlternarFavorito {
   ids: number[];
   agregado: boolean;
-  motivo: "agregado" | "quitado" | "lleno" | "invalido";
+  motivo: "agregado" | "quitado" | "lleno" | "invalido" | "sin-sesion";
 }
 
 /**
@@ -56,13 +82,18 @@ export function normalizarIdsFavoritos(valor: unknown): number[] {
   return ids;
 }
 
+/**
+ * Lee la lista de una cuenta. La clave es obligatoria para que ningún llamador
+ * pueda leer por accidente la clave anónima histórica.
+ */
 export function leerIdsFavoritos(
   storage: Pick<Storage, "getItem"> | null,
+  clave: string,
 ): number[] {
   if (!storage) return [];
 
   try {
-    const crudo = storage.getItem(CLAVE_FAVORITOS);
+    const crudo = storage.getItem(clave);
     if (!crudo) return [];
     return normalizarIdsFavoritos(JSON.parse(crudo));
   } catch {
@@ -70,18 +101,23 @@ export function leerIdsFavoritos(
   }
 }
 
+/**
+ * Guarda la lista de una cuenta. La clave es obligatoria para impedir
+ * escrituras accidentales en la clave anónima histórica.
+ */
 export function guardarIdsFavoritos(
   storage: Pick<Storage, "setItem" | "removeItem"> | null,
   ids: number[],
+  clave: string,
 ): void {
   if (!storage) return;
 
   try {
     if (ids.length === 0) {
-      storage.removeItem(CLAVE_FAVORITOS);
+      storage.removeItem(clave);
       return;
     }
-    storage.setItem(CLAVE_FAVORITOS, JSON.stringify(ids));
+    storage.setItem(clave, JSON.stringify(ids));
   } catch {
     // El almacenamiento puede estar lleno o bloqueado; la UI sigue funcionando.
   }

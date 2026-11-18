@@ -15,7 +15,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     descuento: "-17%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: null,
+    imagen: "",
     tipo: "vendido",
     chipInfo: "Dimensity 7200 Ultra · 200MP",
     detalleSpecs: {

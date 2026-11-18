@@ -80,7 +80,7 @@ describe("fichas técnicas V2 del catálogo", () => {
 
   it("verifica Nothing Ear (a) Black Edition con especificaciones oficiales Nothing", () => {
     const earA = FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack;
-    expect(earA.variantes[0]).toMatchObject({ id: "black", color: "Black Edition" });
+    expect(earA.variantes[0]).toMatchObject({ id: "black", modelo: "Nothing Ear (a) Black Edition" });
     expect(earA.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "driver", valor: 11, unidad: "mm" }),
       expect.objectContaining({ clave: "anc", valor: expect.stringContaining("45 dB") }),

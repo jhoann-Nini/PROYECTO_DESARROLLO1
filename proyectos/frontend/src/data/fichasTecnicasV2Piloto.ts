@@ -17,7 +17,7 @@ import type {
  * Las métricas se conservan como informativas hasta que exista una metodología
  * homogénea y explícita para compararlas.
  */
-const CONSULTA = "2026-11-16";
+const CONSULTA = "2026-11-17";
 
 function atributo(
   clave: string,

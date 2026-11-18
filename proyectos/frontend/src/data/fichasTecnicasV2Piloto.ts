@@ -741,6 +741,49 @@ const xiaomi14Ultra = crearFicha(
   ],
 );
 
+
+const nothingEarAFuente = "nothing-ear-a-black-official";
+const nothingEarABlack = crearFicha(
+  "auriculares",
+  "verificado",
+  [{ id: "black", modelo: "Nothing Ear (a)", color: "Black Edition" }],
+  [
+    atributo("driver", "Transductor dinámico", "audio", 11, nothingEarAFuente, "mm"),
+    atributo("diafragma", "Material del diafragma", "audio", "PMI + TPU", nothingEarAFuente),
+    atributo("hi_res", "Certificación de audio", "audio", "Hi-Res Audio", nothingEarAFuente),
+    atributo("codecs", "Códecs Bluetooth", "audio", "AAC · SBC · LDAC", nothingEarAFuente),
+    atributo("anc", "Cancelación activa de ruido", "audio", "Smart ANC adaptativa hasta 45 dB", nothingEarAFuente),
+    atributo("rango_anc", "Frecuencia de referencia ANC", "audio", 5000, nothingEarAFuente, "Hz"),
+    atributo("microfonos", "Micrófonos", "audio", "3 por auricular · Clear Voice Technology", nothingEarAFuente),
+    atributo("bateria_auricular", "Capacidad de batería por auricular", "bateria", 46, nothingEarAFuente, "mAh"),
+    atributo("bateria_estuche", "Capacidad de batería del estuche", "bateria", 500, nothingEarAFuente, "mAh"),
+    atributo("autonomia_auriculares_anc_off", "Autonomía auriculares (ANC apagada)", "bateria", 9.5, nothingEarAFuente, "h"),
+    atributo("autonomia_total_anc_off", "Autonomía total con estuche (ANC apagada)", "bateria", 42.5, nothingEarAFuente, "h"),
+    atributo("autonomia_auriculares_anc_on", "Autonomía auriculares (ANC activada)", "bateria", 5.5, nothingEarAFuente, "h"),
+    atributo("autonomia_total_anc_on", "Autonomía total con estuche (ANC activada)", "bateria", 24.5, nothingEarAFuente, "h"),
+    atributo("carga_rapida", "Carga rápida", "bateria", "10 minutos para hasta 10 horas de reproducción con ANC apagada", nothingEarAFuente),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", false, nothingEarAFuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", nothingEarAFuente),
+    atributo("conexion_dual", "Conexión multipunto", "conectividad", true, nothingEarAFuente),
+    atributo("fast_pair", "Google Fast Pair", "conectividad", true, nothingEarAFuente),
+    atributo("resistencia_auriculares", "Resistencia auriculares", "diseno", "IP54", nothingEarAFuente),
+    atributo("resistencia_estuche", "Resistencia estuche", "diseno", "IPX2", nothingEarAFuente),
+    atributo("peso_auricular", "Peso por auricular", "diseno", 4.8, nothingEarAFuente, "g"),
+    atributo("peso_estuche", "Peso estuche", "diseno", 39.6, nothingEarAFuente, "g"),
+    atributo("dimensiones_auricular", "Dimensiones auricular", "diseno", "30,9 × 21,7 × 24,3 mm", nothingEarAFuente),
+    atributo("dimensiones_estuche", "Dimensiones estuche", "diseno", "47,6 × 63,3 × 22,7 mm", nothingEarAFuente),
+    atributo("aplicacion", "Aplicación", "software", "Nothing X · EQ personalizado · Bass Enhance · actualizaciones firmware", nothingEarAFuente),
+  ],
+  [
+    metrica("autonomia_total_anc_off", "Autonomía total (ANC apagada)", "bateria", 42.5, "h", nothingEarAFuente),
+    metrica("autonomia_total_anc_on", "Autonomía total (ANC activada)", "bateria", 24.5, "h", nothingEarAFuente),
+  ],
+  [
+    fuente(nothingEarAFuente, "Nothing — Ear (a), especificaciones oficiales y variante Black", "https://nothing.tech/products/ear-a?Colour=Black", "black", "Fuente oficial para color negro, transductor, ANC, códecs, conectividad, micrófonos, batería, dimensiones, peso y resistencia.", "2026-11-17"),
+    fuente("nothing-ear-a-battery-support", "Nothing Support — autonomía de Ear (a)", "https://support.nothing.tech/hc/es-es/articles/23726182764305--Cu%C3%A1nto-dura-la-bater%C3%ADa-de-Ear-a", "black", "Distingue autonomía máxima con ANC apagada y activada, con y sin estuche.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -758,6 +801,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleIphone15ProMax256: iphone15ProMax,
   samsungGalaxyS25Ultra12_1tb: samsungS25Ultra,
   xiaomi14Ultra16_512: xiaomi14Ultra,
+  nothingEarABlack: nothingEarABlack,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -776,6 +820,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("nothing ear a") && n.includes("black")) return nothingEarABlack;
   if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
   if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
   if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;
@@ -801,6 +846,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   switch (id) {
     case 201:
       return iphone15ProMax;
+    case 301:
+      return nothingEarABlack;
     case 204:
       return xiaomi14Ultra;
     case 206:
@@ -829,6 +876,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("nothing ear a") && n.includes("black")) return nothingEarABlack;
       if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
       if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
       if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;

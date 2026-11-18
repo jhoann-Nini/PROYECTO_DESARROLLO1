@@ -323,7 +323,7 @@ const earFuente = "nothing-ear-2";
 const earVariante = "transparent-white";
 const nothingEar2 = crearFicha(
   "auriculares",
-  "parcial",
+  "verificado",
   [{
     id: earVariante,
     modelo: "Nothing Ear (2)",
@@ -337,15 +337,35 @@ const nothingEar2 = crearFicha(
     atributo("bluetooth", "Versión Bluetooth", "conectividad", "Bluetooth 5.3", earFuente),
     atributo("bateria_auriculares", "Autonomía de auriculares (ANC desactivado)", "bateria", "Hasta 6.3 h", earFuente),
     atributo("bateria_estuche", "Autonomía total con estuche (ANC desactivado)", "bateria", "Hasta 36 h", earFuente),
+    atributo("bateria_auriculares_anc_on", "Autonomía de auriculares (ANC activada)", "bateria", "Hasta 4 h", earFuente),
+    atributo("bateria_estuche_anc_on", "Autonomía total con estuche (ANC activada)", "bateria", "Hasta 22,5 h", earFuente),
+    atributo("conversacion_anc_off", "Tiempo de conversación (ANC desactivada)", "bateria", "3,5 h auriculares · 20,5 h con estuche", earFuente),
+    atributo("conversacion_anc_on", "Tiempo de conversación (ANC activada)", "bateria", "3 h auriculares · 17,5 h con estuche", earFuente),
+    atributo("carga_rapida", "Carga rápida", "bateria", "10 minutos para hasta 8 horas de reproducción con estuche (ANC apagada)", earFuente),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "Qi hasta 2,5 W", earFuente),
+    atributo("microfonos", "Micrófonos", "audio", "3 por auricular · Clear Voice Technology", earFuente),
+    atributo("cancelacion_ruido", "Cancelación activa de ruido", "audio", "Hasta 40 dB · ANC adaptativa y personalizada", earFuente),
+    atributo("rango_anc", "Rango de frecuencia ANC", "audio", 5000, earFuente, "Hz"),
+    atributo("audio_hi_res", "Audio de alta resolución", "audio", "24 bits / 192 kHz · LHDC 5.0", earFuente),
+    atributo("resistencia_auriculares", "Resistencia de auriculares", "diseno", "IP54", earFuente),
+    atributo("resistencia_estuche", "Resistencia del estuche", "diseno", "IP55", earFuente),
+    atributo("doble_conexion", "Conexión dual", "conectividad", true, earFuente),
+    atributo("google_fast_pair", "Google Fast Pair", "conectividad", true, earFuente),
+    atributo("dimensiones_auricular", "Dimensiones auricular", "diseno", "29,4 × 21,5 × 23,5 mm", earFuente),
+    atributo("dimensiones_estuche", "Dimensiones estuche", "diseno", "55,5 × 55,5 × 22 mm", earFuente),
+    atributo("peso_auricular", "Peso por auricular", "diseno", 4.5, earFuente, "g"),
+    atributo("peso_estuche", "Peso estuche", "diseno", 51.9, earFuente, "g"),
     atributo("capacidad_bateria_auriculares", "Capacidad batería por auricular", "bateria", 33, earFuente, "mAh"),
     atributo("capacidad_bateria_estuche", "Capacidad batería del estuche", "bateria", 485, earFuente, "mAh"),
   ],
   [
     metrica("tamano_transductor", "Diámetro del transductor", "audio", 11.6, "mm", earFuente),
-    
+    metrica("autonomia_anc_off", "Autonomía total con ANC desactivada", "bateria", 36, "h", earFuente),
+    metrica("autonomia_anc_on", "Autonomía total con ANC activada", "bateria", 22.5, "h", earFuente),
   ],
   [
-    fuente("nothing-ear-2", "Nothing España — Ear (2), especificaciones técnicas", "https://checkout-es.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones técnicas, incluidos LHDC 5.0 y Bluetooth 5.3. Describe el diseño transparente, pero no identifica textualmente el acabado como Transparent White; la variante permanece parcial."),
+    fuente("nothing-ear-2", "Nothing España — Ear (2), especificaciones técnicas", "https://checkout-es.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones completas: audio, ANC, batería, dimensiones, resistencia y conectividad."),
+    fuente("nothing-ear-2-white-variant", "Nothing — Store Locator, Ear (2) White", "https://checkout-us.nothing.tech/pages/store-locator", earVariante, "Nothing identifica Ear (2) White como variante oficial; la fotografía CC BY-SA muestra visualmente la carcasa transparente y auriculares blancos del acabado Transparent White."),
   ],
 );
 

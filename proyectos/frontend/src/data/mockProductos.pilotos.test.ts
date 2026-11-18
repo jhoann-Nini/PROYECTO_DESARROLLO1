@@ -81,6 +81,15 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("completa Xiaomi 14 Ultra 16GB/512GB con ficha oficial y fotografía CC0", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204);
+    expect(producto?.especificaciones).toContain("16GB RAM LPDDR5X · 512GB UFS 4.0");
+    expect(producto?.imagen).toContain("XiaoMi_14_Ultra_watch_May_2024");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5000mAh") && seccion.descripcion.includes("90W"))).toBe(true);
+  });
+
   it("completa iPhone 15 Pro Max 256GB con imagen exacta y elimina benchmark sin fuente", () => {
     const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201);
     expect(producto?.nombre).toBe("iPhone 15 Pro Max (256GB)");

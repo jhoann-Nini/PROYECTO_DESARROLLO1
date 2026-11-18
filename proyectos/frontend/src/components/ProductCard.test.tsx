@@ -25,11 +25,23 @@ describe("Componente ProductCard — Manejo de imágenes y placeholder", () => {
   it("renderiza la etiqueta img normalmente si el producto tiene una imagen válida", () => {
     render(<ProductCard producto={baseProducto} />);
 
-    const img = screen.getByRole("img", { name: /Fotografía oficial de Samsung Galaxy S24 Ultra/i });
+    const img = screen.getByRole("img", { name: /Fotografía de Samsung Galaxy S24 Ultra/i });
     expect(img).toBeDefined();
     expect(img.getAttribute("src")).toBe("https://example.com/s24.png");
     // No debe mostrar el placeholder
     expect(screen.queryByText("Imagen pendiente")).toBeNull();
+  });
+
+  it("no aplica zoom a una imagen con licencia CC BY-ND 2.0", () => {
+    const productoSony = {
+      ...baseProducto,
+      nombre: "Sony WH-1000XM5",
+      imagen: "https://thehelpfulbuyer.com/assets/products/xm5.jpg",
+    };
+    render(<ProductCard producto={productoSony} />);
+
+    const img = screen.getByRole("img", { name: /Fotografía de Sony WH-1000XM5/i });
+    expect(img.className).not.toContain("group-hover:scale");
   });
 
   it("renderiza ProductImagePlaceholder cuando imagen es null", () => {
@@ -58,7 +70,7 @@ describe("Componente ProductCard — Manejo de imágenes y placeholder", () => {
   it("conmuta al ProductImagePlaceholder cuando falla la carga remota de la imagen (evento onError)", () => {
     render(<ProductCard producto={baseProducto} />);
 
-    const img = screen.getByRole("img", { name: /Fotografía oficial de Samsung Galaxy S24 Ultra/i });
+    const img = screen.getByRole("img", { name: /Fotografía de Samsung Galaxy S24 Ultra/i });
     expect(img).toBeDefined();
 
     // Disparamos el error de carga de red/404

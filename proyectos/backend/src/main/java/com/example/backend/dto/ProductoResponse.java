@@ -9,21 +9,6 @@ import java.util.Map;
  * caracteristicas expone especificaciones técnicas estructuradas (JSONB).
  */
 public record ProductoResponse(
-        Long idProducto,
-        String nombre,
-        String descripcion,
-        Long idCategoria,
-        Long idMarca,
-        String imagen,
-        BigDecimal precioReferencia,
-        Boolean estado,
-        Map<String, Object> caracteristicas
-) {
-        /**
-         * Constructor de compatibilidad hacia atrás para pruebas o código
-         * que no requiera especificar características.
-         */
-        public ProductoResponse(
                 Long idProducto,
                 String nombre,
                 String descripcion,
@@ -31,7 +16,21 @@ public record ProductoResponse(
                 Long idMarca,
                 String imagen,
                 BigDecimal precioReferencia,
-                Boolean estado) {
+                Boolean estado,
+                Map<String, Object> caracteristicas) {
+        /**
+         * Constructor de compatibilidad hacia atrás para pruebas o código
+         * que no requiera especificar características.
+         */
+        public ProductoResponse(
+                        Long idProducto,
+                        String nombre,
+                        String descripcion,
+                        Long idCategoria,
+                        Long idMarca,
+                        String imagen,
+                        BigDecimal precioReferencia,
+                        Boolean estado) {
                 this(idProducto, nombre, descripcion, idCategoria, idMarca, imagen, precioReferencia, estado, null);
         }
 }

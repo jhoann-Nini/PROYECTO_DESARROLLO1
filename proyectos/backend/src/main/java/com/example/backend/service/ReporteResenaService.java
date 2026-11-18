@@ -56,14 +56,6 @@ public class ReporteResenaService {
     private final ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
-    public ReporteResenaService(
-            ReporteResenaRepository reporteResenaRepository,
-            ResenaRepository resenaRepository,
-            UsuarioService usuarioService,
-            ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository) {
-        this(reporteResenaRepository, resenaRepository, usuarioService, decisionAuditoriaRepository, null);
-    }
-
     @Autowired
     public ReporteResenaService(
             ReporteResenaRepository reporteResenaRepository,
@@ -91,7 +83,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(usuario);
         validarMotivoYDescripcion(request);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (!Boolean.TRUE.equals(resena.getEstado())) {
@@ -183,6 +175,12 @@ public class ReporteResenaService {
 
         ReporteResena reporte = reporteResenaRepository.findWithResenaAndUsuarioByIdReporte(idReporte)
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
+        // Todas las decisiones sobre un reporte serializan también los cambios de su reseña.
+        // El orden de bloqueo es reporte -> reseña, igual que en la resolución por lotes.
+        Resena resenaBloqueada = resenaRepository.findByIdForModeration(reporte.getResena().getIdResena())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Reseña no encontrada con id " + reporte.getResena().getIdResena()));
+        reporte.setResena(resenaBloqueada);
 
         boolean esReportante = reporte.getUsuario().getIdUsuario().equals(actor.getIdUsuario());
         boolean esAutorResena = reporte.getResena().getUsuario().getIdUsuario().equals(actor.getIdUsuario());
@@ -410,7 +408,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
@@ -435,15 +433,13 @@ public class ReporteResenaService {
         LocalDateTime ahora = LocalDateTime.now();
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
-        if (moderacionAuditoriaRepository != null) {
-            ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
-            evento.setResena(resena);
-            evento.setModerador(actor);
-            evento.setAccion("OCULTAR");
-            evento.setMotivo(motivo);
-            evento.setFechaEvento(ahora);
-            moderacionAuditoriaRepository.saveAndFlush(evento);
-        }
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion("OCULTAR");
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
 
         resena.setOcultaPorModeracion(true);
         resena.setModeradaPor(actor);
@@ -470,7 +466,7 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
@@ -495,15 +491,13 @@ public class ReporteResenaService {
         LocalDateTime ahora = LocalDateTime.now();
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
-        if (moderacionAuditoriaRepository != null) {
-            ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
-            evento.setResena(resena);
-            evento.setModerador(actor);
-            evento.setAccion("RESTAURAR");
-            evento.setMotivo(motivo);
-            evento.setFechaEvento(ahora);
-            moderacionAuditoriaRepository.saveAndFlush(evento);
-        }
+        ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setResena(resena);
+        evento.setModerador(actor);
+        evento.setAccion("RESTAURAR");
+        evento.setMotivo(motivo);
+        evento.setFechaEvento(ahora);
+        moderacionAuditoriaRepository.saveAndFlush(evento);
 
         resena.setOcultaPorModeracion(false);
         resena.setModeradaPor(null);
@@ -543,14 +537,15 @@ public class ReporteResenaService {
         validarUsuarioActivo(actor);
         validarPermisoModeracion(actor);
 
-        Resena resena = resenaRepository.findById(idResena)
+        // Bloquear primero todos los reportes y después la reseña. La resolución individual
+        // usa el mismo orden para evitar carreras y reducir el riesgo de interbloqueos.
+        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdForUpdate(idResena);
+        Resena resena = resenaRepository.findByIdForModeration(idResena)
                 .orElseThrow(() -> new ResourceNotFoundException("Reseña no encontrada con id " + idResena));
 
         if (resena.getUsuario().getIdUsuario().equals(actor.getIdUsuario())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes moderar tu propia reseña.");
         }
-
-        List<ReporteResena> reportes = reporteResenaRepository.findByResenaIdResenaOrderByFechaCreacionDesc(idResena);
 
         boolean hayPendientes = reportes.stream()
                 .anyMatch(r -> EstadoReporte.PENDIENTE.equals(r.getEstado()));

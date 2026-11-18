@@ -786,6 +786,7 @@ const nothingEarABlack = crearFicha(
 
 
 const xiaomi14tFuente = "xiaomi-14t-pro-co-specs";
+const xiaomi14tNoMicrosdFuente = "xiaomi-14t-pro-no-microsd";
 const xiaomi14tPro = crearFicha(
   "moviles",
   "verificado",
@@ -826,7 +827,7 @@ const xiaomi14tPro = crearFicha(
     atributo("nfc", "NFC", "conectividad", true, xiaomi14tFuente),
     atributo("sim", "SIM", "conectividad", "Dual nano-SIM, nano-SIM + eSIM o eSIM + eSIM según región", xiaomi14tFuente),
     atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", xiaomi14tFuente),
-    atributo("almacenamiento_expandible", "Tarjeta microSD", "almacenamiento", false, xiaomi14tFuente),
+    atributo("almacenamiento_expandible", "Tarjeta microSD", "almacenamiento", false, xiaomi14tNoMicrosdFuente),
   ],
   [
     metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", xiaomi14tFuente),
@@ -837,6 +838,7 @@ const xiaomi14tPro = crearFicha(
   [
     fuente(xiaomi14tFuente, "Xiaomi Colombia — Xiaomi 14T Pro, especificaciones oficiales", "https://www.mi.com/co/product/xiaomi-14t-pro/specs/", "12gb-512gb-co", "Fuente primaria regional para 12GB/512GB, Dimensity 9300+, pantalla, cámaras Leica, batería, carga, IP68 y conectividad.", "2026-11-17"),
     fuente("xiaomi-14t-pro-co-faq", "Xiaomi Colombia — Xiaomi 14T Pro, memoria y almacenamiento", "https://www.mi.com/co/support/faq/details/KA-697571/", "12gb-512gb-co", "Confirma 12GB LPDDR5X, 512GB UFS 4.0 y que Ultra Space es expansión de almacenamiento, no memoria RAM física.", "2026-11-17"),
+    fuente(xiaomi14tNoMicrosdFuente, "Xiaomi Colombia — Xiaomi 14T Pro, almacenamiento externo", "https://www.mi.com/co/support/faq/details/KA-719446/", null, "La FAQ oficial confirma que no admite almacenamiento externo; distingue Ultra Space de una tarjeta microSD.", "2026-11-17"),
   ],
 );
 

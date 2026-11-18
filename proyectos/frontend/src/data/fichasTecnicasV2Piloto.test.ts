@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(17); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(18); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -44,6 +44,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyS25Ultra12_1tb.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.xiaomi14Ultra16_512.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.nothingEarABlack.estado_verificacion).toBe("verificado");
+    expect(FICHAS_TECNICAS_V2_PILOTO.xiaomi14tPro12_512.estado_verificacion).toBe("verificado");
   });
 
   it("documenta Galaxy A55 5G y conserva la ambigüedad entre variantes oficiales", () => {
@@ -76,6 +77,21 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("verifica Xiaomi 14T Pro 12GB/512GB con especificaciones oficiales Xiaomi Colombia", () => {
+    const xiaomi = FICHAS_TECNICAS_V2_PILOTO.xiaomi14tPro12_512;
+    expect(xiaomi.variantes[0]).toMatchObject({ id: "12gb-512gb-co", ram: "12 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0", mercado: "Colombia" });
+    expect(xiaomi.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Dimensity 9300+") }),
+      expect.objectContaining({ clave: "tasa_refresco", valor: 144 }),
+      expect.objectContaining({ clave: "camara_principal", valor: 50 }),
+      expect.objectContaining({ clave: "camara_teleobjetivo", valor: 50 }),
+      expect.objectContaining({ clave: "capacidad_bateria", valor: 5000 }),
+      expect.objectContaining({ clave: "carga_inalambrica", valor: 50 }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 6" }),
+    ]));
+    expect(xiaomi.fuentes[0]?.url).toBe("https://www.mi.com/co/product/xiaomi-14t-pro/specs/");
   });
 
   it("verifica Nothing Ear (a) Black Edition con especificaciones oficiales Nothing", () => {
@@ -246,6 +262,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const s25 = normalizarDesdeProducto({ ...base, idProducto: 911, nombre: "Samsung Galaxy S25 Ultra" });
     const xiaomi14 = normalizarDesdeProducto({ ...base, idProducto: 912, nombre: "Xiaomi 14 Ultra (512GB)" });
     const earA = normalizarDesdeProducto({ ...base, idProducto: 913, nombre: "Nothing Ear (a) Black Edition" });
+    const xiaomi14t = normalizarDesdeProducto({ ...base, idProducto: 914, nombre: "Xiaomi 14T Pro 5G Leica" });
     const samsungAmbiguo = normalizarDesdeProducto({
       ...base,
       idProducto: 905,
@@ -264,6 +281,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(s25.variantes[0]?.id).toBe("12gb-1tb");
     expect(xiaomi14.variantes[0]?.id).toBe("16gb-512gb");
     expect(earA.variantes[0]?.id).toBe("black");
+    expect(xiaomi14t.variantes[0]?.id).toBe("12gb-512gb-co");
     expect(samsungAmbiguo.variantes).toEqual([]);
     expect(samsungAmbiguo.fuentes).toEqual([]);
   });
@@ -313,6 +331,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     const s25 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 206);
     const xiaomi14 = DISPOSITIVOS_DESEADOS.find((producto) => producto.id === 204);
     const earA = ULTIMAS_OFERTAS.find((producto) => producto.id === 301);
+    const xiaomi14t = ULTIMAS_OFERTAS.find((producto) => producto.id === 306);
     const ear = PRODUCTOS_MOCK.find((producto) => producto.idProducto === 3);
 
     expect(normalizarDesdeKimovil(ipad!).variantes[0]?.id).toBe("16gb-1tb");
@@ -326,5 +345,6 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(s25!).variantes[0]?.id).toBe("12gb-1tb");
     expect(normalizarDesdeKimovil(xiaomi14!).variantes[0]?.id).toBe("16gb-512gb");
     expect(normalizarDesdeKimovil(earA!).variantes[0]?.id).toBe("black");
+    expect(normalizarDesdeKimovil(xiaomi14t!).variantes[0]?.id).toBe("12gb-512gb-co");
   });
 });

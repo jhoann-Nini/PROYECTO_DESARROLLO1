@@ -40,8 +40,7 @@ registro. Las imágenes que no están registradas no reciben atribución inferid
 - No sugerir que los autores o Wikimedia respaldan TecReview.
 - No marcar una imagen como verificada solo por ser una URL válida. La entrada
   debe tener fuente, autor, licencia y página de origen comprobables.
-- La fotografía de Nothing Ear (2) representa el modelo, pero no confirma por sí
-  sola la variante comercial de color Transparent White. La verificación técnica
+- La fotografía de Nothing Ear (2) muestra el acabado transparente blanco; Nothing lista Ear (2) White como variante oficial. La ficha V2 se actualizó a verificada. La verificación técnica
   de esa variante permanece parcial.
 
 ## Pendientes del grupo piloto

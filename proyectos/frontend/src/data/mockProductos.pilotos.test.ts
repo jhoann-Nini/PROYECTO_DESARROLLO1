@@ -159,7 +159,7 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
     expect(producto?.especificaciones).toContain("12GB RAM");
     expect(producto?.especificaciones).toContain("512GB");
-    expect(producto?.imagen).toBeNull();
+    expect(producto?.imagen).toBe("");
     expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });

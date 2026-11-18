@@ -195,7 +195,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     });
     expect(normalizarDesdeKimovil(macbook!).variantes[0]).toMatchObject({
       id: "48gb-1tb",
-      identificador: "M3 Max · CPU 16 núcleos · GPU 40 núcleos",
+      identificador: "M3 Max · CPU 16 núcleos (12 de rendimiento + 4 de eficiencia) · GPU 40 núcleos",
     });
   });
 

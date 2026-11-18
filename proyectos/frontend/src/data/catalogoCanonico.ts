@@ -3,6 +3,7 @@ import type {
   DispositivoKimovil,
   Producto,
 } from "@/types/producto";
+import { obtenerAtribucionImagen } from "./atribucionImagenes";
 import {
   DISPOSITIVOS_DESEADOS,
   DISPOSITIVOS_VENDIDOS,
@@ -39,14 +40,19 @@ export interface VarianteProductoCanonico {
   pantalla?: string | null;
 }
 
-export type EstadoImagenCanonica = "pendiente" | "sin_imagen";
+export type EstadoImagenCanonica = "pendiente" | "verificada" | "sin_imagen";
 
 export interface ImagenProductoCanonico {
   url: string | null;
   proveedor: string | null;
   referenciaOrigen: string;
+  paginaOrigen: string | null;
+  autor: string | null;
+  fuente: string | null;
   licencia: string | null;
+  licenciaUrl: string | null;
   atribucion: string | null;
+  cambios: string | null;
   estadoVerificacion: EstadoImagenCanonica;
 }
 
@@ -248,14 +254,22 @@ function imagenDeRegistro(
     }
   }
 
+  const atribucion = obtenerAtribucionImagen(url);
+
   return {
     url,
     proveedor,
     referenciaOrigen: `${referenciaOrigen.coleccion}:${referenciaOrigen.idRegistro}`,
-    // No se atribuye una licencia ni autoría sin metadatos de la imagen concreta.
-    licencia: null,
-    atribucion: null,
-    estadoVerificacion: url ? "pendiente" : "sin_imagen",
+    paginaOrigen: atribucion?.paginaOrigen ?? null,
+    autor: atribucion?.autor ?? null,
+    fuente: atribucion?.fuente ?? null,
+    licencia: atribucion?.licencia ?? null,
+    licenciaUrl: atribucion?.urlLicencia ?? null,
+    atribucion: atribucion
+      ? `${atribucion.autor} · ${atribucion.fuente} · ${atribucion.licencia}`
+      : null,
+    cambios: atribucion?.cambios ?? null,
+    estadoVerificacion: atribucion ? "verificada" : url ? "pendiente" : "sin_imagen",
   };
 }
 
@@ -286,8 +300,13 @@ export function obtenerProductoCanonico(
         url: null,
         proveedor: null,
         referenciaOrigen: "sin_referencia",
+        paginaOrigen: null,
+        autor: null,
+        fuente: null,
         licencia: null,
+        licenciaUrl: null,
         atribucion: null,
+        cambios: null,
         estadoVerificacion: "sin_imagen" as const,
       };
 

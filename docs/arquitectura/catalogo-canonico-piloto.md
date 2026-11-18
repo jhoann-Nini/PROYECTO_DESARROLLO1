@@ -79,7 +79,7 @@ Se contrastó la identidad comercial de los ocho modelos con documentación publ
 - **Variantes:** Samsung Galaxy S24 Ultra 512 GB y OnePlus Pad 2 12/256 GB coinciden con opciones publicadas por sus fabricantes. Para ThinkPad E14 Gen 5 y MacBook Pro M3 Max se requiere identificar el SKU/MTM exacto antes de confirmar la configuración. En los demás casos se conserva la variante heredada sin elevarla automáticamente a dato verificado.
 - **Precios, disponibilidad y vendedores:** no verificados; deben obtenerse de una fuente comercial por país y con fecha de consulta.
 - **Imágenes:** siguen pendientes de verificación individual de procedencia, licencia y atribución. Una página oficial del producto no demuestra que la URL de imagen heredada esté autorizada para reutilización.
-- **Estado técnico:** el campo `estadoVerificacion` del catálogo permanece en `pendiente`; esta revisión documental no cambia el estado de verificación de cada registro en código.
+- **Estado del catálogo canónico:** el campo `estadoVerificacion` de sus registros permanece en `pendiente`. Es independiente de `estado_verificacion` en las fichas técnicas V2 y no debe interpretarse como el estado de estas fichas.
 
 
 
@@ -93,7 +93,7 @@ La revisión del catálogo canónico debe tomar como referencia las fichas corre
 - ThinkPad E14 Gen 5: el registro piloto identifica SKU 21JK0005RI, Intel Core i5-1335U, 16 GB DDR4, 512 GB SSD NVMe y panel 14 pulgadas WUXGA de 45% NTSC. La coincidencia con una ficha oficial Lenovo aún debe validarse.
 - MacBook Pro 16 M3 Max: el registro piloto corregido es 16 núcleos CPU/40 GPU, 48 GB de memoria unificada y 1 TB SSD; el SKU exacto sigue pendiente.
 
-Las referencias comerciales históricas de iPad Pro 512 GB y MacBook Pro 36 GB no corresponden a las variantes actuales del piloto. La publicación PCWare citada para ThinkPad no demuestra que sea el SKU 21JK0005RI. No asociar estas ofertas con las variantes canónicas actuales ni mostrar sus precios como comparables. Los estados de verificación permanecen en `pendiente` hasta cotejar SKU, mercado, condición e inventario.
+Las referencias comerciales históricas de iPad Pro 512 GB y MacBook Pro 36 GB no corresponden a las variantes actuales del piloto. La publicación PCWare citada para ThinkPad no demuestra que sea el SKU 21JK0005RI. No asociar estas ofertas con las variantes canónicas actuales ni mostrar sus precios como comparables. El estado `pendiente` mencionado aquí corresponde al catálogo canónico y a la validación de ofertas comerciales (SKU, mercado, condición e inventario); no describe el estado de las fichas técnicas V2, que se registra por separado.
 
 ## Revisión de fuentes comerciales e imágenes (16 de noviembre de 2026)
 
@@ -159,3 +159,40 @@ La verificación de fuentes oficiales se incorporó en `proyectos/frontend/src/d
 | Sony WH-1000XM5 | `verificado` | La ficha oficial de soporte respalda el modelo y las especificaciones registradas. |
 
 **Importante:** `verificado` describe la evidencia técnica de la ficha V2; no garantiza precio vigente, inventario, vendedor autorizado, condición del producto, disponibilidad en Colombia ni licencia de las imágenes. Nothing Ear (2) permanece `parcial` hasta confirmar el acabado específico. El estado independiente del catálogo canónico continúa sujeto a sus propias reglas y no debe elevarse por inferencia.
+- Esta revisión documental no modificó código, backend, SQL ni Supabase. El estado `estadoVerificacion` del catálogo canónico continúa en `pendiente`; no equivale al estado de verificación de las fichas V2.
+
+
+## Estado vigente de las fichas técnicas V2 del piloto (16 de noviembre de 2026)
+
+Las PR #110, #111 y #112 están integradas en `main`. La implementación de fichas técnicas V2 se encuentra en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.ts`; su normalización y resolución se conectan desde `proyectos/frontend/src/data/normalizadorFicha.ts`, y las pruebas específicas están en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.test.ts`.
+
+El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galaxy S24 Ultra tiene dos variantes (256 GB y 512 GB). Los estados siguientes corresponden exclusivamente al contrato `FichaTecnicaV2.estado_verificacion`.
+
+| Modelo / variante | Estado V2 | Evidencia y observación |
+|---|---|---|
+| Nothing Phone (2a) Special Edition — 12 GB/256 GB | `verificado` | Página oficial de Nothing y anuncio de la edición especial respaldan el modelo y la configuración. |
+| Samsung Galaxy S24 Ultra — 12 GB/256 GB | `verificado` | Hoja oficial de especificaciones de Samsung y ficha regional Colombia. |
+| Samsung Galaxy S24 Ultra — 12 GB/512 GB | `verificado` | Hoja oficial de especificaciones de Samsung y ficha regional Colombia. |
+| OnePlus Pad 2 — 12 GB/256 GB UFS 3.1 | `verificado` | Ficha oficial estadounidense de OnePlus respalda la configuración y las especificaciones registradas. |
+| Apple iPad Pro 11 pulgadas M4 — 16 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan chip, memoria y almacenamiento registrados. |
+| Lenovo ThinkPad E14 Gen 5 — MTM 21JK0005RI | `verificado` | PSREF de Lenovo asociado al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
+| Apple MacBook Pro 16 pulgadas M3 Max — 48 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan la configuración M3 Max CPU 16/GPU 40, 48 GB y SSD de 1 TB. |
+| Nothing Ear (2) — Transparent White | `parcial` | La fuente oficial respalda las especificaciones del modelo; falta una fuente primaria que confirme expresamente el acabado Transparent White. |
+| Sony WH-1000XM5 | `verificado` | Ficha oficial de soporte de Sony respalda el modelo y las especificaciones registradas. |
+
+### Interpretación de los estados y límites
+
+- `verificado` significa que la evidencia primaria identificada respalda los datos técnicos incluidos en esa ficha y variante. No certifica autenticidad de una unidad física ni disponibilidad comercial.
+- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Nothing Ear (2), el pendiente concreto es el acabado Transparent White.
+- Los estados de Ficha V2 **no actualizan automáticamente** el estado `estadoVerificacion` del catálogo canónico. Este último continúa `pendiente` hasta completar su propio proceso de identidad, reconciliación y validación de referencias.
+- La verificación técnica no valida precios, stock, vendedores, garantía, condición del producto, disponibilidad en Colombia ni derechos de reutilización de imágenes.
+- Las métricas del piloto se conservan como informativas (`comparable: false`) y no se presentan como benchmarks comparables. No hay benchmarks verificados incorporados en estas fichas.
+
+### Siguiente trabajo del piloto
+
+1. Obtener evidencia primaria del acabado Transparent White de Nothing Ear (2); si no aparece, mantener el estado `parcial` y registrar el límite.
+2. Completar la auditoría independiente de imágenes: modelo y variante correctos, URL utilizable, autor/proveedor, licencia, atribución, alcance de uso y fecha de consulta. Las URLs heredadas no se consideran autorizadas por defecto.
+3. Mantener separadas las fuentes técnicas de las fuentes comerciales. Los precios y la disponibilidad requieren consulta por país, vendedor y fecha.
+4. Una vez cerrados estos controles, ampliar el mismo estándar a los demás modelos del catálogo (28 modelos únicos identificados en la auditoría), sin duplicar modelos ni mezclar variantes.
+
+Esta actualización documental describe el estado del código integrado en `main`; no modifica datos del catálogo, backend, migraciones SQL ni Supabase.

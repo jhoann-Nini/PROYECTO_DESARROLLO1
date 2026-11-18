@@ -38,11 +38,75 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
   });
 
+  it("completa OnePlus Pad 2 con datos técnicos respaldados por OnePlus Chile", () => {
+    const pad = FICHAS_TECNICAS_V2_PILOTO.oneplusPad2;
+    expect(pad.estado_verificacion).toBe("verificado");
+    expect(pad.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "dimensiones", valor: "268,66 × 195,06 × 6,49 mm" }),
+      expect.objectContaining({ clave: "peso", valor: 584, unidad: "g" }),
+      expect.objectContaining({ clave: "sistema_operativo", valor: "OxygenOS 14.1" }),
+      expect.objectContaining({ clave: "densidad_pixeles", valor: 303 }),
+      expect.objectContaining({ clave: "puerto_usb", valor: "USB Type-C 3.2 Gen 1, hasta 5 Gbps" }),
+    ]));
+    expect(pad.fuentes.map((fuente) => fuente.url)).toContain("https://www.oneplus.com/cl/oneplus-pad-2/specs");
+  });
+
+  it("incluye las especificaciones oficiales confirmadas de Nothing Ear (2) sin verificar el nombre del acabado", () => {
+    const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
+    expect(ear.estado_verificacion).toBe("parcial");
+    expect(ear.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "codecs", valor: "AAC, SBC, LHDC 5.0" }),
+      expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),
+    ]));
+    expect(ear.fuentes[0]?.url).toBe("https://checkout-es.nothing.tech/products/ear-2");
+  });
+
   it("conserva el país real del MTM Lenovo y no confunde EET con un país", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.variantes[0]).toMatchObject({
       sku: "21JK0005RI",
       mercado: "Rumania (región EET)",
     });
+  });
+
+  it("documenta la configuración exacta Lenovo 21JK0005RI con los datos del PSREF", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5;
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      sku: "21JK0005RI",
+      mercado: "Rumania (región EET)",
+      ram: "16 GB DDR4-3200 (8 GB soldados + 8 GB SO-DIMM)",
+      almacenamiento: "512 GB SSD M.2 2242 PCIe 4.0 NVMe",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "graficos", valor: "Intel Iris Xe Graphics integrada" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 57, unidad: "Wh" }),
+      expect.objectContaining({ clave: "camara", valor: "FHD 1080p + IR híbrida con obturador de privacidad" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "seguridad" }),
+      expect.objectContaining({ clave: "dimensiones", valor: "313 × 219,3 × 17,99 mm" }),
+      expect.objectContaining({ clave: "peso", valor: 1.43, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI");
+  });
+
+  it("documenta la configuración exacta MacBook Pro 16 M3 Max de 48 GB y 1 TB", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      ram: "48 GB de memoria unificada",
+      almacenamiento: "1 TB SSD",
+      identificador: "M3 Max · CPU 16 núcleos (12 de rendimiento + 4 de eficiencia) · GPU 40 núcleos",
+    });
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "resolucion", valor: "3456 × 2234 píxeles · 254 ppp" }),
+      expect.objectContaining({ clave: "brillo_hdr", valor: 1600, unidad: "nits" }),
+      expect.objectContaining({ clave: "puertos" }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 6E (802.11ax)" }),
+      expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),
+      expect.objectContaining({ clave: "camara", valor: "FaceTime HD 1080p" }),
+      expect.objectContaining({ clave: "peso", valor: 2.16, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.apple.com/es-co/117737");
   });
 
   it("asocia las fichas V2 a los cuatro productos mock", () => {
@@ -131,7 +195,7 @@ describe("fichas técnicas V2 de los ocho productos piloto", () => {
     });
     expect(normalizarDesdeKimovil(macbook!).variantes[0]).toMatchObject({
       id: "48gb-1tb",
-      identificador: "M3 Max · CPU 16 núcleos · GPU 40 núcleos",
+      identificador: "M3 Max · CPU 16 núcleos (12 de rendimiento + 4 de eficiencia) · GPU 40 núcleos",
     });
   });
 

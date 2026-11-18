@@ -20,6 +20,8 @@ import {
   type ValoracionPublicaStats,
 } from "@/services/api";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 
@@ -345,6 +347,7 @@ export default function FichaTecnicaModal({
 
   const esKimovil = "ranking" in producto;
   const ranking = esKimovil ? (producto as DispositivoKimovil).ranking : null;
+  const imagenSinDerivados = obtenerAtribucionImagen(ficha.imagen)?.licencia === "CC BY-ND 2.0";
   const precioFormateado = formatearCOP(ficha.precio);
 
   const seccionActiva =
@@ -404,7 +407,7 @@ export default function FichaTecnicaModal({
                     src={ficha.imagen}
                     alt={`Vista frontal de ${ficha.nombre}`}
                     onError={() => setErrorImagenUrl(ficha.imagen)}
-                    className="max-h-full max-w-full object-contain filter drop-shadow-md transition-transform duration-300 hover:scale-105"
+                    className={`max-h-full max-w-full object-contain ${imagenSinDerivados ? "" : "filter drop-shadow-md transition-transform duration-300 hover:scale-105"}`}
                   />
                 ) : (
                   <ProductImagePlaceholder
@@ -414,6 +417,7 @@ export default function FichaTecnicaModal({
                     tamano="lg"
                   />
                 )}
+                <AtribucionImagenProducto src={ficha.imagen} className="absolute bottom-10 left-3 right-3 rounded bg-[var(--color-paper)]/90 px-2 py-1" />
 
                 <span className="absolute left-3 top-3 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)] backdrop-blur">
                   {ficha.marca}

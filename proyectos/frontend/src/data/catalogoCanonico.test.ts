@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
-  it("define exactamente catorce productos y cubre las cuatro categorías", () => {
-    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(14);
-    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(14);
+  it("define exactamente quince productos y cubre las cuatro categorías", () => {
+    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(15);
+    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(15);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.categoria))).toEqual(
       new Set(["moviles", "tablets", "laptops", "auriculares"]),
     );
@@ -82,6 +82,7 @@ describe("catálogo canónico piloto", () => {
     const oneplus = obtenerProductoCanonico("oneplus-13");
     const iphone15 = obtenerProductoCanonico("apple-iphone-15-pro-max");
     const s25 = obtenerProductoCanonico("samsung-galaxy-s25-ultra");
+    const xiaomi14 = obtenerProductoCanonico("xiaomi-14-ultra");
     expect(a55?.referencias[0]).toMatchObject({ coleccion: "vendidos", idRegistro: 102, varianteId: null });
     expect(a55?.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone?.referencias[0].varianteId).toBe("128gb");
@@ -89,6 +90,7 @@ describe("catálogo canónico piloto", () => {
     expect(oneplus?.referencias[0].varianteId).toBe("16gb-512gb");
     expect(iphone15?.referencias[0].varianteId).toBe("256gb");
     expect(s25?.referencias[0].varianteId).toBe("12gb-1tb");
+    expect(xiaomi14?.referencias[0].varianteId).toBe("16gb-512gb");
   });
 
   it("no fusiona Nothing Phone (2a) Plus con Special Edition", () => {
@@ -129,11 +131,11 @@ describe("catálogo canónico piloto", () => {
     const iphone15 = obtenerProductoCanonico("apple-iphone-15-pro-max");
     const s25 = obtenerProductoCanonico("samsung-galaxy-s25-ultra");
 
-    for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi, oneplus, iphone15, s25]) {
+    for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi, oneplus, iphone15, s25, xiaomi14]) {
       expect(producto?.imagen.url).toMatch(/^https:\/\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
-      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(producto?.imagen.licencia);
-      expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0", "CC0 1.0"]).toContain(producto?.imagen.licencia);
+      expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/(licenses|publicdomain)\//);
       expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\//);
       expect(producto?.imagen.autor).not.toBeNull();
       expect(producto?.imagen.atribucion).not.toBeNull();
@@ -149,6 +151,7 @@ describe("catálogo canónico piloto", () => {
     expect(oneplus?.imagen.licencia).toBe("CC BY-SA 4.0");
     expect(iphone15?.imagen.licencia).toBe("CC BY-SA 4.0");
     expect(s25?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(xiaomi14?.imagen.licencia).toBe("CC0 1.0");
 
     const pendientes = [
       obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5"),

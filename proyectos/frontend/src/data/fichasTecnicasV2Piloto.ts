@@ -395,8 +395,7 @@ const nothingEar2 = crearFicha(
   ],
   [
     metrica("tamano_transductor", "Diámetro del transductor", "audio", 11.6, "mm", earFuente),
-    metrica("autonomia_anc_off", "Autonomía total con ANC desactivada", "bateria", 36, "h", earFuente),
-    metrica("autonomia_anc_on", "Autonomía total con ANC activada", "bateria", 22.5, "h", earFuente),
+
   ],
   [
     fuente("nothing-ear-2", "Nothing España — Ear (2), especificaciones técnicas", "https://checkout-es.nothing.tech/products/ear-2", earVariante, "La página oficial respalda las especificaciones completas: audio, ANC, batería, dimensiones, resistencia y conectividad."),

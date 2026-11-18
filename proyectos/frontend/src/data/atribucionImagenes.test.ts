@@ -5,8 +5,8 @@ import {
 } from "./atribucionImagenes";
 
 describe("atribuciones de imágenes del catálogo", () => {
-  it("registra trece fotografías con procedencia, autoría y licencia identificadas", () => {
-    expect(ATRIBUCIONES_IMAGENES).toHaveLength(13);
+  it("registra catorce fotografías con procedencia, autoría y licencia identificadas", () => {
+    expect(ATRIBUCIONES_IMAGENES).toHaveLength(14);
     for (const imagen of ATRIBUCIONES_IMAGENES) {
       expect(imagen.urlImagen).toMatch(/^https:\/\//);
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
@@ -47,6 +47,13 @@ describe("atribuciones de imágenes del catálogo", () => {
     const iphone = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Kskhh");
     expect(iphone?.licencia).toBe("CC BY-SA 4.0");
     expect(iphone?.nota).toContain("128 GB");
+  });
+
+  it("registra Nothing Ear (a) Black Edition con CC BY 4.0", () => {
+    const earA = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.paginaOrigen.includes("Nothing-Tokyo-2024-04-18_151"));
+    expect(earA?.autor).toBe("RuinDig/Yuki Uchida");
+    expect(earA?.licencia).toBe("CC BY 4.0");
+    expect(earA?.nota).toContain("acabado Black Edition");
   });
 
   it("registra Xiaomi 14 Ultra con licencia CC0 1.0", () => {

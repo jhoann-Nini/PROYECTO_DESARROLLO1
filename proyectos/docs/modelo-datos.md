@@ -628,3 +628,28 @@ El diseño debe conservar cada transición de estado y sus datos de auditoría: 
 Los scripts SQL y entidades actuales pueden representar una versión parcial del flujo; los estados y restricciones deberán alinearse con esta especificación mediante migraciones revisadas. No se debe ejecutar ni aplicar una migración de base de datos como parte de esta revisión documental.
 
 Los scripts SQL históricos `006_reportes_resenas.sql` y `007_moderacion_reportes.sql` todavía admiten los estados `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`, con estados finales inmutables. Estos nombres y transiciones no representan la política objetivo aprobada en esta Fase 1. Deben tratarse como una versión previa del esquema: no ejecutar ni modificar esos scripts como parte de esta revisión; en la fase de implementación se diseñará una migración nueva, numerada y revisada para los estados `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO`, conservando la trazabilidad y los datos existentes.
+
+
+---
+
+# 25. Estado de implementación del esquema — 18 de noviembre de 2026
+
+El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/.
+
+A la fecha de esta actualización, el repositorio contiene las migraciones 001–012. Entre las capacidades incorporadas por esa secuencia se encuentran:
+
+- Soporte de identidad y autenticación de Supabase.
+- Alineación del catálogo de roles y reseñas/valoraciones.
+- Reportes y moderación de reseñas.
+- Asignación de múltiples roles por usuario y relación de representantes con establecimientos.
+- Auditoría de asignaciones, decisiones de moderación y ocultamiento manual.
+- Restricciones de integridad, validación de transiciones y correlación transaccional de eventos de auditoría.
+- Estado separado de moderación automática de reseñas mediante resena.estado_moderacion, con valores permitidos PUBLICADA y PENDIENTE (migración 012).
+
+## 25.1 Modelo conceptual frente al esquema implementado
+
+Este documento no debe interpretarse como un DDL completo ni como una representación exacta, columna por columna, del esquema actual. Las migraciones SQL versionadas y las entidades JPA son las referencias técnicas para el esquema implementado. En particular, el modelo multirrol usa relaciones de asignación y auditoría; no debe describirse como un único rol funcional por usuario.
+
+## 25.2 Estado de los scripts y de cada entorno
+
+Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente.

@@ -543,3 +543,29 @@ Verificar exhaustivamente la seguridad perimetral y los controles de acceso basa
 - **Clase de prueba:** `com.example.backend.controller.EndpointsNuevos401y403IntegrationTest`.
 - **Total pruebas ejecutadas:** 40 pruebas automatizadas, 0 fallos, 0 errores (100% éxito).
 - **Tiempo de ejecución:** ~12.43 s en entorno H2 / Spring Security MockMvc.
+
+
+---
+
+## Estado de CI más reciente — 18 de noviembre de 2026
+
+Se consultó la ejecución de GitHub Actions asociada al commit 52d3782 de la rama main (ejecución 44344635976). Los dos trabajos terminaron en estado success.
+
+| Componente | Validación | Resultado registrado |
+|---|---|---:|
+| Backend (Java 21 / Maven) | ./mvnw test --no-transfer-progress | 477 pruebas; 0 fallos, 0 errores, 0 omitidas |
+| Frontend (Node 22 / Vitest) | npm test | 73 archivos; 993 pruebas aprobadas |
+| Frontend | npx tsc --noEmit | Correcto |
+| Frontend | npm run lint | Correcto |
+| Frontend | npm run build | Correcto; Next.js 16.3.5 |
+
+**Resultado global del CI:** correcto. La evidencia puede consultarse en [la ejecución 44344635976](https://github.com/jhoann-Nini/PROYECTO_DESARROLLO1/actions/runs/44344635976).
+
+### Alcance y límites de esta evidencia
+
+- El backend de CI ejecuta las pruebas configuradas por Maven; no ejecuta migraciones contra Supabase de producción.
+- El frontend de CI ejecuta pruebas Vitest, verificación de tipos, lint y build.
+- El resultado del CI no sustituye pruebas manuales de aceptación ni demuestra el estado de una base PostgreSQL remota.
+- En el log de Maven aparecen avisos durante el cierre de conexiones del pool y un mensaje de Surefire al finalizar el proceso; aun así, el resumen reporta BUILD SUCCESS y 477 pruebas sin fallos ni errores.
+
+El resultado de cinco pruebas fechado el 6 de octubre de 2026, documentado en la sección histórica de este archivo, no representa la última ejecución. Se conserva como antecedente, no como estado actual.

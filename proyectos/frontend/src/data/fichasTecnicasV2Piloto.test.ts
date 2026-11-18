@@ -424,5 +424,4 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "modo_ambiente", valor: true }),
     ]));
   });
-
 });

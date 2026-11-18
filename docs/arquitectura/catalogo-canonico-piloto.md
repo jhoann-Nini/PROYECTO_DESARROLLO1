@@ -1,4 +1,4 @@
-# Catálogo canónico TecReview — piloto de ocho productos
+# Catálogo canónico TecReview — piloto ampliado
 
 ## Alcance implementado en frontend
 
@@ -21,7 +21,9 @@ Los identificadores de origen no se reemplazan ni se interpretan como IDs de la 
 
 ## Imágenes
 
-Las URLs actuales se conservan como referencias heredadas para no romper la presentación existente. No se consideran imágenes verificadas del dispositivo. La metadata deja licencia y atribución como nulas hasta que se confirme la imagen exacta, su autoría y sus condiciones de uso.
+La verificación de imagen es independiente de la ficha técnica. Una URL solo se marca como `verificada` cuando coincide exactamente con una entrada de `src/data/atribucionImagenes.ts`, que documenta página de origen, autor, licencia, enlace de licencia y tratamiento. Las imágenes sin registro de atribución permanecen en estado `pendiente`; no se infiere permiso de reutilización a partir de una página oficial o de una URL válida.
+
+En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, Apple iPhone 13 y Xiaomi Redmi Note 14 Pro+ 5G. Lenovo ThinkPad E14 Gen 5 y MacBook Pro 16 M3 Max siguen pendientes de una fotografía reutilizable cuya correspondencia de modelo y variante esté comprobada.
 
 ## Piloto
 
@@ -35,6 +37,15 @@ Las URLs actuales se conservan como referencias heredadas para no romper la pres
 | `apple-macbook-pro-16-m3-max` | Apple MacBook Pro 16 pulgadas M3 Max | deseados:209 (48 GB/1 TB, 16 CPU/40 GPU; pendiente de validar SKU) |
 | `nothing-ear-2` | Nothing Ear (2) | mock:3 |
 | `sony-wh-1000xm5` | Sony WH-1000XM5 | vendidos:109 |
+| `samsung-galaxy-a55-5g` | Samsung Galaxy A55 5G | vendidos:102 (8 GB RAM; capacidad exacta pendiente entre 128/256 GB) |
+| `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
+| `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
+| `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
+| `apple-iphone-15-pro-max` | Apple iPhone 15 Pro Max | deseados:201 (256 GB) |
+| `samsung-galaxy-s25-ultra` | Samsung Galaxy S25 Ultra | deseados:206 (12 GB/1 TB) |
+| `xiaomi-14-ultra` | Xiaomi 14 Ultra | deseados:204 (16 GB/512 GB) |
+| `nothing-ear-a-black` | Nothing Ear (a) Black Edition | ofertas:301 (Black) |
+| `xiaomi-14t-pro` | Xiaomi 14T Pro 5G Leica | ofertas:306 (12 GB/512 GB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -177,22 +188,43 @@ El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galax
 | Apple iPad Pro 11 pulgadas M4 — 16 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan chip, memoria y almacenamiento registrados. |
 | Lenovo ThinkPad E14 Gen 5 — MTM 21JK0005RI | `verificado` | PSREF de Lenovo asociado al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
 | Apple MacBook Pro 16 pulgadas M3 Max — 48 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan la configuración M3 Max CPU 16/GPU 40, 48 GB y SSD de 1 TB. |
-| Nothing Ear (2) — Transparent White | `parcial` | La fuente oficial respalda las especificaciones del modelo; falta una fuente primaria que confirme expresamente el acabado Transparent White. |
+| Nothing Ear (2) — Transparent White | `verificado` (17 nov 2026) | La página oficial lista Ear (2) White y la fotografía CC BY-SA muestra la carcasa transparente y auriculares blancos. |
 | Sony WH-1000XM5 | `verificado` | Ficha oficial de soporte de Sony respalda el modelo y las especificaciones registradas. |
 
 ### Interpretación de los estados y límites
 
 - `verificado` significa que la evidencia primaria identificada respalda los datos técnicos incluidos en esa ficha y variante. No certifica autenticidad de una unidad física ni disponibilidad comercial.
-- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Nothing Ear (2), el pendiente concreto es el acabado Transparent White.
+- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Samsung Galaxy A55 5G, el pendiente concreto es la capacidad de almacenamiento del registro vendido:102.
 - Los estados de Ficha V2 **no actualizan automáticamente** el estado `estadoVerificacion` del catálogo canónico. Este último continúa `pendiente` hasta completar su propio proceso de identidad, reconciliación y validación de referencias.
 - La verificación técnica no valida precios, stock, vendedores, garantía, condición del producto, disponibilidad en Colombia ni derechos de reutilización de imágenes.
 - Las métricas del piloto se conservan como informativas (`comparable: false`) y no se presentan como benchmarks comparables. No hay benchmarks verificados incorporados en estas fichas.
 
 ### Siguiente trabajo del piloto
 
-1. Obtener evidencia primaria del acabado Transparent White de Nothing Ear (2); si no aparece, mantener el estado `parcial` y registrar el límite.
+1. `Resuelto 17 nov 2026`: se confirmó visualmente Nothing Ear (2) Transparent White y se añadió la fuente oficial de variante.
 2. Completar la auditoría independiente de imágenes: modelo y variante correctos, URL utilizable, autor/proveedor, licencia, atribución, alcance de uso y fecha de consulta. Las URLs heredadas no se consideran autorizadas por defecto.
 3. Mantener separadas las fuentes técnicas de las fuentes comerciales. Los precios y la disponibilidad requieren consulta por país, vendedor y fecha.
 4. Una vez cerrados estos controles, ampliar el mismo estándar a los demás modelos del catálogo (28 modelos únicos identificados en la auditoría), sin duplicar modelos ni mezclar variantes.
 
 Esta actualización documental describe el estado del código integrado en `main`; no modifica datos del catálogo, backend, migraciones SQL ni Supabase.
+
+
+## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
+
+El lote de trabajo amplía la cobertura controlada a **diecisiete modelos** (veintidós variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+
+| Modelo | Ficha V2 | Imagen | Nota de coherencia |
+|---|---|---|---|
+| Samsung Galaxy A55 5G | `parcial` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Samsung Colombia documenta 8/128 GB y 8/256 GB; el registro vendido:102 solo indica 8 GB de RAM, por lo que no se asigna una capacidad a ciegas. |
+| Apple iPhone 13 — 128 GB | `verificado` | CC BY-SA 4.0, autor Kskhh | Ficha técnica oficial Apple y fotografía del modelo; el registro identifica 128 GB. |
+| Xiaomi Redmi Note 14 Pro+ 5G — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigieron datos heredados incorrectos: RAM física 12 GB LPDDR4X, UFS 2.2, batería 5110 mAh, cámara frontal 20 MP y carga 120 W. Se eliminó el benchmark no respaldado y se distingue RAM virtual de RAM física. |
+| OnePlus 13 5G — 16 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigió el nombre inexistente «OnePlus 13 Pro» a OnePlus 13; se alineó con la variante oficial 16/512 y se eliminó el benchmark no documentado. |
+| Apple iPhone 15 Pro Max — 256 GB | `verificado` | CC BY-SA 4.0, autor Kyu3 | Ficha Apple Colombia; se reemplazó la imagen genérica y se eliminó el benchmark Geekbench no respaldado. |
+| Samsung Galaxy S25 Ultra — 12 GB/1 TB | `verificado` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Se corrigió RAM de 16 a 12 GB según Samsung Colombia; se verificó la variante 1 TB y se eliminó el benchmark AnTuTu no respaldado. |
+| Xiaomi 14 Ultra — 16 GB/512 GB | `verificado` | CC0 1.0, autor DUSOAM 68 HNWUA | Ficha oficial Xiaomi; fotografía en exhibición muestra etiqueta 16/512 y se documenta bajo dominio público CC0. |
+| Nothing Ear (a) Black Edition | `verificado` | CC BY 4.0, autor RuinDig/Yuki Uchida | Se incorpora fotografía del acabado negro exacto; ficha Nothing distingue autonomía con ANC encendida/apagada y resistencia de auriculares/estuche. |
+| Nothing Ear (2) Transparent White | `verificado` | CC BY-SA 4.0, autor Ganesh Mohan T | La foto muestra el acabado transparente blanco y Nothing confirma Ear (2) White como variante oficial; ficha técnica ampliada con ANC, batería, carga inalámbrica, micrófonos y protección. |
+| Xiaomi 14T Pro — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Petar Milošević | Ficha oficial Xiaomi Colombia; se corrigió Wi-Fi 7 heredado a Wi-Fi 6 y se eliminó benchmark AnTuTu no documentado. |
+
+Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
+

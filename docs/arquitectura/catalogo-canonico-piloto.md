@@ -168,20 +168,20 @@ El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galax
 | Apple iPad Pro 11 pulgadas M4 — 16 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan chip, memoria y almacenamiento registrados. |
 | Lenovo ThinkPad E14 Gen 5 — MTM 21JK0005RI | `verificado` | PSREF de Lenovo asociado al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
 | Apple MacBook Pro 16 pulgadas M3 Max — 48 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan la configuración M3 Max CPU 16/GPU 40, 48 GB y SSD de 1 TB. |
-| Nothing Ear (2) — Transparent White | `parcial` | La fuente oficial respalda las especificaciones del modelo; falta una fuente primaria que confirme expresamente el acabado Transparent White. |
+| Nothing Ear (2) — Transparent White | `verificado` (17 nov 2026) | La página oficial lista Ear (2) White y la fotografía CC BY-SA muestra la carcasa transparente y auriculares blancos. |
 | Sony WH-1000XM5 | `verificado` | Ficha oficial de soporte de Sony respalda el modelo y las especificaciones registradas. |
 
 ### Interpretación de los estados y límites
 
 - `verificado` significa que la evidencia primaria identificada respalda los datos técnicos incluidos en esa ficha y variante. No certifica autenticidad de una unidad física ni disponibilidad comercial.
-- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Nothing Ear (2), el pendiente concreto es el acabado Transparent White.
+- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Samsung Galaxy A55 5G, el pendiente concreto es la capacidad de almacenamiento del registro vendido:102.
 - Los estados de Ficha V2 **no actualizan automáticamente** el estado `estadoVerificacion` del catálogo canónico. Este último continúa `pendiente` hasta completar su propio proceso de identidad, reconciliación y validación de referencias.
 - La verificación técnica no valida precios, stock, vendedores, garantía, condición del producto, disponibilidad en Colombia ni derechos de reutilización de imágenes.
 - Las métricas del piloto se conservan como informativas (`comparable: false`) y no se presentan como benchmarks comparables. No hay benchmarks verificados incorporados en estas fichas.
 
 ### Siguiente trabajo del piloto
 
-1. Obtener evidencia primaria del acabado Transparent White de Nothing Ear (2); si no aparece, mantener el estado `parcial` y registrar el límite.
+1. `Resuelto 17 nov 2026`: se confirmó visualmente Nothing Ear (2) Transparent White y se añadió la fuente oficial de variante.
 2. Completar la auditoría independiente de imágenes: modelo y variante correctos, URL utilizable, autor/proveedor, licencia, atribución, alcance de uso y fecha de consulta. Las URLs heredadas no se consideran autorizadas por defecto.
 3. Mantener separadas las fuentes técnicas de las fuentes comerciales. Los precios y la disponibilidad requieren consulta por país, vendedor y fecha.
 4. Una vez cerrados estos controles, ampliar el mismo estándar a los demás modelos del catálogo (28 modelos únicos identificados en la auditoría), sin duplicar modelos ni mezclar variantes.

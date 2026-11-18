@@ -310,9 +310,17 @@ export default function CategoriaPageContent({
                 <TarjetaProducto
                   key={producto.idProducto}
                   producto={producto}
-                  onVerDetalle={(vista) =>
-                    router.push(`/productos/${vista.idProducto}`)
-                  }
+                  onVerDetalle={(vista) => {
+                    const idDestino =
+                      typeof vista.idApi === "number" && Number.isSafeInteger(vista.idApi) && vista.idApi > 0
+                        ? vista.idApi
+                        : typeof vista.idProducto === "number" && Number.isSafeInteger(vista.idProducto) && vista.idProducto > 0
+                          ? vista.idProducto
+                          : null;
+                    if (idDestino) {
+                      router.push(`/productos/${idDestino}`);
+                    }
+                  }}
                 />
               ))}
             </section>

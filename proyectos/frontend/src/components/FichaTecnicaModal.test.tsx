@@ -4,6 +4,7 @@ import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/re
 import FichaTecnicaModal from "./FichaTecnicaModal";
 import { Producto, UsuarioSesion } from "@/types/producto";
 import { DISPOSITIVOS_VENDIDOS } from "@/data/mockProductos";
+import { convertirKimovilAViewModel } from "@/data/productoViewModel";
 
 const mockObtenerMiValoracion = vi.fn();
 const mockObtenerResenas = vi.fn().mockResolvedValue([]);
@@ -859,5 +860,358 @@ describe("Componente FichaTecnicaModal — Fase 3: ficha técnica ampliada", () 
     expect(
       screen.getByText("Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.")
     ).toBeDefined();
+  });
+});
+
+describe("Componente FichaTecnicaModal — HA-01: Protección de endpoints API contra identificadores mock o inválidos", () => {
+  afterEach(() => cleanup());
+
+  beforeEach(() => {
+    mockObtenerMiValoracion.mockClear();
+    mockObtenerResenas.mockClear();
+    mockCrearResena.mockClear();
+    mockObtenerValoracionStats.mockClear();
+  });
+
+  const usuarioTest: UsuarioSesion = {
+    id: "1",
+    nombre: "Usuario Test",
+    usuario: "usuario_test",
+    email: "test@tecreview.test",
+  };
+
+  it("no ejecuta peticiones al backend cuando el producto es un DispositivoKimovil de ranking o mock", async () => {
+    const dispositivoMock = DISPOSITIVOS_VENDIDOS[0];
+
+    render(
+      <FichaTecnicaModal
+        producto={dispositivoMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("no ejecuta peticiones al backend cuando el producto tiene idProducto negativo o 0", async () => {
+    const productoNegativo: Producto = {
+      idProducto: -15,
+      nombre: "Producto con ID negativo",
+      descripcion: "Mock producto",
+      idCategoria: 1,
+      idMarca: 1,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca Mock",
+      imagen: null,
+      precioReferencia: 500000,
+      estado: true,
+      caracteristicas: {},
+    };
+
+    render(
+      <FichaTecnicaModal
+        producto={productoNegativo}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("no ejecuta peticiones al backend cuando es un ProductoViewModel con origen mock", async () => {
+    const productoVmMock = convertirKimovilAViewModel(DISPOSITIVOS_VENDIDOS[0]);
+
+    render(
+      <FichaTecnicaModal
+        producto={productoVmMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+    });
+  });
+
+  it("muestra mensaje informativo en pestaña de opiniones para productos mock y no renderiza formulario de envío", () => {
+    const dispositivoMock = DISPOSITIVOS_VENDIDOS[0];
+
+    render(
+      <FichaTecnicaModal
+        producto={dispositivoMock}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    const pestanaOpiniones = screen.getByRole("tab", { name: /opiniones/i });
+    fireEvent.click(pestanaOpiniones);
+
+    expect(
+      screen.getByText("Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo.")
+    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: /publicar opinión/i })).toBeNull();
+    expect(mockCrearResena).not.toHaveBeenCalled();
+  });
+
+  it("ejecuta las llamadas al backend correctamente cuando el producto es un Producto legítimo de API con id positivo", async () => {
+    const productoApi: Producto = {
+      idProducto: 305,
+      nombre: "Producto Legítimo API",
+      descripcion: "Registrado en BD",
+      idCategoria: 1,
+      idMarca: 1,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca Real",
+      imagen: null,
+      precioReferencia: 1200000,
+      estado: true,
+      caracteristicas: {},
+    };
+
+    render(
+      <FichaTecnicaModal
+        producto={productoApi}
+        onClose={vi.fn()}
+        usuarioSesion={usuarioTest}
+      />
+    );
+
+    await waitFor(() => {
+      expect(mockObtenerResenas).toHaveBeenCalledWith(305);
+      expect(mockObtenerValoracionStats).toHaveBeenCalledWith(305);
+      expect(mockObtenerMiValoracion).toHaveBeenCalledWith(305);
+    });
+  });
+
+  describe("HA-06: Reinicio dinámico de estado en FichaTecnicaModal ante cambio de producto", () => {
+    it("reinicia estados y gestiona llamadas de red al cambiar dinámicamente de API a mock, mock a mock y mock a API", async () => {
+      const productoApi1: Producto = {
+        idProducto: 101,
+        nombre: "Teléfono API 1",
+        descripcion: "Desc",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca",
+        imagen: null,
+        precioReferencia: 1000000,
+        estado: true,
+        caracteristicas: {},
+      };
+
+      const mockDispositivo1 = DISPOSITIVOS_VENDIDOS[0];
+      const mockDispositivo2 = DISPOSITIVOS_VENDIDOS[1];
+
+      const productoApi2: Producto = {
+        idProducto: 202,
+        nombre: "Teléfono API 2",
+        descripcion: "Desc",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca",
+        imagen: null,
+        precioReferencia: 2000000,
+        estado: true,
+        caracteristicas: {},
+      };
+
+      // 1. Montar inicialmente con producto API 1
+      const { rerender } = render(
+        <FichaTecnicaModal
+          producto={productoApi1}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(mockObtenerResenas).toHaveBeenCalledWith(101);
+        expect(mockObtenerValoracionStats).toHaveBeenCalledWith(101);
+        expect(mockObtenerMiValoracion).toHaveBeenCalledWith(101);
+      });
+
+      mockObtenerResenas.mockClear();
+      mockObtenerValoracionStats.mockClear();
+      mockObtenerMiValoracion.mockClear();
+
+      // 2. Transición de API a Mock 1
+      rerender(
+        <FichaTecnicaModal
+          producto={mockDispositivo1}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(mockDispositivo1.nombre)).toBeDefined();
+      });
+
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+
+      const pestanaOpiniones = screen.getByRole("tab", { name: /opiniones/i });
+      fireEvent.click(pestanaOpiniones);
+      expect(
+        screen.getByText(
+          "Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo."
+        )
+      ).toBeDefined();
+      expect(screen.queryByRole("button", { name: /publicar opinión/i })).toBeNull();
+
+      // 3. Transición de Mock 1 a Mock 2
+      rerender(
+        <FichaTecnicaModal
+          producto={mockDispositivo2}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText(mockDispositivo2.nombre)).toBeDefined();
+      });
+
+      expect(mockObtenerResenas).not.toHaveBeenCalled();
+      expect(mockObtenerValoracionStats).not.toHaveBeenCalled();
+      expect(mockObtenerMiValoracion).not.toHaveBeenCalled();
+
+      // 4. Transición de Mock 2 a API 2
+      rerender(
+        <FichaTecnicaModal
+          producto={productoApi2}
+          onClose={vi.fn()}
+          usuarioSesion={usuarioTest}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("Teléfono API 2")).toBeDefined();
+        expect(mockObtenerResenas).toHaveBeenCalledWith(202);
+        expect(mockObtenerValoracionStats).toHaveBeenCalledWith(202);
+        expect(mockObtenerMiValoracion).toHaveBeenCalledWith(202);
+      });
+    });
+  });
+});
+
+
+describe("FichaTecnicaModal — integración del contrato FichaTecnicaV2", () => {
+  afterEach(() => cleanup());
+
+  it("presenta variantes, atributos, métricas, benchmarks y fuentes desde un JSON V2 válido", () => {
+    const productoV2: Producto = {
+      idProducto: 992,
+      nombre: "Equipo V2 de prueba",
+      descripcion: "Producto utilizado para comprobar la integración del esquema canónico.",
+      idCategoria: 1,
+      idMarca: 2,
+      nombreCategoria: "Móviles",
+      nombreMarca: "Marca de prueba",
+      imagen: null,
+      precioReferencia: 1000000,
+      estado: true,
+      caracteristicas: {
+        version_esquema: 2,
+        categoria: "moviles",
+        estado_verificacion: "parcial",
+        variantes: [{
+          id: "8gb-256gb",
+          modelo: "Modelo V2",
+          sku: "SKU-V2-256",
+          mercado: "Colombia",
+          ram: "8 GB",
+          almacenamiento: "256 GB",
+        }],
+        atributos: [{
+          clave: "pantalla",
+          nombre: "Diagonal de pantalla",
+          grupo: "pantalla",
+          valor: 6.8,
+          unidad: "in",
+          valorOriginal: "6.8 pulgadas",
+          fuenteId: "fabricante-v2",
+        }],
+        metricasComparables: [{
+          clave: "capacidad_bateria",
+          nombre: "Capacidad de batería",
+          grupo: "bateria",
+          valor: 5000,
+          unidad: "mAh",
+          unidadOriginal: "5000 mAh",
+          sistema_unidades: "internacional",
+          comparable: true,
+          metodo: "Ficha declarada del fabricante",
+          version_metodo: "1",
+          plataforma: "Modelo V2",
+          fuenteId: "fabricante-v2",
+        }],
+        benchmarks: [{
+          id: "benchmark-v2-1",
+          nombre: "Geekbench 6",
+          prueba: "Multi-Core",
+          version: "6.2",
+          valor: 4200,
+          unidad: "puntos",
+          metodo: "Prueba estándar Geekbench",
+          plataforma: "Modelo V2",
+          fecha: "2026-11-01",
+          fuenteId: "benchmark-v2",
+        }],
+        fuentes: [
+          {
+            id: "fabricante-v2",
+            tipo: "fabricante",
+            nombre: "Ficha oficial del fabricante",
+            url: "https://example.com/ficha-v2",
+            fecha_consulta: "2026-11-02",
+            varianteId: "8gb-256gb",
+          },
+          {
+            id: "benchmark-v2",
+            tipo: "benchmark",
+            nombre: "Resultado Geekbench publicado",
+            url: "https://example.com/benchmark-v2",
+            fecha_consulta: "2026-11-03",
+          },
+        ],
+      },
+    };
+
+    render(<FichaTecnicaModal producto={productoV2} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("heading", { name: "Ficha técnica detallada" })).toBeDefined();
+    expect(screen.getByText("Verificación parcial")).toBeDefined();
+    expect(screen.getAllByText("Modelo V2").length).toBeGreaterThan(0);
+    expect(screen.getByText("SKU-V2-256")).toBeDefined();
+    expect(screen.getByText("Colombia")).toBeDefined();
+    expect(screen.getByText("Diagonal de pantalla")).toBeDefined();
+    expect(screen.getByText("6.8 in", { selector: "span" })).toBeDefined();
+    expect(screen.getByText("Capacidad de batería")).toBeDefined();
+    expect(screen.getByText("Comparable automáticamente")).toBeDefined();
+    expect(screen.getByText("Geekbench 6")).toBeDefined();
+    expect(screen.getByText("4200 puntos")).toBeDefined();
+    expect(screen.getByText("Ficha oficial del fabricante")).toBeDefined();
+    expect(
+      screen.getAllByRole("link", { name: "Consultar fuente" }).some(
+        (link) => link.getAttribute("href") === "https://example.com/ficha-v2",
+      ),
+    ).toBe(true);
   });
 });

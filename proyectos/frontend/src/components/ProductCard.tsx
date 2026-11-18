@@ -2,10 +2,12 @@
 "use client";
 
 import { Producto } from "@/types/producto";
+import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 import { sanearPrecioCOP } from "@/data/precios";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 
 interface ProductCardProps {
   producto: Producto;
@@ -22,6 +24,8 @@ export default function ProductCard({
   const tieneImagenValida = Boolean(
     producto.imagen && producto.imagen.trim().length > 0 && !errorImagen
   );
+
+  const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
 
   const precioFormateado = formatearCOP(producto.precioReferencia);
 
@@ -43,9 +47,9 @@ export default function ProductCard({
         {tieneImagenValida ? (
           <img
             src={producto.imagen!}
-            alt={`Fotografía oficial de ${producto.nombre}`}
+            alt={`Fotografía de ${producto.nombre}`}
             onError={() => setErrorImagen(true)}
-            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+            className={`h-full w-full object-contain ${imagenSinDerivados ? "" : "transition-transform duration-300 group-hover:scale-105"}`}
             loading="lazy"
           />
         ) : (
@@ -78,6 +82,7 @@ export default function ProductCard({
           </span>
         )}
       </div>
+      <AtribucionImagenProducto src={producto.imagen} className="px-3 py-1" />
 
       {/* Contenido descriptivo del producto */}
       <div className="flex flex-1 flex-col p-5">

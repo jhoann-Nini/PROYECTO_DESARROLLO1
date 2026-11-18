@@ -18,6 +18,7 @@ import { formatearCOP, normalizarFichaProducto } from "@/data/specsHelper";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import RatingStars from "@/components/catalogo/RatingStars";
 import EspecificacionesProducto from "@/components/detalle/EspecificacionesProducto";
 import ValoracionProducto from "@/components/detalle/ValoracionProducto";
@@ -300,6 +301,7 @@ export default function DetalleProductoCliente({
               />
             )}
           </div>
+          <AtribucionImagenProducto src={producto.imagen} className="mt-2" />
         </div>
 
         <div>

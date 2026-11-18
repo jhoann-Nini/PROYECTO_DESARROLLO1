@@ -332,7 +332,7 @@ const nothingEar2 = crearFicha(
   [
     atributo("transductores", "Transductor", "audio", 11.6, earFuente, "mm"),
     atributo("diafragma", "Diafragma", "audio", "Graphene + PU (poliuretano)", earFuente),
-    atributo("cancelacion_ruido", "Cancelación activa de ruido máxima declarada", "audio", "Hasta 40 dB", earFuente),
+    atributo("cancelacion_ruido", "Cancelación activa de ruido", "audio", "Hasta 40 dB · ANC adaptativa y personalizada", earFuente),
     atributo("codecs", "Códecs Bluetooth", "conectividad", "AAC, SBC, LHDC 5.0", earFuente),
     atributo("bluetooth", "Versión Bluetooth", "conectividad", "Bluetooth 5.3", earFuente),
     atributo("bateria_auriculares", "Autonomía de auriculares (ANC desactivado)", "bateria", "Hasta 6.3 h", earFuente),
@@ -344,7 +344,6 @@ const nothingEar2 = crearFicha(
     atributo("carga_rapida", "Carga rápida", "bateria", "10 minutos para hasta 8 horas de reproducción con estuche (ANC apagada)", earFuente),
     atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "Qi hasta 2,5 W", earFuente),
     atributo("microfonos", "Micrófonos", "audio", "3 por auricular · Clear Voice Technology", earFuente),
-    atributo("cancelacion_ruido", "Cancelación activa de ruido", "audio", "Hasta 40 dB · ANC adaptativa y personalizada", earFuente),
     atributo("rango_anc", "Rango de frecuencia ANC", "audio", 5000, earFuente, "Hz"),
     atributo("audio_hi_res", "Audio de alta resolución", "audio", "24 bits / 192 kHz · LHDC 5.0", earFuente),
     atributo("resistencia_auriculares", "Resistencia de auriculares", "diseno", "IP54", earFuente),

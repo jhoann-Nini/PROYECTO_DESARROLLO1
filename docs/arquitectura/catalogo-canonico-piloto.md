@@ -203,6 +203,7 @@ El lote de trabajo amplía la cobertura controlada a **diecisiete modelos** (vei
 | Samsung Galaxy S25 Ultra — 12 GB/1 TB | `verificado` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Se corrigió RAM de 16 a 12 GB según Samsung Colombia; se verificó la variante 1 TB y se eliminó el benchmark AnTuTu no respaldado. |
 | Xiaomi 14 Ultra — 16 GB/512 GB | `verificado` | CC0 1.0, autor DUSOAM 68 HNWUA | Ficha oficial Xiaomi; fotografía en exhibición muestra etiqueta 16/512 y se documenta bajo dominio público CC0. |
 | Nothing Ear (a) Black Edition | `verificado` | CC BY 4.0, autor RuinDig/Yuki Uchida | Se incorpora fotografía del acabado negro exacto; ficha Nothing distingue autonomía con ANC encendida/apagada y resistencia de auriculares/estuche. |
+| Nothing Ear (2) Transparent White | `verificado` | CC BY-SA 4.0, autor Ganesh Mohan T | La foto muestra el acabado transparente blanco y Nothing confirma Ear (2) White como variante oficial; ficha técnica ampliada con ANC, batería, carga inalámbrica, micrófonos y protección. |
 | Xiaomi 14T Pro — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Petar Milošević | Ficha oficial Xiaomi Colombia; se corrigió Wi-Fi 7 heredado a Wi-Fi 6 y se eliminó benchmark AnTuTu no documentado. |
 
 Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.

@@ -687,6 +687,60 @@ const samsungS25Ultra = crearFicha(
   ],
 );
 
+
+const xiaomi14Fuente = "xiaomi-14-ultra-global-specs";
+const xiaomi14Ultra = crearFicha(
+  "moviles",
+  "verificado",
+  [{ id: "16gb-512gb", modelo: "Xiaomi 14 Ultra", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "Qualcomm Snapdragon 8 Gen 3 · 4 nm · CPU hasta 3,3 GHz", xiaomi14Fuente),
+    atributo("gpu", "GPU", "rendimiento", "Qualcomm Adreno", xiaomi14Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "AMOLED WQHD+ LTPO · Dolby Vision · HDR10+", xiaomi14Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.73, xiaomi14Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "3200 × 1440 píxeles", xiaomi14Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "522 ppi", xiaomi14Fuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", "Dinámica de 1 a 120 Hz", xiaomi14Fuente),
+    atributo("brillo_hbm", "Brillo HBM típico", "pantalla", 1000, xiaomi14Fuente, "nits"),
+    atributo("brillo_maximo", "Brillo pico", "pantalla", 3000, xiaomi14Fuente, "nits"),
+    atributo("profundidad_color", "Profundidad de color", "pantalla", "12 bits", xiaomi14Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 16, xiaomi14Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5X · 8533 Mbps", xiaomi14Fuente),
+    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, xiaomi14Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 4.0", xiaomi14Fuente),
+    atributo("camara_principal", "Cámara principal Leica", "camaras", 50, xiaomi14Fuente, "mpx"),
+    atributo("sensor_principal", "Sensor principal", "camaras", "Sony LYT-900 · sensor de 1 pulgada · OIS · apertura variable f/1.63–f/4.0", xiaomi14Fuente),
+    atributo("camara_teleobjetivo", "Teleobjetivo flotante Leica 75 mm", "camaras", 50, xiaomi14Fuente, "mpx"),
+    atributo("camara_periscopio", "Periscopio Leica 120 mm", "camaras", 50, xiaomi14Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Ultra gran angular Leica 12 mm", "camaras", 50, xiaomi14Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 32, xiaomi14Fuente, "mpx"),
+    atributo("video", "Grabación de vídeo", "camaras", "8K a 30 fps · 4K hasta 120 fps · Dolby Vision 4K a 60 fps", xiaomi14Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, xiaomi14Fuente, "mAh"),
+    atributo("carga_cable", "Carga por cable", "bateria", 90, xiaomi14Fuente, "W"),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", 80, xiaomi14Fuente, "W"),
+    atributo("dimensiones", "Dimensiones", "diseno", "161,4 × 75,3 × 9,20 mm", xiaomi14Fuente),
+    atributo("peso", "Peso", "diseno", 219.8, xiaomi14Fuente, "g"),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", xiaomi14Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G", xiaomi14Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7", xiaomi14Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", xiaomi14Fuente),
+    atributo("nfc", "NFC", "conectividad", true, xiaomi14Fuente),
+    atributo("sim", "SIM", "conectividad", "Doble nano-SIM; disponibilidad regional", xiaomi14Fuente),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", xiaomi14Fuente),
+    atributo("almacenamiento_expandible", "Expansión microSD", "almacenamiento", false, xiaomi14Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.73, "in", xiaomi14Fuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 120, "Hz", xiaomi14Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", xiaomi14Fuente),
+    metrica("carga_cable", "Carga por cable", "bateria", 90, "W", xiaomi14Fuente),
+  ],
+  [
+    fuente(xiaomi14Fuente, "Xiaomi Global — Xiaomi 14 Ultra, especificaciones oficiales", "https://www.mi.com/global/product/xiaomi-14-ultra/specs/", "16gb-512gb", "Fuente oficial para configuración 16/512, Snapdragon 8 Gen 3, pantalla, cámaras Leica, batería, carga y conectividad.", "2026-11-17"),
+    fuente("xiaomi-14-ultra-co-faq", "Xiaomi Colombia — Xiaomi 14 Ultra, preguntas frecuentes", "https://www.mi.com/co/support/faq/details/KA-110997/", "16gb-512gb", "Fuente regional confirma 16 GB RAM LPDDR5X, 512 GB UFS 4.0, batería 5000mAh, carga 90W/80W, dimensiones, peso e IP68.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -703,6 +757,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   oneplus13_16_512: oneplus13,
   appleIphone15ProMax256: iphone15ProMax,
   samsungGalaxyS25Ultra12_1tb: samsungS25Ultra,
+  xiaomi14Ultra16_512: xiaomi14Ultra,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -721,6 +776,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
   if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
   if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;
   if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
@@ -745,6 +801,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   switch (id) {
     case 201:
       return iphone15ProMax;
+    case 204:
+      return xiaomi14Ultra;
     case 206:
       return samsungS25Ultra;
     case 207:
@@ -771,6 +829,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
       if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
       if (n.includes("samsung galaxy s25 ultra")) return samsungS25Ultra;
       if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;

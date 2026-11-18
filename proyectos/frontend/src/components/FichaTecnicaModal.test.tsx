@@ -222,7 +222,7 @@ describe("Componente FichaTecnicaModal — Fase 4.2: Fichas técnicas dinámicas
   });
 
   it("los productos antiguos de los rankings siguen siendo compatibles", () => {
-    const demo = DISPOSITIVOS_VENDIDOS[0];
+    const demo = DISPOSITIVOS_VENDIDOS.find((producto) => Boolean(producto.detalleSpecs?.benchmarkEtiqueta))!;
 
     render(<FichaTecnicaModal producto={demo} onClose={vi.fn()} />);
 

@@ -412,4 +412,17 @@ describe("fichas técnicas V2 del catálogo", () => {
     const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
     expect(normalizarDesdeKimovil(producto!).variantes[0]?.id).toBe("12gb-512gb");
   });
+  it("amplía Sony WH-1000XM5 con datos de conectividad, audio y batería de Sony", () => {
+    const sony = FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5;
+    expect(sony.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "peso", valor: 250, unidad: "g" }),
+      expect.objectContaining({ clave: "impedancia" }),
+      expect.objectContaining({ clave: "sensibilidad" }),
+      expect.objectContaining({ clave: "respuesta_frecuencia_bluetooth" }),
+      expect.objectContaining({ clave: "autonomia_llamadas" }),
+      expect.objectContaining({ clave: "dsee", valor: true }),
+      expect.objectContaining({ clave: "modo_ambiente", valor: true }),
+    ]));
+  });
+
 });

@@ -784,6 +784,62 @@ const nothingEarABlack = crearFicha(
   ],
 );
 
+
+const xiaomi14tFuente = "xiaomi-14t-pro-co-specs";
+const xiaomi14tPro = crearFicha(
+  "moviles",
+  "verificado",
+  [{ id: "12gb-512gb-co", modelo: "Xiaomi 14T Pro", ram: "12 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0", mercado: "Colombia" }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "MediaTek Dimensity 9300+ · 4 nm · CPU hasta 3,4 GHz", xiaomi14tFuente),
+    atributo("gpu", "GPU", "rendimiento", "Immortalis-G720 MC12", xiaomi14tFuente),
+    atributo("npu", "NPU", "rendimiento", "MediaTek NPU 790", xiaomi14tFuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "AMOLED · Dolby Vision · HDR10+", xiaomi14tFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, xiaomi14tFuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles", xiaomi14tFuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "446 ppi", xiaomi14tFuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", 144, xiaomi14tFuente, "Hz"),
+    atributo("brillo_maximo", "Brillo máximo", "pantalla", 4000, xiaomi14tFuente, "nits"),
+    atributo("profundidad_color", "Profundidad de color", "pantalla", "12 bits", xiaomi14tFuente),
+    atributo("ram", "Memoria RAM física", "memoria", 12, xiaomi14tFuente, "GB"),
+    atributo("tipo_ram", "Tecnología RAM", "memoria", "LPDDR5X · 8533 Mbps", xiaomi14tFuente),
+    atributo("almacenamiento", "Almacenamiento interno", "almacenamiento", 512, xiaomi14tFuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 4.0", xiaomi14tFuente),
+    atributo("extension_almacenamiento", "Ultra Space", "almacenamiento", "16 GB de expansión de almacenamiento; no es RAM física", xiaomi14tFuente),
+    atributo("camara_principal", "Cámara principal Leica", "camaras", 50, xiaomi14tFuente, "mpx"),
+    atributo("sensor_principal", "Sensor principal", "camaras", "Light Fusion 900 · OIS · f/1.6 · equivalente 23 mm", xiaomi14tFuente),
+    atributo("camara_teleobjetivo", "Telefoto Leica", "camaras", 50, xiaomi14tFuente, "mpx"),
+    atributo("teleobjetivo_equivalente", "Distancia focal equivalente telefoto", "camaras", "60 mm · f/2.0", xiaomi14tFuente),
+    atributo("camara_ultra_gran_angular", "Ultra gran angular Leica", "camaras", 12, xiaomi14tFuente, "mpx"),
+    atributo("ultra_gran_angular_equivalente", "Distancia focal equivalente ultra gran angular", "camaras", "15 mm · f/2.2 · 120°", xiaomi14tFuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", 32, xiaomi14tFuente, "mpx"),
+    atributo("video", "Grabación de vídeo trasera", "camaras", "8K a 24/30 fps · 4K a 24/30/60 fps", xiaomi14tFuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, xiaomi14tFuente, "mAh"),
+    atributo("carga_cable", "HyperCharge por cable", "bateria", 120, xiaomi14tFuente, "W"),
+    atributo("carga_inalambrica", "HyperCharge inalámbrica", "bateria", 50, xiaomi14tFuente, "W"),
+    atributo("dimensiones", "Dimensiones", "diseno", "160,4 × 75,1 × 8,39 mm", xiaomi14tFuente),
+    atributo("peso", "Peso", "diseno", 209, xiaomi14tFuente, "g"),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", xiaomi14tFuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G", xiaomi14tFuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6", xiaomi14tFuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.4", xiaomi14tFuente),
+    atributo("nfc", "NFC", "conectividad", true, xiaomi14tFuente),
+    atributo("sim", "SIM", "conectividad", "Dual nano-SIM, nano-SIM + eSIM o eSIM + eSIM según región", xiaomi14tFuente),
+    atributo("sistema_operativo", "Sistema operativo", "software", "Xiaomi HyperOS", xiaomi14tFuente),
+    atributo("almacenamiento_expandible", "Tarjeta microSD", "almacenamiento", false, xiaomi14tFuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", xiaomi14tFuente),
+    metrica("tasa_refresco", "Tasa de refresco máxima", "pantalla", 144, "Hz", xiaomi14tFuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", xiaomi14tFuente),
+    metrica("carga_cable", "HyperCharge por cable", "bateria", 120, "W", xiaomi14tFuente),
+  ],
+  [
+    fuente(xiaomi14tFuente, "Xiaomi Colombia — Xiaomi 14T Pro, especificaciones oficiales", "https://www.mi.com/co/product/xiaomi-14t-pro/specs/", "12gb-512gb-co", "Fuente primaria regional para 12GB/512GB, Dimensity 9300+, pantalla, cámaras Leica, batería, carga, IP68 y conectividad.", "2026-11-17"),
+    fuente("xiaomi-14t-pro-co-faq", "Xiaomi Colombia — Xiaomi 14T Pro, memoria y almacenamiento", "https://www.mi.com/co/support/faq/details/KA-697571/", "12gb-512gb-co", "Confirma 12GB LPDDR5X, 512GB UFS 4.0 y que Ultra Space es expansión de almacenamiento, no memoria RAM física.", "2026-11-17"),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -802,6 +858,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   samsungGalaxyS25Ultra12_1tb: samsungS25Ultra,
   xiaomi14Ultra16_512: xiaomi14Ultra,
   nothingEarABlack: nothingEarABlack,
+  xiaomi14tPro12_512: xiaomi14tPro,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -820,6 +877,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   const n = normalizarNombre(nombre);
   if (n.includes("nothing phone 2a special edition")) return nothingPhone;
   if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+  if (n.includes("xiaomi 14t pro")) return xiaomi14tPro;
   if (n.includes("nothing ear a") && n.includes("black")) return nothingEarABlack;
   if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
   if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;
@@ -846,6 +904,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
   switch (id) {
     case 201:
       return iphone15ProMax;
+    case 306:
+      return xiaomi14tPro;
     case 301:
       return nothingEarABlack;
     case 204:
@@ -876,6 +936,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
     default: {
       const n = normalizarNombre(nombre);
       if (n.includes("redmi note 14 pro")) return redmiNote14ProPlus;
+      if (n.includes("xiaomi 14t pro")) return xiaomi14tPro;
       if (n.includes("nothing ear a") && n.includes("black")) return nothingEarABlack;
       if (n.includes("xiaomi 14 ultra")) return xiaomi14Ultra;
       if (n.includes("iphone 15 pro max") && n.includes("256")) return iphone15ProMax;

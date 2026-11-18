@@ -96,6 +96,6 @@ describe("atribuciones de imágenes del catálogo", () => {
 
   it("documenta que la fotografía de Ear (2) muestra el acabado transparente blanco", () => {
     const ear = ATRIBUCIONES_IMAGENES.find((imagen) => imagen.autor === "Ganesh Mohan T");
-    expect(ear?.nota).toContain("no acredita");
+    expect(ear?.nota).toContain("Transparent White");
   });
 });

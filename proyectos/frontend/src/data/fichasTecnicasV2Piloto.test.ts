@@ -34,7 +34,7 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIpadPro11M4.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadE14Gen5.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max.estado_verificacion).toBe("verificado");
-    expect(FICHAS_TECNICAS_V2_PILOTO.nothingEar2.estado_verificacion).toBe("parcial");
+    expect(FICHAS_TECNICAS_V2_PILOTO.nothingEar2.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5.estado_verificacion).toBe("verificado");
     expect(FICHAS_TECNICAS_V2_PILOTO.samsungGalaxyA55.estado_verificacion).toBe("parcial");
     expect(FICHAS_TECNICAS_V2_PILOTO.appleIphone13_128.estado_verificacion).toBe("verificado");
@@ -195,14 +195,18 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(pad.fuentes.map((fuente) => fuente.url)).toContain("https://www.oneplus.com/cl/oneplus-pad-2/specs");
   });
 
-  it("incluye las especificaciones oficiales confirmadas de Nothing Ear (2) sin verificar el nombre del acabado", () => {
+  it("verifica Nothing Ear (2) Transparent White con ficha oficial y evidencia de variante", () => {
     const ear = FICHAS_TECNICAS_V2_PILOTO.nothingEar2;
     expect(ear.estado_verificacion).toBe("parcial");
     expect(ear.atributos).toEqual(expect.arrayContaining([
       expect.objectContaining({ clave: "codecs", valor: "AAC, SBC, LHDC 5.0" }),
       expect.objectContaining({ clave: "bluetooth", valor: "Bluetooth 5.3" }),
+      expect.objectContaining({ clave: "bateria_auriculares_anc_on", valor: "Hasta 4 h" }),
+      expect.objectContaining({ clave: "bateria_estuche_anc_on", valor: "Hasta 22,5 h" }),
+      expect.objectContaining({ clave: "resistencia_estuche", valor: "IP55" }),
+      expect.objectContaining({ clave: "carga_inalambrica", valor: "Qi hasta 2,5 W" }),
     ]));
-    expect(ear.fuentes[0]?.url).toBe("https://checkout-es.nothing.tech/products/ear-2");
+    expect(ear.fuentes.map((fuente) => fuente.url)).toContain("https://checkout-us.nothing.tech/pages/store-locator");
   });
 
   it("conserva el país real del MTM Lenovo y no confunde EET con un país", () => {

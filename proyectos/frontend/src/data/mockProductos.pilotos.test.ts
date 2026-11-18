@@ -81,6 +81,16 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
   });
 
+  it("corrige Xiaomi 14T Pro con especificaciones oficiales y foto exacta", () => {
+    const producto = ULTIMAS_OFERTAS.find((item) => item.id === 306);
+    expect(producto?.especificaciones).toContain("12GB RAM LPDDR5X · 512GB UFS 4.0");
+    expect(producto?.especificaciones).toContain("Dimensity 9300+");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/48/Xiaomi_14T_Pro.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("Wi-Fi 6") && !seccion.descripcion.includes("Wi-Fi 7"))).toBe(true);
+  });
+
   it("corrige Nothing Ear (a) Black Edition con imagen exacta y ficha oficial", () => {
     const producto = ULTIMAS_OFERTAS.find((item) => item.id === 301);
     expect(producto?.especificaciones).toContain("Driver 11mm");

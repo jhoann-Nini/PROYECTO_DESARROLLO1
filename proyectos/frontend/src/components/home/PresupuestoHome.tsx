@@ -1,31 +1,42 @@
-import type { SyntheticEvent } from "react";
+import { useRef, type KeyboardEvent, type SyntheticEvent } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 
 export interface PresupuestoHomeProps {
   presupuestoMax: number;
   onCambiarPresupuesto: (valor: number) => void;
   /**
-   * Se invoca al terminar el ajuste del slider (pointer, mouse, touch o teclado)
-   * con el valor actual del control, expresado en COP (200.000–6.000.000).
+   * Confirma desde el botón o al terminar un ajuste del slider.
+   * El valor actual del control está expresado en COP (200.000–6.000.000).
    */
-  onFinalizarAjuste?: (valor: number) => void;
+  onConfirmarPresupuesto: (valor: number) => void;
   totalEnPresupuesto: number;
   totalProductos: number;
-  filtrarSolo: boolean;
-  onAlternarFiltro: () => void;
 }
 
 export default function PresupuestoHome({
   presupuestoMax,
   onCambiarPresupuesto,
-  onFinalizarAjuste,
+  onConfirmarPresupuesto,
   totalEnPresupuesto,
   totalProductos,
-  filtrarSolo,
-  onAlternarFiltro,
 }: PresupuestoHomeProps) {
+  const ultimoConfirmadoRef = useRef<number | null>(null);
+
   function manejarFinAjuste(evento: SyntheticEvent<HTMLInputElement>) {
-    onFinalizarAjuste?.(Number(evento.currentTarget.value));
+    const valor = Number(evento.currentTarget.value);
+    // Un gesto puede emitir pointerup y después mouseup/touchend.
+    if (ultimoConfirmadoRef.current === valor) return;
+    ultimoConfirmadoRef.current = valor;
+    onConfirmarPresupuesto(valor);
+  }
+
+  function manejarFinTeclado(evento: KeyboardEvent<HTMLInputElement>) {
+    if ([
+      "ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown",
+      "Home", "End", "PageUp", "PageDown", "Enter",
+    ].includes(evento.key)) {
+      manejarFinAjuste(evento);
+    }
   }
 
   return (
@@ -58,11 +69,14 @@ export default function PresupuestoHome({
           max="6000000"
           step="100000"
           value={presupuestoMax}
-          onChange={(evento) => onCambiarPresupuesto(Number(evento.target.value))}
+          onChange={(evento) => {
+            ultimoConfirmadoRef.current = null;
+            onCambiarPresupuesto(Number(evento.target.value));
+          }}
           onPointerUp={manejarFinAjuste}
           onMouseUp={manejarFinAjuste}
           onTouchEnd={manejarFinAjuste}
-          onKeyUp={manejarFinAjuste}
+          onKeyUp={manejarFinTeclado}
           aria-label="Ajustar presupuesto máximo en pesos colombianos"
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--color-hairline)] accent-[var(--color-brand-blue)]"
         />
@@ -71,7 +85,7 @@ export default function PresupuestoHome({
           <span className="font-semibold text-[var(--color-ink)]">
             Límite: {formatearCOP(presupuestoMax)}
           </span>
-          <span>Máximo: $ 6.000.000+ COP</span>
+          <span>Máximo: $ 6.000.000 COP</span>
         </div>
       </div>
 
@@ -85,17 +99,11 @@ export default function PresupuestoHome({
 
         <button
           type="button"
-          onClick={onAlternarFiltro}
-          aria-pressed={filtrarSolo}
-          title="Alternar entre mostrar todo el catálogo o filtrar exclusivamente por presupuesto"
-          className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors ${
-            filtrarSolo
-              ? "border-[var(--color-positive)]/40 bg-[var(--color-positive)]/10 text-[var(--color-ink)]"
-              : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-ink)]"
-          }`}
+          onClick={() => onConfirmarPresupuesto(presupuestoMax)}
+          title="Ver productos de todas las categorías dentro de este presupuesto"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-ink)]"
         >
-          <span aria-hidden="true">{filtrarSolo ? "✓" : "○"}</span>
-          {filtrarSolo ? "Solo en presupuesto" : "Filtrar por presupuesto"}
+          Filtrar por presupuesto
         </button>
       </div>
     </div>

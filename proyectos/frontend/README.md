@@ -25,7 +25,7 @@ La interfaz replica la disposición técnica de dos columnas y buscador de **Kim
    - **Cuerpo y Especificaciones**: Sans-serif técnica (`Space Grotesk`) y Monospace (`Space Mono`).
 3. **Componentes y Secciones**:
    - **Header Banner**: Logo `NOTHING MOVIL`, titular `EXPLORA TU PRÓXIMO DISPOSITIVO`, buscador técnico con filtros de categoría rápida (Móviles, Tablets, TVs, Wearables).
-   - **Slider de Presupuesto**: Control deslizante interactivo con panel técnico `[ HASTA $XXX USD ]` que filtra en vivo.
+   - **Slider de Presupuesto**: Control en COP; al confirmar abre el catálogo general con precio máximo inclusivo, sin filtrar «Destacados para ti».
    - **Últimas Ofertas**: Módulo lateral segmentado con porcentajes de descuento y precios Crimson.
    - **Sección Lo Más Top (Kimovil)**: Dos columnas simultáneas (*Los Más Vendidos* y *Los Más Deseados*) con tarjetas modulares, ranking dot matrix, flechas de tendencia y calificación *Nothing Score*.
    - **Inspector y Catálogo API**: Selector de vista para auditar en tiempo real los datos entregados por Spring Boot (`/api/productos`).
@@ -117,6 +117,17 @@ Cada página resuelve el slug contra los nombres reales de `GET /api/categorias`
 búsqueda, orden por nombre/precio, ficha técnica, estados de carga, vacío y error
 con reintento. Si el backend no responde, la página muestra el error: no se usan
 datos simulados en las páginas de categoría.
+
+---
+
+## Presupuesto desde la página principal
+
+«Filtrar por presupuesto» o terminar el ajuste del slider abre
+`/productos?precioMax=<límite COP>`. Se incluyen productos de cualquier
+categoría cuyo precio registrado sea menor o igual al límite. Destacados
+permanece independiente. El presupuesto inicial se puede quitar desde el chip
+de precio o limpiando filtros; los cambios posteriores son locales al catálogo.
+Detalles: [`docs/presupuesto-catalogo-general.md`](docs/presupuesto-catalogo-general.md).
 
 ---
 

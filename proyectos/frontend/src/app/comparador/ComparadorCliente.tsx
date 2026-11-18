@@ -27,9 +27,9 @@ import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function ComparadorCliente() {
-  const { ids, recientes, hidratado, agregar, quitar, limpiar } =
-    useComparador();
-
+  const [catalogo, setCatalogo] = useState<Producto[] | null>(null);
+  const { ids, recientes, hidratado, validado, idCategoria, seleccionDepurada, agregar, quitar, limpiar } =
+    useComparador(catalogo);
   const [productos, setProductos] = useState<ProductoViewModel[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +53,13 @@ export default function ComparadorCliente() {
           MarcaResponse[],
         ]) => {
           if (!activo) return;
+          const nombresCategoria = new Map(
+            categorias.map((categoria) => [categoria.idCategoria, categoria.nombre]),
+          );
+          setCatalogo(productosApi.map((producto) => ({
+            ...producto,
+            nombreCategoria: nombresCategoria.get(producto.idCategoria) ?? producto.nombreCategoria,
+          })));
           setProductos(
             construirCatalogo({
               productos: productosApi,
@@ -79,18 +86,6 @@ export default function ComparadorCliente() {
     };
   }, [intento]);
 
-  useEffect(() => {
-    if (!hidratado || cargando || error) return;
-
-    const idsDisponibles = new Set(
-      productos.map((producto) => producto.idProducto),
-    );
-
-    ids
-      .filter((id) => !idsDisponibles.has(id))
-      .forEach((id) => quitar(id));
-  }, [cargando, error, hidratado, ids, productos, quitar]);
-
   const seleccionados = useMemo(() => {
     const porId = new Map(
       productos.map((producto) => [producto.idProducto, producto]),
@@ -112,25 +107,34 @@ export default function ComparadorCliente() {
   }, [recientes, productos]);
 
   const filas = useMemo(
-    () => construirFilasComparacion(seleccionados),
-    [seleccionados],
+    () => construirFilasComparacion(seleccionados, catalogo ?? []),
+    [seleccionados, catalogo],
   );
   const filasVisibles = soloDiferencias
     ? filas.filter((fila) => fila.difiere)
     : filas;
   const recomendacion = useMemo(
-    () => generarRecomendacion(seleccionados),
-    [seleccionados],
+    () => generarRecomendacion(seleccionados, filas),
+    [seleccionados, filas],
   );
 
   const resultadosSelector = useMemo(() => {
     const termino = normalizarTexto(busqueda);
-    const filtrados = termino
-      ? productos.filter((producto) => producto.textoBusqueda.includes(termino))
-      : productos;
+    const compatibles = new Set(
+      (catalogo ?? [])
+        .filter((producto) =>
+          Number.isInteger(producto.idCategoria) && producto.idCategoria > 0 &&
+          (idCategoria === null || producto.idCategoria === idCategoria),
+        )
+        .map((producto) => producto.idProducto),
+    );
+    const filtrados = productos.filter((producto) =>
+      compatibles.has(producto.idProducto) &&
+      (!termino || producto.textoBusqueda.includes(termino)),
+    );
 
     return filtrados.slice(0, 8);
-  }, [productos, busqueda]);
+  }, [productos, busqueda, catalogo, idCategoria]);
 
   function agregarProducto(producto: ProductoViewModel) {
     const categoriaActual = seleccionados[0]?.categoria;
@@ -139,6 +143,11 @@ export default function ComparadorCliente() {
       return;
     }
     const resultado = agregar(producto.idProducto);
+
+    if (resultado.motivo === "categoria-incompatible") {
+      setAviso("Solo puedes comparar productos de la misma categoría. Vacía el comparador para cambiarla.");
+      return;
+    }
 
     if (resultado.motivo === "lleno") {
       setAviso(
@@ -214,7 +223,7 @@ export default function ComparadorCliente() {
           Comparador de productos
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
-          Revisa hasta {MAX_COMPARADOR} productos lado a lado. Las diferencias se
+          Revisa hasta {MAX_COMPARADOR} productos de la misma categoría lado a lado. Las diferencias se
           calculan solo con los datos registrados en el catálogo.
         </p>
       </header>
@@ -232,13 +241,28 @@ export default function ComparadorCliente() {
               Agregar productos
             </h2>
             <p className="mt-1 text-sm text-[var(--color-subtle)]">
-              Busca productos de una misma categoría para obtener una comparación técnica válida.
+              El primer producto fija la categoría. Busca y suma productos de
+              esa misma categoría; vacía la selección para cambiarla.
             </p>
           </div>
           <span className="shrink-0 rounded-full bg-[var(--color-canvas)] px-3 py-1 text-xs font-semibold text-[var(--color-subtle)]">
             {ids.length} de {MAX_COMPARADOR} seleccionados
           </span>
         </div>
+
+        {idCategoria !== null && (
+          <p role="status" className="mt-3 text-sm text-[var(--color-subtle)]">
+            Categoría de la comparación: {catalogo?.find(
+              (producto) => producto.idProducto === ids[0],
+            )?.nombreCategoria || `Categoría #${idCategoria}`}.
+            Solo se muestran productos compatibles.
+          </p>
+        )}
+        {seleccionDepurada && (
+          <p role="status" className="mt-3 text-sm text-[var(--color-subtle)]">
+            Se depuró la selección guardada: se conservaron el primer producto válido y los de su misma categoría.
+          </p>
+        )}
 
         <label
           htmlFor="buscar-comparador"
@@ -304,7 +328,7 @@ export default function ComparadorCliente() {
                   <button
                     type="button"
                     onClick={() => agregarProducto(producto)}
-                    disabled={!hidratado || seleccionado || lleno || categoriaIncompatible}
+                    disabled={!validado || seleccionado || lleno}
                     aria-label={
                       seleccionado
                         ? `${producto.nombre} ya está en el comparador`
@@ -390,6 +414,11 @@ export default function ComparadorCliente() {
           />
         ) : (
           <>
+            {!filas.some((fila) => fila.clave.startsWith("tecnica:")) && (
+              <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
+                No hay características técnicas registradas para esta selección.
+              </p>
+            )}
             <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">
               <table
                 aria-label="Comparación de productos"

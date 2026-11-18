@@ -194,6 +194,26 @@ Lenovo
 
 Los filtros disponibles dependerán de la información registrada en el sistema.
 
+## 11.1 Buscar por presupuesto desde la página principal
+
+1. Ajusta la barra «Presupuesto máximo» al límite deseado en pesos colombianos.
+2. Pulsa «Filtrar por presupuesto» o termina el ajuste con ratón, tacto o
+   teclado. Se abrirá el catálogo general con ese máximo.
+3. Verás productos de cualquier categoría cuyo precio registrado sea menor o
+   igual al presupuesto. Los productos sin precio no se consideran dentro del
+   límite.
+4. Puedes seguir usando búsqueda, categorías, marcas y orden. Para retirar el
+   presupuesto, quita el chip «Hasta… COP» o limpia los filtros.
+
+«Destacados para ti» no se filtra ni cambia sus productos al ajustar o confirmar
+el presupuesto. La búsqueda de la página principal tampoco se lleva al catálogo
+al confirmar ese límite.
+
+El enlace conserva el presupuesto inicial, por ejemplo
+`/productos?precioMax=4000000`. Los ajustes posteriores de filtros son locales;
+recargar ese enlace vuelve a aplicar el presupuesto inicial. Para abrir sin
+límite, usa `/productos` sin parámetros.
+
 ---
 
 # 12. Consulta por categoría
@@ -370,6 +390,45 @@ Característica B
 Valoración
 
 Las características mostradas dependerán de la categoría de los productos.
+
+## 18.1 Seleccionar productos de la misma categoría
+
+El comparador permite seleccionar hasta cuatro productos. El primero fija la
+categoría: los siguientes deben pertenecer a esa misma categoría registrada en
+el catálogo.
+
+- En `/comparador`, el selector muestra únicamente productos compatibles con
+  la selección actual.
+- Desde una ficha, «Agregar al comparador» se bloquea si el producto pertenece
+  a otra categoría y se explica el motivo. Puedes ir a «Ver comparador» para
+  vaciar la selección y empezar con otra categoría.
+- Al quitar el último producto o pulsar «Vaciar comparador», se libera la
+  categoría.
+- La selección se conserva en este navegador. Si una selección antigua mezcla
+  categorías, se mantiene el primer producto válido y los de su misma
+  categoría; se informa de la depuración. También se quitan productos que ya
+  no están en el catálogo.
+- Si no se puede consultar el catálogo desde la ficha, no se agregan productos
+  sin validar. La selección se conserva y aparece «Reintentar comparador».
+
+## 18.2 Filas técnicas según la categoría
+
+La tabla conserva precio, disponibilidad, marca y categoría. Las filas técnicas
+se adaptan a los productos seleccionados y muestran únicamente características
+registradas:
+
+- En auriculares se muestran datos de audio, como transductores, ANC,
+  micrófonos, autonomía o códecs, cuando existen. No se presentan filas de
+  pantalla, RAM o cámaras de móvil.
+- En portátiles pueden aparecer GPU, puertos o webcam; en celulares y tablets
+  se mantienen sus características pertinentes.
+- Si un producto tiene un dato y otro no, el segundo muestra «Sin dato». Si
+  ninguno lo tiene, no se añade esa fila.
+- Cuando faltan todas las características técnicas, se informa y solo se
+  muestran los datos generales. No se rellenan especificaciones de ejemplo.
+- «Solo diferencias» oculta filas iguales sin cambiar la selección ni la
+  sugerencia informativa. La cantidad de información registrada no es una
+  puntuación de calidad.
 
 ---
 

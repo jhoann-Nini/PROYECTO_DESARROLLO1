@@ -12,8 +12,8 @@ describe("atribuciones de imágenes del catálogo", () => {
       expect(imagen.paginaOrigen).toMatch(/^https:\/\//);
       expect(imagen.fuente.trim()).not.toBe("");
       expect(imagen.autor.trim()).not.toBe("");
-      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(imagen.licencia);
-      expect(imagen.urlLicencia).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0", "CC0 1.0"]).toContain(imagen.licencia);
+      expect(imagen.urlLicencia).toMatch(/^https:\/\/creativecommons\.org\/(licenses|publicdomain)\//);
       expect(imagen.cambios.trim()).not.toBe("");
     }
   });

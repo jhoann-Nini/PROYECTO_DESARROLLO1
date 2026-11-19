@@ -16,7 +16,7 @@ Los identificadores de origen no se reemplazan ni se interpretan como IDs de la 
 1. Las apariciones del mismo modelo en rankings, ofertas y mocks se agrupan bajo una identidad canónica.
 2. Las variantes comerciales (RAM, almacenamiento, color o mercado) se mantienen separadas.
 3. No se fusionan modelos de una misma familia por similitud de nombre. Por ejemplo, Nothing Phone (2a) Plus y Nothing Phone (2a) Special Edition no son el mismo registro canónico.
-4. Los datos de precio, ranking, puntuación y especificaciones permanecen en su registro de origen; el catálogo canónico no los duplica.
+4. Los datos de precio, ranking y puntuación permanecen en sus registros de origen. Las especificaciones se normalizan en una ficha técnica v2 vinculada al modelo canónico, conservando sus fuentes y variantes.
 5. Una referencia sin capacidad/color explícitos permanece sin variante asignada.
 
 ## Imágenes
@@ -65,7 +65,7 @@ Se contrastó la identidad comercial de los ocho modelos con documentación publ
 | Producto | Fuente oficial | Resultado y cautela |
 |---|---|---|
 | Nothing Phone (2a) Special Edition | [Nothing — Phone (2a) Special Edition](https://checkout.nothing.tech/pages/phone-2a) | El fabricante identifica expresamente la edición especial. La capacidad 12 GB/256 GB debe conservarse como variante de la fuente local hasta verificarla contra SKU/mercado. |
-| Samsung Galaxy S24 Ultra | [Samsung — Galaxy S24 series specifications](https://news.samsung.com/us/enter-new-era-of-mobile-ai-samsung-galaxy-s24-series//) | Modelo confirmado. Samsung enumera capacidades de 256 GB, 512 GB y 1 TB; la referencia local de 512 GB es compatible con la oferta publicada, pero precio e inventario no quedan validados. |
+| Samsung Galaxy S24 Ultra | [Samsung — Galaxy S24 series specifications](https://news.samsung.com/us/enter-new-era-of-mobile-ai-samsung-galaxy-s24-series) | Modelo confirmado. Samsung enumera capacidades de 256 GB, 512 GB y 1 TB; la referencia local de 512 GB es compatible con la oferta publicada, pero precio e inventario no quedan validados. |
 | OnePlus Pad 2 | [OnePlus — especificaciones](https://www.oneplus.com/us/oneplus-pad-2/specs) | Modelo confirmado. La ficha estadounidense especifica 12 GB RAM y 256 GB; coincide con la variante piloto. |
 | Apple iPad Pro 11 pulgadas M4 | [Apple — especificaciones técnicas](https://support.apple.com/en-am/119892) | La variante del piloto se fija en 1 TB y 16 GB de memoria unificada, con CPU/GPU de 10 núcleos. La conectividad Wi-Fi o Wi-Fi + Cellular queda sin determinar hasta identificar el SKU. |
 | Lenovo ThinkPad E14 Gen 5 | [Lenovo PSREF — MTM 21JK0005RI](https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI) | La variante piloto queda identificada como Intel Core i5-1335U, 16 GB DDR4 y SSD de 512 GB para el MTM 21JK0005RI. No mezclarla con anuncios de otros MTM ni con la variante i5-1355U. |

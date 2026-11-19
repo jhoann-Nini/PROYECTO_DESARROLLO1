@@ -28,6 +28,40 @@ describe("Componente FichaTecnicaModal — Fase 4.2: Fichas técnicas dinámicas
     cleanup();
   });
 
+  it("presenta una ficha V3 explícitamente en el modal", () => {
+    const producto: Producto = {
+      idProducto: 812, nombre: "Equipo V3", descripcion: null, idCategoria: 1, idMarca: 1,
+      nombreCategoria: "Móviles", nombreMarca: "Marca", imagen: null, precioReferencia: null, estado: true,
+      caracteristicas: { version_esquema: 3, categoria: "celulares", variantes: [], especificaciones: [], fuentes: [], evidencias: [], benchmarks: [] },
+    };
+    render(<FichaTecnicaModal producto={producto} onClose={vi.fn()} />);
+    expect(screen.getByLabelText("Ficha técnica versión 3")).toBeDefined();
+    expect(screen.getByText(/Celulares/)).toBeDefined();
+    expect(screen.getByText(/No hay especificaciones registradas/)).toBeDefined();
+  });
+
+  it("muestra error V3 inválido en el modal sin degradarlo a legacy", () => {
+    const producto: Producto = {
+      idProducto: 813, nombre: "Equipo inválido", descripcion: null, idCategoria: 1, idMarca: 1,
+      nombreCategoria: "Móviles", nombreMarca: "Marca", imagen: null, precioReferencia: null, estado: true,
+      caracteristicas: { version_esquema: 3, categoria: "Smartwatch" },
+    };
+    render(<FichaTecnicaModal producto={producto} onClose={vi.fn()} />);
+    expect(screen.getByRole("alert").textContent).toContain("No se pudo interpretar la ficha técnica V3");
+    expect(screen.queryByText("Ficha técnica detallada")).toBeNull();
+  });
+
+  it("conserva la presentación de un producto V1", () => {
+    const producto: Producto = {
+      idProducto: 814, nombre: "Equipo V1", descripcion: null, idCategoria: 1, idMarca: 1,
+      nombreCategoria: "Móviles", nombreMarca: "Marca", imagen: null, precioReferencia: null, estado: true,
+      caracteristicas: { version_esquema: 1, categoria: "moviles", variante: null, metricasComparables: [], benchmarks: [], fuentes: [], estado_verificacion: "pendiente", ram: "8 GB" },
+    };
+    render(<FichaTecnicaModal producto={producto} onClose={vi.fn()} />);
+    expect(screen.getByRole("heading", { name: "Equipo V1" })).toBeDefined();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
   it("unos auriculares NO muestran especificaciones de pantalla, resolución ni frecuencia de actualización", () => {
     const auriculares: Producto = {
       idProducto: 401,

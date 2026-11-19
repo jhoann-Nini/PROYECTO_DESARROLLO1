@@ -279,7 +279,7 @@ export function mapearPerfilABusinessSession(
     fechaRegistro: perfil.fechaRegistro,
     avatar: metadata.avatar_url
       ? String(metadata.avatar_url)
-      : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      : undefined,
   };
 }
 

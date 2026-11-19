@@ -1221,6 +1221,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
+  if (n === "apple iphone 16" || n === "iphone 16") return iphone16;
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;

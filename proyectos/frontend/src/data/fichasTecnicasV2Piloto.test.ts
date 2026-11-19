@@ -93,7 +93,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "ram", valor: expect.stringContaining("64 GB") }),
     ]));
     expect(ficha.fuentes[0]?.url).toContain("dell.com");
-    const producto = normalizarDesdeProducto({ idProducto: 29, nombre: "Dell XPS 13 9340", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
+    const producto = normalizarDesdeProducto({ idProducto: 30, nombre: "Dell XPS 13 9340", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
     expect(producto.estado_verificacion).toBe("parcial");
     expect(producto.variantes).toEqual([]);
   });
@@ -110,7 +110,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "ram", valor: expect.stringContaining("64 GB") }),
     ]));
     expect(ficha.fuentes[0]?.url).toContain("dell.com");
-    const producto = normalizarDesdeProducto({ idProducto: 30, nombre: "Dell XPS 16 9640", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
+    const producto = normalizarDesdeProducto({ idProducto: 29, nombre: "Dell XPS 16 9640", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
     expect(producto.estado_verificacion).toBe("parcial");
     expect(producto.variantes).toEqual([]);
   });

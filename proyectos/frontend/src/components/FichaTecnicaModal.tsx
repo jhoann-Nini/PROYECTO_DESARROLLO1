@@ -24,6 +24,8 @@ import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
+import FichaTecnicaV3Panel from "@/components/FichaTecnicaV3Panel";
+import { clasificarFichaTecnicaProducto, type EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
 
 interface FichaTecnicaModalProps {
   producto: DispositivoKimovil | Producto | ProductoViewModel | null;
@@ -243,8 +245,16 @@ export default function FichaTecnicaModal({
     }
   };
 
+  const estadoFicha = useMemo<EstadoFichaTecnicaProducto | null>(() => {
+    if (!producto) return null;
+    if ("fichaTecnica" in producto && producto.fichaTecnica) return producto.fichaTecnica;
+    if ("caracteristicas" in producto) return clasificarFichaTecnicaProducto(producto as Producto);
+    return null;
+  }, [producto]);
+
   const fichaTecnicaV2 = useMemo<FichaTecnicaV2 | null>(() => {
     if (!producto) return null;
+    if (estadoFicha?.version === "v3" || estadoFicha?.version === "error") return null;
     if ("origen" in producto) {
       if (producto.fichaTecnicaV2) {
         return normalizarFichaTecnicaV2(producto.fichaTecnicaV2, { categoriaPorDefecto: producto.categoria });
@@ -253,17 +263,18 @@ export default function FichaTecnicaModal({
       return normalizarFichaTecnicaV2(caracteristicas, { categoriaPorDefecto: producto.categoria });
     }
     return normalizarFichaTecnicaV2(producto);
-  }, [producto]);
+  }, [producto, estadoFicha]);
 
   const usaFichaV2 = useMemo(() => {
     if (!producto) return false;
+    if (estadoFicha?.version === "v3" || estadoFicha?.version === "error") return false;
     if ("origen" in producto) return true;
     if ("caracteristicas" in producto) {
       const raw = producto.caracteristicas;
       return Boolean(raw && typeof raw === "object" && !Array.isArray(raw) && raw.version_esquema === 2);
     }
     return false;
-  }, [producto]);
+  }, [producto, estadoFicha]);
 
   const ficha = useMemo(() => {
     if (!producto) return null;
@@ -565,9 +576,11 @@ export default function FichaTecnicaModal({
                 <p className="mt-2 border-l-2 border-[var(--color-brand-blue)]/60 pl-3 text-sm leading-relaxed text-[var(--color-subtle)]">
                   {ficha.resumen}
                 </p>
-                {usaFichaV2 && fichaTecnicaV2 && <FichaTecnicaV2Panel ficha={fichaTecnicaV2} />}
+                {estadoFicha?.version === "v3" && <FichaTecnicaV3Panel key={claveProductoUnica ?? "v3"} estado={estadoFicha} />}
+                {estadoFicha?.version === "error" && <div role="alert" className="rounded border border-red-300 bg-red-50 p-4 text-sm text-red-900">No se pudo interpretar la ficha técnica. No se mostrará como ficha V1/V2.</div>}
+                {estadoFicha?.version !== "v3" && estadoFicha?.version !== "error" && usaFichaV2 && fichaTecnicaV2 && <FichaTecnicaV2Panel ficha={fichaTecnicaV2} />}
 
-                {!usaFichaV2 && ficha.datosTecnicos && (
+                {estadoFicha?.version !== "v3" && estadoFicha?.version !== "error" && !usaFichaV2 && ficha.datosTecnicos && (
                   <section
                     aria-label="Datos técnicos verificados"
                     className="mt-4 space-y-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"

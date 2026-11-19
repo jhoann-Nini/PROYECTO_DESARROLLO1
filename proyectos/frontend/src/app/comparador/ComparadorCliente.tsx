@@ -36,6 +36,7 @@ export default function ComparadorCliente() {
   const [intento, setIntento] = useState(0);
   const [busqueda, setBusqueda] = useState("");
   const [soloDiferencias, setSoloDiferencias] = useState(false);
+  const [variantesSeleccionadas, setVariantesSeleccionadas] = useState<Record<number, string>>({});
   const [aviso, setAviso] = useState("");
 
   useEffect(() => {
@@ -107,8 +108,8 @@ export default function ComparadorCliente() {
   }, [recientes, productos]);
 
   const filas = useMemo(
-    () => construirFilasComparacion(seleccionados, catalogo ?? []),
-    [seleccionados, catalogo],
+    () => construirFilasComparacion(seleccionados, catalogo ?? [], variantesSeleccionadas),
+    [seleccionados, catalogo, variantesSeleccionadas],
   );
   const filasVisibles = soloDiferencias
     ? filas.filter((fila) => fila.difiere)
@@ -414,6 +415,8 @@ export default function ComparadorCliente() {
           />
         ) : (
           <>
+            {seleccionados.some((producto) => producto.fichaTecnica?.estado === "invalida") && <p role="alert" className="mt-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900">Una o más fichas tienen una versión o estructura inválida. No se usarán como V1/V2 ni participarán en la comparación V3.</p>}
+            {seleccionados.some((producto) => producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.advertenciaCategoria) && <p role="alert" className="mt-4 rounded border border-amber-400 bg-amber-50 p-3 text-sm text-amber-950">Una categoría V3 no coincide o no pudo contrastarse con la categoría del catálogo. Esa ficha no participará en la comparación V3.</p>}
             {!filas.some((fila) => fila.clave.startsWith("tecnica:")) && (
               <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
                 No hay características técnicas registradas para esta selección.
@@ -457,6 +460,7 @@ export default function ComparadorCliente() {
                         <p className="mt-1 text-xs font-normal text-[var(--color-subtle)]">
                           {producto.marca}
                         </p>
+                        {producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.ficha.variantes.length > 1 && <label className="mt-2 block text-xs">Variante<select aria-label={`Variante de ${producto.nombre}`} className="mt-1 block w-full rounded border p-1.5" value={variantesSeleccionadas[producto.idProducto] ?? ""} onChange={(event) => setVariantesSeleccionadas((actual) => ({ ...actual, [producto.idProducto]: event.target.value }))}><option value="">Selecciona una variante</option>{producto.fichaTecnica.ficha.variantes.map((variante) => <option key={variante.id} value={variante.id}>{[variante.modelo, variante.sku, variante.mercado].filter(Boolean).join(" · ") || variante.id}</option>)}</select></label>}
                         <button
                           type="button"
                           onClick={() => quitarProducto(producto)}
@@ -482,6 +486,7 @@ export default function ComparadorCliente() {
                         className="p-3 align-top text-xs font-semibold text-[var(--color-ink)]"
                       >
                         <span className="block">{fila.etiqueta}</span>
+                        {fila.comparabilidad && <span className="mt-1 block text-[10px] font-normal text-[var(--color-subtle)]">{fila.comparabilidad}</span>}
                         {fila.difiere && (
                           <span className="mt-1 inline-flex rounded-full bg-[var(--color-star)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-ink)]">
                             Distinto

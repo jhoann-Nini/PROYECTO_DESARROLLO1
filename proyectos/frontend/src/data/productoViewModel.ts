@@ -5,6 +5,7 @@ import type {
   TiendaPrecio,
 } from "@/types/producto";
 import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
+import { categoriaProductoDesdeNombre, clasificarFichaTecnicaProducto, type EstadoFichaTecnicaProducto } from "./fichaTecnicaProducto";
 import type { IdProductoGlobal } from "./identificadores";
 import {
   claveMockDe,
@@ -18,7 +19,6 @@ import { normalizarDatosFichaTecnica } from "./fichaTecnica";
 import type { DatosFichaTecnica } from "./fichaTecnica";
 import {
   normalizarDesdeKimovil,
-  normalizarDesdeProducto,
   normalizarFichaTecnicaV2,
 } from "./normalizadorFicha";
 
@@ -60,6 +60,8 @@ export interface ProductoViewModel {
   precioDesdeCOP?: number | null;
   idGlobal?: IdProductoGlobal;
   fichaTecnicaV2?: FichaTecnicaV2;
+  /** Ficha versionada; conserva el JSON original y los errores de despacho. */
+  fichaTecnica?: EstadoFichaTecnicaProducto;
   origen?: OrigenProductoViewModel;
   idApi?: number | null;
   claveMock?: string | null;
@@ -414,7 +416,6 @@ export function crearProductoViewModel(
     opciones.nombreMarca?.trim() ||
     `Marca #${producto.idMarca}`;
   const especificaciones = extraerEspecificaciones(producto.caracteristicas);
-  const datosFichaTecnica = normalizarDatosFichaTecnica(producto.caracteristicas);
   const tiendas = extraerTiendas(producto.caracteristicas);
   const imagen = producto.imagen?.trim() || null;
   const textoBusqueda = construirTextoBusqueda(
@@ -431,10 +432,17 @@ export function crearProductoViewModel(
 
   const idGlobal =
     opciones.idGlobal ?? (esIdApiValido ? idGlobalApi(producto.idProducto) ?? undefined : undefined);
-  const fichaTecnicaV2 = normalizarDesdeProducto(producto, {
+  const fichaTecnica = clasificarFichaTecnicaProducto(producto, {
     idGlobal,
     categoriaPorDefecto: categoria,
+    categoriaProducto: producto.nombreCategoria?.trim() ? categoriaProductoDesdeNombre(producto.nombreCategoria) : null,
   });
+  const fichaTecnicaV2 = fichaTecnica.estado === "valida" && fichaTecnica.version !== "v3"
+    ? fichaTecnica.fichaV2
+    : undefined;
+  const datosFichaTecnica = fichaTecnica.version === "v3" || fichaTecnica.estado === "invalida"
+    ? normalizarDatosFichaTecnica(null)
+    : normalizarDatosFichaTecnica(producto.caracteristicas);
 
   return {
     idProducto: producto.idProducto,
@@ -455,6 +463,7 @@ export function crearProductoViewModel(
     especificaciones,
     datosFichaTecnica,
     fichaTecnicaV2,
+    fichaTecnica,
     caracteristicas: detectarCaracteristicas(
       especificaciones,
       textoBusqueda
@@ -580,6 +589,12 @@ export function convertirKimovilAViewModel(
     idGlobal: idGlobal ?? undefined,
     categoriaPorDefecto: categoria,
   });
+  const fichaTecnica: EstadoFichaTecnicaProducto = {
+    version: "legacy",
+    estado: "valida",
+    original: caracteristicasObj,
+    fichaV2: fichaTecnicaV2,
+  };
 
   return {
     idProducto,
@@ -600,6 +615,7 @@ export function convertirKimovilAViewModel(
     especificaciones,
     datosFichaTecnica,
     fichaTecnicaV2,
+    fichaTecnica,
     caracteristicas: detectarCaracteristicas(
       especificaciones,
       textoBusqueda
@@ -636,12 +652,13 @@ export function adaptarAProductoViewModel(
         (vm.idProducto > 0
           ? (idGlobalApi(vm.idProducto) ?? undefined)
           : (idGlobalMock(`mock-${Math.abs(vm.idProducto)}`) ?? undefined));
-      const fichaTecnicaV2 =
-        vm.fichaTecnicaV2 ??
-        normalizarFichaTecnicaV2(vm.datosFichaTecnica, {
-          idGlobal,
-          categoriaPorDefecto: vm.categoria,
-        });
+      const esFichaIndependienteV3 = vm.fichaTecnica?.version === "v3" || vm.fichaTecnica?.estado === "invalida";
+      const fichaTecnicaV2 = vm.fichaTecnicaV2 ?? (esFichaIndependienteV3
+        ? undefined
+        : normalizarFichaTecnicaV2(vm.datosFichaTecnica, {
+            idGlobal,
+            categoriaPorDefecto: vm.categoria,
+          }));
       return {
         ...vm,
         idGlobal,

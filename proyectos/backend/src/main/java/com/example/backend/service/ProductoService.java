@@ -125,6 +125,8 @@ public class ProductoService {
             return;
         }
 
+        FichaTecnicaV3Dispatcher.validateAndRoute(caracteristicas);
+
         if (caracteristicas.size() > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Las características no pueden superar los 100 atributos");
         }

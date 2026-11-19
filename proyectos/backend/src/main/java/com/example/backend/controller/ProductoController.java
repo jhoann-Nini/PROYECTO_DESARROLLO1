@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -71,6 +72,25 @@ public class ProductoController {
     @GetMapping("/{id}")
     public ProductoResponse obtener(@PathVariable Long id) {
         return productoService.obtenerPorId(id);
+    }
+
+    @GetMapping("/{id}/ficha-tecnica")
+    public Map<String, Object> obtenerFichaTecnica(@PathVariable Long id) {
+        return productoService.obtenerFichaTecnica(id);
+    }
+
+    @PutMapping("/{id}/ficha-tecnica")
+    public ProductoResponse actualizarFichaTecnica(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> fichaTecnica) {
+        return productoService.actualizarFichaTecnica(id, fichaTecnica);
+    }
+
+    @PatchMapping("/{id}/ficha-tecnica")
+    public ProductoResponse actualizarFichaTecnicaParcial(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> fichaTecnica) {
+        return productoService.actualizarFichaTecnica(id, fichaTecnica);
     }
 
     @PostMapping

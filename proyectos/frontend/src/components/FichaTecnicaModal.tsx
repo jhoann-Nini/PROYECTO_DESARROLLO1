@@ -249,8 +249,9 @@ export default function FichaTecnicaModal({
   const estadoFicha = useMemo<EstadoFichaTecnicaProducto | null>(() => {
     if (!producto) return null;
     if ("fichaTecnica" in producto && producto.fichaTecnica) return producto.fichaTecnica;
+    if ("caracteristicas" in producto) return clasificarFichaTecnicaProducto(producto as Producto);
     const fichaV3Piloto = obtenerFichaTecnicaV3Piloto({
-      id: "idProducto" in producto ? producto.idProducto : "id" in producto ? (producto as DispositivoKimovil).id : null,
+      id: "id" in producto ? (producto as DispositivoKimovil).id : null,
       nombre: producto.nombre,
     });
     if (fichaV3Piloto) {
@@ -261,7 +262,6 @@ export default function FichaTecnicaModal({
         ficha: fichaV3Piloto,
       };
     }
-    if ("caracteristicas" in producto) return clasificarFichaTecnicaProducto(producto as Producto);
     return null;
   }, [producto]);
 

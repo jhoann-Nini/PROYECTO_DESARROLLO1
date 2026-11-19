@@ -768,6 +768,51 @@ describe("api.ts - Cliente API del frontend", () => {
       );
     });
 
+    it("obtenerFichaTecnicaProducto debe consultar GET /api/productos/{id}/ficha-tecnica", async () => {
+      const { obtenerFichaTecnicaProducto } = await loadApi(DEFAULT_API_URL);
+      const fichaV3Mock = { version_esquema: 3, categoria: "celulares", especificaciones: [] };
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => fichaV3Mock,
+      } as unknown as Response);
+
+      const res = await obtenerFichaTecnicaProducto(42);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/42/ficha-tecnica",
+      );
+      expect(res).toEqual(fichaV3Mock);
+    });
+
+    it("actualizarFichaTecnicaProducto debe enviar PUT /api/productos/{id}/ficha-tecnica con autenticación", async () => {
+      const { actualizarFichaTecnicaProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin-valido" } },
+        error: null,
+      });
+
+      const fichaActualizada = { version_esquema: 3, categoria: "celulares", especificaciones: [] };
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ idProducto: 42, nombre: "Móvil V3", caracteristicas: fichaActualizada }),
+      } as unknown as Response);
+
+      const res = await actualizarFichaTecnicaProducto(42, fichaActualizada);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/42/ficha-tecnica",
+        expect.objectContaining({
+          method: "PUT",
+          headers: expect.any(Headers),
+          body: JSON.stringify(fichaActualizada),
+        }),
+      );
+      expect(res.caracteristicas).toEqual(fichaActualizada);
+    });
+
     it("maneja error 403 Forbidden cuando el backend rechaza la operación administrativa", async () => {
       const { crearProducto } = await loadApi(DEFAULT_API_URL);
       mockGetSession.mockResolvedValue({

@@ -94,6 +94,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/representante/**").access(representativeAuthorizationManager)
                 .requestMatchers(HttpMethod.POST, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
                 .requestMatchers(HttpMethod.PUT, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
+                .requestMatchers(HttpMethod.PATCH, "/api/productos/**").access(adminAuthorizationManager)
                 .requestMatchers(HttpMethod.DELETE, "/api/productos/**", "/api/categorias/**", "/api/marcas/**", "/api/establecimientos/**").access(adminAuthorizationManager)
                 .anyRequest().authenticated()
             )

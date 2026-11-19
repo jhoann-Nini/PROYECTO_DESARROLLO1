@@ -22,8 +22,6 @@ import {
   construirFilasComparacion,
   generarRecomendacion,
 } from "@/data/comparador";
-import { obtenerFichaTecnicaV3Piloto } from "@/data/fichasTecnicasV3Piloto";
-import type { EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
 import type { VarianteFichaV3 } from "@/types/fichaTecnicaV3";
 import { useComparador } from "@/hooks/useComparador";
 import { CLASE_FOCO } from "@/components/ui/foco";
@@ -97,27 +95,7 @@ export default function ComparadorCliente() {
 
     return ids
       .map((id) => porId.get(id))
-      .filter((producto): producto is ProductoViewModel => Boolean(producto))
-      .map((producto) => {
-        if (producto.fichaTecnica?.version === "v3") return producto;
-        const fichaV3 = obtenerFichaTecnicaV3Piloto({
-          id: producto.idProducto,
-          nombre: producto.nombre,
-        });
-        if (fichaV3) {
-          const fichaTecnicaV3Valida: EstadoFichaTecnicaProducto = {
-            version: "v3",
-            estado: "valida",
-            original: fichaV3 as unknown as Record<string, unknown>,
-            ficha: fichaV3,
-          };
-          return {
-            ...producto,
-            fichaTecnica: fichaTecnicaV3Valida,
-          };
-        }
-        return producto;
-      });
+      .filter((producto): producto is ProductoViewModel => Boolean(producto));
   }, [ids, productos]);
 
   const productosRecientes = useMemo(() => {

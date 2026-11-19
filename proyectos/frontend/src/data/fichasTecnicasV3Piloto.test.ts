@@ -13,7 +13,6 @@ import {
 } from "./mockProductos";
 import {
   crearProductoViewModel,
-  convertirKimovilAViewModel,
 } from "./productoViewModel";
 import { construirFilasComparacion } from "./comparador";
 
@@ -138,16 +137,32 @@ describe("Fichas Técnicas V3 Piloto", () => {
   });
 
   describe("3. Integración en view models y comparador de la aplicación", () => {
-    it("asigna ficha V3 válida al generar view models para los 8 productos piloto", () => {
-      const p1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 1)!);
-      const p3 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 3)!);
-      const p5 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 5)!);
-      const p6 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 6)!);
+    const mockProd = (idProducto: number, nombre: string, idCategoria: number, idMarca: number, precioReferencia: number) =>
+      crearProductoViewModel(
+        {
+          idProducto,
+          nombre,
+          descripcion: null,
+          idCategoria,
+          idMarca,
+          imagen: null,
+          estado: true,
+          precioReferencia,
+          caracteristicas: null,
+        },
+        { origen: "mock" }
+      );
 
-      const k202 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 202)!);
-      const k208 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 208)!);
-      const k209 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 209)!);
-      const k109 = convertirKimovilAViewModel(DISPOSITIVOS_VENDIDOS.find((p) => p.id === 109)!);
+    it("asigna ficha V3 válida al generar view models para los 8 productos piloto", () => {
+      const p1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 1)!, { origen: "mock" });
+      const p3 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 3)!, { origen: "mock" });
+      const p5 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 5)!, { origen: "mock" });
+      const p6 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 6)!, { origen: "mock" });
+
+      const k202 = mockProd(202, "Samsung Galaxy S24 Ultra", 1, 2, 5000000);
+      const k208 = mockProd(208, "Apple iPad Pro 11 M4", 2, 1, 4500000);
+      const k209 = mockProd(209, "Apple MacBook Pro 16 M3 Max", 3, 1, 15000000);
+      const k109 = mockProd(109, "Sony WH-1000XM5", 4, 3, 1600000);
 
       for (const vm of [p1, p3, p5, p6, k202, k208, k209, k109]) {
         expect(vm.fichaTecnica?.version).toBe("v3");
@@ -161,29 +176,29 @@ describe("Fichas Técnicas V3 Piloto", () => {
 
     it("compara correctamente en las 4 categorías con las fichas V3 integradas", () => {
       // 1. Celulares: Nothing Phone (2a) vs Galaxy S24 Ultra
-      const cel1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 1)!);
-      const cel2 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 202)!);
+      const cel1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 1)!, { origen: "mock" });
+      const cel2 = mockProd(202, "Samsung Galaxy S24 Ultra", 1, 2, 5000000);
       const filasCel = construirFilasComparacion([cel1, cel2]);
       const filasV3Cel = filasCel.filter((f) => f.clave.startsWith("tecnica:v3:"));
       expect(filasV3Cel.length).toBeGreaterThan(0);
 
       // 2. Tablets: OnePlus Pad 2 vs Apple iPad Pro 11 M4
-      const tab1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 5)!);
-      const tab2 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 208)!);
+      const tab1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 5)!, { origen: "mock" });
+      const tab2 = mockProd(208, "Apple iPad Pro 11 M4", 2, 1, 4500000);
       const filasTab = construirFilasComparacion([tab1, tab2]);
       const filasV3Tab = filasTab.filter((f) => f.clave.startsWith("tecnica:v3:"));
       expect(filasV3Tab.length).toBeGreaterThan(0);
 
       // 3. Portátiles: ThinkPad E14 Gen 5 vs MacBook Pro 16 M3 Max
-      const lap1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 6)!);
-      const lap2 = convertirKimovilAViewModel(DISPOSITIVOS_DESEADOS.find((p) => p.id === 209)!);
+      const lap1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 6)!, { origen: "mock" });
+      const lap2 = mockProd(209, "Apple MacBook Pro 16 M3 Max", 3, 1, 15000000);
       const filasLap = construirFilasComparacion([lap1, lap2]);
       const filasV3Lap = filasLap.filter((f) => f.clave.startsWith("tecnica:v3:"));
       expect(filasV3Lap.length).toBeGreaterThan(0);
 
       // 4. Auriculares: Nothing Ear (2) vs Sony WH-1000XM5
-      const aur1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 3)!);
-      const aur2 = convertirKimovilAViewModel(DISPOSITIVOS_VENDIDOS.find((p) => p.id === 109)!);
+      const aur1 = crearProductoViewModel(PRODUCTOS_MOCK.find((p) => p.idProducto === 3)!, { origen: "mock" });
+      const aur2 = mockProd(109, "Sony WH-1000XM5", 4, 3, 1600000);
       const filasAur = construirFilasComparacion([aur1, aur2]);
       const filasV3Aur = filasAur.filter((f) => f.clave.startsWith("tecnica:v3:"));
       expect(filasV3Aur.length).toBeGreaterThan(0);

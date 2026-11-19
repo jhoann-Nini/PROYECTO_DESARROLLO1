@@ -107,7 +107,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       ficha.atributos.find((atributo) => atributo.clave === clave);
 
     expect(obtenerAtributo("procesador")?.valor).toContain("Core Ultra 9 185H");
-    expect(obtenerAtributo("graficos")?.valor).toContain("RTX 4070");
+    expect(obtenerAtributo("graficos")?.valor).toContain("RTX 4050, 4060 o 4070");
     expect(obtenerAtributo("pantalla")?.valor).toContain("3840 × 2400 OLED");
     expect(obtenerAtributo("ram")?.valor).toContain("64 GB");
     expect(ficha.fuentes[0]?.url).toContain("dell.com");

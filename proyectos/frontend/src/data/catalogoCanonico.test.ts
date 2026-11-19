@@ -23,7 +23,7 @@ describe("catálogo canónico piloto", () => {
       "deseados:202",
       "ofertas:300",
     ]);
-    expect(samsung?.variantes.map((item) => item.id)).toEqual(["512gb"]);
+    expect(samsung?.variantes.map((item) => item.id)).toEqual(["256gb", "512gb"]);
 
     expect(onePlus?.referencias.map((item) => `${item.coleccion}:${item.idRegistro}`)).toEqual([
       "vendidos:108",

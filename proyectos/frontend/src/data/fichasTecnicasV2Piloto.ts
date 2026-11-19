@@ -1043,8 +1043,10 @@ const thinkpadT14Gen5 = crearFicha(
   "parcial",
   [],
   [
-    atributo("procesador", "Procesadores disponibles en la familia", "rendimiento", "Intel Core Ultra 5 125U, 135U, 125H o 135H; Intel Core Ultra 7 155U, 165U, 155H o 165H; o AMD Ryzen 5 PRO 8540U / Ryzen 7 PRO 8840U, según plataforma y configuración", thinkpadT14Gen5FuenteIntel),
-    atributo("graficos", "Gráficos disponibles", "rendimiento", "Intel Graphics o Intel Arc integrados (Arc solo en determinados procesadores H y con memoria de doble canal); AMD Radeon 740M o 780M integrados en las versiones AMD", thinkpadT14Gen5FuenteIntel),
+    atributo("procesador_intel", "Procesadores Intel disponibles", "rendimiento", "Intel Core Ultra 5 125U, 135U, 125H o 135H; Intel Core Ultra 7 155U, 165U, 155H o 165H, según configuración", thinkpadT14Gen5FuenteIntel),
+        atributo("procesador_amd", "Procesadores AMD disponibles", "rendimiento", "AMD Ryzen 5 PRO 8540U o Ryzen 7 PRO 8840U, según configuración", thinkpadT14Gen5FuenteAmd),
+    atributo("graficos_intel", "Gráficos Intel disponibles", "rendimiento", "Intel Graphics o Intel Arc integrados (Arc solo en determinados procesadores H y con memoria de doble canal)", thinkpadT14Gen5FuenteIntel),
+        atributo("graficos_amd", "Gráficos AMD disponibles", "rendimiento", "AMD Radeon 740M o Radeon 780M integrados", thinkpadT14Gen5FuenteAmd),
     atributo("ram", "Memoria RAM admitida", "memoria", "DDR5-5600 en dos ranuras SO-DIMM; hasta 64 GB, según plataforma y configuración", thinkpadT14Gen5FuenteIntel),
     atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "Una unidad SSD M.2 2280 PCIe 4.0 NVMe; opciones de 256 GB, 512 GB, 1 TB y hasta 2 TB, según configuración", thinkpadT14Gen5FuenteIntel),
     atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas: WUXGA (1920 × 1200) IPS de 400 o 500 nits, táctil o no táctil según panel; o 2.8K (2880 × 1800) OLED de 400 nits, 120 Hz y 100 % DCI-P3", thinkpadT14Gen5FuenteIntel),

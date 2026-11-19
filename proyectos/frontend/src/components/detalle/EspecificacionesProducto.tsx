@@ -2,6 +2,7 @@ import type { Producto } from "@/types/producto";
 import { normalizarFichaProducto } from "@/data/specsHelper";
 import FichaTecnicaV3Panel from "@/components/FichaTecnicaV3Panel";
 import { clasificarFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
+import { obtenerFichaTecnicaV3Piloto } from "@/data/fichasTecnicasV3Piloto";
 import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
 
 interface EspecificacionesProductoProps {
@@ -11,7 +12,21 @@ interface EspecificacionesProductoProps {
 export default function EspecificacionesProducto({
   producto,
 }: EspecificacionesProductoProps) {
-  const estadoFicha = clasificarFichaTecnicaProducto(producto);
+  let estadoFicha = clasificarFichaTecnicaProducto(producto);
+  if (estadoFicha.version !== "v3" && estadoFicha.version !== "error") {
+    const fichaV3Piloto = obtenerFichaTecnicaV3Piloto({
+      id: producto.idProducto,
+      nombre: producto.nombre,
+    });
+    if (fichaV3Piloto) {
+      estadoFicha = {
+        version: "v3",
+        estado: "valida",
+        original: fichaV3Piloto as unknown as Record<string, unknown>,
+        ficha: fichaV3Piloto,
+      };
+    }
+  }
   if (estadoFicha.version === "v3") return <FichaTecnicaV3Panel estado={estadoFicha} />;
   if (estadoFicha.version === "error") return <div role="alert" className="rounded border border-red-300 bg-red-50 p-4 text-sm text-red-900">La ficha técnica tiene una versión o estructura no compatible. El contenido original se conservó.</div>;
   if (estadoFicha.version === "v2" && estadoFicha.estado === "valida") return <FichaTecnicaV2Panel ficha={estadoFicha.fichaV2} />;

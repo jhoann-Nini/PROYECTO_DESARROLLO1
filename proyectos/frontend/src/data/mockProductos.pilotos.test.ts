@@ -164,10 +164,10 @@ describe("coherencia técnica e imágenes de productos del catálogo", () => {
     expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
   });
 
-  it("no usa fotografías genéricas para Lenovo o MacBook cuando no hay licencia reutilizable", () => {
+  it("asocia imágenes principales candidatas oficiales para Lenovo ThinkPad y MacBook Pro", () => {
     const thinkpad = PRODUCTOS_MOCK.find((item) => item.idProducto === 6);
     const macbook = DISPOSITIVOS_DESEADOS.find((item) => item.id === 209);
-    expect(thinkpad?.imagen).toBeNull();
-    expect(macbook?.imagen).toBe("");
+    expect(thinkpad?.imagen).toContain("lenovo-thinkpad-e14-gen-5");
+    expect(macbook?.imagen).toContain("Apple-MacBook-Pro");
   });
 });

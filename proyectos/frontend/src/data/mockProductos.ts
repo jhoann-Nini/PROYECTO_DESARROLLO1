@@ -961,7 +961,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     precio: 5996000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "",
+    imagen: "https://www.apple.com/newsroom/images/2023/10/apple-unveils-new-macbook-pro-featuring-m3-chips/article/Apple-MacBook-Pro-top-view-231030_big.jpg.large.jpg",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "laptops",
@@ -1554,7 +1554,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 6,
     nombreCategoria: "Laptops / PCs",
     nombreMarca: "Lenovo",
-    imagen: null,
+    imagen: "https://p4-ofp.static.pub/ShareResource/na/products/thinkpad/560x450/lenovo-thinkpad-e14-gen-5-intel-pc-mag.png?height=584&width=584",
     precioReferencia: 3196000,
     estado: true,
     caracteristicas: {

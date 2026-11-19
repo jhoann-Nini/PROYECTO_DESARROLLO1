@@ -22,6 +22,9 @@ import {
   construirFilasComparacion,
   generarRecomendacion,
 } from "@/data/comparador";
+import { obtenerFichaTecnicaV3Piloto } from "@/data/fichasTecnicasV3Piloto";
+import type { EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
+import type { VarianteFichaV3 } from "@/types/fichaTecnicaV3";
 import { useComparador } from "@/hooks/useComparador";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
@@ -94,7 +97,27 @@ export default function ComparadorCliente() {
 
     return ids
       .map((id) => porId.get(id))
-      .filter((producto): producto is ProductoViewModel => Boolean(producto));
+      .filter((producto): producto is ProductoViewModel => Boolean(producto))
+      .map((producto) => {
+        if (producto.fichaTecnica?.version === "v3") return producto;
+        const fichaV3 = obtenerFichaTecnicaV3Piloto({
+          id: producto.idProducto,
+          nombre: producto.nombre,
+        });
+        if (fichaV3) {
+          const fichaTecnicaV3Valida: EstadoFichaTecnicaProducto = {
+            version: "v3",
+            estado: "valida",
+            original: fichaV3 as unknown as Record<string, unknown>,
+            ficha: fichaV3,
+          };
+          return {
+            ...producto,
+            fichaTecnica: fichaTecnicaV3Valida,
+          };
+        }
+        return producto;
+      });
   }, [ids, productos]);
 
   const productosRecientes = useMemo(() => {
@@ -460,7 +483,7 @@ export default function ComparadorCliente() {
                         <p className="mt-1 text-xs font-normal text-[var(--color-subtle)]">
                           {producto.marca}
                         </p>
-                        {producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.ficha.variantes.length > 1 && <label className="mt-2 block text-xs">Variante<select aria-label={`Variante de ${producto.nombre}`} className="mt-1 block w-full rounded border p-1.5" value={variantesSeleccionadas[producto.idProducto] ?? ""} onChange={(event) => setVariantesSeleccionadas((actual) => ({ ...actual, [producto.idProducto]: event.target.value }))}><option value="">Selecciona una variante</option>{producto.fichaTecnica.ficha.variantes.map((variante) => <option key={variante.id} value={variante.id}>{[variante.modelo, variante.sku, variante.mercado].filter(Boolean).join(" · ") || variante.id}</option>)}</select></label>}
+                        {producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.ficha.variantes.length > 1 && <label className="mt-2 block text-xs">Variante<select aria-label={`Variante de ${producto.nombre}`} className="mt-1 block w-full rounded border p-1.5" value={variantesSeleccionadas[producto.idProducto] ?? ""} onChange={(event) => setVariantesSeleccionadas((actual) => ({ ...actual, [producto.idProducto]: event.target.value }))}><option value="">Selecciona una variante</option>{producto.fichaTecnica.ficha.variantes.map((variante: VarianteFichaV3) => <option key={variante.id} value={variante.id}>{[variante.modelo, variante.sku, variante.mercado].filter(Boolean).join(" · ") || variante.id}</option>)}</select></label>}
                         <button
                           type="button"
                           onClick={() => quitarProducto(producto)}

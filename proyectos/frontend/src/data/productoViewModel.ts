@@ -17,6 +17,7 @@ import { detectarCategoria, formatearCOP } from "./specsHelper";
 import { sanearPrecioCOP } from "./precios";
 import { normalizarDatosFichaTecnica } from "./fichaTecnica";
 import type { DatosFichaTecnica } from "./fichaTecnica";
+import { obtenerFichaTecnicaV3Piloto } from "./fichasTecnicasV3Piloto";
 import {
   normalizarDesdeKimovil,
   normalizarFichaTecnicaV2,
@@ -432,11 +433,23 @@ export function crearProductoViewModel(
 
   const idGlobal =
     opciones.idGlobal ?? (esIdApiValido ? idGlobalApi(producto.idProducto) ?? undefined : undefined);
-  const fichaTecnica = clasificarFichaTecnicaProducto(producto, {
+  const fichaTecnicaClasificada = clasificarFichaTecnicaProducto(producto, {
     idGlobal,
     categoriaPorDefecto: categoria,
     categoriaProducto: producto.nombreCategoria?.trim() ? categoriaProductoDesdeNombre(producto.nombreCategoria) : null,
   });
+  const tieneEsquemaExplicito = typeof producto.caracteristicas === "object" && producto.caracteristicas !== null && "version_esquema" in producto.caracteristicas;
+  const fichaV3Piloto = fichaTecnicaClasificada.version !== "v3" && fichaTecnicaClasificada.version !== "error" && !tieneEsquemaExplicito
+    ? obtenerFichaTecnicaV3Piloto({ id: producto.idProducto, nombre: producto.nombre })
+    : null;
+  const fichaTecnica: EstadoFichaTecnicaProducto = fichaV3Piloto
+    ? {
+        version: "v3",
+        estado: "valida",
+        original: fichaV3Piloto as unknown as Record<string, unknown>,
+        ficha: fichaV3Piloto,
+      }
+    : fichaTecnicaClasificada;
   const fichaTecnicaV2 = fichaTecnica.estado === "valida" && fichaTecnica.version !== "v3"
     ? fichaTecnica.fichaV2
     : undefined;
@@ -566,7 +579,13 @@ export function convertirKimovilAViewModel(
   }
 
   const especificaciones = extraerEspecificaciones(caracteristicasObj);
-  const datosFichaTecnica = normalizarDatosFichaTecnica(caracteristicasObj);
+  const fichaV3Piloto = obtenerFichaTecnicaV3Piloto({
+    id: dispositivo.id,
+    nombre: dispositivo.nombre,
+  });
+  const datosFichaTecnica = fichaV3Piloto
+    ? normalizarDatosFichaTecnica(null)
+    : normalizarDatosFichaTecnica(caracteristicasObj);
   const tiendas = extraerTiendas(caracteristicasObj);
   const imagen = dispositivo.imagen?.trim() || null;
 
@@ -585,16 +604,30 @@ export function convertirKimovilAViewModel(
       ? Math.min(5, Math.max(0, dispositivo.puntuacion / 2))
       : normalizarRating(opciones.rating);
 
-  const fichaTecnicaV2 = normalizarDesdeKimovil(dispositivo, {
-    idGlobal: idGlobal ?? undefined,
-    categoriaPorDefecto: categoria,
-  });
-  const fichaTecnica: EstadoFichaTecnicaProducto = {
-    version: "legacy",
-    estado: "valida",
-    original: caracteristicasObj,
-    fichaV2: fichaTecnicaV2,
-  };
+  let fichaTecnica: EstadoFichaTecnicaProducto;
+  let fichaTecnicaV2: FichaTecnicaV2 | undefined;
+
+  if (fichaV3Piloto) {
+    fichaTecnica = {
+      version: "v3",
+      estado: "valida",
+      original: fichaV3Piloto as unknown as Record<string, unknown>,
+      ficha: fichaV3Piloto,
+    };
+    fichaTecnicaV2 = undefined;
+  } else {
+    const v2 = normalizarDesdeKimovil(dispositivo, {
+      idGlobal: idGlobal ?? undefined,
+      categoriaPorDefecto: categoria,
+    });
+    fichaTecnica = {
+      version: "legacy",
+      estado: "valida",
+      original: caracteristicasObj,
+      fichaV2: v2,
+    };
+    fichaTecnicaV2 = v2;
+  }
 
   return {
     idProducto,

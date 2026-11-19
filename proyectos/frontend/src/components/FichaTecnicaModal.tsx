@@ -26,6 +26,7 @@ import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 import FichaTecnicaV3Panel from "@/components/FichaTecnicaV3Panel";
 import { clasificarFichaTecnicaProducto, type EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
+import { obtenerFichaTecnicaV3Piloto } from "@/data/fichasTecnicasV3Piloto";
 
 interface FichaTecnicaModalProps {
   producto: DispositivoKimovil | Producto | ProductoViewModel | null;
@@ -248,6 +249,18 @@ export default function FichaTecnicaModal({
   const estadoFicha = useMemo<EstadoFichaTecnicaProducto | null>(() => {
     if (!producto) return null;
     if ("fichaTecnica" in producto && producto.fichaTecnica) return producto.fichaTecnica;
+    const fichaV3Piloto = obtenerFichaTecnicaV3Piloto({
+      id: "idProducto" in producto ? producto.idProducto : "id" in producto ? (producto as DispositivoKimovil).id : null,
+      nombre: producto.nombre,
+    });
+    if (fichaV3Piloto) {
+      return {
+        version: "v3",
+        estado: "valida",
+        original: fichaV3Piloto as unknown as Record<string, unknown>,
+        ficha: fichaV3Piloto,
+      };
+    }
     if ("caracteristicas" in producto) return clasificarFichaTecnicaProducto(producto as Producto);
     return null;
   }, [producto]);

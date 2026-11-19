@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del catálogo piloto (25 fichas).
+ * Fichas técnicas estructuradas del catálogo piloto (26 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -574,6 +574,48 @@ const iphone13 = crearFicha(
   ],
   [
     fuente("apple-iphone-13-tech-specs", "Apple Support — iPhone 13, especificaciones técnicas", "https://support.apple.com/es-la/111872", iphone13Variante, "La fuente oficial enumera capacidad de 128 GB, chip, pantalla, cámaras, resistencia, dimensiones, peso y conectividad.", "2026-11-17"),
+  ],
+);
+
+
+const iphone16Fuente = "apple-iphone-16-tech-specs";
+const iphone16 = crearFicha(
+  "moviles",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A18 · CPU de 6 núcleos (2 de rendimiento y 4 de eficiencia) · GPU de 5 núcleos · Neural Engine de 16 núcleos", iphone16Fuente),
+    atributo("pantalla", "Pantalla", "pantalla", "Super Retina XDR · OLED · Dynamic Island · HDR · True Tone · gama de colores P3", iphone16Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, iphone16Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2556 × 1179 píxeles · 460 ppi", iphone16Fuente),
+    atributo("brillo_tipico", "Brillo máximo típico", "pantalla", 1000, iphone16Fuente, "nits"),
+    atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1600, iphone16Fuente, "nits"),
+    atributo("brillo_exterior", "Brillo máximo en exteriores", "pantalla", 2000, iphone16Fuente, "nits"),
+    atributo("camara_principal", "Cámara principal Fusion", "camaras", 48, iphone16Fuente, "mpx"),
+    atributo("camara_teleobjetivo", "Teleobjetivo 2x habilitado por el sensor principal", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal TrueDepth", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("video", "Grabación de vídeo", "camaras", "4K Dolby Vision hasta 60 fps · Modo Cine hasta 4K Dolby Vision a 30 fps · Modo Acción hasta 2.8K Dolby Vision a 60 fps", iphone16Fuente),
+    atributo("estabilizacion", "Estabilización de cámara principal", "camaras", "Óptica por desplazamiento del sensor", iphone16Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos según IEC 60529", iphone16Fuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "147,6 × 71,6 × 7,80 mm", iphone16Fuente),
+    atributo("peso", "Peso", "diseno", 170, iphone16Fuente, "g"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, iphone16Fuente, "h"),
+    atributo("autonomia_streaming", "Reproducción de vídeo en streaming (máximo declarado)", "bateria", 18, iphone16Fuente, "h"),
+    atributo("autonomia_audio", "Reproducción de audio (máximo declarado)", "bateria", 80, iphone16Fuente, "h"),
+    atributo("carga_rapida", "Carga por cable", "bateria", "Hasta 50% en aproximadamente 30 minutos con adaptador de 20 W o superior", iphone16Fuente),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "MagSafe hasta 25 W · Qi2 hasta 25 W", iphone16Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G sub-6 GHz", iphone16Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7 (802.11be) · MIMO 2×2", iphone16Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", iphone16Fuente),
+    atributo("conector", "Conector", "conectividad", "USB-C · USB 2 hasta 480 Mb/s · compatible con DisplayPort", iphone16Fuente),
+    atributo("sim", "Tarjeta SIM", "conectividad", "Doble eSIM · nano-SIM y eSIM; disponibilidad según región", iphone16Fuente),
+    atributo("nfc", "NFC", "conectividad", true, iphone16Fuente),
+    atributo("sistema_operativo", "Sistema operativo indicado por Apple", "software", "iOS 26", iphone16Fuente),
+  ],
+  [],
+  [
+    fuente("apple-iphone-16-tech-specs", "Apple Colombia — iPhone 16, especificaciones técnicas", "https://www.apple.com/co/iphone-16/specs/", null, "La ficha oficial respalda las especificaciones generales de la familia iPhone 16. El registro del catálogo no identifica capacidad ni SKU; por eso no se asignan variantes ni almacenamiento a una configuración concreta.", "2026-11-19"),
   ],
 );
 
@@ -1144,6 +1186,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
   appleIphone13_128: iphone13,
+  appleIphone16: iphone16,
   xiaomiRedmiNote14ProPlus12_512: redmiNote14ProPlus,
   oneplus13_16_512: oneplus13,
   appleIphone15ProMax256: iphone15ProMax,
@@ -1178,6 +1221,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
+  if (n === "apple iphone 16" || n === "iphone 16") return iphone16;
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;

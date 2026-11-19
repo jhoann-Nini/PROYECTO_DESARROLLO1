@@ -579,6 +579,29 @@ export async function eliminarProducto(id: number): Promise<void> {
   });
 }
 
+/**
+ * Consulta la ficha técnica de un producto por su ID.
+ */
+export async function obtenerFichaTecnicaProducto(
+  id: number,
+): Promise<Record<string, unknown>> {
+  return apiFetch<Record<string, unknown>>(`/api/productos/${id}/ficha-tecnica`);
+}
+
+/**
+ * Actualiza exclusivamente la ficha técnica de un producto de forma independiente.
+ * Requiere rol Administrador.
+ */
+export async function actualizarFichaTecnicaProducto(
+  id: number,
+  fichaTecnica: Record<string, unknown>,
+): Promise<ProductoResponse> {
+  return apiFetchAutenticado<ProductoResponse>(`/api/productos/${id}/ficha-tecnica`, {
+    method: "PUT",
+    body: JSON.stringify(fichaTecnica),
+  });
+}
+
 // ============================================================================
 // SERVICIOS DE CATEGORÍAS (CRUD)
 // ============================================================================

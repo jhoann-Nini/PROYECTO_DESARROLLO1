@@ -66,6 +66,12 @@ public class ProductoService {
         return toResponse(buscarActivoOFallar(id));
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerFichaTecnica(Long id) {
+        Producto producto = buscarActivoOFallar(id);
+        return producto.getCaracteristicas() != null ? producto.getCaracteristicas() : Map.of();
+    }
+
 
     @Transactional
     public ProductoResponse crear(ProductoRequest request) {
@@ -104,6 +110,17 @@ public class ProductoService {
         producto.setImagen(request.imagen());
         producto.setPrecioReferencia(request.precioReferencia());
         producto.setCaracteristicas(request.caracteristicas());
+
+        return toResponse(productoRepository.save(producto));
+    }
+
+
+    @Transactional
+    public ProductoResponse actualizarFichaTecnica(Long id, Map<String, Object> fichaTecnica) {
+        validarCaracteristicas(fichaTecnica);
+
+        Producto producto = buscarActivoOFallar(id);
+        producto.setCaracteristicas(fichaTecnica);
 
         return toResponse(productoRepository.save(producto));
     }

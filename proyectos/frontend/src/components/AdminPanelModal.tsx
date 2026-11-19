@@ -15,6 +15,7 @@ import { esAdministrador } from "@/types/producto";
 import { detectarCategoria, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
 import AdminUsuariosRoles from "@/components/admin/AdminUsuariosRoles";
 import AdminEstablecimientos from "@/components/admin/AdminEstablecimientos";
+import AdminFichaTecnicaModal from "@/components/admin/AdminFichaTecnicaModal";
 import {
   obtenerProductos,
   obtenerCategorias,
@@ -136,6 +137,7 @@ export default function AdminPanelModal({
   const [modoFormulario, setModoFormulario] = useState<ModoFormulario>("ninguno");
   const [productoEditando, setProductoEditando] = useState<ProductoResponse | null>(null);
   const [productoEliminando, setProductoEliminando] = useState<ProductoResponse | null>(null);
+  const [productoFichaV3, setProductoFichaV3] = useState<ProductoResponse | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   const [exportandoCsv, setExportandoCsv] = useState(false);
@@ -725,7 +727,14 @@ export default function AdminPanelModal({
         formPrecioReferencia.trim() !== "" ? Number(formPrecioReferencia) : null,
     };
 
-    if (Object.keys(caracteristicasAEnviar).length > 0) {
+    if (
+      modoFormulario === "editar" &&
+      productoEditando?.caracteristicas &&
+      (productoEditando.caracteristicas as Record<string, unknown>).version_esquema === 3
+    ) {
+      // Preservar la ficha técnica V3 intacta al guardar información general del producto
+      request.caracteristicas = productoEditando.caracteristicas;
+    } else if (Object.keys(caracteristicasAEnviar).length > 0) {
       request.caracteristicas = caracteristicasAEnviar;
     } else if (
       modoFormulario === "editar" &&
@@ -1680,6 +1689,15 @@ export default function AdminPanelModal({
                           </td>
                           <td className="py-2.5 px-3 text-center">
                             <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => setProductoFichaV3(prod)}
+                                disabled={guardando || eliminando}
+                                aria-label={`Ficha Técnica V3 de ${prod.nombre}`}
+                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                              >
+                                Ficha V3
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => abrirEditar(prod)}
@@ -2694,6 +2712,19 @@ export default function AdminPanelModal({
               </div>
             </div>
           </div>
+        )}
+
+        {productoFichaV3 && (
+          <AdminFichaTecnicaModal
+            producto={productoFichaV3}
+            abierto={Boolean(productoFichaV3)}
+            onCerrar={() => setProductoFichaV3(null)}
+            onFichaGuardada={(actualizado) => {
+              setProductos((prev) =>
+                prev.map((p) => (p.idProducto === actualizado.idProducto ? actualizado : p)),
+              );
+            }}
+          />
         )}
 
         {/* Pie del modal */}

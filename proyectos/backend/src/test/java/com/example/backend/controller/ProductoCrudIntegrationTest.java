@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -604,5 +605,81 @@ class ProductoCrudIntegrationTest {
                         .content(mapper.writeValueAsString(solicitudConCaracteristicas("Legacy", legacy))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.caracteristicas.pantalla", is("dato legacy")));
+    }
+
+    @Test
+    @DisplayName("22. Consultar ficha técnica independientemente mediante GET /api/productos/{id}/ficha-tecnica")
+    void consultarFichaTecnicaIndependiente() throws Exception {
+        Producto conFicha = crearProducto("Con Ficha V3", true);
+        conFicha.setCaracteristicas(mapper.convertValue(fichaV3Valida(), Map.class));
+        productoRepository.save(conFicha);
+
+        mockMvc.perform(get("/api/productos/{id}/ficha-tecnica", conFicha.getIdProducto()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version_esquema", is(3)))
+                .andExpect(jsonPath("$.categoria", is("celulares")));
+
+        Producto sinFicha = crearProducto("Sin Ficha", true);
+        sinFicha.setCaracteristicas(null);
+        productoRepository.save(sinFicha);
+
+        mockMvc.perform(get("/api/productos/{id}/ficha-tecnica", sinFicha.getIdProducto()))
+                .andExpect(status().isOk())
+                .andExpect(content().string("{}"));
+
+        mockMvc.perform(get("/api/productos/{id}/ficha-tecnica", 999999L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("23. Actualizar ficha técnica de forma independiente sin alterar atributos generales")
+    void actualizarFichaTecnicaIndependiente() throws Exception {
+        Producto producto = crearProducto("Producto Para Ficha", true);
+        producto.setDescripcion("Descripción intacta");
+        producto.setPrecioReferencia(new BigDecimal("1500000.00"));
+        producto.setImagen("https://example.com/foto.jpg");
+        producto = productoRepository.save(producto);
+
+        // Actualización válida con V3
+        ObjectNode fichaV3 = fichaV3Valida();
+        mockMvc.perform(put("/api/productos/{id}/ficha-tecnica", producto.getIdProducto())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(fichaV3)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.idProducto", is(producto.getIdProducto().intValue())))
+                .andExpect(jsonPath("$.nombre", is("Producto Para Ficha")))
+                .andExpect(jsonPath("$.descripcion", is("Descripción intacta")))
+                .andExpect(jsonPath("$.precioReferencia", is(1500000.0)))
+                .andExpect(jsonPath("$.imagen", is("https://example.com/foto.jpg")))
+                .andExpect(jsonPath("$.caracteristicas.version_esquema", is(3)));
+
+        Producto persistido = productoRepository.findById(producto.getIdProducto()).orElseThrow();
+        assertEquals("Producto Para Ficha", persistido.getNombre());
+        assertEquals("Descripción intacta", persistido.getDescripcion());
+        assertEquals(new BigDecimal("1500000.00"), persistido.getPrecioReferencia());
+        assertEquals(3, persistido.getCaracteristicas().get("version_esquema"));
+
+        // Rechazo de V3 inválida
+        ObjectNode invalidV3 = fichaV3Valida();
+        invalidV3.put("categoria", "smartwatch_invalido");
+        mockMvc.perform(put("/api/productos/{id}/ficha-tecnica", producto.getIdProducto())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(invalidV3)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("categoría V3 no soportada")));
+
+        // La ficha previa no se corrompe
+        persistido = productoRepository.findById(producto.getIdProducto()).orElseThrow();
+        assertEquals("celulares", persistido.getCaracteristicas().get("categoria"));
+
+        // Actualización mediante PATCH
+        ObjectNode legacyMap = mapper.createObjectNode();
+        legacyMap.put("pantalla", "6.1 OLED");
+        mockMvc.perform(patch("/api/productos/{id}/ficha-tecnica", producto.getIdProducto())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(legacyMap)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.caracteristicas.pantalla", is("6.1 OLED")))
+                .andExpect(jsonPath("$.nombre", is("Producto Para Ficha")));
     }
 }

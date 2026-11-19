@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del catálogo piloto (19 fichas).
+ * Fichas técnicas estructuradas del catálogo piloto (20 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -958,40 +958,33 @@ const redmiNote13ProPlus = crearFicha(
 );
 
 
-/**
- * Ficha familiar para el registro genérico del catálogo. Como el producto
- * no identifica capacidad, se exponen únicamente las variantes oficiales
- * documentadas; la capacidad seleccionada no se presupone.
- */
-const samsungS24UltraFamiliaFuente = "samsung-s24-ultra-family";
-const samsungS24UltraFamilia = crearFicha(
-  "moviles",
-  "verificado",
+const yoga7Fuente = "lenovo-yoga7-14ahp9-psref";
+const yoga7Familia = crearFicha(
+  "laptops",
+  "parcial",
+  [],
   [
-    { id: "12gb-256gb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "256 GB" },
-    { id: "12gb-512gb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "512 GB" },
-    { id: "12gb-1tb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "1 TB" },
+    atributo("procesador", "Procesadores disponibles en la familia", "rendimiento", "AMD Ryzen 5 8640HS o Ryzen 7 8840HS; la configuración concreta depende del MTM", yoga7Fuente),
+    atributo("graficos", "Gráficos disponibles", "rendimiento", "AMD Radeon 760M (Ryzen 5) o Radeon 780M (Ryzen 7)", yoga7Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "8 GB o 16 GB LPDDR5/LPDDR5X-6400 soldados; no ampliable", yoga7Fuente),
+    atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "SSD M.2 2242 PCIe 4.0 NVMe de 256 GB, 512 GB o 1 TB, según configuración", yoga7Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas WUXGA (1920 × 1200), IPS 300 nits u OLED 400 nits; ambas táctiles y 60 Hz", yoga7Fuente),
+    atributo("bateria", "Batería", "bateria", 71, yoga7Fuente, "Wh"),
+    atributo("autonomia", "Autonomía declarada", "bateria", "Hasta 12,5 h MobileMark 25; depende del panel y condiciones de prueba", yoga7Fuente),
+    atributo("conectividad", "Conectividad inalámbrica", "conectividad", "Wi-Fi 6E y Bluetooth 5.3", yoga7Fuente),
+    atributo("puertos", "Puertos", "conectividad", "USB-A 5 Gbps; USB-C 10 Gbps; USB4 40 Gbps; HDMI 2.1; lector microSD; audio 3,5 mm", yoga7Fuente),
+    atributo("bisagra", "Modos de uso", "diseno", "Bisagra de 360°: portátil, tienda, soporte y tableta", yoga7Fuente),
+    atributo("peso", "Peso inicial según panel", "diseno", "Desde 1,61 kg (IPS) o 1,49 kg (OLED)", yoga7Fuente),
   ],
-  samsung256.atributos.map((item) =>
-    item.clave === "almacenamiento"
-      ? atributo("almacenamiento", "Almacenamiento", "almacenamiento", "256 GB, 512 GB o 1 TB según variante", samsungS24UltraFamiliaFuente)
-      : item
-  ),
-  samsung256.metricasComparables,
+  [],
   [
     fuente(
-      samsungS24UltraFamiliaFuente,
-      "Samsung — Galaxy S24 Series B2B Specification Sheet",
-      "https://images.samsung.com/is/content/samsung/assets/us/2401/business/mobile/phones/galaxy/Galaxy_S24_Series_B2B_Spec_Sheet.pdf",
+      yoga7Fuente,
+      "Lenovo PSREF — Yoga 7 2-in-1 14AHP9, especificaciones oficiales",
+      "https://psref.lenovo.com/syspool/Sys/PDF/Yoga/Yoga_7_2_in_1_14AHP9/Yoga_7_2_in_1_14AHP9_Spec.PDF",
       null,
-      "La hoja oficial identifica para Galaxy S24 Ultra 12 GB de RAM y capacidades de 256 GB, 512 GB y 1 TB. El registro del catálogo no especifica cuál capacidad tiene la unidad."
-    ),
-    fuente(
-      "samsung-s24-ultra-co-family",
-      "Samsung Colombia — Galaxy S24 Ultra, especificaciones",
-      "https://www.samsung.com/co/smartphones/galaxy-s24-ultra/specs/",
-      null,
-      "Fuente regional oficial para las características de la familia; no se infiere color ni capacidad concreta del registro."
+      "La fuente documenta la familia 14AHP9 y sus opciones de procesador, memoria soldada, almacenamiento, panel, batería y puertos. El registro de TecReview no incluye MTM ni configuración exacta; por eso la ficha se marca parcial y no asigna RAM, SSD, panel ni procesador a una unidad concreta.",
+      CONSULTA
     ),
   ],
 );
@@ -1000,11 +993,11 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
   samsungGalaxyS24Ultra512: samsung512,
-  samsungGalaxyS24UltraFamilia: samsungS24UltraFamilia,
   oneplusPad2: oneplusPad2,
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
   appleMacbookPro16M3Max: macbookPro16M3Max,
+  lenovoYoga7_14_2in1: yoga7Familia,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
@@ -1046,9 +1039,9 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
+  if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
-  if (n.includes("s24 ultra")) return samsungS24UltraFamilia;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
@@ -1106,9 +1099,9 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("galaxy a55")) return galaxyA55;
       if (n.includes("iphone 13") && n.includes("128")) return iphone13;
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
-      if (n.includes("s24 ultra") && n.includes("256gb")) return samsung256;
-      if (n.includes("s24 ultra")) return samsungS24UltraFamilia;
+      if (n.includes("s24 ultra")) return samsung256;
       if (n.includes("oneplus pad 2")) return oneplusPad2;
+      if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
       if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
       if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
       if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;

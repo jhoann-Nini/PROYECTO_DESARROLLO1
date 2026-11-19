@@ -73,8 +73,9 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto controlado de ocho modelos. No se copian precios, puntuaciones ni
- * especificaciones a esta identidad: permanecen en sus registros de origen.
+ * Piloto controlado de ocho modelos. Precios y puntuaciones permanecen en
+ * sus registros de origen; la ficha técnica v2 se vincula por ID canónico y
+ * conserva por separado variantes, atributos y fuentes.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
   {

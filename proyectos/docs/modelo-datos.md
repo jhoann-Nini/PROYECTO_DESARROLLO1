@@ -636,7 +636,7 @@ Los scripts SQL históricos `006_reportes_resenas.sql` y `007_moderacion_reporte
 
 El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/.
 
-A la fecha de esta actualización, el repositorio contiene las migraciones 001–013. Entre las capacidades incorporadas por esa secuencia se encuentran:
+A la fecha de esta actualización, el repositorio contiene las migraciones 001–014. Entre las capacidades incorporadas por esa secuencia se encuentran:
 
 - Soporte de identidad y autenticación de Supabase.
 - Alineación del catálogo de roles y reseñas/valoraciones.
@@ -652,7 +652,7 @@ Este documento no debe interpretarse como un DDL completo ni como una representa
 
 ## 25.2 Estado de los scripts y de cada entorno
 
-Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a seis productos existentes; no modifica precios ni características.
+Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a seis productos existentes. La migración 014 registra dos precios de referencia comerciales con fuente y fecha; no convierte esos valores en inventario garantizado.
 
 
 ## 25.3 Imágenes licenciadas del catálogo — 19 de noviembre de 2026
@@ -669,3 +669,15 @@ La migración 013 completa el campo `producto.imagen` para seis registros existe
 | 85 | Nothing Ear (2) |
 
 La autoría, página de origen, licencia y tratamiento de cada fotografía se mantienen en `proyectos/frontend/src/data/atribucionImagenes.ts`. La migración no asigna precios ni modifica especificaciones: esos datos requieren una variante exacta y una fuente comercial vigente. El Xiaomi 14 Ultra (ID 3) queda pendiente de una URL compatible con el límite actual de 255 caracteres de `producto.imagen`; no se acortó ni sustituyó la URL original de la fotografía CC0.
+
+
+## 25.4 Precios de referencia documentados — 19 de noviembre de 2026
+
+La migración 014 registra precios observados para dos productos cuyo modelo coincide exactamente con la fuente consultada y cuyo campo `precio_referencia` estaba vacío:
+
+| ID | Producto | Precio de referencia (COP) | Condición | Fuente |
+|---:|---|---:|---|---|
+| 74 | Sony WH-1000XM5 | $2.249.896 | Precio publicado por Sony Colombia; color Smoky Pink en la ficha consultada | [Sony Colombia](https://www.sony.com.co/electronics/audifonos-banda-cabeza/wh-1000xm5) |
+| 85 | Nothing Ear (2) | $599.990 | Nuevo; oferta publicada por Exclusive JJ | [Exclusive JJ Colombia](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) |
+
+Estos importes son referencias observadas el 19/11/2026, no precios dinámicos ni garantía de inventario. La migración solo actualiza registros con ID y nombre coincidentes y precio previo NULL. Los demás productos permanecen sin precio cuando la fuente no permite confirmar la variante, condición o mercado.

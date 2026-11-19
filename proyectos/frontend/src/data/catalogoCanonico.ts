@@ -1,10 +1,9 @@
-import { obtenerFichaTecnicaPiloto } from "./fichasTecnicasPiloto";
-import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
 import type {
   CategoriaDispositivo,
   DispositivoKimovil,
   Producto,
 } from "@/types/producto";
+import { obtenerAtribucionImagen } from "./atribucionImagenes";
 import {
   DISPOSITIVOS_DESEADOS,
   DISPOSITIVOS_VENDIDOS,
@@ -36,16 +35,24 @@ export interface VarianteProductoCanonico {
   almacenamiento?: string | null;
   color?: string | null;
   mercado?: string | null;
+  sku?: string | null;
+  procesador?: string | null;
+  pantalla?: string | null;
 }
 
-export type EstadoImagenCanonica = "pendiente" | "sin_imagen";
+export type EstadoImagenCanonica = "pendiente" | "verificada" | "sin_imagen";
 
 export interface ImagenProductoCanonico {
   url: string | null;
   proveedor: string | null;
   referenciaOrigen: string;
+  paginaOrigen: string | null;
+  autor: string | null;
+  fuente: string | null;
   licencia: string | null;
+  licenciaUrl: string | null;
   atribucion: string | null;
+  cambios: string | null;
   estadoVerificacion: EstadoImagenCanonica;
 }
 
@@ -63,7 +70,6 @@ export interface ProductoCanonico {
 export interface ProductoCanonicoResuelto extends ProductoCanonico {
   registros: Array<DispositivoKimovil | Producto>;
   imagen: ImagenProductoCanonico;
-  fichaTecnica: FichaTecnicaV2;
 }
 
 const referencia = (
@@ -73,9 +79,8 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto controlado de ocho modelos. Precios y puntuaciones permanecen en
- * sus registros de origen; la ficha técnica v2 se vincula por ID canónico y
- * conserva por separado variantes, atributos y fuentes.
+ * Catálogo canónico ampliado de dieciocho modelos. No se copian precios, puntuaciones ni
+ * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
   {
@@ -135,7 +140,7 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
         id: "12gb-256gb",
         nombre: "12 GB RAM · 256 GB",
         ram: "12 GB",
-        almacenamiento: "256 GB",
+        almacenamiento: "256 GB UFS 3.1",
       },
     ],
   },
@@ -165,9 +170,12 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       {
         id: "16gb-512gb",
-        nombre: "16 GB RAM · 512 GB SSD",
-        ram: "16 GB",
-        almacenamiento: "512 GB SSD",
+        nombre: "Intel Core i5-1335U · 16 GB RAM · 512 GB SSD",
+        ram: "16 GB DDR4",
+        almacenamiento: "512 GB SSD NVMe",
+        sku: "21JK0005RI",
+        procesador: "Intel Core i5-1335U de 13.ª generación",
+        pantalla: "14 pulgadas IPS WUXGA · 300 nits · 45% NTSC",
       },
     ],
   },
@@ -184,6 +192,7 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
         nombre: "48 GB memoria unificada · 1 TB SSD",
         ram: "48 GB memoria unificada",
         almacenamiento: "1 TB SSD",
+        procesador: "Apple M3 Max · 16 núcleos CPU · 40 núcleos GPU",
       },
     ],
   },
@@ -211,6 +220,118 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     referencias: [referencia("vendidos", 109)],
     variantes: [],
   },
+
+  {
+    id: "samsung-galaxy-a55-5g",
+    nombre: "Samsung Galaxy A55 5G",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 102)],
+    variantes: [
+      { id: "8gb-128gb", nombre: "8 GB RAM · 128 GB", ram: "8 GB", almacenamiento: "128 GB", mercado: "Colombia · SKU SM-A556ELBLLTC" },
+      { id: "8gb-256gb", nombre: "8 GB RAM · 256 GB", ram: "8 GB", almacenamiento: "256 GB", mercado: "Colombia · configuración de lanzamiento" },
+    ],
+  },
+  {
+    id: "apple-iphone-13",
+    nombre: "Apple iPhone 13",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 104, "128gb")],
+    variantes: [
+      { id: "128gb", nombre: "128 GB", almacenamiento: "128 GB" },
+    ],
+  },
+  {
+    id: "xiaomi-14t-pro",
+    nombre: "Xiaomi 14T Pro 5G Leica",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("ofertas", 306, "12gb-512gb-co")],
+    variantes: [{ id: "12gb-512gb-co", nombre: "12 GB RAM · 512 GB", ram: "12 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0", mercado: "Colombia" }],
+  },
+  {
+    id: "nothing-ear-a-black",
+    nombre: "Nothing Ear (a) Black Edition",
+    marca: "Nothing",
+    categoria: "auriculares",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("ofertas", 301, "black")],
+    variantes: [{ id: "black", nombre: "Black Edition", color: "Black" }],
+  },
+  {
+    id: "xiaomi-14-ultra",
+    nombre: "Xiaomi 14 Ultra",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 204, "16gb-512gb")],
+    variantes: [{ id: "16gb-512gb", nombre: "16 GB RAM · 512 GB", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" }],
+  },
+  {
+    id: "apple-iphone-15-pro-max",
+    nombre: "Apple iPhone 15 Pro Max",
+    marca: "Apple",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 201, "256gb")],
+    variantes: [{ id: "256gb", nombre: "256 GB", almacenamiento: "256 GB" }],
+  },
+  {
+    id: "samsung-galaxy-s25-ultra",
+    nombre: "Samsung Galaxy S25 Ultra",
+    marca: "Samsung",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 206, "12gb-1tb")],
+    variantes: [
+      { id: "12gb-1tb", nombre: "12 GB RAM · 1 TB", ram: "12 GB", almacenamiento: "1 TB", mercado: "Colombia" },
+      { id: "12gb-512gb", nombre: "12 GB RAM · 512 GB", ram: "12 GB", almacenamiento: "512 GB", mercado: "Colombia" },
+      { id: "12gb-256gb", nombre: "12 GB RAM · 256 GB", ram: "12 GB", almacenamiento: "256 GB", mercado: "Colombia" },
+    ],
+  },
+  {
+    id: "oneplus-13",
+    nombre: "OnePlus 13 5G",
+    marca: "OnePlus",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("deseados", 207, "16gb-512gb")],
+    variantes: [
+      { id: "16gb-512gb", nombre: "16 GB RAM · 512 GB", ram: "16 GB LPDDR5X", almacenamiento: "512 GB UFS 4.0" },
+      { id: "12gb-256gb", nombre: "12 GB RAM · 256 GB", ram: "12 GB LPDDR5X", almacenamiento: "256 GB UFS 4.0" },
+    ],
+  },
+  {
+    id: "xiaomi-redmi-note-14-pro-plus-5g",
+    nombre: "Xiaomi Redmi Note 14 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 107, "12gb-512gb-co")],
+    variantes: [
+      { id: "12gb-512gb-co", nombre: "12 GB RAM · 512 GB", ram: "12 GB LPDDR4X", almacenamiento: "512 GB UFS 2.2", mercado: "Colombia" },
+    ],
+  },
+  {
+    id: "redmi-note-13-pro-plus-5g",
+    nombre: "Redmi Note 13 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 101, "12gb-512gb")],
+    variantes: [{
+      id: "12gb-512gb",
+      nombre: "12 GB RAM · 512 GB · Colombia",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    }],
+  },
+
 ];
 
 function buscarRegistro(
@@ -245,14 +366,22 @@ function imagenDeRegistro(
     }
   }
 
+  const atribucion = obtenerAtribucionImagen(url);
+
   return {
     url,
     proveedor,
     referenciaOrigen: `${referenciaOrigen.coleccion}:${referenciaOrigen.idRegistro}`,
-    // No se atribuye una licencia ni autoría sin metadatos de la imagen concreta.
-    licencia: null,
-    atribucion: null,
-    estadoVerificacion: url ? "pendiente" : "sin_imagen",
+    paginaOrigen: atribucion?.paginaOrigen ?? null,
+    autor: atribucion?.autor ?? null,
+    fuente: atribucion?.fuente ?? null,
+    licencia: atribucion?.licencia ?? null,
+    licenciaUrl: atribucion?.urlLicencia ?? null,
+    atribucion: atribucion
+      ? `${atribucion.autor} · ${atribucion.fuente} · ${atribucion.licencia}`
+      : null,
+    cambios: atribucion?.cambios ?? null,
+    estadoVerificacion: atribucion ? "verificada" : url ? "pendiente" : "sin_imagen",
   };
 }
 
@@ -283,17 +412,17 @@ export function obtenerProductoCanonico(
         url: null,
         proveedor: null,
         referenciaOrigen: "sin_referencia",
+        paginaOrigen: null,
+        autor: null,
+        fuente: null,
         licencia: null,
+        licenciaUrl: null,
         atribucion: null,
+        cambios: null,
         estadoVerificacion: "sin_imagen" as const,
       };
 
-  const fichaTecnica = obtenerFichaTecnicaPiloto(producto.id);
-  if (!fichaTecnica) {
-    throw new Error(`No existe ficha técnica para el producto piloto: ${producto.id}`);
-  }
-
-  return { ...producto, registros, imagen, fichaTecnica };
+  return { ...producto, registros, imagen };
 }
 
 export function obtenerCatalogoCanonicoPiloto(): ProductoCanonicoResuelto[] {

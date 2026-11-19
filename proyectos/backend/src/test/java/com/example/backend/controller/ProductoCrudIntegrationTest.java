@@ -514,4 +514,95 @@ class ProductoCrudIntegrationTest {
                 .andExpect(jsonPath("$.status", is(400)))
                 .andExpect(jsonPath("$.message", containsString("Cuerpo de la solicitud malformado o con estructura de datos inválida")));
     }
+
+    private ObjectNode fichaV3Valida() throws Exception {
+        return (ObjectNode) mapper.readTree("""
+            {"version_esquema":3,"categoria":"celulares",
+             "variantes":[{"id":"var-1","modelo":"Ilustrativo","sku":null,"mercado":null,"identificadores":{}}],
+             "especificaciones":[{"id":"display.diagonal.var-1","clave":"display.diagonal","nombre":"Diagonal","grupo":"pantalla","variante_id":"var-1","estado_dato":"conocido","justificacion_estado":null,"valor_original":{"texto":"0 in","unidad":"in"},"normalizacion":{"estado":"normalizada","valor":{"tipo":"magnitud","valor":0,"unidad":"in"},"regla_conversion_id":null,"precision":{"decimales":1}},"evidencia_ids":["ev-1"],"revision_conflicto":{"estado":"sin_conflicto","resuelto_en":null,"resuelto_por":null,"resolucion":null},"verificacion":{"estado":"con_fuente","verificado_en":null,"verificado_por":null,"evento_auditoria_id":null,"motivo_revision":null},"comparacion":{"habilitada":true,"id":"rule-1","modo":"orden_numerico","unidad":"in","direccion":"mayor_es_mejor","objetivo":null,"tolerancia":{"valor":0.1,"unidad":"in"}}}],
+             "fuentes":[{"id":"src-1","tipo":"fabricante","nombre":"Fuente ilustrativa","url":"https://example.test/specs","localizador":"sección","consultada_en":"2026-11-19","variante_id":"var-1","mercado":"ilustrativo"}],
+             "evidencias":[{"id":"ev-1","fuente_id":"src-1","alcance":{"tipo":"variante","variante_id":"var-1"},"localizador":"sección","extracto":"evidencia ilustrativa","postura":"respalda","registrada_en":"2026-11-19","registrada_por":"tester"}],"benchmarks":[]}
+            """);
+    }
+
+    private ObjectNode solicitudConCaracteristicas(String nombre, ObjectNode ficha) {
+        ObjectNode request = mapper.createObjectNode();
+        request.put("nombre", nombre);
+        request.put("descripcion", "Prueba de integración V3");
+        request.put("idCategoria", defaultCategoria.getIdCategoria());
+        request.put("idMarca", defaultMarca.getIdMarca());
+        request.put("precioReferencia", 0);
+        request.set("caracteristicas", ficha);
+        return request;
+    }
+
+    @Test
+    @DisplayName("19. Crear producto con ficha V3 válida: persiste y devuelve JSON sin alteraciones")
+    void crearProductoConFichaV3ValidaPersisteJson() throws Exception {
+        ObjectNode request = solicitudConCaracteristicas("V3 válido", fichaV3Valida());
+        String response = mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.caracteristicas.version_esquema", is(3)))
+                .andExpect(jsonPath("$.caracteristicas.especificaciones[0].normalizacion.valor.valor", is(0)))
+                .andReturn().getResponse().getContentAsString();
+        long id = mapper.readTree(response).get("idProducto").asLong();
+        assertEquals(3, productoRepository.findById(id).orElseThrow().getCaracteristicas().get("version_esquema"));
+    }
+
+    @Test
+    @DisplayName("20. Actualizar producto con V3 válida y rechazar V3 inválida sin persistirla")
+    void actualizarProductoConV3ValidaEInvalida() throws Exception {
+        Producto producto = crearProducto("Actualización V3", true);
+        ObjectNode valid = solicitudConCaracteristicas(producto.getNombre(), fichaV3Valida());
+        mockMvc.perform(put("/api/productos/{id}", producto.getIdProducto()).contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(valid)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.caracteristicas.version_esquema", is(3)));
+        ObjectNode invalidFicha = fichaV3Valida();
+        invalidFicha.put("categoria", "Smartwatch");
+        ObjectNode invalid = solicitudConCaracteristicas(producto.getNombre(), invalidFicha);
+        mockMvc.perform(put("/api/productos/{id}", producto.getIdProducto()).contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("categoria")));
+        assertEquals("celulares", productoRepository.findById(producto.getIdProducto()).orElseThrow()
+                .getCaracteristicas().get("categoria"));
+    }
+
+    @Test
+    @DisplayName("21. Rechazar versión desconocida y conservar mapas V1, V2 y legacy")
+    void despachoPorVersionRechazaDesconocidasYConservaFormatosPrevios() throws Exception {
+        ObjectNode unknown = mapper.createObjectNode(); unknown.put("version_esquema", 4);
+        ObjectNode requestUnknown = solicitudConCaracteristicas("versión desconocida", unknown);
+        mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(requestUnknown)))
+                .andExpect(status().isBadRequest());
+
+        ObjectNode unversionedV3 = fichaV3Valida();
+        unversionedV3.remove("version_esquema");
+        mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(solicitudConCaracteristicas("V3 sin versión", unversionedV3))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", containsString("version_esquema")));
+
+        for (int version : new int[]{1, 2}) {
+            ObjectNode mislabeled = fichaV3Valida(); mislabeled.put("version_esquema", version);
+            mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(solicitudConCaracteristicas("V3 mal etiquetada", mislabeled))))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message", containsString("marcadores V3")));
+
+            ObjectNode old = mapper.createObjectNode(); old.put("version_esquema", version); old.put("campoLegacy", "preservado");
+            mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                            .content(mapper.writeValueAsString(solicitudConCaracteristicas("V" + version, old))))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.caracteristicas.version_esquema", is(version)))
+                    .andExpect(jsonPath("$.caracteristicas.campoLegacy", is("preservado")));
+        }
+        ObjectNode legacy = mapper.createObjectNode(); legacy.put("pantalla", "dato legacy");
+        mockMvc.perform(post("/api/productos").contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(solicitudConCaracteristicas("Legacy", legacy))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.caracteristicas.pantalla", is("dato legacy")));
+    }
 }

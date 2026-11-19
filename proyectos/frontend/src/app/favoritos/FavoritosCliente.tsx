@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   obtenerCategorias,
@@ -22,14 +23,25 @@ import {
 } from "@/data/favoritosCatalogo";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { useFavoritos } from "@/hooks/useFavoritos";
+import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
+import AuthModal from "@/components/AuthModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 
 export default function FavoritosCliente() {
   const router = useRouter();
+  const {
+    usuario,
+    cargando: cargandoSesion,
+    error: errorSesion,
+    establecerUsuario,
+    limpiarError,
+    reintentar: reintentarSesion,
+  } = useSesionTecReview();
   const { ids, hidratado, limpiar } = useFavoritos();
 
+  const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [productos, setProductos] = useState<ProductoViewModel[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,9 +49,17 @@ export default function FavoritosCliente() {
   const [aviso, setAviso] = useState("");
   const [categoria, setCategoria] = useState<FiltroCategoriaFavoritos>("todas");
   const [orden, setOrden] = useState<OrdenCatalogo>("relevancia");
+  const idSesion = usuario?.id ?? null;
 
   useEffect(() => {
+    if (!idSesion) return;
+
     let activo = true;
+    queueMicrotask(() => {
+      if (!activo) return;
+      setCargando(true);
+      setError(null);
+    });
 
     Promise.all([
       obtenerProductos<Producto>(),
@@ -77,7 +97,7 @@ export default function FavoritosCliente() {
     return () => {
       activo = false;
     };
-  }, [intento]);
+  }, [idSesion, intento]);
 
   const favoritos = useMemo(() => {
     const porId = new Map(
@@ -109,6 +129,104 @@ export default function FavoritosCliente() {
   function vaciarFavoritos() {
     limpiar();
     setAviso("Se vaciaron tus favoritos.");
+  }
+
+  if (cargandoSesion) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div
+          role="status"
+          aria-busy="true"
+          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+        >
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
+          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+            Verificando tu sesión…
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!usuario) {
+    return (
+      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+        <section className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center shadow-[var(--shadow-paper)] sm:p-10">
+          <span
+            aria-hidden="true"
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              className="h-7 w-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 20.25s-7.5-4.5-7.5-9.75A4.5 4.5 0 0 1 12 7.5a4.5 4.5 0 0 1 7.5 3c0 5.25-7.5 9.75-7.5 9.75Z"
+              />
+            </svg>
+          </span>
+
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--color-ink)]">
+            Inicia sesión para ver tus favoritos
+          </h1>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--color-subtle)]">
+            Solo las cuentas con sesión activa pueden guardar, consultar y
+            quitar favoritos. Tus favoritos se conservan en este navegador y no
+            se sincronizan entre dispositivos.
+          </p>
+
+          {errorSesion && (
+            <p role="alert" className="mt-4 text-sm text-red-700">
+              {errorSesion}
+            </p>
+          )}
+
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                limpiarError();
+                setModalAuthAbierto(true);
+              }}
+              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+            >
+              Iniciar sesión
+            </button>
+            <Link
+              href="/productos"
+              className={`rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-5 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+            >
+              Explorar catálogo
+            </Link>
+            {errorSesion && (
+              <button
+                type="button"
+                onClick={() => {
+                  void reintentarSesion();
+                }}
+                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-5 py-2.5 text-sm font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              >
+                Reintentar
+              </button>
+            )}
+          </div>
+        </section>
+
+        <AuthModal
+          isOpen={modalAuthAbierto}
+          onClose={() => setModalAuthAbierto(false)}
+          onLoginSuccess={(usuarioSesion) => {
+            establecerUsuario(usuarioSesion);
+            setModalAuthAbierto(false);
+          }}
+        />
+      </main>
+    );
   }
 
   if (cargando) {
@@ -152,8 +270,9 @@ export default function FavoritosCliente() {
             Favoritos
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
-            Los productos que guardas se conservan en este navegador. No
-            necesitas iniciar sesión para consultarlos.
+            Solo puedes ver y administrar tus favoritos con la sesión iniciada.
+            Se conservan en este navegador y no se sincronizan entre
+            dispositivos.
           </p>
         </div>
 

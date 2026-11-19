@@ -332,6 +332,6 @@ export function hayFiltrosActivos(
     filtros.marcas.length > 0 ||
     filtros.caracteristicas.length > 0 ||
     filtros.precioMin > rango.min ||
-    filtros.precioMax < rango.max
+    filtros.precioMax < Number.MAX_SAFE_INTEGER
   );
 }

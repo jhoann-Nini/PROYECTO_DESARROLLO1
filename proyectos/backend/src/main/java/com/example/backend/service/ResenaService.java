@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.example.backend.entity.EstadoModeracion;
 
 /**
  * Servicio de negocio para la consulta, registro, actualización y eliminación de reseñas de productos.
@@ -37,6 +38,7 @@ public class ResenaService {
     private final UsuarioService usuarioService;
     private final ResenaUpdateHelper resenaUpdateHelper;
     private final ResenaCreateTransaction resenaCreateTransaction;
+    private final ResenaModerationService resenaModerationService;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
     public ResenaService(ResenaRepository resenaRepository,
@@ -44,13 +46,15 @@ public class ResenaService {
                          UsuarioService usuarioService,
                          ResenaUpdateHelper resenaUpdateHelper,
                          ResenaCreateTransaction resenaCreateTransaction,
+                         ResenaModerationService resenaModerationService,
                          ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
-        this.resenaRepository = resenaRepository;
-        this.productoRepository = productoRepository;
-        this.usuarioService = usuarioService;
-        this.resenaUpdateHelper = resenaUpdateHelper;
-        this.resenaCreateTransaction = resenaCreateTransaction;
-        this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
+      this.resenaRepository = resenaRepository;
+      this.productoRepository = productoRepository;
+      this.usuarioService = usuarioService;
+      this.resenaUpdateHelper = resenaUpdateHelper;
+      this.resenaCreateTransaction = resenaCreateTransaction;
+      this.resenaModerationService = resenaModerationService;
+      this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
     }
 
     @Transactional(readOnly = true)
@@ -60,9 +64,9 @@ public class ResenaService {
             if (!productoRepository.existsById(idProducto)) {
                 throw new ResourceNotFoundException("Producto no encontrado con id " + idProducto);
             }
-            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc(idProducto);
+            resenas = resenaRepository.findByProductoIdProductoAndEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc(idProducto);
         } else {
-            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseAndOcultaPorModeracionFalseOrderByFechaCreacionDesc();
+            resenas = resenaRepository.findByEstadoTrueAndOcultaPorReportesFalseOrderByFechaCreacionDesc();
         }
         return resenas.stream().map(this::toResponse).toList();
     }
@@ -131,11 +135,20 @@ public class ResenaService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar esta reseña.");
         }
 
-        String comentarioLimpio = request.comentario().trim();
-        resena.setComentario(comentarioLimpio);
-        if (request.puntuacion() != null) {
-            resena.setPuntuacion(request.puntuacion());
-        }
+      String comentarioLimpio = request.comentario().trim();
+
+      resena.setComentario(comentarioLimpio);
+
+      if (request.puntuacion() != null) {
+        resena.setPuntuacion(request.puntuacion());
+      }
+
+      // Conservar PENDIENTE si ya estaba en revisión.
+      if (resena.getEstadoModeracion() != EstadoModeracion.PENDIENTE) {
+        resena.setEstadoModeracion(
+          resenaModerationService.determinarEstado(comentarioLimpio)
+        );
+      }
 
         Resena guardada = resenaRepository.save(resena);
         return toResponse(guardada);
@@ -307,7 +320,8 @@ public class ResenaService {
                 r.getComentario(),
                 r.getPuntuacion(),
                 r.getFechaCreacion(),
-                r.getEstado()
+                r.getEstado(),
+                r.getEstadoModeracion()
         );
     }
 }

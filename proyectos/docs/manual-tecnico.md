@@ -1277,3 +1277,40 @@ Estado: Borrador
 Última actualización: Pendiente
 
 Responsable: Equipo de desarrollo TecnoReview
+
+---
+
+# Estado técnico actualizado — 18 de noviembre de 2026
+
+Esta sección complementa las instrucciones históricas de este manual y prevalece sobre las referencias que describen el proyecto como una estructura inicial o meramente propuesta.
+
+## Repositorio y estructura real
+
+El repositorio es jhoann-Nini/PROYECTO_DESARROLLO1. Los proyectos están dentro de proyectos/:
+
+- proyectos/frontend/: Next.js 16.3.5, React 19.2.8 y TypeScript.
+- proyectos/backend/: Spring Boot 4.0.0, Java 21, Spring Data JPA, Spring Security y PostgreSQL.
+- proyectos/docs/: documentación funcional, técnica, API y scripts SQL de referencia.
+- proyectos/backend/src/main/resources/db/migration/: secuencia de migraciones SQL versionadas.
+
+## Migraciones SQL
+
+El backend contiene los scripts numerados del 001 al 012. La migración 004 alternativa marcada como obsoleta se conserva como referencia histórica y no debe confundirse con la migración 004 vigente. La migración 012 agrega el estado independiente de moderación automática de reseñas (PUBLICADA / PENDIENTE).
+
+Los scripts ejecutables del backend son la referencia de implementación. La carpeta proyectos/docs/sql/ mantiene copias de consulta; debe conservarse sincronizada con ellos. La presencia de los archivos en Git acredita que están implementados y versionados en el repositorio, pero no acredita por sí sola qué versiones están registradas en una instancia concreta de Supabase. Para comprobar una instancia se debe consultar public.schema_version y validar el esquema allí.
+
+## Validación continua registrada
+
+El CI de GitHub Actions asociado al commit 52d3782 de main, ejecutado el 18 de noviembre de 2026, finalizó correctamente:
+
+- Backend: ./mvnw test, 477 pruebas, 0 fallos, 0 errores y 0 omitidas.
+- Frontend: 73 archivos de prueba y 993 pruebas aprobadas.
+- TypeScript: npx tsc --noEmit, correcto.
+- ESLint: npm run lint, correcto.
+- Compilación: npm run build, correcta con Next.js 16.3.5.
+
+Esta validación corresponde a CI y no debe describirse como una prueba integral contra una base remota de producción. Consulta pruebas-integracion.md.
+
+## Ejecución local
+
+Desde proyectos/backend, usar ./mvnw test (Linux/macOS) o mvnw.cmd test (Windows). Desde proyectos/frontend, ejecutar npm ci, npx tsc --noEmit, npm test, npm run lint y npm run build. Las variables de entorno y credenciales deben configurarse localmente y no deben incorporarse al repositorio.

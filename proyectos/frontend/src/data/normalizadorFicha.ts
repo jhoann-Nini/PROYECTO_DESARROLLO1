@@ -47,6 +47,11 @@ import {
 } from "./identificadores";
 import { detectarCategoria } from "./specsHelper";
 import type { DatosFichaTecnica, MetricaComparableFicha } from "./fichaTecnica";
+import {
+  obtenerFichaTecnicaV2PilotoParaKimovil,
+  obtenerFichaTecnicaV2PilotoParaProducto,
+} from "./fichasTecnicasV2Piloto";
+import { obtenerFichaTecnicaV2CatalogoParaKimovil } from "./fichasTecnicasV2CatalogoAdicional";
 
 export {
   esMetricaComparableAutomaticamente,
@@ -1008,11 +1013,17 @@ export function normalizarDesdeProducto(
         `Versión de esquema no soportada en características del producto: ${String(rawObj.version_esquema)}`
       );
     }
+    const fichaPiloto = obtenerFichaTecnicaV2PilotoParaProducto(producto.nombre);
+    if (fichaPiloto) return { ...fichaPiloto, categoria };
+
     return normalizarDesdeMapaCaracteristicas(
       rawObj,
       ctx
     );
   }
+
+  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaProducto(producto.nombre);
+  if (fichaPiloto) return { ...fichaPiloto, categoria };
 
   return crearFichaVacia(categoria);
 }
@@ -1029,6 +1040,25 @@ export function normalizarDesdeKimovil(
   }
 
   const categoria = detectarCategoria(dispositivo) as CategoriaFichaTecnica;
+  const fichaCatalogo = obtenerFichaTecnicaV2CatalogoParaKimovil(dispositivo.id, dispositivo.nombre);
+  const fichaPiloto = obtenerFichaTecnicaV2PilotoParaKimovil(dispositivo.id, dispositivo.nombre);
+
+  if (fichaCatalogo && fichaPiloto) {
+    const variantes =
+      fichaPiloto.variantes.length > fichaCatalogo.variantes.length
+        ? fichaPiloto.variantes
+        : fichaCatalogo.variantes;
+
+    return {
+      ...fichaCatalogo,
+      categoria,
+      variantes,
+    };
+  }
+
+  if (fichaCatalogo) return { ...fichaCatalogo, categoria };
+  if (fichaPiloto) return { ...fichaPiloto, categoria };
+
   const idClave = String(dispositivo.id);
   const idGlobal = contexto?.idGlobal ?? (idGlobalMock(idClave) ?? undefined);
   const claveFuente = idGlobal ? idGlobal.replace(/^mock:/, "") : idClave;

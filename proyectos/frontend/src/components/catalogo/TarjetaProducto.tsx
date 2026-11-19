@@ -3,8 +3,10 @@
 
 import { useState } from "react";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import RatingStars from "./RatingStars";
@@ -35,6 +37,7 @@ export default function TarjetaProducto({
   const esLista = variante === "lista";
   const tieneImagen =
     Boolean(producto.imagen) && producto.imagen !== null && !errorImagen;
+  const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
   const specs = [
     producto.especificaciones.pantalla,
     producto.especificaciones.procesador,
@@ -83,7 +86,7 @@ export default function TarjetaProducto({
               alt={`Fotografía de ${producto.nombre}`}
               onError={() => setErrorImagen(true)}
               loading="lazy"
-              className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+              className={`h-full w-full object-contain ${imagenSinDerivados ? "" : "transition-transform duration-300 group-hover:scale-[1.03]"}`}
             />
           ) : (
             <ProductImagePlaceholder
@@ -94,6 +97,10 @@ export default function TarjetaProducto({
             />
           )}
         </button>
+        <AtribucionImagenProducto
+          src={producto.imagen}
+          className="absolute bottom-1 left-1 right-1 rounded bg-[var(--color-paper)]/90 px-1 py-0.5"
+        />
 
         {tienePosicion && (
           <span className="absolute left-2 top-2 rounded-md bg-[var(--color-brand-solid)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-solid)] shadow-[var(--shadow-paper)]">

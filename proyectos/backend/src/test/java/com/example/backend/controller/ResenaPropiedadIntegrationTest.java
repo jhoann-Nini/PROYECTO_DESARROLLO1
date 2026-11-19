@@ -7,9 +7,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import com.example.backend.config.SecurityConfig;
 import com.example.backend.entity.Categoria;
+import com.example.backend.entity.EstadoModeracion;
 import com.example.backend.entity.Marca;
 import com.example.backend.entity.Producto;
 import com.example.backend.entity.Resena;
@@ -243,6 +245,7 @@ class ResenaPropiedadIntegrationTest {
         resena.setComentario("Reseña legítima creada por el autor.");
         resena.setPuntuacion(5);
         resena.setEstado(true);
+        resena.setEstadoModeracion(EstadoModeracion.PUBLICADA);
         resena.setFechaCreacion(LocalDateTime.now());
         idResenaAutor = resenaRepository.save(resena).getIdResena();
     }
@@ -570,5 +573,123 @@ class ResenaPropiedadIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"idProducto\":" + idOtroProducto + ",\"comentario\":\"Intento de publicar por cuenta inactiva\",\"puntuacion\":4}"))
                 .andExpect(status().isForbidden());
+    }
+    @Test
+    @DisplayName("[TEC-97] POST con palabra bloqueada guarda la reseña como PENDIENTE")
+    void postResena_conPalabraBloqueada_quedaPendiente() throws Exception {
+      String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
+
+      String respuesta = mockMvc.perform(post("/api/resenas")
+          .header("Authorization", "Bearer " + tokenAutor)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content("{\"idProducto\":" + idOtroProducto
+            + ",\"comentario\":\"Este producto es una estafa\",\"puntuacion\":1}"))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.estadoModeracion").value("PENDIENTE"))
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
+      JsonNode json = new ObjectMapper().readTree(respuesta);
+      long idNuevaResena = json.get("idResena").asLong();
+
+      Resena resenaGuardada = resenaRepository.findById(idNuevaResena).orElseThrow();
+
+      Assertions.assertEquals(
+        EstadoModeracion.PENDIENTE,
+        resenaGuardada.getEstadoModeracion()
+      );
+    }
+
+    @Test
+    @DisplayName("[TEC-97] POST con comentario normal guarda la reseña como PUBLICADA")
+    void postResena_comentarioNormal_quedaPublicada() throws Exception {
+      String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
+
+      String respuesta = mockMvc.perform(post("/api/resenas")
+          .header("Authorization", "Bearer " + tokenAutor)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content("{\"idProducto\":" + idOtroProducto
+            + ",\"comentario\":\"Excelente producto, funciona perfectamente\",\"puntuacion\":5}"))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.estadoModeracion").value("PUBLICADA"))
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
+      JsonNode json = new ObjectMapper().readTree(respuesta);
+      long idNuevaResena = json.get("idResena").asLong();
+
+      Resena resenaGuardada = resenaRepository.findById(idNuevaResena).orElseThrow();
+
+      Assertions.assertEquals(
+        EstadoModeracion.PUBLICADA,
+        resenaGuardada.getEstadoModeracion()
+      );
+    }
+    @Test
+    @DisplayName("[TEC-97] PUT conserva PENDIENTE aunque el comentario corregido sea normal")
+    void putResena_pendienteConComentarioNormal_siguePendiente() throws Exception {
+      Resena resena = resenaRepository.findById(idResenaAutor).orElseThrow();
+      resena.setEstadoModeracion(EstadoModeracion.PENDIENTE);
+      resena.setComentario("Este producto es una estafa");
+      resenaRepository.save(resena);
+
+      String tokenAutor = generarToken(SUB_AUTOR, "autor@example.com");
+
+      mockMvc.perform(put("/api/resenas/" + idResenaAutor)
+          .header("Authorization", "Bearer " + tokenAutor)
+          .contentType(MediaType.APPLICATION_JSON)
+          .content("{\"comentario\":\"Excelente producto, funciona perfectamente\",\"puntuacion\":5}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.estadoModeracion").value("PENDIENTE"));
+
+      Resena resenaActualizada = resenaRepository.findById(idResenaAutor).orElseThrow();
+
+      Assertions.assertEquals(
+        "Excelente producto, funciona perfectamente",
+        resenaActualizada.getComentario()
+      );
+
+      Assertions.assertEquals(
+        EstadoModeracion.PENDIENTE,
+        resenaActualizada.getEstadoModeracion()
+      );
+    }
+    @Test
+    @DisplayName("[TEC-97] GET público muestra PUBLICADAS y excluye PENDIENTES")
+    void listarResenas_productoMuestraPublicadasYExcluyePendientes() throws Exception {
+
+      // Crear una reseña pendiente
+      Resena pendiente = new Resena();
+      pendiente.setProducto(productoRepository.findById(idOtroProducto).orElseThrow());
+      pendiente.setUsuario(usuarioRepository.findById(idUsuarioAutor).orElseThrow());
+      pendiente.setComentario("Este producto es una estafa");
+      pendiente.setPuntuacion(1);
+      pendiente.setEstado(true);
+      pendiente.setEstadoModeracion(EstadoModeracion.PENDIENTE);
+      pendiente.setFechaCreacion(LocalDateTime.now());
+
+      Resena resenaPendiente = resenaRepository.save(pendiente);
+
+      // Crear una reseña publicada del mismo producto, con otro usuario
+      Resena publicada = new Resena();
+      publicada.setProducto(productoRepository.findById(idOtroProducto).orElseThrow());
+      publicada.setUsuario(usuarioRepository.findById(idUsuarioImpostor).orElseThrow());
+      publicada.setComentario("Excelente producto, funciona perfectamente");
+      publicada.setPuntuacion(5);
+      publicada.setEstado(true);
+      publicada.setEstadoModeracion(EstadoModeracion.PUBLICADA);
+      publicada.setFechaCreacion(LocalDateTime.now());
+
+      Resena resenaPublicada = resenaRepository.save(publicada);
+
+      // Consultar las reseñas públicas del producto
+      mockMvc.perform(get("/api/productos/" + idOtroProducto + "/resenas"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[?(@.idResena == "
+          + resenaPendiente.getIdResena() + ")]").doesNotExist())
+        .andExpect(jsonPath("$[?(@.idResena == "
+          + resenaPublicada.getIdResena() + ")]").exists());
     }
 }

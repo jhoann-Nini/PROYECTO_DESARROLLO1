@@ -95,6 +95,42 @@ describe("FichaTecnicaV3Panel", () => {
     expect(screen.getByRole("alert").textContent).toContain("no coincide");
     expect(screen.getByText(/Celulares/)).toBeTruthy();
   });
+
+  it("diferencia variantes con el mismo modelo utilizando sus identificadores sin duplicar etiquetas", () => {
+    const ficha = structuredClone(fixture);
+    ficha.variantes = [
+      { id: "var-256", modelo: "Galaxy S24 Ultra", sku: null, mercado: null, identificadores: { ram: "12 GB", almacenamiento: "256 GB" } },
+      { id: "var-512", modelo: "Galaxy S24 Ultra", sku: null, mercado: null, identificadores: { ram: "12 GB", almacenamiento: "512 GB" } },
+      { id: "var-1tb", modelo: "Galaxy S24 Ultra", sku: null, mercado: null, identificadores: { ram: "12 GB", almacenamiento: "1 TB" } },
+    ];
+    const state: typeof estado = { ...estado, original: ficha as unknown as Record<string, unknown>, ficha };
+    render(<FichaTecnicaV3Panel estado={state} />);
+
+    const select = screen.getByLabelText("Variante") as HTMLSelectElement;
+    expect(select).toBeTruthy();
+    const options = Array.from(select.options).map((opt) => opt.textContent);
+    expect(options).toContain("Elige una variante para consultar sus especificaciones");
+    expect(options).toContain("Galaxy S24 Ultra · 12 GB · 256 GB");
+    expect(options).toContain("Galaxy S24 Ultra · 12 GB · 512 GB");
+    expect(options).toContain("Galaxy S24 Ultra · 12 GB · 1 TB");
+
+    // Confirma que todas las opciones de variantes son únicas (sin duplicados visuales)
+    const opcionesVariantes = options.filter((t) => t && !t.includes("Elige una variante"));
+    const opcionesUnicas = new Set(opcionesVariantes);
+    expect(opcionesUnicas.size).toBe(opcionesVariantes.length);
+  });
+
+  it("muestra microcopy natural y badges accesibles para comparabilidad y revisiones", () => {
+    const ficha = structuredClone(fixture);
+    ficha.especificaciones[0].comparacion = { habilitada: false };
+    ficha.especificaciones[0].verificacion = { estado: "requiere_revision", verificado_en: null, verificado_por: null, evento_auditoria_id: null, motivo_revision: "Discrepancia de hz" };
+    const state: typeof estado = { ...estado, original: ficha as unknown as Record<string, unknown>, ficha };
+    render(<FichaTecnicaV3Panel estado={state} />);
+
+    expect(screen.getByText("Este atributo no está disponible para comparar.")).toBeTruthy();
+    expect(screen.getByText("Requiere revisión")).toBeTruthy();
+    expect(screen.getByText("Motivo de revisión: Discrepancia de hz")).toBeTruthy();
+  });
 });
 
 function benchmark(id: string, variantId: string, evidenceId: string, sourceId: string, pending = false): DatosFichaTecnicaV3["benchmarks"][number] {

@@ -1,4 +1,4 @@
-# Catálogo canónico TecReview — piloto de ocho productos
+# Catálogo canónico TecReview — piloto ampliado
 
 ## Alcance implementado en frontend
 
@@ -16,25 +16,37 @@ Los identificadores de origen no se reemplazan ni se interpretan como IDs de la 
 1. Las apariciones del mismo modelo en rankings, ofertas y mocks se agrupan bajo una identidad canónica.
 2. Las variantes comerciales (RAM, almacenamiento, color o mercado) se mantienen separadas.
 3. No se fusionan modelos de una misma familia por similitud de nombre. Por ejemplo, Nothing Phone (2a) Plus y Nothing Phone (2a) Special Edition no son el mismo registro canónico.
-4. Los datos de precio, ranking y puntuación permanecen en sus registros de origen. Las especificaciones se normalizan en una ficha técnica v2 vinculada al modelo canónico, conservando sus fuentes y variantes.
+4. Los datos de precio, ranking, puntuación y especificaciones permanecen en su registro de origen; el catálogo canónico no los duplica.
 5. Una referencia sin capacidad/color explícitos permanece sin variante asignada.
 
 ## Imágenes
 
-Las URLs actuales se conservan como referencias heredadas para no romper la presentación existente. No se consideran imágenes verificadas del dispositivo. La metadata deja licencia y atribución como nulas hasta que se confirme la imagen exacta, su autoría y sus condiciones de uso.
+La verificación de imagen es independiente de la ficha técnica. Una URL solo se marca como `verificada` cuando coincide exactamente con una entrada de `src/data/atribucionImagenes.ts`, que documenta página de origen, autor, licencia, enlace de licencia y tratamiento. Las imágenes sin registro de atribución permanecen en estado `pendiente`; no se infiere permiso de reutilización a partir de una página oficial o de una URL válida.
+
+En el lote ampliado se documentaron fotografías para Samsung Galaxy A55 5G, Apple iPhone 13 y Xiaomi Redmi Note 14 Pro+ 5G. Lenovo ThinkPad E14 Gen 5 y MacBook Pro 16 M3 Max siguen pendientes de una fotografía reutilizable cuya correspondencia de modelo y variante esté comprobada.
 
 ## Piloto
 
 | ID canónico | Modelo | Referencias |
 |---|---|---|
 | `nothing-phone-2a-special-edition` | Nothing Phone (2a) Special Edition | mock:1 |
-| `samsung-galaxy-s24-ultra` | Samsung Galaxy S24 Ultra | deseados:202, ofertas:300 |
-| `oneplus-pad-2` | OnePlus Pad 2 | vendidos:108, ofertas:303, mock:5 |
-| `apple-ipad-pro-11-m4` | Apple iPad Pro 11 pulgadas M4 | deseados:208 |
-| `lenovo-thinkpad-e14-gen-5` | Lenovo ThinkPad E14 Gen 5 | mock:6 |
-| `apple-macbook-pro-16-m3-max` | Apple MacBook Pro 16 pulgadas M3 Max | deseados:209 |
+| `samsung-galaxy-s24-ultra` | Samsung Galaxy S24 Ultra | deseados:202 (256 GB), ofertas:300 (512 GB) |
+| `oneplus-pad-2` | OnePlus Pad 2 | vendidos:108, ofertas:303, mock:5 (12 GB/256 GB, UFS 3.1) |
+| `apple-ipad-pro-11-m4` | Apple iPad Pro 11 pulgadas M4 | deseados:208 (16 GB/1 TB, pendiente de validar SKU) |
+| `lenovo-thinkpad-e14-gen-5` | Lenovo ThinkPad E14 Gen 5 | mock:6 (SKU 21JK0005RI, i5-1335U, 16 GB/512 GB) |
+| `apple-macbook-pro-16-m3-max` | Apple MacBook Pro 16 pulgadas M3 Max | deseados:209 (48 GB/1 TB, 16 CPU/40 GPU; pendiente de validar SKU) |
 | `nothing-ear-2` | Nothing Ear (2) | mock:3 |
 | `sony-wh-1000xm5` | Sony WH-1000XM5 | vendidos:109 |
+| `samsung-galaxy-a55-5g` | Samsung Galaxy A55 5G | vendidos:102 (8 GB RAM; capacidad exacta pendiente entre 128/256 GB) |
+| `apple-iphone-13` | Apple iPhone 13 | vendidos:104 (128 GB) |
+| `xiaomi-redmi-note-14-pro-plus-5g` | Xiaomi Redmi Note 14 Pro+ 5G | vendidos:107 (12 GB/512 GB) |
+| `redmi-note-13-pro-plus-5g` | Redmi Note 13 Pro+ 5G | vendidos:101 (12 GB/512 GB, Colombia; imagen pendiente) |
+| `oneplus-13` | OnePlus 13 5G | deseados:207 (16 GB/512 GB) |
+| `apple-iphone-15-pro-max` | Apple iPhone 15 Pro Max | deseados:201 (256 GB) |
+| `samsung-galaxy-s25-ultra` | Samsung Galaxy S25 Ultra | deseados:206 (12 GB/1 TB) |
+| `xiaomi-14-ultra` | Xiaomi 14 Ultra | deseados:204 (16 GB/512 GB) |
+| `nothing-ear-a-black` | Nothing Ear (a) Black Edition | ofertas:301 (Black) |
+| `xiaomi-14t-pro` | Xiaomi 14T Pro 5G Leica | ofertas:306 (12 GB/512 GB) |
 
 ## Revisión futura de backend (no ejecutada)
 
@@ -65,21 +77,35 @@ Se contrastó la identidad comercial de los ocho modelos con documentación publ
 | Producto | Fuente oficial | Resultado y cautela |
 |---|---|---|
 | Nothing Phone (2a) Special Edition | [Nothing — Phone (2a) Special Edition](https://checkout.nothing.tech/pages/phone-2a) | El fabricante identifica expresamente la edición especial. La capacidad 12 GB/256 GB debe conservarse como variante de la fuente local hasta verificarla contra SKU/mercado. |
-| Samsung Galaxy S24 Ultra | [Samsung — Galaxy S24 series specifications](https://news.samsung.com/us/enter-new-era-of-mobile-ai-samsung-galaxy-s24-series) | Modelo confirmado. Samsung enumera capacidades de 256 GB, 512 GB y 1 TB; la referencia local de 512 GB es compatible con la oferta publicada, pero precio e inventario no quedan validados. |
+| Samsung Galaxy S24 Ultra | [Samsung — Galaxy S24 series specifications](https://news.samsung.com/us/enter-new-era-of-mobile-ai-samsung-galaxy-s24-series//) | Modelo confirmado. Samsung enumera capacidades de 256 GB, 512 GB y 1 TB; la referencia local de 512 GB es compatible con la oferta publicada, pero precio e inventario no quedan validados. |
 | OnePlus Pad 2 | [OnePlus — especificaciones](https://www.oneplus.com/us/oneplus-pad-2/specs) | Modelo confirmado. La ficha estadounidense especifica 12 GB RAM y 256 GB; coincide con la variante piloto. |
-| Apple iPad Pro 11 pulgadas M4 | [Apple — especificaciones técnicas](https://support.apple.com/en-am/119892) | La variante del piloto se fija en 1 TB y 16 GB de memoria unificada, con CPU/GPU de 10 núcleos. La conectividad Wi-Fi o Wi-Fi + Cellular queda sin determinar hasta identificar el SKU. |
-| Lenovo ThinkPad E14 Gen 5 | [Lenovo PSREF — MTM 21JK0005RI](https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI) | La variante piloto queda identificada como Intel Core i5-1335U, 16 GB DDR4 y SSD de 512 GB para el MTM 21JK0005RI. No mezclarla con anuncios de otros MTM ni con la variante i5-1355U. |
-| Apple MacBook Pro 16 pulgadas M3 Max | [Apple — especificaciones técnicas](https://support.apple.com/es-la/117737) | La configuración de referencia del piloto es M3 Max con CPU de 16 núcleos, GPU de 40 núcleos, 48 GB de memoria unificada y SSD de 1 TB. La variante heredada de 36 GB se corrige porque no corresponde a esta configuración. |
+| Apple iPad Pro 11 pulgadas M4 | [Apple — especificaciones técnicas](https://support.apple.com/en-am/119892) | Modelo y opciones de capacidad confirmados. El registro local fue corregido a 16 GB/1 TB por PR #108; conservarlo como variante de origen pendiente de cotejo por SKU y conectividad. |
+| Lenovo ThinkPad E14 Gen 5 | [Lenovo — E14 Gen 5 AMD](https://www.lenovo.com/us/en/p/LEN101T0068) y [PSREF modelo AMD](https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_AMD?M=21JR000AIX) | La familia tiene configuraciones Intel y AMD. El registro local ahora identifica SKU 21JK0005RI e Intel Core i5-1335U; la combinación exacta sigue pendiente de cotejo con PSREF/MTM oficial. |
+| Apple MacBook Pro 16 pulgadas M3 Max | [Apple — especificaciones técnicas](https://support.apple.com/es-la/117737) | Modelo confirmado (noviembre de 2023). El registro local fue corregido a M3 Max de 16 CPU/40 GPU, 48 GB/1 TB; mantener la configuración pendiente de validar contra el SKU exacto y el mercado. |
 | Nothing Ear (2) | [Nothing — Ear (2)](https://checkout-us.nothing.tech/products/ear-2) | Modelo confirmado y ficha oficial de características disponible. El color Transparent White se conserva como variante de origen; no se validó disponibilidad comercial actual. |
 | Sony WH-1000XM5 | [Sony — especificaciones](https://www.sony.com/electronics/support/wireless-headphones-bluetooth-headphones/wh-1000xm5/specifications) | Modelo confirmado mediante ficha oficial de soporte. La fuente consultada respalda especificaciones, no disponibilidad ni precio actual. |
 
 ### Resultado de la validación
 
 - **Identidad de modelo/familia:** los ocho productos tienen respaldo en fuentes oficiales.
-- **Variantes:** Samsung Galaxy S24 Ultra conserva 256 GB y 512 GB como variantes distintas; OnePlus Pad 2 conserva 12/256 GB. El iPad Pro M4 se documenta como 1 TB/16 GB; el MacBook Pro M3 Max como 16 CPU/40 GPU, 48 GB/1 TB; y el ThinkPad E14 Gen 5 como MTM 21JK0005RI con i5-1335U, 16 GB/512 GB. Los SKU y mercados deben seguir visibles en la ficha.
+- **Variantes:** Samsung Galaxy S24 Ultra 512 GB y OnePlus Pad 2 12/256 GB coinciden con opciones publicadas por sus fabricantes. Para ThinkPad E14 Gen 5 y MacBook Pro M3 Max se requiere identificar el SKU/MTM exacto antes de confirmar la configuración. En los demás casos se conserva la variante heredada sin elevarla automáticamente a dato verificado.
 - **Precios, disponibilidad y vendedores:** no verificados; deben obtenerse de una fuente comercial por país y con fecha de consulta.
 - **Imágenes:** siguen pendientes de verificación individual de procedencia, licencia y atribución. Una página oficial del producto no demuestra que la URL de imagen heredada esté autorizada para reutilización.
-- **Estado técnico:** el campo `estadoVerificacion` del catálogo permanece en `pendiente`; esta revisión documental no cambia el estado de verificación de cada registro en código.
+- **Estado del catálogo canónico:** el campo `estadoVerificacion` de sus registros permanece en `pendiente`. Es independiente de `estado_verificacion` en las fichas técnicas V2 y no debe interpretarse como el estado de estas fichas.
+
+
+
+### Reconciliación de variantes tras PR #108
+
+La revisión del catálogo canónico debe tomar como referencia las fichas corregidas en `mockProductos.ts`, sin convertir esos datos mock en información verificada por fabricante:
+
+- Samsung Galaxy S24 Ultra: `deseados:202` corresponde a 256 GB y `ofertas:300` a 512 GB. Ambas referencias se asignan a variantes distintas; no se debe dejar la referencia deseada sin variante.
+- OnePlus Pad 2: conservar 12 GB/256 GB y especificar UFS 3.1.
+- iPad Pro 11 M4: el registro piloto corregido es 16 GB de memoria unificada/1 TB, no 8 GB/512 GB.
+- ThinkPad E14 Gen 5: el registro piloto identifica SKU 21JK0005RI, Intel Core i5-1335U, 16 GB DDR4, 512 GB SSD NVMe y panel 14 pulgadas WUXGA de 45% NTSC. La coincidencia con una ficha oficial Lenovo aún debe validarse.
+- MacBook Pro 16 M3 Max: el registro piloto corregido es 16 núcleos CPU/40 GPU, 48 GB de memoria unificada y 1 TB SSD; el SKU exacto sigue pendiente.
+
+Las referencias comerciales históricas de iPad Pro 512 GB y MacBook Pro 36 GB no corresponden a las variantes actuales del piloto. La publicación PCWare citada para ThinkPad no demuestra que sea el SKU 21JK0005RI. No asociar estas ofertas con las variantes canónicas actuales ni mostrar sus precios como comparables. El estado `pendiente` mencionado aquí corresponde al catálogo canónico y a la validación de ofertas comerciales (SKU, mercado, condición e inventario); no describe el estado de las fichas técnicas V2, que se registra por separado.
 
 ## Revisión de fuentes comerciales e imágenes (16 de noviembre de 2026)
 
@@ -92,9 +118,9 @@ Esta revisión es una fotografía de resultados públicos consultados en la fech
 | Samsung Galaxy S24 Ultra 512 GB | [Samsung Colombia](https://www.samsung.com/co/smartphones/galaxy-s24-ultra/buy/?modelCode=SM-S928BZTILTC) | $7.499.900 COP | Precio mostrado en el selector de 512 GB; verificar disponibilidad/color y precio final en checkout. |
 | iPad Pro 11 M4 512 GB | [Tienda PC](https://www.tiendapc.com.co/LoNuevo) | $6.839.000 COP | Publicación indexada para 512 GB; confirmar stock, color y vigencia directamente con la tienda. |
 | iPad Pro 11 M4 512 GB | [Mac Center](https://mac-center.com/products/ipad-pro-de-11-pulgadas-m4-mvvc3cl-a) | $7.169.000 COP | La página consultada indicaba agotado. No presentar como oferta disponible. |
-| ThinkPad E14 Gen 5 Intel i5-1335U, 16/512 | [PCWare](https://www.pcware.com.co/lenovo-thinkpad-e14-gen-5-intel-core-i5-1335u-4-6ghz-ram-16gb-ssd-512gb-intel-iris-xe-graphics-14-pulgadas-ips-wuxga-1920-1200-windows-11-pro-21jl000llm) | $5.299.900 COP | La publicación indicaba MTM 21JL000LLM, no el MTM piloto 21JK0005RI, y precio excluido de IVA. No es coincidencia exacta de SKU. |
+| ThinkPad E14 Gen 5 Intel i5-1335U, 16/512 | [PCWare](https://www.pcware.com.co/lenovo-thinkpad-e14-gen-5-intel-core-i5-1335u-4-6ghz-ram-16gb-ssd-512gb-intel-iris-xe-graphics-14-pulgadas-ips-wuxga-1920-1200-windows-11-pro-21jl000llm) | $5.299.900 COP | La publicación indicaba sobre pedido y precio excluido de IVA. No comparar directamente con precios finales con impuestos. |
 | ThinkPad E14 Gen 5 Intel i7-1355U, 16/512 | [Castor Data](https://www.castordata.com.co/shop/computacion-computadores-portatiles-1046/21jl002alm-portatil-lenovo-thinkpad-e14-gen-5-intel-core-i7-1355u-ram-16gb-ssd-512gb-w11-pro-negro-4427) | $4.697.750 COP | Configuración distinta (i7); la página muestra precio promocional. Confirmar inventario y precio final. |
-| MacBook Pro 16 M3 Max, 36 GB/1 TB | [Mac Center](https://mac-center.com/products/macbook-pro-de-16-pulgadas-m3-max-mrw33e-a) | $18.629.000 COP | La publicación corresponde a una configuración de 36 GB y no coincide con la variante piloto de 48 GB/1 TB; no usar como precio comparable. |
+| MacBook Pro 16 M3 Max, 36 GB/1 TB | [Mac Center](https://mac-center.com/products/macbook-pro-de-16-pulgadas-m3-max-mrw33e-a) | $18.629.000 COP | Configuración y SKU publicados; verificar stock. |
 | MacBook Pro 16 M3 Max, 36 GB/1 TB | [Colombian Mac Store](https://www.colombianmacstore.com.co/comprar-mac-usado/computador-apple-portatil/macbook-pro-16-pulgadas/laptop-macbook-pro-m3-max-16.html) | $11.499.900 COP | Publicación de equipo usado en condición "como nuevo"; no mezclar con producto nuevo. |
 | Sony WH-1000XM5 | [Sony Colombia](https://www.sony.com.co/headphones/wireless) | $2.249.896 COP | Precio mostrado para color Smoky Pink; confirmar color, stock y precio final. |
 | Nothing Ear (2) | [Exclusive JJ](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) | $599.990 COP | Publicación por encargo; confirmar plazo, existencia y garantía. |
@@ -128,29 +154,78 @@ Por tanto, la política de implementación sigue siendo:
 - No se modificó código, backend, SQL ni Supabase en esta revisión; el estado `estadoVerificacion` continúa en `pendiente`.
 
 
-## Fichas técnicas v2 del piloto (18 de noviembre de 2026)
+## Estado vigente de las fichas técnicas V2 tras PR #112 (17 de noviembre de 2026)
 
-Las ocho fichas están implementadas en `proyectos/frontend/src/data/fichasTecnicasPiloto.ts` y se exponen desde `obtenerProductoCanonico(...).fichaTecnica`. Se utiliza el contrato `FichaTecnicaV2`: variantes, atributos y fuentes permanecen separados; los campos no respaldados se omiten.
+La verificación de fuentes oficiales se incorporó en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.ts` y quedó cubierta por pruebas en `fichasTecnicasV2Piloto.test.ts`. El estado de la ficha V2 no debe confundirse con el campo de verificación del catálogo canónico: son contratos distintos y no se sincronizan automáticamente.
 
-| Modelo canónico | Variante de referencia | Fuente principal | Estado |
+| Ficha V2 | Estado vigente | Alcance de la verificación |
+|---|---|---|
+| Nothing Phone (2a) Special Edition | `verificado` | La fuente del fabricante y el anuncio de Nothing respaldan el modelo Special Edition y la configuración 12 GB/256 GB. |
+| Samsung Galaxy S24 Ultra 256 GB | `verificado` | La ficha oficial respalda la variante de 256 GB. |
+| Samsung Galaxy S24 Ultra 512 GB | `verificado` | La ficha oficial respalda la variante de 512 GB. |
+| OnePlus Pad 2 12 GB/256 GB | `verificado` | La ficha estadounidense del fabricante respalda memoria, almacenamiento UFS 3.1 y especificaciones asociadas. |
+| Apple iPad Pro 11 pulgadas M4 16 GB/1 TB | `verificado` | Las especificaciones oficiales respaldan la configuración técnica registrada. |
+| Lenovo ThinkPad E14 Gen 5, MTM 21JK0005RI | `verificado` | La ficha PSREF asociada al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
+| Apple MacBook Pro 16 pulgadas M3 Max 48 GB/1 TB | `verificado` | Las especificaciones oficiales respaldan la configuración técnica registrada. |
+| Nothing Ear (2) | `parcial` | El modelo y sus especificaciones están respaldados; no se encontró confirmación primaria expresa del acabado Transparent White. |
+| Sony WH-1000XM5 | `verificado` | La ficha oficial de soporte respalda el modelo y las especificaciones registradas. |
+
+**Importante:** `verificado` describe la evidencia técnica de la ficha V2; no garantiza precio vigente, inventario, vendedor autorizado, condición del producto, disponibilidad en Colombia ni licencia de las imágenes. Nothing Ear (2) permanece `parcial` hasta confirmar el acabado específico. El estado independiente del catálogo canónico continúa sujeto a sus propias reglas y no debe elevarse por inferencia.
+- Esta revisión documental no modificó código, backend, SQL ni Supabase. El estado `estadoVerificacion` del catálogo canónico continúa en `pendiente`; no equivale al estado de verificación de las fichas V2.
+
+
+## Estado vigente de las fichas técnicas V2 del piloto (16 de noviembre de 2026)
+
+Las PR #110, #111 y #112 están integradas en `main`. La implementación de fichas técnicas V2 se encuentra en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.ts`; su normalización y resolución se conectan desde `proyectos/frontend/src/data/normalizadorFicha.ts`, y las pruebas específicas están en `proyectos/frontend/src/data/fichasTecnicasV2Piloto.test.ts`.
+
+El alcance del piloto es de **ocho modelos y nueve variantes**: el Samsung Galaxy S24 Ultra tiene dos variantes (256 GB y 512 GB). Los estados siguientes corresponden exclusivamente al contrato `FichaTecnicaV2.estado_verificacion`.
+
+| Modelo / variante | Estado V2 | Evidencia y observación |
+|---|---|---|
+| Nothing Phone (2a) Special Edition — 12 GB/256 GB | `verificado` | Página oficial de Nothing y anuncio de la edición especial respaldan el modelo y la configuración. |
+| Samsung Galaxy S24 Ultra — 12 GB/256 GB | `verificado` | Hoja oficial de especificaciones de Samsung y ficha regional Colombia. |
+| Samsung Galaxy S24 Ultra — 12 GB/512 GB | `verificado` | Hoja oficial de especificaciones de Samsung y ficha regional Colombia. |
+| OnePlus Pad 2 — 12 GB/256 GB UFS 3.1 | `verificado` | Ficha oficial estadounidense de OnePlus respalda la configuración y las especificaciones registradas. |
+| Apple iPad Pro 11 pulgadas M4 — 16 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan chip, memoria y almacenamiento registrados. |
+| Lenovo ThinkPad E14 Gen 5 — MTM 21JK0005RI | `verificado` | PSREF de Lenovo asociado al MTM exacto respalda la configuración y el mercado Rumania (región EET). |
+| Apple MacBook Pro 16 pulgadas M3 Max — 48 GB/1 TB | `verificado` | Especificaciones oficiales de Apple respaldan la configuración M3 Max CPU 16/GPU 40, 48 GB y SSD de 1 TB. |
+| Nothing Ear (2) — Transparent White | `verificado` (17 nov 2026) | La página oficial lista Ear (2) White y la fotografía CC BY-SA muestra la carcasa transparente y auriculares blancos. |
+| Sony WH-1000XM5 | `verificado` | Ficha oficial de soporte de Sony respalda el modelo y las especificaciones registradas. |
+
+### Interpretación de los estados y límites
+
+- `verificado` significa que la evidencia primaria identificada respalda los datos técnicos incluidos en esa ficha y variante. No certifica autenticidad de una unidad física ni disponibilidad comercial.
+- `parcial` significa que el modelo y parte de sus especificaciones tienen respaldo, pero queda al menos un dato de variante por confirmar. En Samsung Galaxy A55 5G, el pendiente concreto es la capacidad de almacenamiento del registro vendido:102.
+- Los estados de Ficha V2 **no actualizan automáticamente** el estado `estadoVerificacion` del catálogo canónico. Este último continúa `pendiente` hasta completar su propio proceso de identidad, reconciliación y validación de referencias.
+- La verificación técnica no valida precios, stock, vendedores, garantía, condición del producto, disponibilidad en Colombia ni derechos de reutilización de imágenes.
+- Las métricas del piloto se conservan como informativas (`comparable: false`) y no se presentan como benchmarks comparables. No hay benchmarks verificados incorporados en estas fichas.
+
+### Siguiente trabajo del piloto
+
+1. `Resuelto 17 nov 2026`: se confirmó visualmente Nothing Ear (2) Transparent White y se añadió la fuente oficial de variante.
+2. Completar la auditoría independiente de imágenes: modelo y variante correctos, URL utilizable, autor/proveedor, licencia, atribución, alcance de uso y fecha de consulta. Las URLs heredadas no se consideran autorizadas por defecto.
+3. Mantener separadas las fuentes técnicas de las fuentes comerciales. Los precios y la disponibilidad requieren consulta por país, vendedor y fecha.
+4. Una vez cerrados estos controles, ampliar el mismo estándar a los demás modelos del catálogo (28 modelos únicos identificados en la auditoría), sin duplicar modelos ni mezclar variantes.
+
+Esta actualización documental describe el estado del código integrado en `main`; no modifica datos del catálogo, backend, migraciones SQL ni Supabase.
+
+
+## Ampliación del catálogo y de fichas V2 (17 de noviembre de 2026)
+
+El lote de trabajo amplía la cobertura controlada a **dieciocho modelos** (veintidós variantes documentadas cuando se cuentan las dos configuraciones oficiales del Galaxy A55 y las dos del Galaxy S24 Ultra). Se añadieron:
+
+| Modelo | Ficha V2 | Imagen | Nota de coherencia |
 |---|---|---|---|
-| Nothing Phone (2a) Special Edition | 12 GB / 256 GB | Nothing — Phone (2a) | Parcial: falta cotejo de SKU/mercado de la edición |
-| Samsung Galaxy S24 Ultra | 12 GB / 256 GB y 12 GB / 512 GB | Samsung Newsroom — Galaxy S24 | Parcial: variantes separadas; validar SKU regional |
-| OnePlus Pad 2 | 12 GB / 256 GB Wi-Fi | OnePlus — Pad 2 specifications | Parcial: ficha estadounidense; validar disponibilidad/SKU local |
-| iPad Pro 11 pulgadas M4 | 16 GB / 1 TB | Apple — especificaciones técnicas | Parcial: falta identificar Wi-Fi o Wi-Fi + Cellular |
-| ThinkPad E14 Gen 5 | MTM 21JK0005RI; i5-1335U; 16 GB / 512 GB | Lenovo PSREF | Parcial: no extrapolar a otros MTM |
-| MacBook Pro 16 pulgadas M3 Max | 16 CPU / 40 GPU; 48 GB / 1 TB | Apple — especificaciones técnicas | Parcial: falta validar número de pieza regional |
-| Nothing Ear (2) | Transparent White | Nothing — Ear (2) | Parcial: color conservado desde el registro local |
-| Sony WH-1000XM5 | Modelo base | Sony Support — especificaciones | Parcial: falta documentar color/mercado de la unidad local |
+| Samsung Galaxy A55 5G | `parcial` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Samsung Colombia documenta 8/128 GB y 8/256 GB; el registro vendido:102 solo indica 8 GB de RAM, por lo que no se asigna una capacidad a ciegas. |
+| Apple iPhone 13 — 128 GB | `verificado` | CC BY-SA 4.0, autor Kskhh | Ficha técnica oficial Apple y fotografía del modelo; el registro identifica 128 GB. |
+| Xiaomi Redmi Note 14 Pro+ 5G — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigieron datos heredados incorrectos: RAM física 12 GB LPDDR4X, UFS 2.2, batería 5110 mAh, cámara frontal 20 MP y carga 120 W. Se eliminó el benchmark no respaldado y se distingue RAM virtual de RAM física. |
+| OnePlus 13 5G — 16 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Maksdroider | Se corrigió el nombre inexistente «OnePlus 13 Pro» a OnePlus 13; se alineó con la variante oficial 16/512 y se eliminó el benchmark no documentado. |
+| Apple iPhone 15 Pro Max — 256 GB | `verificado` | CC BY-SA 4.0, autor Kyu3 | Ficha Apple Colombia; se reemplazó la imagen genérica y se eliminó el benchmark Geekbench no respaldado. |
+| Samsung Galaxy S25 Ultra — 12 GB/1 TB | `verificado` | CC BY-SA 4.0, autor Captainmorlypogi1959 | Se corrigió RAM de 16 a 12 GB según Samsung Colombia; se verificó la variante 1 TB y se eliminó el benchmark AnTuTu no respaldado. |
+| Xiaomi 14 Ultra — 16 GB/512 GB | `verificado` | CC0 1.0, autor DUSOAM 68 HNWUA | Ficha oficial Xiaomi; fotografía en exhibición muestra etiqueta 16/512 y se documenta bajo dominio público CC0. |
+| Nothing Ear (a) Black Edition | `verificado` | CC BY 4.0, autor RuinDig/Yuki Uchida | Se incorpora fotografía del acabado negro exacto; ficha Nothing distingue autonomía con ANC encendida/apagada y resistencia de auriculares/estuche. |
+| Nothing Ear (2) Transparent White | `verificado` | CC BY-SA 4.0, autor Ganesh Mohan T | La foto muestra el acabado transparente blanco y Nothing confirma Ear (2) White como variante oficial; ficha técnica ampliada con ANC, batería, carga inalámbrica, micrófonos y protección. |
+| Xiaomi 14T Pro — 12 GB/512 GB | `verificado` | CC BY-SA 4.0, autor Petar Milošević | Ficha oficial Xiaomi Colombia; se corrigió Wi-Fi 7 heredado a Wi-Fi 6 y se eliminó benchmark AnTuTu no documentado. |
 
-### Reglas que se aplicaron
+Las tres imágenes están registradas con página de origen, autor, licencia, enlace de licencia y tratamiento. El resto de los modelos del inventario de 28 modelos únicos continúa pendiente de la misma reconciliación; este lote no declara completo el catálogo total.
 
-1. Cada atributo técnico tiene un `fuenteId` que debe apuntar a una fuente de la misma ficha.
-2. Las variantes comerciales no se fusionan: Galaxy S24 Ultra 256 GB y 512 GB son opciones distintas.
-3. Se corrigieron dos configuraciones piloto: iPad Pro M4 a 1 TB/16 GB y MacBook Pro M3 Max a 48 GB/1 TB con 16 CPU/40 GPU.
-4. El ThinkPad se vincula al MTM 21JK0005RI y al procesador i5-1335U; anuncios de MTM diferentes no se consideran equivalentes.
-5. Los benchmarks y métricas comparables se dejan vacíos cuando no hay protocolo, versión y plataforma verificables. No se reutilizan puntuaciones editoriales o valores mock como resultados de laboratorio.
-6. El estado `parcial` no significa que todos los atributos estén completos: indica que existe fuente oficial, pero queda alguna comprobación de SKU, mercado o variante.
-7. Los precios, disponibilidad e imágenes siguen fuera de la ficha técnica y requieren sus propios registros, fuentes y fechas.
-
-Las fichas del piloto constituyen una primera implementación de datos. La guía general para los demás productos se definirá después de revisar este piloto y acordar los campos obligatorios por categoría.

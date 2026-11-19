@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(25); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(26); // S24 Ultra mantiene dos fichas de variante; iPhone 16 se documenta como familia parcial.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -200,6 +200,35 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("documenta Apple iPhone 16 como familia parcial sin inferir capacidad ni SKU", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleIphone16;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Apple A18") }),
+      expect.objectContaining({ clave: "tamano_pantalla", valor: 6.1, unidad: "in" }),
+      expect.objectContaining({ clave: "resolucion", valor: "2556 × 1179 píxeles · 460 ppi" }),
+      expect.objectContaining({ clave: "camara_principal", valor: 48, unidad: "mpx" }),
+      expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 7 (802.11be) · MIMO 2×2" }),
+    ]));
+    expect(ficha.atributos.some((atributo) => atributo.clave === "almacenamiento")).toBe(false);
+    expect(ficha.fuentes[0]?.url).toBe("https://www.apple.com/co/iphone-16/specs/");
+    const producto = normalizarDesdeProducto({
+      idProducto: 2,
+      nombre: "Apple iPhone 16",
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
   });
 
   it("verifica Xiaomi 14T Pro 12GB/512GB con especificaciones oficiales Xiaomi Colombia", () => {

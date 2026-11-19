@@ -1,3 +1,5 @@
+import { obtenerFichaTecnicaPiloto } from "./fichasTecnicasPiloto";
+import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
 import type {
   CategoriaDispositivo,
   DispositivoKimovil,
@@ -61,6 +63,7 @@ export interface ProductoCanonico {
 export interface ProductoCanonicoResuelto extends ProductoCanonico {
   registros: Array<DispositivoKimovil | Producto>;
   imagen: ImagenProductoCanonico;
+  fichaTecnica: FichaTecnicaV2;
 }
 
 const referencia = (
@@ -97,13 +100,20 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     categoria: "moviles",
     estadoVerificacion: "pendiente",
     referencias: [
-      referencia("deseados", 202),
+      referencia("deseados", 202, "256gb"),
       referencia("ofertas", 300, "512gb"),
     ],
     variantes: [
       {
+        id: "256gb",
+        nombre: "12 GB RAM · 256 GB",
+        ram: "12 GB",
+        almacenamiento: "256 GB",
+      },
+      {
         id: "512gb",
-        nombre: "512 GB",
+        nombre: "12 GB RAM · 512 GB",
+        ram: "12 GB",
         almacenamiento: "512 GB",
       },
     ],
@@ -134,13 +144,13 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     marca: "Apple",
     categoria: "tablets",
     estadoVerificacion: "pendiente",
-    referencias: [referencia("deseados", 208, "8gb-512gb")],
+    referencias: [referencia("deseados", 208, "16gb-1tb")],
     variantes: [
       {
-        id: "8gb-512gb",
-        nombre: "8 GB memoria unificada · 512 GB",
-        ram: "8 GB memoria unificada",
-        almacenamiento: "512 GB",
+        id: "16gb-1tb",
+        nombre: "16 GB memoria unificada · 1 TB",
+        ram: "16 GB memoria unificada",
+        almacenamiento: "1 TB",
       },
     ],
   },
@@ -166,12 +176,12 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     marca: "Apple",
     categoria: "laptops",
     estadoVerificacion: "pendiente",
-    referencias: [referencia("deseados", 209, "36gb-1tb")],
+    referencias: [referencia("deseados", 209, "48gb-1tb")],
     variantes: [
       {
-        id: "36gb-1tb",
-        nombre: "36 GB memoria unificada · 1 TB SSD",
-        ram: "36 GB memoria unificada",
+        id: "48gb-1tb",
+        nombre: "48 GB memoria unificada · 1 TB SSD",
+        ram: "48 GB memoria unificada",
         almacenamiento: "1 TB SSD",
       },
     ],
@@ -277,7 +287,12 @@ export function obtenerProductoCanonico(
         estadoVerificacion: "sin_imagen" as const,
       };
 
-  return { ...producto, registros, imagen };
+  const fichaTecnica = obtenerFichaTecnicaPiloto(producto.id);
+  if (!fichaTecnica) {
+    throw new Error(`No existe ficha técnica para el producto piloto: ${producto.id}`);
+  }
+
+  return { ...producto, registros, imagen, fichaTecnica };
 }
 
 export function obtenerCatalogoCanonicoPiloto(): ProductoCanonicoResuelto[] {

@@ -109,23 +109,23 @@ export default function ResumenSesion({
         <button
           type="button"
           onClick={onAbrirAuth}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+          aria-label="Iniciar sesión"
+          title="Iniciar sesión"
+          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
         >
           <svg
-            className="h-3.5 w-3.5"
+            className="h-5 w-5"
             fill="none"
             stroke="currentColor"
-            strokeWidth={1.8}
+            strokeWidth={1.75}
+            strokeLinecap="round"
+            strokeLinejoin="round"
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 7a4 4 0 11-8 0 4 4 0 018 0zm-3.5 6.5V21m0-4h3m-3-3h3"
-            />
+            <circle cx="12" cy="8" r="3.5" />
+            <path d="M5 20a7 7 0 0 1 14 0" />
           </svg>
-          Iniciar sesión
         </button>
       )}
     </div>

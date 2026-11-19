@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del piloto de ocho productos.
+ * Fichas técnicas estructuradas del catálogo piloto (19 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -957,10 +957,50 @@ const redmiNote13ProPlus = crearFicha(
   ],
 );
 
+
+/**
+ * Ficha familiar para el registro genérico del catálogo. Como el producto
+ * no identifica capacidad, se exponen únicamente las variantes oficiales
+ * documentadas; la capacidad seleccionada no se presupone.
+ */
+const samsungS24UltraFamiliaFuente = "samsung-s24-ultra-family";
+const samsungS24UltraFamilia = crearFicha(
+  "moviles",
+  "verificado",
+  [
+    { id: "12gb-256gb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "256 GB" },
+    { id: "12gb-512gb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "512 GB" },
+    { id: "12gb-1tb", modelo: "Samsung Galaxy S24 Ultra", ram: "12 GB", almacenamiento: "1 TB" },
+  ],
+  samsung256.atributos.map((item) =>
+    item.clave === "almacenamiento"
+      ? atributo("almacenamiento", "Almacenamiento", "almacenamiento", "256 GB, 512 GB o 1 TB según variante", samsungS24UltraFamiliaFuente)
+      : item
+  ),
+  samsung256.metricasComparables,
+  [
+    fuente(
+      samsungS24UltraFamiliaFuente,
+      "Samsung — Galaxy S24 Series B2B Specification Sheet",
+      "https://images.samsung.com/is/content/samsung/assets/us/2401/business/mobile/phones/galaxy/Galaxy_S24_Series_B2B_Spec_Sheet.pdf",
+      null,
+      "La hoja oficial identifica para Galaxy S24 Ultra 12 GB de RAM y capacidades de 256 GB, 512 GB y 1 TB. El registro del catálogo no especifica cuál capacidad tiene la unidad."
+    ),
+    fuente(
+      "samsung-s24-ultra-co-family",
+      "Samsung Colombia — Galaxy S24 Ultra, especificaciones",
+      "https://www.samsung.com/co/smartphones/galaxy-s24-ultra/specs/",
+      null,
+      "Fuente regional oficial para las características de la familia; no se infiere color ni capacidad concreta del registro."
+    ),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
   samsungGalaxyS24Ultra512: samsung512,
+  samsungGalaxyS24UltraFamilia: samsungS24UltraFamilia,
   oneplusPad2: oneplusPad2,
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
@@ -1008,6 +1048,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
+  if (n.includes("s24 ultra")) return samsungS24UltraFamilia;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
@@ -1065,7 +1106,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("galaxy a55")) return galaxyA55;
       if (n.includes("iphone 13") && n.includes("128")) return iphone13;
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
-      if (n.includes("s24 ultra")) return samsung256;
+      if (n.includes("s24 ultra") && n.includes("256gb")) return samsung256;
+      if (n.includes("s24 ultra")) return samsungS24UltraFamilia;
       if (n.includes("oneplus pad 2")) return oneplusPad2;
       if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
       if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;

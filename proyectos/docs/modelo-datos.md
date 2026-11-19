@@ -628,3 +628,69 @@ El diseño debe conservar cada transición de estado y sus datos de auditoría: 
 Los scripts SQL y entidades actuales pueden representar una versión parcial del flujo; los estados y restricciones deberán alinearse con esta especificación mediante migraciones revisadas. No se debe ejecutar ni aplicar una migración de base de datos como parte de esta revisión documental.
 
 Los scripts SQL históricos `006_reportes_resenas.sql` y `007_moderacion_reportes.sql` todavía admiten los estados `PENDIENTE`, `EN_REVISION`, `ACEPTADO` y `RECHAZADO`, con estados finales inmutables. Estos nombres y transiciones no representan la política objetivo aprobada en esta Fase 1. Deben tratarse como una versión previa del esquema: no ejecutar ni modificar esos scripts como parte de esta revisión; en la fase de implementación se diseñará una migración nueva, numerada y revisada para los estados `PROCEDENTE`, `NO_PROCEDENTE`, `ESCALADO` y `CERRADO`, conservando la trazabilidad y los datos existentes.
+
+
+---
+
+# 25. Estado de implementación del esquema — 18 de noviembre de 2026
+
+El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/.
+
+A la fecha de esta actualización, el repositorio contiene las migraciones 001–016. Entre las capacidades incorporadas por esa secuencia se encuentran:
+
+- Soporte de identidad y autenticación de Supabase.
+- Alineación del catálogo de roles y reseñas/valoraciones.
+- Reportes y moderación de reseñas.
+- Asignación de múltiples roles por usuario y relación de representantes con establecimientos.
+- Auditoría de asignaciones, decisiones de moderación y ocultamiento manual.
+- Restricciones de integridad, validación de transiciones y correlación transaccional de eventos de auditoría.
+- Estado separado de moderación automática de reseñas mediante resena.estado_moderacion, con valores permitidos PUBLICADA y PENDIENTE (migración 012).
+
+## 25.1 Modelo conceptual frente al esquema implementado
+
+Este documento no debe interpretarse como un DDL completo ni como una representación exacta, columna por columna, del esquema actual. Las migraciones SQL versionadas y las entidades JPA son las referencias técnicas para el esquema implementado. En particular, el modelo multirrol usa relaciones de asignación y auditoría; no debe describirse como un único rol funcional por usuario.
+
+## 25.2 Estado de los scripts y de cada entorno
+
+Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a siete productos existentes. Las migraciones 014 y 016 registran siete precios de referencia comerciales con fuente y fecha; no convierten esos valores en inventario garantizado. La migración 015 amplía la columna de imagen a TEXT para admitir URLs de origen largas sin truncarlas.
+
+
+## 25.3 Imágenes licenciadas del catálogo — 19 de noviembre de 2026
+
+La migración 013 completa el campo `producto.imagen` para seis registros existentes, solo cuando la imagen estaba vacía y coinciden simultáneamente el identificador y el nombre del producto:
+
+| ID | Producto |
+|---:|---|
+| 1 | Samsung Galaxy S24 Ultra |
+| 7 | Samsung Galaxy A55 5G |
+| 56 | Apple iPad Pro 11 pulgadas M4 |
+| 69 | OnePlus Pad 2 |
+| 74 | Sony WH-1000XM5 |
+| 85 | Nothing Ear (2) |
+
+La autoría, página de origen, licencia y tratamiento de cada fotografía se mantienen en `proyectos/frontend/src/data/atribucionImagenes.ts`. La migración no asigna precios ni modifica especificaciones: esos datos requieren una variante exacta y una fuente comercial vigente. El Xiaomi 14 Ultra (ID 3) se incorporó mediante la migración 015, que amplía `producto.imagen` a TEXT para conservar la URL CC0 original de Wikimedia Commons (283 caracteres) sin acortarla ni modificarla.
+
+
+## 25.4 Precios de referencia documentados — 19 de noviembre de 2026
+
+Las migraciones 014 y 016 registran siete precios observados para productos cuyo modelo coincide con la fuente consultada y cuyo campo `precio_referencia` estaba vacío:
+
+| ID | Producto | Precio de referencia (COP) | Condición | Fuente |
+|---:|---|---:|---|---|
+| 74 | Sony WH-1000XM5 | $2.249.896 | Precio publicado por Sony Colombia; color Smoky Pink en la ficha consultada | [Sony Colombia](https://www.sony.com.co/electronics/audifonos-banda-cabeza/wh-1000xm5) |
+| 85 | Nothing Ear (2) | $599.990 | Nuevo; oferta publicada por Exclusive JJ | [Exclusive JJ Colombia](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) |
+| 37 | JBL Tune Buds | $299.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |
+| 38 | JBL Live Beam 3 | $589.900 | Oferta de vendedor Smartphonetablet en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |
+| 39 | JBL Tour Pro 3 | $1.324.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |
+| 73 | Sony WF-1000XM5 | $1.999.900 | Precio publicado por Sony Colombia | [Sony Colombia](https://www.sony.com.co/headphones/wireless) |
+| 76 | Sony WH-CH720N | $349.900 | Oferta publicada por Sony Colombia en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |
+
+Estos importes son referencias observadas el 19/11/2026, no precios dinámicos ni garantía de inventario. La migración solo actualiza registros con ID y nombre coincidentes y precio previo NULL. Los demás productos permanecen sin precio cuando la fuente no permite confirmar la variante, condición o mercado.
+
+
+## 25.5 Compatibilidad con URL de imagen largas — 19 de noviembre de 2026
+
+La migración 015 cambia el tipo de `public.producto.imagen` de `VARCHAR(255)` a `TEXT`. La modificación es de ampliación y mantiene el contrato de aplicación como cadena de texto. Se necesitó para guardar la URL original de la fotografía CC0 del Xiaomi 14 Ultra (ID 3), que tiene 283 caracteres. No se utiliza un acortador ni se transforma el archivo de origen.
+
+
+La migración 016 completa cinco precios adicionales del lote de auriculares. En JBL Live Beam 3 y Sony WH-CH720N se conserva que el precio observado proviene de un vendedor identificado en Falabella; no se presenta como precio directo del fabricante. Todos los importes son referencias observadas el 19/11/2026.

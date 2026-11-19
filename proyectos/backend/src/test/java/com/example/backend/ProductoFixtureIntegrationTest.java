@@ -48,7 +48,7 @@ class ProductoFixtureIntegrationTest {
     @Test
     void fixtureProductsArePersistedInTheTestDatabase() throws Exception {
         JsonNode fixture = objectMapper.readTree(
-                new ClassPathResource("fixtures/productos-prueba.json").getInputStream());
+                new ClassPathResource("fixtures/productos-prueba.json", ProductoFixtureIntegrationTest.class.getClassLoader()).getInputStream());
         Map<String, Long> categoryIds = new HashMap<>();
         Map<String, Long> brandIds = new HashMap<>();
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(

@@ -1,6 +1,8 @@
 import type { Producto } from "@/types/producto";
 import { obtenerSlugDeCategoria, type CategoriaSlug } from "@/lib/categorias";
 import { normalizarDatosFichaTecnica } from "./fichaTecnica";
+import { tieneMarcadoresV3 } from "@/types/fichaTecnicaV3";
+import { clasificarFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
 
 export interface EspecificacionComparador {
   clave: string;
@@ -109,6 +111,11 @@ export function obtenerEspecificacionesComparador(
 ): EspecificacionComparador[] {
   const raw = producto.caracteristicas;
   if (!esRegistro(raw)) return [];
+  // Aplica el despacho central: solo V1, V2 y legacy válidos pasan a esta ruta.
+  const clasificacion = clasificarFichaTecnicaProducto(producto);
+  if (clasificacion.estado !== "valida" || clasificacion.version === "v3") return [];
+  // Defensa redundante para no tratar marcadores V3 mal etiquetados como datos antiguos.
+  if (tieneMarcadoresV3(raw)) return [];
 
   const categoria = obtenerSlugDeCategoria(producto.nombreCategoria ?? "");
   const especificaciones = new Map<string, EspecificacionComparador>();

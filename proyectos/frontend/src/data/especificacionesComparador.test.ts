@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Producto } from "@/types/producto";
 import { obtenerEspecificacionesComparador } from "./especificacionesComparador";
+import { crearFichaVacia } from "./normalizadorFicha";
 
 function producto(
   caracteristicas: Producto["caracteristicas"],
@@ -21,6 +22,22 @@ function producto(
 }
 
 describe("obtenerEspecificacionesComparador", () => {
+  it.each([
+    ["versión desconocida", { version_esquema: 99, ram: "8 GB", pantalla: "OLED", camaras: "50 MP" }],
+    ["V3 etiquetada como V1", { version_esquema: 1, categoria: "celulares", variantes: [], especificaciones: [], fuentes: [], evidencias: [], benchmarks: [], ram: "8 GB" }],
+    ["V3 sin versión", { categoria: "celulares", variantes: [], especificaciones: [], fuentes: [], evidencias: [], benchmarks: [], ram: "8 GB" }],
+    ["V3 válida", { version_esquema: 3, categoria: "celulares", variantes: [], especificaciones: [], fuentes: [], evidencias: [], benchmarks: [], ram: "8 GB" }],
+  ])("falla cerrado para %s", (_caso, caracteristicas) => {
+    expect(obtenerEspecificacionesComparador(producto(caracteristicas))).toEqual([]);
+  });
+
+  it("conserva la ruta de comparación de V1 y V2 válidas", () => {
+    const v1 = { version_esquema: 1, categoria: "moviles", secciones: [], metricas: [], ram: "8 GB" };
+    expect(obtenerEspecificacionesComparador(producto(v1, "Celulares")).some((item) => item.clave === "ram")).toBe(true);
+    const v2 = { ...crearFichaVacia("moviles"), ram: "12 GB" };
+    expect(obtenerEspecificacionesComparador(producto(v2, "Celulares")).some((item) => item.clave === "ram")).toBe(true);
+  });
+
   it("excluye de audio los aliases heredados de memoria y chipset en todos los formatos", () => {
     expect(obtenerEspecificacionesComparador(producto({
       memoria: "8 GB",

@@ -8,37 +8,29 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Redmi Note 13 Pro+ 5G",
     marca: "Xiaomi",
     categoria: "moviles",
-    especificaciones: "Dimensity 7200 Ultra · 200MP OIS · 12GB RAM · 120Hz Curved AMOLED",
+    especificaciones: "12GB RAM · 512GB · Dimensity 7200-Ultra · 200MP OIS · 120W HyperCharge",
     puntuacion: 9.1,
     precio: 1749000, // $ 1.749.000 COP
     precioOriginal: 2099000,
     descuento: "-17%",
     tendencia: "sube",
     cambioRanking: 2,
-    imagen: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800&auto=format&fit=crop&q=80",
+    imagen: "",
     tipo: "vendido",
     chipInfo: "Dimensity 7200 Ultra · 200MP",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "800,000 Puntos",
       secciones: [
         {
           icono: "📱",
           titulo: "PANTALLA & DISEÑO CURVO",
-          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K · 120Hz · 1800 nits pico · Dolby Vision · IP68.",
+          descripcion: "6.67'' CrystalRes Curved AMOLED 1.5K (2712 × 1220) · 120Hz · 1800 nits · Dolby Vision · Gorilla Glass Victus · IP68.",
         },
         {
           icono: "⚡",
           titulo: "PROCESADOR & RENDIMIENTO",
-          descripcion: "MediaTek Dimensity 7200 Ultra (4nm TSMC) Octa-Core con refrigeración líquida VC.",
+          descripcion: "MediaTek Dimensity 7200-Ultra (4 nm) · CPU octa-core hasta 2,8 GHz · GPU Mali-G610.",
         },
-      ],
-      metricas: [
-        { nombre: "Rendimiento y CPU", puntos: 9.1 },
-        { nombre: "Cámara 200MP OIS", puntos: 9.2 },
-        { nombre: "Pantalla AMOLED 1.5K", puntos: 9.3 },
-        { nombre: "Batería y Carga 120W", puntos: 9.4 },
       ],
       tiendas: [
         { nombre: "Éxito Colombia Oficial", precio: 1749000, envioGratis: true },
@@ -52,7 +44,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "Galaxy A55 5G",
     marca: "Samsung",
     categoria: "moviles",
-    especificaciones: "Exynos 1480 · 5000 mAh · Super AMOLED 120Hz · 8GB RAM",
+    especificaciones: "Exynos 1480 · 8GB RAM · 256GB · Super AMOLED 6,6 pulgadas 120Hz · 5000mAh",
     puntuacion: 8.8,
     precio: 1589000, // $ 1.589.000 COP
     precioOriginal: 1800000,
@@ -61,11 +53,9 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     cambioRanking: 0,
     imagen: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Samsung_Galaxy_A55_5G_2024.jpg",
     tipo: "vendido",
-    chipInfo: "Exynos 1480 · 50MP",
+    chipInfo: "Samsung Exynos 1480",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "AnTuTu Benchmark v10",
-      benchmarkValor: "715,000 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -126,7 +116,7 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     nombre: "iPhone 13 (128GB)",
     marca: "Apple",
     categoria: "moviles",
-    especificaciones: "A15 Bionic · Super Retina XDR · iOS 18 · Modo Cine",
+    especificaciones: "Apple A15 Bionic · Super Retina XDR OLED 6,1 pulgadas · Cámara dual 12MP · 128GB",
     puntuacion: 8.6,
     precio: 2649000, // $ 2.649.000 COP
     precioOriginal: 2999000,
@@ -135,11 +125,9 @@ export const DISPOSITIVOS_VENDIDOS: DispositivoKimovil[] = [
     cambioRanking: 3,
     imagen: "https://upload.wikimedia.org/wikipedia/commons/3/3c/IPhone_13.jpg",
     tipo: "vendido",
-    chipInfo: "Apple A15 Bionic · 12MP",
+    chipInfo: "Apple A15 Bionic",
     detalleSpecs: {
       categoriaTipo: "moviles",
-      benchmarkEtiqueta: "Geekbench 6 Multi-Core",
-      benchmarkValor: "4,750 Puntos",
       secciones: [
         {
           icono: "📱",
@@ -973,7 +961,7 @@ export const DISPOSITIVOS_DESEADOS: DispositivoKimovil[] = [
     precio: 5996000,
     tendencia: "igual",
     cambioRanking: 0,
-    imagen: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80",
+    imagen: "",
     tipo: "deseado",
     detalleSpecs: {
       categoriaTipo: "laptops",
@@ -1566,7 +1554,7 @@ export const PRODUCTOS_MOCK: Producto[] = [
     idMarca: 6,
     nombreCategoria: "Laptops / PCs",
     nombreMarca: "Lenovo",
-    imagen: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&auto=format&fit=crop&q=80",
+    imagen: null,
     precioReferencia: 3196000,
     estado: true,
     caracteristicas: {

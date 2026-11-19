@@ -1,0 +1,956 @@
+{
+  "version_esquema": 3,
+  "categoria": "auriculares",
+  "variantes": [
+    {
+      "id": "black",
+      "modelo": "WH-1000XM5",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "Black"
+      }
+    },
+    {
+      "id": "platinum-silver",
+      "modelo": "WH-1000XM5",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "Platinum Silver"
+      }
+    },
+    {
+      "id": "midnight-blue",
+      "modelo": "WH-1000XM5",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "Midnight Blue"
+      }
+    },
+    {
+      "id": "smoky-pink",
+      "modelo": "WH-1000XM5",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "Smoky Pink"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-sony-wh-1000xm5-01-audio.type",
+      "clave": "audio.type",
+      "nombre": "Tipo",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Closed, dynamic",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Closed, dynamic"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-02-audio.driver",
+      "clave": "audio.driver",
+      "nombre": "Driver",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "30mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 30,
+          "unidad": "mm"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-03-audio.frequency_response",
+      "clave": "audio.frequency_response",
+      "nombre": "Respuesta JEITA",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "4 Hz–40000 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 4,
+            "unidad": "Hz"
+          },
+          "maximo": {
+            "valor": 40000,
+            "unidad": "Hz"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-04-audio.bluetooth_frequency",
+      "clave": "audio.bluetooth_frequency",
+      "nombre": "Respuesta Bluetooth",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "20-20000Hz 44.1kHz; 20-40000Hz LDAC 96kHz",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "20–20,000 Hz a 44.1 kHz; 20–40,000 Hz LDAC a 96 kHz"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-05-audio.codecs",
+      "clave": "audio.codecs",
+      "nombre": "Formatos de audio",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "SBC, AAC, LDAC",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "SBC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "AAC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "LDAC"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-06-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "version 5.2",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "5.2"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-07-battery.playback_anc_on",
+      "clave": "battery.playback_anc_on",
+      "nombre": "Autonomía ANC ON",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Max 30 hours",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 30,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-08-battery.playback_anc_off",
+      "clave": "battery.playback_anc_off",
+      "nombre": "Autonomía ANC OFF",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Max 40 hours",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 40,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-09-battery.charge_time",
+      "clave": "battery.charge_time",
+      "nombre": "Tiempo de carga",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Approx 3.5 hrs",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 3.5,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-10-weight",
+      "clave": "weight",
+      "nombre": "Peso",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Approx 250g",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 250,
+          "unidad": "g"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-11-audio.input",
+      "clave": "audio.input",
+      "nombre": "Entrada",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Stereo Mini Jack",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Stereo Mini Jack"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-12-audio.wearing_style",
+      "clave": "audio.wearing_style",
+      "nombre": "Formato",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Over Ear",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Over Ear"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-13-audio.noise_features",
+      "clave": "audio.noise_features",
+      "nombre": "Funciones noise canceling",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Auto NC Optimizer; atmospheric pressure optimizing; Quick Attention",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Auto NC Optimizer"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Atmospheric Pressure Optimizing"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Quick Attention"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-sony-wh-1000xm5-14-colors",
+      "clave": "colors",
+      "nombre": "Colores publicados",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Black; Platinum Silver; Midnight Blue; Smoky Pink",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Black"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Platinum Silver"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Midnight Blue"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Smoky Pink"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-sony-wh-1000xm5-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "sony-spec",
+      "tipo": "fabricante",
+      "nombre": "Sony Asia Pacific — WH-1000XM5 specifications",
+      "url": "https://www.sony-asia.com/electronics/headband-headphones/wh-1000xm5/specifications",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "sony-colors",
+      "tipo": "fabricante",
+      "nombre": "Sony Asia Pacific — product/colour information",
+      "url": "https://www.sony-asia.com/electronics/headband-headphones/wh-1000xm5",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-sony-wh-1000xm5-01",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Tipo",
+      "extracto": "Closed, dynamic",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-02",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Driver",
+      "extracto": "30mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-03",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Respuesta JEITA",
+      "extracto": "4 Hz–40000 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-04",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Respuesta Bluetooth",
+      "extracto": "20-20000Hz 44.1kHz; 20-40000Hz LDAC 96kHz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-05",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Formatos de audio",
+      "extracto": "SBC, AAC, LDAC",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-06",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "version 5.2",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-07",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Autonomía ANC ON",
+      "extracto": "Max 30 hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-08",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Autonomía ANC OFF",
+      "extracto": "Max 40 hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-09",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Tiempo de carga",
+      "extracto": "Approx 3.5 hrs",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-10",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Peso",
+      "extracto": "Approx 250g",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-11",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Entrada",
+      "extracto": "Stereo Mini Jack",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-12",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Formato",
+      "extracto": "Over Ear",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-13",
+      "fuente_id": "sony-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Funciones noise canceling",
+      "extracto": "Auto NC Optimizer; atmospheric pressure optimizing; Quick Attention",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-sony-wh-1000xm5-14",
+      "fuente_id": "sony-colors",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "black",
+          "platinum-silver",
+          "midnight-blue",
+          "smoky-pink"
+        ]
+      },
+      "localizador": "Colores publicados",
+      "extracto": "Black; Platinum Silver; Midnight Blue; Smoky Pink",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del piloto de ocho productos.
+ * Fichas técnicas estructuradas del catálogo piloto (26 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -303,6 +303,50 @@ const thinkpadE14Gen5 = crearFicha(
 
 const macFuente = "apple-macbook-pro-m3-max";
 const macVariante = "48gb-1tb";
+const macbookPro16M3ProFuente = "apple-macbook-pro-16-m3-pro";
+const macbookPro16M3Pro = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple M3 Pro · CPU de 12 núcleos (6 de rendimiento y 6 de eficiencia) · GPU de 18 núcleos · Neural Engine de 16 núcleos", macbookPro16M3ProFuente),
+    atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", "150 GB/s", macbookPro16M3ProFuente),
+    atributo("memoria_unificada", "Memoria unificada disponible", "memoria", "18 GB; configurable a 36 GB", macbookPro16M3ProFuente),
+    atributo("almacenamiento", "Almacenamiento SSD disponible", "almacenamiento", "512 GB; configurable a 1 TB, 2 TB o 4 TB", macbookPro16M3ProFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 16.2, macbookPro16M3ProFuente, "in"),
+    atributo("tipo_pantalla", "Pantalla", "pantalla", "Liquid Retina XDR", macbookPro16M3ProFuente),
+    atributo("resolucion", "Resolución", "pantalla", "3456 × 2234 píxeles · 254 ppp", macbookPro16M3ProFuente),
+    atributo("contraste", "Relación de contraste", "pantalla", "1 000 000:1", macbookPro16M3ProFuente),
+    atributo("brillo_sdr", "Brillo SDR", "pantalla", 600, macbookPro16M3ProFuente, "nits"),
+    atributo("brillo_xdr", "Brillo XDR sostenido", "pantalla", 1000, macbookPro16M3ProFuente, "nits"),
+    atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1600, macbookPro16M3ProFuente, "nits"),
+    atributo("gama_color", "Gama de color", "pantalla", "P3 · True Tone · mil millones de colores", macbookPro16M3ProFuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", 120, macbookPro16M3ProFuente, "Hz"),
+    atributo("energia_bateria", "Capacidad de batería", "bateria", 100, macbookPro16M3ProFuente, "Wh"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, macbookPro16M3ProFuente, "h"),
+    atributo("autonomia_web", "Navegación web inalámbrica (máximo declarado)", "bateria", 15, macbookPro16M3ProFuente, "h"),
+    atributo("adaptador", "Adaptador de corriente incluido", "energia", "USB-C de 140 W · carga rápida", macbookPro16M3ProFuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6E (802.11ax)", macbookPro16M3ProFuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", macbookPro16M3ProFuente),
+    atributo("puertos", "Puertos y expansión", "conectividad", "3 × Thunderbolt 4 / USB-C (hasta 40 Gb/s) · HDMI · lector SDXC · MagSafe 3 · jack 3,5 mm", macbookPro16M3ProFuente),
+    atributo("camara", "Cámara", "audio_video", "FaceTime HD 1080p", macbookPro16M3ProFuente),
+    atributo("audio", "Sistema de audio", "audio_video", "6 altavoces de alta fidelidad con woofers de cancelación de fuerza · 3 micrófonos de calidad de estudio · audio espacial y Dolby Atmos", macbookPro16M3ProFuente),
+    atributo("dimensiones", "Dimensiones (alto × ancho × fondo)", "diseno", "1,68 × 35,57 × 24,81 cm", macbookPro16M3ProFuente),
+    atributo("peso", "Peso", "diseno", 2.14, macbookPro16M3ProFuente, "kg"),
+  ],
+  [],
+  [
+    fuente(
+      macbookPro16M3ProFuente,
+      "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023), especificaciones técnicas",
+      "https://support.apple.com/es-co/117737",
+      null,
+      "La fuente oficial distingue las opciones M3 Pro y M3 Max. Esta ficha documenta la plataforma M3 Pro y las opciones publicadas de memoria y SSD; el registro del catálogo no identifica capacidad de memoria ni almacenamiento, por lo que permanece parcial y sin variante asignada.",
+      "2026-11-19"
+    ),
+  ],
+);
+
 const macbookPro16M3Max = crearFicha(
   "laptops",
   "verificado",
@@ -530,6 +574,48 @@ const iphone13 = crearFicha(
   ],
   [
     fuente("apple-iphone-13-tech-specs", "Apple Support — iPhone 13, especificaciones técnicas", "https://support.apple.com/es-la/111872", iphone13Variante, "La fuente oficial enumera capacidad de 128 GB, chip, pantalla, cámaras, resistencia, dimensiones, peso y conectividad.", "2026-11-17"),
+  ],
+);
+
+
+const iphone16Fuente = "apple-iphone-16-tech-specs";
+const iphone16 = crearFicha(
+  "moviles",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple A18 · CPU de 6 núcleos (2 de rendimiento y 4 de eficiencia) · GPU de 5 núcleos · Neural Engine de 16 núcleos", iphone16Fuente),
+    atributo("pantalla", "Pantalla", "pantalla", "Super Retina XDR · OLED · Dynamic Island · HDR · True Tone · gama de colores P3", iphone16Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.1, iphone16Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2556 × 1179 píxeles · 460 ppi", iphone16Fuente),
+    atributo("brillo_tipico", "Brillo máximo típico", "pantalla", 1000, iphone16Fuente, "nits"),
+    atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1600, iphone16Fuente, "nits"),
+    atributo("brillo_exterior", "Brillo máximo en exteriores", "pantalla", 2000, iphone16Fuente, "nits"),
+    atributo("camara_principal", "Cámara principal Fusion", "camaras", 48, iphone16Fuente, "mpx"),
+    atributo("camara_teleobjetivo", "Teleobjetivo 2x habilitado por el sensor principal", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("camara_frontal", "Cámara frontal TrueDepth", "camaras", 12, iphone16Fuente, "mpx"),
+    atributo("video", "Grabación de vídeo", "camaras", "4K Dolby Vision hasta 60 fps · Modo Cine hasta 4K Dolby Vision a 30 fps · Modo Acción hasta 2.8K Dolby Vision a 60 fps", iphone16Fuente),
+    atributo("estabilizacion", "Estabilización de cámara principal", "camaras", "Óptica por desplazamiento del sensor", iphone16Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68 · hasta 6 m durante 30 minutos según IEC 60529", iphone16Fuente),
+    atributo("dimensiones", "Dimensiones", "diseno", "147,6 × 71,6 × 7,80 mm", iphone16Fuente),
+    atributo("peso", "Peso", "diseno", 170, iphone16Fuente, "g"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, iphone16Fuente, "h"),
+    atributo("autonomia_streaming", "Reproducción de vídeo en streaming (máximo declarado)", "bateria", 18, iphone16Fuente, "h"),
+    atributo("autonomia_audio", "Reproducción de audio (máximo declarado)", "bateria", 80, iphone16Fuente, "h"),
+    atributo("carga_rapida", "Carga por cable", "bateria", "Hasta 50% en aproximadamente 30 minutos con adaptador de 20 W o superior", iphone16Fuente),
+    atributo("carga_inalambrica", "Carga inalámbrica", "bateria", "MagSafe hasta 25 W · Qi2 hasta 25 W", iphone16Fuente),
+    atributo("red_movil", "Red móvil", "conectividad", "5G sub-6 GHz", iphone16Fuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 7 (802.11be) · MIMO 2×2", iphone16Fuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", iphone16Fuente),
+    atributo("conector", "Conector", "conectividad", "USB-C · USB 2 hasta 480 Mb/s · compatible con DisplayPort", iphone16Fuente),
+    atributo("sim", "Tarjeta SIM", "conectividad", "Doble eSIM · nano-SIM y eSIM; disponibilidad según región", iphone16Fuente),
+    atributo("nfc", "NFC", "conectividad", true, iphone16Fuente),
+    atributo("sistema_operativo", "Sistema operativo indicado por Apple", "software", "iOS 26", iphone16Fuente),
+  ],
+  [],
+  [
+    fuente("apple-iphone-16-tech-specs", "Apple Colombia — iPhone 16, especificaciones técnicas", "https://www.apple.com/co/iphone-16/specs/", null, "La ficha oficial respalda las especificaciones generales de la familia iPhone 16. El registro del catálogo no identifica capacidad ni SKU; por eso no se asignan variantes ni almacenamiento a una configuración concreta.", "2026-11-19"),
   ],
 );
 
@@ -908,6 +994,180 @@ const xiaomi14tPro = crearFicha(
   ],
 );
 
+const redmi13Fuente = "redmi-note-13-pro-plus";
+const redmi13Variante = "12gb-512gb";
+const redmiNote13ProPlus = crearFicha(
+  "moviles",
+  "verificado",
+  [{
+    id: redmi13Variante,
+    modelo: "Redmi Note 13 Pro+ 5G",
+    ram: "12 GB LPDDR5",
+    almacenamiento: "512 GB UFS 3.1",
+    mercado: "Colombia",
+  }],
+  [
+    atributo("procesador", "Procesador", "rendimiento", "MediaTek Dimensity 7200-Ultra · 4 nm · CPU octa-core hasta 2,8 GHz · GPU Mali-G610", redmi13Fuente),
+    atributo("pantalla", "Tecnología de pantalla", "pantalla", "CrystalRes Curved AMOLED · Dolby Vision · HDR10+", redmi13Fuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, redmi13Fuente, "in"),
+    atributo("resolucion", "Resolución", "pantalla", "2712 × 1220 píxeles", redmi13Fuente),
+    atributo("densidad_pixeles", "Densidad de píxeles", "pantalla", "446 ppi", redmi13Fuente),
+    atributo("tasa_refresco", "Frecuencia de actualización", "pantalla", 120, redmi13Fuente, "Hz"),
+    atributo("brillo", "Brillo máximo", "pantalla", 1800, redmi13Fuente, "nits"),
+    atributo("proteccion_pantalla", "Protección de pantalla", "pantalla", "Corning Gorilla Glass Victus", redmi13Fuente),
+    atributo("ram", "Memoria RAM", "memoria", 12, redmi13Fuente, "GB"),
+    atributo("tipo_ram", "Tecnología de RAM", "memoria", "LPDDR5", redmi13Fuente),
+    atributo("almacenamiento", "Almacenamiento", "almacenamiento", 512, redmi13Fuente, "GB"),
+    atributo("tipo_almacenamiento", "Tecnología de almacenamiento", "almacenamiento", "UFS 3.1", redmi13Fuente),
+    atributo("camara_principal", "Cámara principal", "camaras", "200 MP · OIS · ƒ/1.65 · sensor de 1/1,4 pulgadas", redmi13Fuente),
+    atributo("camara_ultra_gran_angular", "Cámara ultra gran angular", "camaras", "8 MP · ƒ/2.2", redmi13Fuente),
+    atributo("camara_macro", "Cámara macro", "camaras", "2 MP · ƒ/2.4", redmi13Fuente),
+    atributo("camara_frontal", "Cámara frontal", "camaras", "16 MP · ƒ/2.4", redmi13Fuente),
+    atributo("video", "Grabación de vídeo trasera", "camaras", "4K a 24/30 fps · 1080p hasta 60 fps", redmi13Fuente),
+    atributo("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, redmi13Fuente, "mAh"),
+    atributo("carga_rapida", "Carga rápida", "bateria", 120, redmi13Fuente, "W"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 19, redmi13Fuente, "h"),
+    atributo("conectividad", "Conectividad", "conectividad", "5G · Wi-Fi 6 · Bluetooth 5.3 · NFC · Dual SIM nano SIM", redmi13Fuente),
+    atributo("resistencia", "Resistencia al agua y polvo", "diseno", "IP68", redmi13Fuente),
+    atributo("dimensiones", "Dimensiones", "dimensiones", "161,4 × 74,2 × 8,9 mm", redmi13Fuente),
+    atributo("peso", "Peso", "dimensiones", 204.5, redmi13Fuente, "g"),
+    atributo("sistema_operativo_lanzamiento", "Sistema operativo de lanzamiento", "software", "MIUI 14", redmi13Fuente),
+  ],
+  [
+    metrica("tamano_pantalla", "Diagonal de pantalla", "pantalla", 6.67, "in", redmi13Fuente),
+    metrica("capacidad_bateria", "Capacidad típica de batería", "bateria", 5000, "mAh", redmi13Fuente),
+  ],
+  [
+    fuente("redmi-note-13-pro-plus-co-specs", "Xiaomi Colombia — REDMI Note 13 Pro+ 5G, especificaciones", "https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/specs/", redmi13Variante, "La ficha oficial confirma procesador, pantalla, cámaras, batería, conectividad, IP68 y dimensiones."),
+    fuente("redmi-note-13-pro-plus-co-buy", "Xiaomi Colombia — REDMI Note 13 Pro+ 5G, variante 12 GB + 512 GB", "https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/buy/?gid=4223706821&ml=3472&mr=m", redmi13Variante, "La página de compra confirma la variante colombiana 12 GB + 512 GB y sus colores disponibles."),
+  ],
+);
+
+
+const yoga7Fuente = "lenovo-yoga7-14ahp9-psref";
+const yoga7Familia = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles en la familia", "rendimiento", "AMD Ryzen 5 8640HS o Ryzen 7 8840HS; la configuración concreta depende del MTM", yoga7Fuente),
+    atributo("graficos", "Gráficos disponibles", "rendimiento", "AMD Radeon 760M (Ryzen 5) o Radeon 780M (Ryzen 7)", yoga7Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "8 GB o 16 GB LPDDR5/LPDDR5X-6400 soldados; no ampliable", yoga7Fuente),
+    atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "SSD M.2 2242 PCIe 4.0 NVMe de 256 GB, 512 GB o 1 TB, según configuración", yoga7Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas WUXGA (1920 × 1200), IPS 300 nits u OLED 400 nits; ambas táctiles y 60 Hz", yoga7Fuente),
+    atributo("bateria", "Batería", "bateria", 71, yoga7Fuente, "Wh"),
+    atributo("autonomia", "Autonomía declarada", "bateria", "Hasta 12,5 h MobileMark 25; depende del panel y condiciones de prueba", yoga7Fuente),
+    atributo("conectividad", "Conectividad inalámbrica", "conectividad", "Wi-Fi 6E y Bluetooth 5.3", yoga7Fuente),
+    atributo("puertos", "Puertos", "conectividad", "USB-A 5 Gbps; USB-C 10 Gbps; USB4 40 Gbps; HDMI 2.1; lector microSD; audio 3,5 mm", yoga7Fuente),
+    atributo("bisagra", "Modos de uso", "diseno", "Bisagra de 360°: portátil, tienda, soporte y tableta", yoga7Fuente),
+    atributo("peso", "Peso inicial según panel", "diseno", "Desde 1,61 kg (IPS) o 1,49 kg (OLED)", yoga7Fuente),
+  ],
+  [],
+  [
+    fuente(
+      yoga7Fuente,
+      "Lenovo PSREF — Yoga 7 2-in-1 14AHP9, especificaciones oficiales",
+      "https://psref.lenovo.com/syspool/Sys/PDF/Yoga/Yoga_7_2_in_1_14AHP9/Yoga_7_2_in_1_14AHP9_Spec.PDF",
+      null,
+      "La fuente documenta la familia 14AHP9 y sus opciones de procesador, memoria soldada, almacenamiento, panel, batería y puertos. El registro de TecReview no incluye MTM ni configuración exacta; por eso la ficha se marca parcial y no asigna RAM, SSD, panel ni procesador a una unidad concreta.",
+      CONSULTA
+    ),
+  ],
+);
+
+ 
+const hpSpectreFuente = "hp-spectre-x360-14-eu0000";
+const hpSpectreX36014 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles en la serie", "rendimiento", "Intel Core Ultra 5 125H o Core Ultra 7 155H; depende de la configuración", hpSpectreFuente),
+    atributo("graficos", "Gráficos", "rendimiento", "Intel Arc integrados", hpSpectreFuente),
+    atributo("pantalla", "Pantalla de la serie 14-eu0000", "pantalla", "OLED táctil de 14 pulgadas, 2.8K (2880 × 1800), 100 % DCI-P3, hasta 120 Hz y 400 nits SDR / 500 nits HDR", hpSpectreFuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "16 GB o 32 GB LPDDR5x-7467 soldados; no ampliables", hpSpectreFuente),
+    atributo("almacenamiento", "Almacenamiento disponible", "almacenamiento", "SSD M.2 PCIe 4.0 NVMe de 512 GB, 1 TB o 2 TB; opciones regionales", hpSpectreFuente),
+    atributo("audio", "Audio", "audio", "Cuatro altavoces", hpSpectreFuente),
+    atributo("conectividad_inalambrica", "Opciones inalámbricas", "conectividad", "La serie contempla tarjetas inalámbricas distintas según configuración y región; confirmar SKU para identificar Wi-Fi/Bluetooth", hpSpectreFuente),
+  ],
+  [],
+  [
+    fuente(
+      hpSpectreFuente,
+      "HP Support — Spectre x360 14-eu0000 series, especificaciones oficiales",
+      "https://support.hp.com/us-en/document/ish_9687926-9688096-16",
+      null,
+      "La fuente oficial describe la serie 14-eu0000 y advierte que los componentes varían por país y configuración. El producto del catálogo no incluye número de producto/SKU; por ello la ficha queda parcial, sin variante concreta ni asignación de RAM, SSD o procesador a una unidad específica.",
+      CONSULTA
+    ),
+  ],
+);
+
+const dellXps13Fuente = "dell-xps-13-9340";
+const dellXps13_9340 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles", "rendimiento", "Intel Core Ultra 5 125H, Core Ultra 7 155H o Core Ultra 7 165H; según configuración", dellXps13Fuente),
+    atributo("graficos", "Gráficos", "rendimiento", "Intel Arc integrados", dellXps13Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "13,4 pulgadas: FHD+ 1920 × 1200 WLED no táctil; QHD+ 2560 × 1600 WLED táctil; o 3K+ 2880 × 1800 OLED táctil", dellXps13Fuente),
+    atributo("tasa_refresco", "Frecuencia de pantalla", "pantalla", "FHD+ y QHD+: 30–120 Hz; OLED: 48–60 Hz", dellXps13Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "8 GB LPDDR5-6400 o 16 GB, 32 GB y 64 GB LPDDR5x-7467; integrada en placa", dellXps13Fuente),
+    atributo("peso", "Peso aproximado según pantalla", "diseno", "Desde 1,19 kg con OLED o 1,22 kg con FHD+/QHD+", dellXps13Fuente),
+    atributo("sistema_operativo", "Sistemas operativos ofrecidos", "software", "Windows 11 Home/Pro y Ubuntu 22.04 LTS en configuraciones seleccionadas", dellXps13Fuente),
+  ],
+  [],
+  [
+    fuente(dellXps13Fuente, "Dell — XPS 13 9340, especificaciones y manual oficial", "https://www.dell.com/support/kbdoc/en-au/000222269/dell-xps-13-9340-usage-and-troubleshooting-guide", null, "La documentación Dell describe opciones de procesador, pantalla y memoria para el modelo 9340. La ficha del catálogo no identifica Service Tag ni configuración comercial; queda parcial y no asigna una opción concreta al producto."),
+  ],
+);
+const thinkpadT14Gen5FuenteIntel = "lenovo-thinkpad-t14-gen5-intel-psref";
+const thinkpadT14Gen5FuenteAmd = "lenovo-thinkpad-t14-gen5-amd-psref";
+const thinkpadT14Gen5 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador_intel", "Procesadores Intel disponibles", "rendimiento", "Intel Core Ultra 5 125U, 135U, 125H o 135H; Intel Core Ultra 7 155U, 165U, 155H o 165H, según configuración", thinkpadT14Gen5FuenteIntel),
+        atributo("procesador_amd", "Procesadores AMD disponibles", "rendimiento", "AMD Ryzen 5 PRO 8540U o Ryzen 7 PRO 8840U, según configuración", thinkpadT14Gen5FuenteAmd),
+    atributo("graficos_intel", "Gráficos Intel disponibles", "rendimiento", "Intel Graphics o Intel Arc integrados (Arc solo en determinados procesadores H y con memoria de doble canal)", thinkpadT14Gen5FuenteIntel),
+        atributo("graficos_amd", "Gráficos AMD disponibles", "rendimiento", "AMD Radeon 740M o Radeon 780M integrados", thinkpadT14Gen5FuenteAmd),
+    atributo("ram", "Memoria RAM admitida", "memoria", "DDR5-5600 en dos ranuras SO-DIMM; hasta 64 GB, según plataforma y configuración", thinkpadT14Gen5FuenteIntel),
+    atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "Una unidad SSD M.2 2280 PCIe 4.0 NVMe; opciones de 256 GB, 512 GB, 1 TB y hasta 2 TB, según configuración", thinkpadT14Gen5FuenteIntel),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas: WUXGA (1920 × 1200) IPS de 400 o 500 nits, táctil o no táctil según panel; o 2.8K (2880 × 1800) OLED de 400 nits, 120 Hz y 100 % DCI-P3", thinkpadT14Gen5FuenteIntel),
+    atributo("bateria", "Capacidades de batería", "bateria", "39,3 Wh (solo ofertas especiales) o 52,5 Wh", thinkpadT14Gen5FuenteIntel),
+    atributo("peso", "Peso inicial según configuración", "diseno", "Desde 1,31 kg hasta 1,43 kg, según plataforma, color y batería", thinkpadT14Gen5FuenteIntel),
+    atributo("dimensiones", "Dimensiones (ancho × fondo × alto)", "diseno", "315,9 × 223,7 × 17,7 mm", thinkpadT14Gen5FuenteIntel),
+    atributo("sistema_operativo", "Sistemas operativos ofrecidos", "software", "Windows 11, Fedora Linux, Ubuntu Linux, otras distribuciones Linux o sin sistema operativo preinstalado, según mercado", thinkpadT14Gen5FuenteIntel),
+  ],
+  [],
+  [
+    fuente(thinkpadT14Gen5FuenteIntel, "Lenovo PSREF — ThinkPad T14 Gen 5 Intel, especificaciones oficiales", "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_Intel/ThinkPad_T14_Gen_5_Intel_Spec.PDF", null, "La documentación oficial Intel describe opciones de CPU U/H, gráficos, memoria DDR5-5600, almacenamiento, paneles, batería, peso y dimensiones. No se dispone del MTM del producto del catálogo."),
+    fuente(thinkpadT14Gen5FuenteAmd, "Lenovo PSREF — ThinkPad T14 Gen 5 AMD, especificaciones oficiales", "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_AMD/ThinkPad_T14_Gen_5_AMD_Spec.PDF", null, "La documentación oficial AMD describe Ryzen 5 PRO 8540U y Ryzen 7 PRO 8840U, gráficos Radeon 740M/780M, memoria DDR5-5600, almacenamiento, paneles, batería y peso. Se conserva como familia parcial porque el catálogo no identifica plataforma ni MTM."),
+  ],
+);
+
+const dellXps16Fuente = "dell-xps-16-9640";
+const dellXps16_9640 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles", "rendimiento", "Intel Core Ultra 7 155H, Core Ultra 7 165H o Core Ultra 9 185H; según configuración", dellXps16Fuente),
+    atributo("graficos", "Opciones gráficas", "rendimiento", "Intel Arc integrados o NVIDIA GeForce RTX 4050, 4060 o 4070; según configuración", dellXps16Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "16,3 pulgadas FHD+ 1920 × 1200 WVA no táctil o 4K+ 3840 × 2400 OLED táctil", dellXps16Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "16 GB LPDDR5x con gráficos Intel Arc; hasta 64 GB LPDDR5x integrada según GPU/configuración", dellXps16Fuente),
+    atributo("almacenamiento", "Opciones de SSD", "almacenamiento", "512 GB, 1 TB, 2 TB o 4 TB M.2 PCIe NVMe Gen 4; opciones según configuración", dellXps16Fuente),
+    atributo("peso", "Peso aproximado", "diseno", "Desde 2,13 kg con panel FHD+ o 2,18 kg con panel UHD+", dellXps16Fuente),
+  ],
+  [],
+  [
+    fuente(dellXps16Fuente, "Dell — XPS 16 9640, manual y especificaciones oficiales", "https://www.dell.com/support/manuals/en-us/xps-16-9640-laptop/xps-16-9640-owners-manual/processor", null, "La documentación oficial identifica opciones de CPU, GPU, memoria y pantalla del XPS 16 9640. El registro del catálogo no contiene Service Tag ni SKU; no se determina una configuración individual y la ficha se mantiene parcial."),
+    fuente("dell-xps-16-9640-specs", "Dell — XPS 16 9640, especificaciones de memoria y almacenamiento", "https://www.dell.com/support/kbdoc/en-mk/000222265/dell-xps-16-9640-laptop-usage-and-troubleshooting-guide", null, "Dell detalla RAM integrada y capacidades de SSD disponibles según la configuración."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -915,11 +1175,18 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   oneplusPad2: oneplusPad2,
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
+  lenovoThinkpadT14Gen5: thinkpadT14Gen5,
+  appleMacbookPro16M3Pro: macbookPro16M3Pro,
   appleMacbookPro16M3Max: macbookPro16M3Max,
+  lenovoYoga7_14_2in1: yoga7Familia,
+  hpSpectreX36014,
+  dellXps13_9340,
+  dellXps16_9640,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
   appleIphone13_128: iphone13,
+  appleIphone16: iphone16,
   xiaomiRedmiNote14ProPlus12_512: redmiNote14ProPlus,
   oneplus13_16_512: oneplus13,
   appleIphone15ProMax256: iphone15ProMax,
@@ -927,6 +1194,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   xiaomi14Ultra16_512: xiaomi14Ultra,
   nothingEarABlack: nothingEarABlack,
   xiaomi14tPro12_512: xiaomi14tPro,
+  redmiNote13ProPlus: redmiNote13ProPlus,
 } satisfies Record<string, FichaTecnicaV2>;
 
 function normalizarNombre(nombre: string): string {
@@ -953,12 +1221,19 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("oneplus 13 5g") || n === "oneplus 13") return oneplus13;
   if (n.includes("galaxy a55")) return galaxyA55;
   if (n.includes("iphone 13") && n.includes("128")) return iphone13;
+  if (n === "apple iphone 16" || n === "iphone 16") return iphone16;
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
+  if (n.includes("thinkpad t14 gen 5")) return thinkpadT14Gen5;
+  if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
+  if (n.includes("hp spectre x360 14")) return hpSpectreX36014;
+  if (n.includes("dell xps 13 9340")) return dellXps13_9340;
+  if (n.includes("dell xps 16 9640")) return dellXps16_9640;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
+  if (n.includes("macbook pro") && n.includes("m3 pro") && n.includes("16")) return macbookPro16M3Pro;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
   return null;
@@ -984,6 +1259,8 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       return oneplus13;
     case 107:
       return redmiNote14ProPlus;
+    case 101:
+      return redmiNote13ProPlus;
     case 102:
       return galaxyA55;
     case 104:
@@ -1015,6 +1292,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
       if (n.includes("s24 ultra")) return samsung256;
       if (n.includes("oneplus pad 2")) return oneplusPad2;
+      if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
       if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
       if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
       if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;

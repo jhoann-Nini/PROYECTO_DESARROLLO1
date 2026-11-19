@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 import { construirHeadersSeguridad } from "./src/lib/securityHeaders";
 
@@ -6,7 +7,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 
   turbopack: {
-    root: __dirname,
+    root: path.resolve(__dirname, ".."),
   },
 
   async headers() {

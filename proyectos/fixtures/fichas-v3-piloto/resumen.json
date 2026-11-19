@@ -1,0 +1,78 @@
+{
+  "version_esquema": 3,
+  "fecha_consulta": "2026-11-19",
+  "fichas": [
+    {
+      "id": "ipad-pro-11-m4",
+      "categoria": "tablets",
+      "ficha": "ipad-pro-11-m4.json",
+      "especificaciones": 26,
+      "variantes": 4,
+      "fuentes": 2,
+      "evidencias": 26
+    },
+    {
+      "id": "lenovo-thinkpad-e14-gen-5",
+      "categoria": "portatiles",
+      "ficha": "lenovo-thinkpad-e14-gen-5.json",
+      "especificaciones": 19,
+      "variantes": 1,
+      "fuentes": 1,
+      "evidencias": 19
+    },
+    {
+      "id": "macbook-pro-16-m3-max",
+      "categoria": "portatiles",
+      "ficha": "macbook-pro-16-m3-max.json",
+      "especificaciones": 18,
+      "variantes": 1,
+      "fuentes": 2,
+      "evidencias": 18
+    },
+    {
+      "id": "nothing-ear-2",
+      "categoria": "auriculares",
+      "ficha": "nothing-ear-2.json",
+      "especificaciones": 18,
+      "variantes": 2,
+      "fuentes": 2,
+      "evidencias": 18
+    },
+    {
+      "id": "nothing-phone-2a",
+      "categoria": "celulares",
+      "ficha": "nothing-phone-2a.json",
+      "especificaciones": 22,
+      "variantes": 2,
+      "fuentes": 2,
+      "evidencias": 22
+    },
+    {
+      "id": "oneplus-pad-2",
+      "categoria": "tablets",
+      "ficha": "oneplus-pad-2.json",
+      "especificaciones": 23,
+      "variantes": 2,
+      "fuentes": 3,
+      "evidencias": 23
+    },
+    {
+      "id": "samsung-galaxy-s24-ultra",
+      "categoria": "celulares",
+      "ficha": "samsung-galaxy-s24-ultra.json",
+      "especificaciones": 23,
+      "variantes": 3,
+      "fuentes": 3,
+      "evidencias": 23
+    },
+    {
+      "id": "sony-wh-1000xm5",
+      "categoria": "auriculares",
+      "ficha": "sony-wh-1000xm5.json",
+      "especificaciones": 14,
+      "variantes": 4,
+      "fuentes": 2,
+      "evidencias": 14
+    }
+  ]
+}

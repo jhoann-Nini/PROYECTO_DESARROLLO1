@@ -1,0 +1,1162 @@
+{
+  "version_esquema": 3,
+  "categoria": "portatiles",
+  "variantes": [
+    {
+      "id": "21jk0005ri",
+      "modelo": "ThinkPad E14 Gen 5 Intel",
+      "sku": "21JK0005RI",
+      "mercado": "EET / Romania per PSREF",
+      "identificadores": {
+        "machine_type": "21JK",
+        "EAN": "0196804692708"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-01-processor.model",
+      "clave": "processor.model",
+      "nombre": "CPU",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Intel Core i5-1335U, 10C (2P+8E)/12T",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Intel Core i5-1335U, 10 núcleos (2P+8E), 12 hilos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-02-gpu.model",
+      "clave": "gpu.model",
+      "nombre": "GPU",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Integrated Intel Iris Xe Graphics",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Intel Iris Xe Graphics integrada"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-03-memory.ram",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8GB soldered + 8GB SO-DIMM DDR4-3200",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 16,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-04-memory.layout",
+      "clave": "memory.layout",
+      "nombre": "Configuración RAM",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8GB soldada + 8GB SO-DIMM DDR4-3200",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "8GB soldada + 8GB SO-DIMM DDR4-3200"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-05-storage.capacity",
+      "clave": "storage.capacity",
+      "nombre": "SSD",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "512GB M.2 2242 PCIe4.0x4 NVMe Opal 2.0",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 512,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-06-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "14 inch",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 14,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-07-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1920 × 1200 WUXGA",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 1920,
+          "alto": 1200,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-08-display.panel",
+      "clave": "display.panel",
+      "nombre": "Panel",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "IPS antiglare",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "IPS antirreflejo"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-09-display.brightness",
+      "clave": "display.brightness",
+      "nombre": "Brillo",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "300 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 300,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-10-display.color_gamut",
+      "clave": "display.color_gamut",
+      "nombre": "Gama",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "45% NTSC",
+        "unidad": "%"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 45,
+          "unidad": "%"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-11-webcam",
+      "clave": "webcam",
+      "nombre": "Webcam",
+      "grupo": "multimedia",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "FHD 1080p + IR hybrid with privacy shutter",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "FHD 1080p + IR híbrida con obturador"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-12-battery.capacity",
+      "clave": "battery.capacity",
+      "nombre": "Batería",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "57Wh",
+        "unidad": "Wh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 57,
+          "unidad": "Wh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-13-connectivity.wifi",
+      "clave": "connectivity.wifi",
+      "nombre": "Wi-Fi",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Wi-Fi 6 802.11ax 2x2",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Wi-Fi 6 (802.11ax) 2×2"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-14-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5.1",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "5.1"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-15-ports",
+      "clave": "ports",
+      "nombre": "Puertos",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "USB2; USB-A3.2G1; USB-C3.2G2; TB4; HDMI2.1; RJ45; 3.5mm",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "USB 2.0"
+            },
+            {
+              "tipo": "texto",
+              "valor": "USB-A 3.2 Gen 1"
+            },
+            {
+              "tipo": "texto",
+              "valor": "USB-C 3.2 Gen 2"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Thunderbolt 4 / USB4 40Gbps"
+            },
+            {
+              "tipo": "texto",
+              "valor": "HDMI 2.1"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Ethernet RJ-45"
+            },
+            {
+              "tipo": "texto",
+              "valor": "combo 3.5 mm"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-16-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones ancho × profundidad × grosor",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "313 × 219.3 × 17.99 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 313,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "profundidad",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 219.3,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "grosor",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 17.99,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-17-weight",
+      "clave": "weight",
+      "nombre": "Peso inicial",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Starting at 1.43 kg",
+        "unidad": "kg"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1.43,
+          "unidad": "kg"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-18-security.fingerprint",
+      "clave": "security.fingerprint",
+      "nombre": "Lector de huellas",
+      "grupo": "seguridad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Touch style, integrated in power button",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "booleano",
+          "valor": true
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-lenovo-thinkpad-e14-gen-5-19-software.os",
+      "clave": "software.os",
+      "nombre": "SO preinstalado",
+      "grupo": "software",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "None",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "None"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-lenovo-thinkpad-e14-gen-5-19"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "lenovo-psref",
+      "tipo": "fabricante",
+      "nombre": "Lenovo PSREF — ThinkPad E14 Gen 5 Intel, SKU 21JK0005RI",
+      "url": "https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-01",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "CPU",
+      "extracto": "Intel Core i5-1335U, 10C (2P+8E)/12T",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-02",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "GPU",
+      "extracto": "Integrated Intel Iris Xe Graphics",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-03",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "RAM",
+      "extracto": "8GB soldered + 8GB SO-DIMM DDR4-3200",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-04",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Configuración RAM",
+      "extracto": "8GB soldada + 8GB SO-DIMM DDR4-3200",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-05",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "SSD",
+      "extracto": "512GB M.2 2242 PCIe4.0x4 NVMe Opal 2.0",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-06",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Diagonal",
+      "extracto": "14 inch",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-07",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "1920 × 1200 WUXGA",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-08",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Panel",
+      "extracto": "IPS antiglare",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-09",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Brillo",
+      "extracto": "300 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-10",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Gama",
+      "extracto": "45% NTSC",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-11",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Webcam",
+      "extracto": "FHD 1080p + IR hybrid with privacy shutter",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-12",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Batería",
+      "extracto": "57Wh",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-13",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Wi-Fi",
+      "extracto": "Wi-Fi 6 802.11ax 2x2",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-14",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "5.1",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-15",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Puertos",
+      "extracto": "USB2; USB-A3.2G1; USB-C3.2G2; TB4; HDMI2.1; RJ45; 3.5mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-16",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Dimensiones ancho × profundidad × grosor",
+      "extracto": "313 × 219.3 × 17.99 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-17",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Peso inicial",
+      "extracto": "Starting at 1.43 kg",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-18",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "Lector de huellas",
+      "extracto": "Touch style, integrated in power button",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-lenovo-thinkpad-e14-gen-5-19",
+      "fuente_id": "lenovo-psref",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "21jk0005ri"
+        ]
+      },
+      "localizador": "SO preinstalado",
+      "extracto": "None",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

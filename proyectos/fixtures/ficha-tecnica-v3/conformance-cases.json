@@ -1,0 +1,3485 @@
+[
+  {
+    "id": "v3_valid",
+    "description": "Valid complete V3 with zero-valued magnitude",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "V3 contract"
+  },
+  {
+    "id": "contradiction_sin_conflicto",
+    "description": "Contradictory evidence requires a resolved conflict",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Contradiction state"
+  },
+  {
+    "id": "contradiction_conflicto_pendiente",
+    "description": "Contradictory evidence requires a resolved conflict",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "conflicto_pendiente",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Contradiction state"
+  },
+  {
+    "id": "contradiction_resolved",
+    "description": "Resolved conflict with complete trace metadata",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1",
+            "ev-2"
+          ],
+          "revision_conflicto": {
+            "estado": "conflicto_resuelto",
+            "resuelto_en": "2026-11-19",
+            "resuelto_por": "reviewer",
+            "resolucion": "Compared source statements; retained supported value"
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        },
+        {
+          "id": "ev-2",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "other section",
+          "extracto": "contradictory evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Resolved conflict"
+  },
+  {
+    "id": "contradiction_resolved_inconsistent",
+    "description": "Resolved state missing resolution date",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "conflicto_resuelto",
+            "resuelto_en": null,
+            "resuelto_por": "reviewer",
+            "resolucion": "Resolution"
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Conflict metadata coherence"
+  },
+  {
+    "id": "set_object_key_order",
+    "description": "Set equality ignores property order",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "conjunto",
+              "tipo_elemento": "magnitud",
+              "elementos": [
+                {
+                  "tipo": "magnitud",
+                  "valor": 1,
+                  "unidad": "mm"
+                },
+                {
+                  "unidad": "mm",
+                  "valor": 1,
+                  "tipo": "magnitud"
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Structural set/list semantics"
+  },
+  {
+    "id": "set_numeric_1_equals_1_0",
+    "description": "JSON numbers 1 and 1.0 are equal",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "conjunto",
+              "tipo_elemento": "numero",
+              "elementos": [
+                {
+                  "tipo": "numero",
+                  "valor": 1
+                },
+                {
+                  "tipo": "numero",
+                  "valor": 1.0
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Structural set/list semantics"
+  },
+  {
+    "id": "set_distinct_numbers",
+    "description": "Distinct finite numbers remain distinct",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "conjunto",
+              "tipo_elemento": "numero",
+              "elementos": [
+                {
+                  "tipo": "numero",
+                  "valor": 1
+                },
+                {
+                  "tipo": "numero",
+                  "valor": 1.0000000000000002
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Structural set/list semantics"
+  },
+  {
+    "id": "set_duplicate_text",
+    "description": "Set rejects duplicate text",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "conjunto",
+              "tipo_elemento": "texto",
+              "elementos": [
+                {
+                  "tipo": "texto",
+                  "valor": "A"
+                },
+                {
+                  "tipo": "texto",
+                  "valor": "A"
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Structural set/list semantics"
+  },
+  {
+    "id": "sequence_booleans",
+    "description": "Sequence preserves booleans",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "secuencia",
+              "tipo_elemento": "booleano",
+              "elementos": [
+                {
+                  "tipo": "booleano",
+                  "valor": true
+                },
+                {
+                  "tipo": "booleano",
+                  "valor": false
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Structural set/list semantics"
+  },
+  {
+    "id": "list_null_atom",
+    "description": "Null is not a supported typed atom",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "lista",
+              "semantica": "conjunto",
+              "tipo_elemento": "numero",
+              "elementos": [
+                {
+                  "tipo": "numero",
+                  "valor": null
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Atom type"
+  },
+  {
+    "id": "dimensions_standard_custom_same_label",
+    "description": "Standard alto and custom alto have namespaced identities",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "dimensiones",
+              "ejes": [
+                {
+                  "eje": "alto",
+                  "magnitud": {
+                    "valor": 10,
+                    "unidad": "mm"
+                  }
+                },
+                {
+                  "eje": "otro",
+                  "nombre_eje": "alto",
+                  "magnitud": {
+                    "valor": 11,
+                    "unidad": "mm"
+                  }
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Dimension key namespace"
+  },
+  {
+    "id": "dimensions_duplicate_standard",
+    "description": "Repeated standard axis rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "dimensiones",
+              "ejes": [
+                {
+                  "eje": "alto",
+                  "magnitud": {
+                    "valor": 10,
+                    "unidad": "mm"
+                  }
+                },
+                {
+                  "eje": "alto",
+                  "magnitud": {
+                    "valor": 11,
+                    "unidad": "mm"
+                  }
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Dimension uniqueness"
+  },
+  {
+    "id": "dimensions_duplicate_custom",
+    "description": "Repeated exact custom axis rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "dimensiones",
+              "ejes": [
+                {
+                  "eje": "otro",
+                  "nombre_eje": "Panel",
+                  "magnitud": {
+                    "valor": 10,
+                    "unidad": "mm"
+                  }
+                },
+                {
+                  "eje": "otro",
+                  "nombre_eje": "Panel",
+                  "magnitud": {
+                    "valor": 11,
+                    "unidad": "mm"
+                  }
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Dimension uniqueness"
+  },
+  {
+    "id": "dimensions_custom_case_sensitive",
+    "description": "Custom names preserve case distinction",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "dimensiones",
+              "ejes": [
+                {
+                  "eje": "otro",
+                  "nombre_eje": "Panel",
+                  "magnitud": {
+                    "valor": 10,
+                    "unidad": "mm"
+                  }
+                },
+                {
+                  "eje": "otro",
+                  "nombre_eje": "panel",
+                  "magnitud": {
+                    "valor": 11,
+                    "unidad": "mm"
+                  }
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Custom identity"
+  },
+  {
+    "id": "dimensions_empty_custom",
+    "description": "Empty custom name rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "dimensiones",
+              "ejes": [
+                {
+                  "eje": "otro",
+                  "nombre_eje": " ",
+                  "magnitud": {
+                    "valor": 10,
+                    "unidad": "mm"
+                  }
+                },
+                {
+                  "eje": "ancho",
+                  "magnitud": {
+                    "valor": 11,
+                    "unidad": "mm"
+                  }
+                }
+              ]
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": false
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Custom axis name"
+  },
+  {
+    "id": "precision_negative",
+    "description": "Negative precision rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": -1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Finite nonnegative integer precision"
+  },
+  {
+    "id": "precision_fraction",
+    "description": "Fractional precision rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1.5
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Finite nonnegative integer precision"
+  },
+  {
+    "id": "precision_large_finite",
+    "description": "Large finite integer accepted without arbitrary limit",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1e+100
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Finite nonnegative integer precision"
+  },
+  {
+    "id": "precision_nonfinite",
+    "description": "Exponent overflow becomes nonfinite and is rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1e400
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Finite precision"
+  },
+  {
+    "id": "metadata_malformed",
+    "description": "Malformed metadata type rejected",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": 7,
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Metadata types"
+  },
+  {
+    "id": "metadata_missing_nullable",
+    "description": "Required nullable key cannot be omitted",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Required nullable metadata"
+  },
+  {
+    "id": "evidence_wrong_variant",
+    "description": "Verified evidence must cover exact variant",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "verificado",
+            "verificado_en": "2026-11-19",
+            "verificado_por": "reviewer",
+            "evento_auditoria_id": "audit-1",
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "other"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Evidence variant compatibility"
+  },
+  {
+    "id": "evidence_compatible_variant",
+    "description": "Evidence scope matches product variant",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "Evidence variant compatibility"
+  },
+  {
+    "id": "version_1_v3_marker",
+    "description": "V3 markers cannot be mislabeled",
+    "input": {
+      "version_esquema": 1,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Version marker dispatch"
+  },
+  {
+    "id": "version_2_v3_marker",
+    "description": "V3 markers cannot be mislabeled",
+    "input": {
+      "version_esquema": 2,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Version marker dispatch"
+  },
+  {
+    "id": "version_4_v3_marker",
+    "description": "V3 markers cannot be mislabeled",
+    "input": {
+      "version_esquema": 4,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Version marker dispatch"
+  },
+  {
+    "id": "version_malformed",
+    "description": "String schema version rejected",
+    "input": {
+      "version_esquema": "3",
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Version parsing"
+  },
+  {
+    "id": "v3_missing_version",
+    "description": "V3 marker envelope requires version",
+    "input": {
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [
+            "ev-1"
+          ],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "respalda",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": []
+    },
+    "expected": "invalid",
+    "rule": "Version marker dispatch"
+  },
+  {
+    "id": "v1_legitimate",
+    "description": "V1 route remains accepted",
+    "input": {
+      "version_esquema": 1,
+      "ram": 8,
+      "almacenamiento": 128
+    },
+    "expected": "valid",
+    "rule": "V1 compatibility"
+  },
+  {
+    "id": "v2_legitimate",
+    "description": "V2 envelope without V3 markers remains accepted",
+    "input": {
+      "version_esquema": 2,
+      "categoria": "tablets",
+      "variantes": [],
+      "fuentes": [],
+      "benchmarks": []
+    },
+    "expected": "valid",
+    "rule": "V2 compatibility"
+  },
+  {
+    "id": "legacy_legitimate",
+    "description": "Unversioned legacy characteristics route remains accepted",
+    "input": {
+      "procesador": "Example",
+      "ram": 8
+    },
+    "expected": "valid",
+    "rule": "Legacy compatibility"
+  },
+  {
+    "id": "benchmark_contradiction_sin_conflicto",
+    "description": "Benchmark contradictory evidence follows the same conflict resolution rule",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "pendiente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": [
+        {
+          "id": "benchmark-1",
+          "nombre_prueba": "Fixture benchmark",
+          "version": null,
+          "plataforma": null,
+          "modo_ejecucion": null,
+          "resultado_original": {
+            "texto": "1 point",
+            "unidad": "puntos"
+          },
+          "resultado": {
+            "valor": 1,
+            "unidad": "puntos"
+          },
+          "regla_conversion_id": null,
+          "fecha_ejecucion": "2026-11-19",
+          "fuente_id": "src-1",
+          "evidencia_id": "ev-1",
+          "variante_id": "var-1",
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          }
+        }
+      ]
+    },
+    "expected": "invalid",
+    "rule": "Benchmark conflict state"
+  },
+  {
+    "id": "benchmark_contradiction_conflicto_pendiente",
+    "description": "Benchmark contradictory evidence follows the same conflict resolution rule",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "pendiente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": [
+        {
+          "id": "benchmark-1",
+          "nombre_prueba": "Fixture benchmark",
+          "version": null,
+          "plataforma": null,
+          "modo_ejecucion": null,
+          "resultado_original": {
+            "texto": "1 point",
+            "unidad": "puntos"
+          },
+          "resultado": {
+            "valor": 1,
+            "unidad": "puntos"
+          },
+          "regla_conversion_id": null,
+          "fecha_ejecucion": "2026-11-19",
+          "fuente_id": "src-1",
+          "evidencia_id": "ev-1",
+          "variante_id": "var-1",
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "revision_conflicto": {
+            "estado": "conflicto_pendiente",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          }
+        }
+      ]
+    },
+    "expected": "invalid",
+    "rule": "Benchmark conflict state"
+  },
+  {
+    "id": "benchmark_contradiction_conflicto_resuelto",
+    "description": "Benchmark contradictory evidence follows the same conflict resolution rule",
+    "input": {
+      "version_esquema": 3,
+      "categoria": "celulares",
+      "variantes": [
+        {
+          "id": "var-1",
+          "modelo": "Illustrative model",
+          "sku": null,
+          "mercado": null,
+          "identificadores": {}
+        }
+      ],
+      "especificaciones": [
+        {
+          "id": "display.diagonal.var-1",
+          "clave": "display.diagonal",
+          "nombre": "Diagonal",
+          "grupo": "pantalla",
+          "variante_id": "var-1",
+          "estado_dato": "conocido",
+          "justificacion_estado": null,
+          "valor_original": {
+            "texto": "0 in",
+            "unidad": "in"
+          },
+          "normalizacion": {
+            "estado": "normalizada",
+            "valor": {
+              "tipo": "magnitud",
+              "valor": 0,
+              "unidad": "in"
+            },
+            "regla_conversion_id": null,
+            "precision": {
+              "decimales": 1
+            }
+          },
+          "evidencia_ids": [],
+          "revision_conflicto": {
+            "estado": "sin_conflicto",
+            "resuelto_en": null,
+            "resuelto_por": null,
+            "resolucion": null
+          },
+          "verificacion": {
+            "estado": "pendiente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "comparacion": {
+            "habilitada": true,
+            "id": "rule-1",
+            "modo": "orden_numerico",
+            "unidad": "in",
+            "direccion": "mayor_es_mejor",
+            "objetivo": null,
+            "tolerancia": {
+              "valor": 0.1,
+              "unidad": "in"
+            }
+          }
+        }
+      ],
+      "fuentes": [
+        {
+          "id": "src-1",
+          "tipo": "fabricante",
+          "nombre": "Fixture source",
+          "url": "https://example.test/specs",
+          "localizador": "section",
+          "consultada_en": "2026-11-19",
+          "variante_id": "var-1",
+          "mercado": "illustrative"
+        }
+      ],
+      "evidencias": [
+        {
+          "id": "ev-1",
+          "fuente_id": "src-1",
+          "alcance": {
+            "tipo": "variante",
+            "variante_id": "var-1"
+          },
+          "localizador": "section",
+          "extracto": "illustrative evidence",
+          "postura": "contradice",
+          "registrada_en": "2026-11-19",
+          "registrada_por": "test"
+        }
+      ],
+      "benchmarks": [
+        {
+          "id": "benchmark-1",
+          "nombre_prueba": "Fixture benchmark",
+          "version": null,
+          "plataforma": null,
+          "modo_ejecucion": null,
+          "resultado_original": {
+            "texto": "1 point",
+            "unidad": "puntos"
+          },
+          "resultado": {
+            "valor": 1,
+            "unidad": "puntos"
+          },
+          "regla_conversion_id": null,
+          "fecha_ejecucion": "2026-11-19",
+          "fuente_id": "src-1",
+          "evidencia_id": "ev-1",
+          "variante_id": "var-1",
+          "verificacion": {
+            "estado": "con_fuente",
+            "verificado_en": null,
+            "verificado_por": null,
+            "evento_auditoria_id": null,
+            "motivo_revision": null
+          },
+          "revision_conflicto": {
+            "estado": "conflicto_resuelto",
+            "resuelto_en": "2026-11-19",
+            "resuelto_por": "reviewer",
+            "resolucion": "Compared evidence records"
+          }
+        }
+      ]
+    },
+    "expected": "valid",
+    "rule": "Benchmark conflict state"
+  },
+  {
+    "id": "numeric_source_reference_rejected",
+    "description": "Source references must be strings, even when the string ID is numeric",
+    "input": {"version_esquema":3,"categoria":"celulares","variantes":[{"id":"1","modelo":null,"sku":null,"mercado":null,"identificadores":{}}],"especificaciones":[],"fuentes":[{"id":"1","tipo":"fabricante","nombre":"Source","url":null,"localizador":null,"consultada_en":null,"variante_id":null,"mercado":null}],"evidencias":[{"id":"ev-1","fuente_id":1,"alcance":{"tipo":"variante","variante_id":"1"},"localizador":"section","extracto":null,"postura":"respalda","registrada_en":"2026-11-19","registrada_por":null}],"benchmarks":[]},
+    "expected": "invalid",
+    "rule": "Reference identifiers must be strings"
+  },
+  {
+    "id": "numeric_all_variant_scope_id_rejected",
+    "description": "Variant IDs in all-variant evidence scopes must be strings",
+    "input": {"version_esquema":3,"categoria":"celulares","variantes":[{"id":"1","modelo":null,"sku":null,"mercado":null,"identificadores":{}}],"especificaciones":[],"fuentes":[{"id":"src-1","tipo":"fabricante","nombre":"Source","url":null,"localizador":null,"consultada_en":null,"variante_id":null,"mercado":null}],"evidencias":[{"id":"ev-1","fuente_id":"src-1","alcance":{"tipo":"todas_las_variantes","variante_ids":[1]},"localizador":"section","extracto":null,"postura":"respalda","registrada_en":"2026-11-19","registrada_por":null}],"benchmarks":[]},
+    "expected": "invalid",
+    "rule": "Reference identifiers must be strings"
+  },
+  {
+    "id": "numeric_variant_scope_id_rejected",
+    "description": "Variant IDs in single-variant evidence scopes must be strings",
+    "input": {"version_esquema":3,"categoria":"celulares","variantes":[{"id":"1","modelo":null,"sku":null,"mercado":null,"identificadores":{}}],"especificaciones":[],"fuentes":[{"id":"src-1","tipo":"fabricante","nombre":"Source","url":null,"localizador":null,"consultada_en":null,"variante_id":null,"mercado":null}],"evidencias":[{"id":"ev-1","fuente_id":"src-1","alcance":{"tipo":"variante","variante_id":1},"localizador":"section","extracto":null,"postura":"respalda","registrada_en":"2026-11-19","registrada_por":null}],"benchmarks":[]},
+    "expected": "invalid",
+    "rule": "Reference identifiers must be strings"
+  },
+  {
+    "id": "numeric_evidence_reference_rejected",
+    "description": "Evidence references must be strings, even when the string ID is numeric",
+    "input": {"version_esquema":3,"categoria":"celulares","variantes":[{"id":"1","modelo":null,"sku":null,"mercado":null,"identificadores":{}}],"especificaciones":[{"id":"spec-1","clave":"example","nombre":"Example","grupo":"general","variante_id":"1","estado_dato":"desconocido","justificacion_estado":null,"valor_original":null,"normalizacion":{"estado":"no_procesada","valor":null,"regla_conversion_id":null,"precision":null},"evidencia_ids":[1],"revision_conflicto":{"estado":"sin_conflicto","resuelto_en":null,"resuelto_por":null,"resolucion":null},"verificacion":{"estado":"pendiente","verificado_en":null,"verificado_por":null,"evento_auditoria_id":null,"motivo_revision":null},"comparacion":{"habilitada":false}}],"fuentes":[{"id":"src-1","tipo":"fabricante","nombre":"Source","url":null,"localizador":null,"consultada_en":null,"variante_id":null,"mercado":null}],"evidencias":[{"id":"1","fuente_id":"src-1","alcance":{"tipo":"variante","variante_id":"1"},"localizador":"section","extracto":null,"postura":"contexto","registrada_en":"2026-11-19","registrada_por":null}],"benchmarks":[]},
+    "expected": "invalid",
+    "rule": "Reference identifiers must be strings"
+  },
+  {
+    "id": "array_valued_enums_rejected",
+    "description": "Enum fields must be JSON strings, not one-element arrays that stringify to a valid enum",
+    "input": {"version_esquema":3,"categoria":"celulares","variantes":[{"id":"var-1","modelo":null,"sku":null,"mercado":null,"identificadores":{}}],"especificaciones":[{"id":"spec-compound","clave":"hardware.profile","nombre":"Profile","grupo":"general","variante_id":"var-1","estado_dato":"conocido","justificacion_estado":null,"valor_original":{"texto":"profile","unidad":null},"normalizacion":{"estado":"normalizada","valor":{"tipo":"compuesto","componentes":[{"clave":"interfaces","nombre":"Interfaces","valor":{"tipo":"lista","semantica":["secuencia"],"tipo_elemento":"texto","elementos":[{"tipo":"texto","valor":"USB-C"}]}},{"clave":"dimensions","nombre":"Dimensions","valor":{"tipo":"dimensiones","ejes":[{"eje":["alto"],"magnitud":{"valor":1,"unidad":"mm"}},{"eje":"ancho","magnitud":{"valor":2,"unidad":"mm"}}]}}]},"regla_conversion_id":null,"precision":null},"evidencia_ids":[],"revision_conflicto":{"estado":["sin_conflicto"],"resuelto_en":null,"resuelto_por":null,"resolucion":null},"verificacion":{"estado":"pendiente","verificado_en":null,"verificado_por":null,"evento_auditoria_id":null,"motivo_revision":null},"comparacion":{"habilitada":false}},{"id":"spec-clock","clave":"cpu.clock","nombre":"Clock","grupo":"hardware","variante_id":"var-1","estado_dato":"conocido","justificacion_estado":null,"valor_original":{"texto":"1 GHz","unidad":"GHz"},"normalizacion":{"estado":"normalizada","valor":{"tipo":"magnitud","valor":1,"unidad":"GHz"},"regla_conversion_id":null,"precision":null},"evidencia_ids":[],"revision_conflicto":{"estado":"sin_conflicto","resuelto_en":null,"resuelto_por":null,"resolucion":null},"verificacion":{"estado":"pendiente","verificado_en":null,"verificado_por":null,"evento_auditoria_id":null,"motivo_revision":null},"comparacion":{"habilitada":true,"id":"clock-rule","modo":"orden_numerico","unidad":"GHz","direccion":["mayor_es_mejor"],"objetivo":null,"tolerancia":null}}],"fuentes":[{"id":"src-1","tipo":["fabricante"],"nombre":"Source","url":null,"localizador":null,"consultada_en":null,"variante_id":null,"mercado":null}],"evidencias":[{"id":"ev-1","fuente_id":"src-1","alcance":{"tipo":"variante","variante_id":"var-1"},"localizador":"section","extracto":null,"postura":["contexto"],"registrada_en":"2026-11-19","registrada_por":null}],"benchmarks":[]},
+    "expected": "invalid",
+    "rule": "Enum values must be strings"
+  },
+  {
+    "id": "array_category_does_not_make_legacy_v3_marker",
+    "description": "An array containing a category name is not the V3 category marker",
+    "input": {"categoria":["celulares"],"especificaciones":[]},
+    "expected": "valid",
+    "rule": "Strict version marker types"
+  }
+]

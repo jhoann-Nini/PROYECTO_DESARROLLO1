@@ -520,6 +520,49 @@ describe("ComparadorCliente", () => {
     expect(screen.getByRole("rowheader", { name: /Pantalla/ })).toBeDefined();
   });
 
+  it("oculta filas V3 iguales aunque tengan nota explicativa de comparabilidad al activar Solo diferencias", async () => {
+    const v3Ficha = {
+      version_esquema: 3,
+      categoria: "celulares",
+      variantes: [{ id: "var-1", modelo: "M1", sku: null, mercado: null, identificadores: {} }],
+      especificaciones: [
+        {
+          id: "display.diagonal.var-1",
+          clave: "display.diagonal",
+          nombre: "Diagonal de pantalla",
+          grupo: "pantalla",
+          variante_id: "var-1",
+          estado_dato: "conocido",
+          justificacion_estado: null,
+          valor_original: { texto: "6.7 in", unidad: "in" },
+          normalizacion: { estado: "normalizada", valor: { tipo: "magnitud", valor: 6.7, unidad: "in" }, regla_conversion_id: null, precision: { decimales: 1 } },
+          evidencia_ids: [],
+          revision_conflicto: { estado: "sin_conflicto", resuelto_en: null, resuelto_por: null, resolucion: null },
+          verificacion: { estado: "pendiente", verificado_en: null, verificado_por: null, evento_auditoria_id: null, motivo_revision: null },
+          comparacion: { habilitada: true, id: "rule-diag", modo: "orden_numerico", unidad: "in", direccion: "mayor_es_mejor", objetivo: null, tolerancia: { valor: 0.1, unidad: "in" } },
+        },
+      ],
+      fuentes: [],
+      evidencias: [],
+      benchmarks: [],
+    };
+    const p1 = crearProducto(1, { caracteristicas: v3Ficha, precioReferencia: 1000000 });
+    const p2 = crearProducto(2, { caracteristicas: v3Ficha, precioReferencia: 2000000 });
+    configurarExito([p1, p2]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("rowheader", { name: /Diagonal de pantalla/ })).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Solo diferencias" }));
+
+    expect(screen.queryByRole("rowheader", { name: /Diagonal de pantalla/ })).toBeNull();
+    expect(screen.getByRole("rowheader", { name: /Precio de referencia/ })).toBeDefined();
+  });
+
   it("muestra la recomendación derivada y su carácter informativo", async () => {
     configurarExito([crearProducto(1), crearProducto(2)]);
     seleccionarEnStorage([1, 2]);

@@ -1,0 +1,1167 @@
+{
+  "version_esquema": 3,
+  "categoria": "auriculares",
+  "variantes": [
+    {
+      "id": "white",
+      "modelo": "Ear (2)",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "White"
+      }
+    },
+    {
+      "id": "black",
+      "modelo": "Ear (2)",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "color": "Black"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-nothing-ear-2-01-audio.driver",
+      "clave": "audio.driver",
+      "nombre": "Driver",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "11.6mm dynamic",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 11.6,
+          "unidad": "mm"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-02-audio.codecs",
+      "clave": "audio.codecs",
+      "nombre": "Bluetooth codecs",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "AAC, SBC, LHDC",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "AAC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "SBC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "LHDC"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-03-audio.anc_max",
+      "clave": "audio.anc_max",
+      "nombre": "ANC",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 40dB",
+        "unidad": "dB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 40,
+          "unidad": "dB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-04-audio.anc_modes",
+      "clave": "audio.anc_modes",
+      "nombre": "Modos ANC",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "personalised, adaptive, transparency",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Personalised ANC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Environment Adaptive ANC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Transparency Mode"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-05-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5.3",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "5.3"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-06-battery.playback_anc_off",
+      "clave": "battery.playback_anc_off",
+      "nombre": "Reproducción con estuche ANC off",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 36 hours",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 36,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-07-battery.playback_anc_on",
+      "clave": "battery.playback_anc_on",
+      "nombre": "Reproducción con estuche ANC on",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 22.5 hours",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 22.5,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-08-battery.earbuds",
+      "clave": "battery.earbuds",
+      "nombre": "Batería auriculares",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "33mAh earbuds",
+        "unidad": "mAh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 33,
+          "unidad": "mAh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-09-battery.case",
+      "clave": "battery.case",
+      "nombre": "Batería estuche",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "485mAh",
+        "unidad": "mAh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 485,
+          "unidad": "mAh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-10-battery.wireless_power",
+      "clave": "battery.wireless_power",
+      "nombre": "Carga inalámbrica Qi",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 2.5W",
+        "unidad": "W"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 2.5,
+          "unidad": "W"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-11-protection.earbuds",
+      "clave": "protection.earbuds",
+      "nombre": "Resistencia auriculares",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "IP54",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "IP54"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-12-protection.case",
+      "clave": "protection.case",
+      "nombre": "Resistencia estuche",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "IP55",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "IP55"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-13-microphones.count",
+      "clave": "microphones.count",
+      "nombre": "Micrófonos por auricular",
+      "grupo": "llamadas",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "3 mics per bud",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 3,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-14-dimensions.earbud",
+      "clave": "dimensions.earbud",
+      "nombre": "Dimensiones auricular",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "29.4 × 21.5 × 23.5 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 29.4,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 21.5,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "profundidad",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 23.5,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-15-weight.earbud",
+      "clave": "weight.earbud",
+      "nombre": "Peso auricular",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "4.5g",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 4.5,
+          "unidad": "g"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-16-dimensions.case",
+      "clave": "dimensions.case",
+      "nombre": "Dimensiones estuche",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "55.5 × 55.5 × 22mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 55.5,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 55.5,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "profundidad",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 22,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-17-weight.case",
+      "clave": "weight.case",
+      "nombre": "Peso estuche",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "51.9g",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 51.9,
+          "unidad": "g"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-ear-2-18-connectivity.port",
+      "clave": "connectivity.port",
+      "nombre": "Puerto",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "USB Type-C",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "USB Type-C"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-ear-2-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "ear-spec",
+      "tipo": "fabricante",
+      "nombre": "Nothing Europe — Ear (2) technical details",
+      "url": "https://checkout-eu.nothing.tech/products/ear-2",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "ear-colors",
+      "tipo": "fabricante",
+      "nombre": "Nothing locator lists Ear (2) Black and White",
+      "url": "https://checkout-my.nothing.tech/pages/store-locator",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-nothing-ear-2-01",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Driver",
+      "extracto": "11.6mm dynamic",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-02",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Bluetooth codecs",
+      "extracto": "AAC, SBC, LHDC",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-03",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "ANC",
+      "extracto": "up to 40dB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-04",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Modos ANC",
+      "extracto": "personalised, adaptive, transparency",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-05",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "5.3",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-06",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Reproducción con estuche ANC off",
+      "extracto": "up to 36 hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-07",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Reproducción con estuche ANC on",
+      "extracto": "up to 22.5 hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-08",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Batería auriculares",
+      "extracto": "33mAh earbuds",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-09",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Batería estuche",
+      "extracto": "485mAh",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-10",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Carga inalámbrica Qi",
+      "extracto": "up to 2.5W",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-11",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Resistencia auriculares",
+      "extracto": "IP54",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-12",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Resistencia estuche",
+      "extracto": "IP55",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-13",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Micrófonos por auricular",
+      "extracto": "3 mics per bud",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-14",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Dimensiones auricular",
+      "extracto": "29.4 × 21.5 × 23.5 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-15",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Peso auricular",
+      "extracto": "4.5g",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-16",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Dimensiones estuche",
+      "extracto": "55.5 × 55.5 × 22mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-17",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Peso estuche",
+      "extracto": "51.9g",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-ear-2-18",
+      "fuente_id": "ear-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "white",
+          "black"
+        ]
+      },
+      "localizador": "Puerto",
+      "extracto": "USB Type-C",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

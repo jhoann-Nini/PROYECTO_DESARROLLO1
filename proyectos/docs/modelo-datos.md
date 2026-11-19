@@ -673,12 +673,17 @@ La autoría, página de origen, licencia y tratamiento de cada fotografía se ma
 
 ## 25.4 Precios de referencia documentados — 19 de noviembre de 2026
 
-La migración 014 registra precios observados para dos productos cuyo modelo coincide exactamente con la fuente consultada y cuyo campo `precio_referencia` estaba vacío:
+Las migraciones 014 y 016 registran siete precios observados para productos cuyo modelo coincide con la fuente consultada y cuyo campo `precio_referencia` estaba vacío:
 
 | ID | Producto | Precio de referencia (COP) | Condición | Fuente |
 |---:|---|---:|---|---|
 | 74 | Sony WH-1000XM5 | $2.249.896 | Precio publicado por Sony Colombia; color Smoky Pink en la ficha consultada | [Sony Colombia](https://www.sony.com.co/electronics/audifonos-banda-cabeza/wh-1000xm5) |
-| 85 | Nothing Ear (2) | $599.990 | Nuevo; oferta publicada por Exclusive JJ | [Exclusive JJ Colombia](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) |\n| 37 | JBL Tune Buds | $299.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |\n| 38 | JBL Live Beam 3 | $589.900 | Oferta de vendedor Smartphonetablet en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |\n| 39 | JBL Tour Pro 3 | $1.324.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |\n| 73 | Sony WF-1000XM5 | $1.999.900 | Precio publicado por Sony Colombia | [Sony Colombia](https://www.sony.com.co/headphones/wireless) |\n| 76 | Sony WH-CH720N | $349.900 | Oferta publicada por Sony Colombia en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |
+| 85 | Nothing Ear (2) | $599.990 | Nuevo; oferta publicada por Exclusive JJ | [Exclusive JJ Colombia](https://www.exclusivejj.com/tienda/accesorios/1159-nothing-ear-2.html) |
+| 37 | JBL Tune Buds | $299.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |
+| 38 | JBL Live Beam 3 | $589.900 | Oferta de vendedor Smartphonetablet en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |
+| 39 | JBL Tour Pro 3 | $1.324.900 | Precio publicado por JBL Colombia | [JBL Colombia](https://www.jbl.com.co/audifonos-true-wireless/) |
+| 73 | Sony WF-1000XM5 | $1.999.900 | Precio publicado por Sony Colombia | [Sony Colombia](https://www.sony.com.co/headphones/wireless) |
+| 76 | Sony WH-CH720N | $349.900 | Oferta publicada por Sony Colombia en Falabella | [Falabella Colombia](https://www.falabella.com.co/falabella-co/category/cat50670/Audifonos) |
 
 Estos importes son referencias observadas el 19/11/2026, no precios dinámicos ni garantía de inventario. La migración solo actualiza registros con ID y nombre coincidentes y precio previo NULL. Los demás productos permanecen sin precio cuando la fuente no permite confirmar la variante, condición o mercado.
 

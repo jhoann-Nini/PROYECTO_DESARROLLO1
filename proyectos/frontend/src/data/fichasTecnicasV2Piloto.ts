@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del piloto de ocho productos.
+ * Fichas técnicas estructuradas del catálogo piloto (20 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -957,6 +957,38 @@ const redmiNote13ProPlus = crearFicha(
   ],
 );
 
+
+const yoga7Fuente = "lenovo-yoga7-14ahp9-psref";
+const yoga7Familia = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles en la familia", "rendimiento", "AMD Ryzen 5 8640HS o Ryzen 7 8840HS; la configuración concreta depende del MTM", yoga7Fuente),
+    atributo("graficos", "Gráficos disponibles", "rendimiento", "AMD Radeon 760M (Ryzen 5) o Radeon 780M (Ryzen 7)", yoga7Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "8 GB o 16 GB LPDDR5/LPDDR5X-6400 soldados; no ampliable", yoga7Fuente),
+    atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "SSD M.2 2242 PCIe 4.0 NVMe de 256 GB, 512 GB o 1 TB, según configuración", yoga7Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas WUXGA (1920 × 1200), IPS 300 nits u OLED 400 nits; ambas táctiles y 60 Hz", yoga7Fuente),
+    atributo("bateria", "Batería", "bateria", 71, yoga7Fuente, "Wh"),
+    atributo("autonomia", "Autonomía declarada", "bateria", "Hasta 12,5 h MobileMark 25; depende del panel y condiciones de prueba", yoga7Fuente),
+    atributo("conectividad", "Conectividad inalámbrica", "conectividad", "Wi-Fi 6E y Bluetooth 5.3", yoga7Fuente),
+    atributo("puertos", "Puertos", "conectividad", "USB-A 5 Gbps; USB-C 10 Gbps; USB4 40 Gbps; HDMI 2.1; lector microSD; audio 3,5 mm", yoga7Fuente),
+    atributo("bisagra", "Modos de uso", "diseno", "Bisagra de 360°: portátil, tienda, soporte y tableta", yoga7Fuente),
+    atributo("peso", "Peso inicial según panel", "diseno", "Desde 1,61 kg (IPS) o 1,49 kg (OLED)", yoga7Fuente),
+  ],
+  [],
+  [
+    fuente(
+      yoga7Fuente,
+      "Lenovo PSREF — Yoga 7 2-in-1 14AHP9, especificaciones oficiales",
+      "https://psref.lenovo.com/syspool/Sys/PDF/Yoga/Yoga_7_2_in_1_14AHP9/Yoga_7_2_in_1_14AHP9_Spec.PDF",
+      null,
+      "La fuente documenta la familia 14AHP9 y sus opciones de procesador, memoria soldada, almacenamiento, panel, batería y puertos. El registro de TecReview no incluye MTM ni configuración exacta; por eso la ficha se marca parcial y no asigna RAM, SSD, panel ni procesador a una unidad concreta.",
+      CONSULTA
+    ),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -965,6 +997,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
   appleMacbookPro16M3Max: macbookPro16M3Max,
+  lenovoYoga7_14_2in1: yoga7Familia,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
@@ -1006,6 +1039,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
+  if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
@@ -1067,6 +1101,7 @@ export function obtenerFichaTecnicaV2PilotoParaKimovil(
       if (n.includes("s24 ultra") && n.includes("512gb")) return samsung512;
       if (n.includes("s24 ultra")) return samsung256;
       if (n.includes("oneplus pad 2")) return oneplusPad2;
+      if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
       if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
       if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
       if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;

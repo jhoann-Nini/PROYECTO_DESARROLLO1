@@ -17,13 +17,40 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(19); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(20); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
       expect(ficha.benchmarks).toEqual([]);
       expect(ficha.metricasComparables.every((metrica) => metrica.comparable === false)).toBe(true);
     }
+  });
+
+
+  it("documenta Yoga 7 14 2-en-1 como familia parcial sin inventar una configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.lenovoYoga7_14_2in1;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Ryzen 5 8640HS o Ryzen 7 8840HS") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("8 GB o 16 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("256 GB, 512 GB o 1 TB") }),
+      expect.objectContaining({ clave: "bateria", valor: 71, unidad: "Wh" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toContain("psref.lenovo.com");
+    const producto = normalizarDesdeProducto({
+      idProducto: 945,
+      nombre: "Lenovo Yoga 7 14 2-in-1",
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
   });
 
   it("solo marca verificadas las configuraciones respaldadas por fuentes oficiales", () => {

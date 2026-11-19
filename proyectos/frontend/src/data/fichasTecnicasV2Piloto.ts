@@ -341,7 +341,8 @@ const macbookPro16M3Pro = crearFicha(
       "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023), especificaciones técnicas",
       "https://support.apple.com/es-co/117737",
       null,
-      "La fuente oficial distingue las opciones M3 Pro y M3 Max. Esta ficha documenta la plataforma M3 Pro y las opciones publicadas de memoria y SSD; el registro del catálogo no identifica capacidad de memoria ni almacenamiento, por lo que permanece parcial y sin variante asignada."
+      "La fuente oficial distingue las opciones M3 Pro y M3 Max. Esta ficha documenta la plataforma M3 Pro y las opciones publicadas de memoria y SSD; el registro del catálogo no identifica capacidad de memoria ni almacenamiento, por lo que permanece parcial y sin variante asignada.",
+      "2026-11-19"
     ),
   ],
 );

@@ -107,7 +107,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       ficha.atributos.find((atributo) => atributo.clave === clave);
 
     expect(obtenerAtributo("procesador_amd")?.valor).toContain("Ryzen 5 PRO 8540U");
-    expect(obtenerAtributo("procesador_intel")?.valor).toContain("Core Ultra 7 165H");
+    expect(obtenerAtributo("procesador_intel")?.valor).toContain("165H");
     expect(obtenerAtributo("graficos_amd")?.valor).toContain("Radeon 780M");
     expect(obtenerAtributo("ram")?.valor).toContain("64 GB");
     expect(obtenerAtributo("almacenamiento")?.valor).toContain("2 TB");

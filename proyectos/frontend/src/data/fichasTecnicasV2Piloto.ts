@@ -989,6 +989,34 @@ const yoga7Familia = crearFicha(
   ],
 );
 
+ 
+const hpSpectreFuente = "hp-spectre-x360-14-eu0000";
+const hpSpectreX36014 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles en la serie", "rendimiento", "Intel Core Ultra 5 125H o Core Ultra 7 155H; depende de la configuración", hpSpectreFuente),
+    atributo("graficos", "Gráficos", "rendimiento", "Intel Arc integrados", hpSpectreFuente),
+    atributo("pantalla", "Pantalla de la serie 14-eu0000", "pantalla", "OLED táctil de 14 pulgadas, 2.8K (2880 × 1800), 100 % DCI-P3, hasta 120 Hz y 400 nits SDR / 500 nits HDR", hpSpectreFuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "16 GB o 32 GB LPDDR5x-7467 soldados; no ampliables", hpSpectreFuente),
+    atributo("almacenamiento", "Almacenamiento disponible", "almacenamiento", "SSD M.2 PCIe 4.0 NVMe de 512 GB, 1 TB o 2 TB; opciones regionales", hpSpectreFuente),
+    atributo("audio", "Audio", "audio", "Cuatro altavoces", hpSpectreFuente),
+    atributo("conectividad_inalambrica", "Opciones inalámbricas", "conectividad", "La serie contempla tarjetas inalámbricas distintas según configuración y región; confirmar SKU para identificar Wi-Fi/Bluetooth", hpSpectreFuente),
+  ],
+  [],
+  [
+    fuente(
+      hpSpectreFuente,
+      "HP Support — Spectre x360 14-eu0000 series, especificaciones oficiales",
+      "https://support.hp.com/us-en/document/ish_9687926-9688096-16",
+      null,
+      "La fuente oficial describe la serie 14-eu0000 y advierte que los componentes varían por país y configuración. El producto del catálogo no incluye número de producto/SKU; por ello la ficha queda parcial, sin variante concreta ni asignación de RAM, SSD o procesador a una unidad específica.",
+      CONSULTA
+    ),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -998,6 +1026,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
   appleMacbookPro16M3Max: macbookPro16M3Max,
   lenovoYoga7_14_2in1: yoga7Familia,
+  hpSpectreX36014,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
@@ -1040,6 +1069,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
   if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
+  if (n.includes("hp spectre x360 14")) return hpSpectreX36014;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;

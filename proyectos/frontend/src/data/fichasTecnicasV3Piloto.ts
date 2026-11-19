@@ -123,7 +123,7 @@ function resolverClavePorNombre(nombre: string): string | null {
   if (n.includes("thinkpad") && (n.includes("e14") || n.includes("gen 5"))) {
     return "lenovo-thinkpad-e14-gen-5";
   }
-  if (n.includes("macbook pro") && (n.includes("m3 max") || n.includes("16"))) {
+  if (n.includes("macbook pro") && n.includes("m3 max")) {
     return "macbook-pro-16-m3-max";
   }
   if (n.includes("nothing ear") && (n.includes("2") || n.includes("(2)"))) {

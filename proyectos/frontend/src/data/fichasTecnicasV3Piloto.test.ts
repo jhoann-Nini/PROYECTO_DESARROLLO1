@@ -34,17 +34,19 @@ describe("Fichas Técnicas V3 Piloto", () => {
   });
 
   describe("1. Imágenes principales asociadas y visibles", () => {
-    it("los 8 productos piloto tienen una imagen principal asociada y no vacía", () => {
-      // Mock: 1 (Nothing Phone), 3 (Nothing Ear 2), 5 (OnePlus Pad 2), 6 (ThinkPad)
-      for (const id of [1, 3, 5, 6]) {
+    it("los productos piloto con imagen publicada tienen una URL no vacía", () => {
+      // Mock: 1 (Nothing Phone), 3 (Nothing Ear 2), 5 (OnePlus Pad 2)
+      // ThinkPad (6) queda sin imagen hasta autorizar su uso.
+      for (const id of [1, 3, 5]) {
         const prod = PRODUCTOS_MOCK.find((p) => p.idProducto === id);
         expect(prod).toBeDefined();
         expect(typeof prod?.imagen).toBe("string");
         expect(prod?.imagen?.trim().length).toBeGreaterThan(0);
       }
 
-      // Deseados: 202 (S24 Ultra), 208 (iPad Pro), 209 (MacBook Pro)
-      for (const id of [202, 208, 209]) {
+      // Deseados: 202 (S24 Ultra), 208 (iPad Pro)
+      // MacBook Pro (209) queda sin imagen hasta autorizar su uso.
+      for (const id of [202, 208]) {
         const prod = DISPOSITIVOS_DESEADOS.find((p) => p.id === id);
         expect(prod).toBeDefined();
         expect(typeof prod?.imagen).toBe("string");
@@ -68,12 +70,18 @@ describe("Fichas Técnicas V3 Piloto", () => {
       }
     });
 
-    it("asocia imágenes candidatas oficiales a Lenovo ThinkPad y MacBook Pro", () => {
+    it("conserva las imágenes candidatas sin publicarlas mientras la licencia siga pendiente", () => {
       const thinkpad = PRODUCTOS_MOCK.find((p) => p.idProducto === 6);
       const macbook = DISPOSITIVOS_DESEADOS.find((p) => p.id === 209);
+      const thinkpadImg = obtenerImagenCandidataV3Piloto("lenovo-thinkpad-e14-gen-5");
+      const macbookImg = obtenerImagenCandidataV3Piloto("macbook-pro-16-m3-max");
 
-      expect(thinkpad?.imagen).toContain("lenovo-thinkpad-e14-gen-5");
-      expect(macbook?.imagen).toContain("Apple-MacBook-Pro");
+      expect(thinkpad?.imagen).toBeNull();
+      expect(macbook?.imagen).toBe("");
+      expect(thinkpadImg?.uso_permitido).toBe(false);
+      expect(macbookImg?.uso_permitido).toBe(false);
+      expect(thinkpadImg?.estado_licencia).toBe("pendiente_autorizacion");
+      expect(macbookImg?.estado_licencia).toBe("pendiente_autorizacion");
     });
 
     it("provee catálogo de imágenes candidatas y metadatos de procedencia para los 8 productos piloto", () => {
@@ -87,6 +95,13 @@ describe("Fichas Técnicas V3 Piloto", () => {
       expect(macbookImg).not.toBeNull();
       expect(macbookImg?.url_original).toContain("Apple-MacBook-Pro");
       expect(macbookImg?.pagina_procedencia).toContain("apple.com/newsroom");
+    });
+  });
+
+  describe("Resolución segura de la familia MacBook Pro", () => {
+    it("no confunde MacBook Pro 16 M3 Pro con la ficha de la variante M3 Max", () => {
+      expect(obtenerFichaTecnicaV3Piloto({ nombre: "Apple MacBook Pro 16 pulgadas M3 Pro" })).toBeNull();
+      expect(obtenerFichaTecnicaV3Piloto({ nombre: "Apple MacBook Pro 16 pulgadas M3 Max" })?.categoria).toBe("portatiles");
     });
   });
 

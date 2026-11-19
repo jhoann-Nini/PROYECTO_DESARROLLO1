@@ -636,7 +636,7 @@ Los scripts SQL históricos `006_reportes_resenas.sql` y `007_moderacion_reporte
 
 El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/.
 
-A la fecha de esta actualización, el repositorio contiene las migraciones 001–012. Entre las capacidades incorporadas por esa secuencia se encuentran:
+A la fecha de esta actualización, el repositorio contiene las migraciones 001–013. Entre las capacidades incorporadas por esa secuencia se encuentran:
 
 - Soporte de identidad y autenticación de Supabase.
 - Alineación del catálogo de roles y reseñas/valoraciones.
@@ -652,4 +652,20 @@ Este documento no debe interpretarse como un DDL completo ni como una representa
 
 ## 25.2 Estado de los scripts y de cada entorno
 
-Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente.
+Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a seis productos existentes; no modifica precios ni características.
+
+
+## 25.3 Imágenes licenciadas del catálogo — 19 de noviembre de 2026
+
+La migración 013 completa el campo `producto.imagen` para seis registros existentes, solo cuando la imagen estaba vacía y coinciden simultáneamente el identificador y el nombre del producto:
+
+| ID | Producto |
+|---:|---|
+| 1 | Samsung Galaxy S24 Ultra |
+| 7 | Samsung Galaxy A55 5G |
+| 56 | Apple iPad Pro 11 pulgadas M4 |
+| 69 | OnePlus Pad 2 |
+| 74 | Sony WH-1000XM5 |
+| 85 | Nothing Ear (2) |
+
+La autoría, página de origen, licencia y tratamiento de cada fotografía se mantienen en `proyectos/frontend/src/data/atribucionImagenes.ts`. La migración no asigna precios ni modifica especificaciones: esos datos requieren una variante exacta y una fuente comercial vigente. El Xiaomi 14 Ultra (ID 3) queda pendiente de una URL compatible con el límite actual de 255 caracteres de `producto.imagen`; no se acortó ni sustituyó la URL original de la fotografía CC0.

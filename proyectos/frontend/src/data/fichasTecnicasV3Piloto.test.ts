@@ -35,16 +35,18 @@ describe("Fichas Técnicas V3 Piloto", () => {
 
   describe("1. Imágenes principales asociadas y visibles", () => {
     it("los productos piloto con imagen publicada tienen una URL no vacía", () => {
-      // Mock: 1 (Nothing Phone), 3 (Nothing Ear 2), 5 (OnePlus Pad 2), 6 (ThinkPad)
-      for (const id of [1, 3, 5, 6]) {
+      // Mock: 1 (Nothing Phone), 3 (Nothing Ear 2), 5 (OnePlus Pad 2)
+      // ThinkPad (6) queda sin imagen hasta autorizar su uso.
+      for (const id of [1, 3, 5]) {
         const prod = PRODUCTOS_MOCK.find((p) => p.idProducto === id);
         expect(prod).toBeDefined();
         expect(typeof prod?.imagen).toBe("string");
         expect(prod?.imagen?.trim().length).toBeGreaterThan(0);
       }
 
-      // Deseados: 202 (S24 Ultra), 208 (iPad Pro), 209 (MacBook Pro)
-      for (const id of [202, 208, 209]) {
+      // Deseados: 202 (S24 Ultra), 208 (iPad Pro)
+      // MacBook Pro (209) queda sin imagen hasta autorizar su uso.
+      for (const id of [202, 208]) {
         const prod = DISPOSITIVOS_DESEADOS.find((p) => p.id === id);
         expect(prod).toBeDefined();
         expect(typeof prod?.imagen).toBe("string");

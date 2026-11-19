@@ -22,7 +22,7 @@ export default function AtribucionImagenProducto({
         rel="noopener noreferrer"
         className="underline underline-offset-2 hover:text-[var(--color-ink)]"
       >
-        {atribucion.autor} · Wikimedia Commons
+        {atribucion.autor} · {atribucion.fuente}{atribucion.titulo ? ` · ${atribucion.titulo}` : ""}
       </a>
       {" · "}
       <a

@@ -6,7 +6,7 @@ import {
   ULTIMAS_OFERTAS,
 } from "./mockProductos";
 
-describe("fichas técnicas de los ocho productos piloto", () => {
+describe("coherencia técnica e imágenes de productos del catálogo", () => {
   it("mantiene Nothing Phone (2a) Special Edition de 12GB/256GB", () => {
     const producto = PRODUCTOS_MOCK.find((item) => item.idProducto === 1);
     expect(producto?.nombre).toBe("Nothing Phone (2a) Special Edition");
@@ -79,6 +79,74 @@ describe("fichas técnicas de los ocho productos piloto", () => {
     expect(producto?.nombre).toBe("Nothing Ear (2) Transparent White");
     expect(producto?.caracteristicas?.transductores).toContain("11.6mm");
     expect(producto?.caracteristicas?.cancelacion_ruido).toContain("40dB");
+  });
+
+  it("corrige Xiaomi 14T Pro con especificaciones oficiales y foto exacta", () => {
+    const producto = ULTIMAS_OFERTAS.find((item) => item.id === 306);
+    expect(producto?.especificaciones).toContain("12GB RAM LPDDR5X · 512GB UFS 4.0");
+    expect(producto?.especificaciones).toContain("Dimensity 9300+");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/48/Xiaomi_14T_Pro.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("Wi-Fi 6") && !seccion.descripcion.includes("Wi-Fi 7"))).toBe(true);
+  });
+
+  it("corrige Nothing Ear (a) Black Edition con imagen exacta y ficha oficial", () => {
+    const producto = ULTIMAS_OFERTAS.find((item) => item.id === 301);
+    expect(producto?.especificaciones).toContain("Driver 11mm");
+    expect(producto?.especificaciones).toContain("Bluetooth 5.3");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/41/Nothing-Tokyo-2024-04-18_151.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5.5h") && seccion.descripcion.includes("24.5h"))).toBe(true);
+  });
+
+  it("completa Xiaomi 14 Ultra 16GB/512GB con ficha oficial y fotografía CC0", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 204);
+    expect(producto?.especificaciones).toContain("16GB RAM LPDDR5X · 512GB UFS 4.0");
+    expect(producto?.imagen).toContain("XiaoMi_14_Ultra_watch_May_2024");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5000mAh") && seccion.descripcion.includes("90W"))).toBe(true);
+  });
+
+  it("completa iPhone 15 Pro Max 256GB con imagen exacta y elimina benchmark sin fuente", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 201);
+    expect(producto?.nombre).toBe("iPhone 15 Pro Max (256GB)");
+    expect(producto?.especificaciones).toContain("A17 Pro");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/9/99/IPhone_15_Pro_Max.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+  });
+
+  it("corrige Galaxy S25 Ultra a 12GB RAM/1TB según Samsung Colombia y elimina benchmark sin fuente", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 206);
+    expect(producto?.especificaciones).toContain("12GB RAM · 1TB");
+    expect(producto?.especificaciones).not.toContain("16GB RAM");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/1/1e/Samsung_Galaxy_S25_Ultra_2025.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+  });
+
+  it("normaliza el registro OnePlus 13 y elimina el nombre de modelo inexistente y el benchmark no respaldado", () => {
+    const producto = DISPOSITIVOS_DESEADOS.find((item) => item.id === 207);
+    expect(producto?.nombre).toBe("OnePlus 13 5G");
+    expect(producto?.especificaciones).toContain("16GB RAM · 512GB");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/1/14/OnePlus_13_back.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("50MP teleobjetivo") && seccion.descripcion.includes("50MP ultra gran angular"))).toBe(true);
+  });
+
+  it("corrige Redmi Note 14 Pro+ a 12GB físicos/512GB y elimina datos técnicos falsos", () => {
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 107);
+    expect(producto?.especificaciones).toContain("12GB RAM física · 512GB");
+    expect(producto?.especificaciones).toContain("UFS 2.2");
+    expect(producto?.imagen).toBe("https://upload.wikimedia.org/wikipedia/commons/4/40/Redmi_Note_14_ProPlus.jpg");
+    expect(producto?.detalleSpecs?.benchmarkEtiqueta).toBeUndefined();
+    expect(producto?.detalleSpecs?.benchmarkValor).toBeUndefined();
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("5110mAh") && seccion.descripcion.includes("120W"))).toBe(true);
+    expect(producto?.detalleSpecs?.secciones?.some((seccion) => seccion.descripcion.includes("20MP") && seccion.descripcion.includes("cámara frontal"))).toBe(true);
   });
 
   it("no presenta -42dB como benchmark verificado del Sony WH-1000XM5", () => {

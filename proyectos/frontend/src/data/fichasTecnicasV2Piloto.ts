@@ -1036,6 +1036,32 @@ const dellXps13_9340 = crearFicha(
     fuente(dellXps13Fuente, "Dell — XPS 13 9340, especificaciones y manual oficial", "https://www.dell.com/support/kbdoc/en-au/000222269/dell-xps-13-9340-usage-and-troubleshooting-guide", null, "La documentación Dell describe opciones de procesador, pantalla y memoria para el modelo 9340. La ficha del catálogo no identifica Service Tag ni configuración comercial; queda parcial y no asigna una opción concreta al producto."),
   ],
 );
+const thinkpadT14Gen5FuenteIntel = "lenovo-thinkpad-t14-gen5-intel-psref";
+const thinkpadT14Gen5FuenteAmd = "lenovo-thinkpad-t14-gen5-amd-psref";
+const thinkpadT14Gen5 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador_intel", "Procesadores Intel disponibles", "rendimiento", "Intel Core Ultra 5 125U, 135U, 125H o 135H; Intel Core Ultra 7 155U, 165U, 155H o 165H, según configuración", thinkpadT14Gen5FuenteIntel),
+        atributo("procesador_amd", "Procesadores AMD disponibles", "rendimiento", "AMD Ryzen 5 PRO 8540U o Ryzen 7 PRO 8840U, según configuración", thinkpadT14Gen5FuenteAmd),
+    atributo("graficos_intel", "Gráficos Intel disponibles", "rendimiento", "Intel Graphics o Intel Arc integrados (Arc solo en determinados procesadores H y con memoria de doble canal)", thinkpadT14Gen5FuenteIntel),
+        atributo("graficos_amd", "Gráficos AMD disponibles", "rendimiento", "AMD Radeon 740M o Radeon 780M integrados", thinkpadT14Gen5FuenteAmd),
+    atributo("ram", "Memoria RAM admitida", "memoria", "DDR5-5600 en dos ranuras SO-DIMM; hasta 64 GB, según plataforma y configuración", thinkpadT14Gen5FuenteIntel),
+    atributo("almacenamiento", "Almacenamiento admitido", "almacenamiento", "Una unidad SSD M.2 2280 PCIe 4.0 NVMe; opciones de 256 GB, 512 GB, 1 TB y hasta 2 TB, según configuración", thinkpadT14Gen5FuenteIntel),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "14 pulgadas: WUXGA (1920 × 1200) IPS de 400 o 500 nits, táctil o no táctil según panel; o 2.8K (2880 × 1800) OLED de 400 nits, 120 Hz y 100 % DCI-P3", thinkpadT14Gen5FuenteIntel),
+    atributo("bateria", "Capacidades de batería", "bateria", "39,3 Wh (solo ofertas especiales) o 52,5 Wh", thinkpadT14Gen5FuenteIntel),
+    atributo("peso", "Peso inicial según configuración", "diseno", "Desde 1,31 kg hasta 1,43 kg, según plataforma, color y batería", thinkpadT14Gen5FuenteIntel),
+    atributo("dimensiones", "Dimensiones (ancho × fondo × alto)", "diseno", "315,9 × 223,7 × 17,7 mm", thinkpadT14Gen5FuenteIntel),
+    atributo("sistema_operativo", "Sistemas operativos ofrecidos", "software", "Windows 11, Fedora Linux, Ubuntu Linux, otras distribuciones Linux o sin sistema operativo preinstalado, según mercado", thinkpadT14Gen5FuenteIntel),
+  ],
+  [],
+  [
+    fuente(thinkpadT14Gen5FuenteIntel, "Lenovo PSREF — ThinkPad T14 Gen 5 Intel, especificaciones oficiales", "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_Intel/ThinkPad_T14_Gen_5_Intel_Spec.PDF", null, "La documentación oficial Intel describe opciones de CPU U/H, gráficos, memoria DDR5-5600, almacenamiento, paneles, batería, peso y dimensiones. No se dispone del MTM del producto del catálogo."),
+    fuente(thinkpadT14Gen5FuenteAmd, "Lenovo PSREF — ThinkPad T14 Gen 5 AMD, especificaciones oficiales", "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_AMD/ThinkPad_T14_Gen_5_AMD_Spec.PDF", null, "La documentación oficial AMD describe Ryzen 5 PRO 8540U y Ryzen 7 PRO 8840U, gráficos Radeon 740M/780M, memoria DDR5-5600, almacenamiento, paneles, batería y peso. Se conserva como familia parcial porque el catálogo no identifica plataforma ni MTM."),
+  ],
+);
+
 const dellXps16Fuente = "dell-xps-16-9640";
 const dellXps16_9640 = crearFicha(
   "laptops",
@@ -1063,6 +1089,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   oneplusPad2: oneplusPad2,
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
+  lenovoThinkpadT14Gen5: thinkpadT14Gen5,
   appleMacbookPro16M3Max: macbookPro16M3Max,
   lenovoYoga7_14_2in1: yoga7Familia,
   hpSpectreX36014,
@@ -1109,6 +1136,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("nothing ear 2")) return nothingEar2;
   if (n.includes("oneplus pad 2")) return oneplusPad2;
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
+  if (n.includes("thinkpad t14 gen 5")) return thinkpadT14Gen5;
   if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
   if (n.includes("hp spectre x360 14")) return hpSpectreX36014;
   if (n.includes("dell xps 13 9340")) return dellXps13_9340;

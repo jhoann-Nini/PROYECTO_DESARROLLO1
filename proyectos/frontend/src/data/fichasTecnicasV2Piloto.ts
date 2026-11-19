@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del catálogo piloto (20 fichas).
+ * Fichas técnicas estructuradas del catálogo piloto (23 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -1017,6 +1017,45 @@ const hpSpectreX36014 = crearFicha(
   ],
 );
 
+const dellXps13Fuente = "dell-xps-13-9340";
+const dellXps13_9340 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles", "rendimiento", "Intel Core Ultra 5 125H, Core Ultra 7 155H o Core Ultra 7 165H; según configuración", dellXps13Fuente),
+    atributo("graficos", "Gráficos", "rendimiento", "Intel Arc integrados", dellXps13Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "13,4 pulgadas: FHD+ 1920 × 1200 WLED no táctil; QHD+ 2560 × 1600 WLED táctil; o 3K+ 2880 × 1800 OLED táctil", dellXps13Fuente),
+    atributo("tasa_refresco", "Frecuencia de pantalla", "pantalla", "FHD+ y QHD+: 30–120 Hz; OLED: 48–60 Hz", dellXps13Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "8 GB LPDDR5-6400 o 16 GB, 32 GB y 64 GB LPDDR5x-7467; integrada en placa", dellXps13Fuente),
+    atributo("peso", "Peso aproximado según pantalla", "diseno", "Desde 1,19 kg con OLED o 1,22 kg con FHD+/QHD+", dellXps13Fuente),
+    atributo("sistema_operativo", "Sistemas operativos ofrecidos", "software", "Windows 11 Home/Pro y Ubuntu 22.04 LTS en configuraciones seleccionadas", dellXps13Fuente),
+  ],
+  [],
+  [
+    fuente(dellXps13Fuente, "Dell — XPS 13 9340, especificaciones y manual oficial", "https://www.dell.com/support/kbdoc/en-au/000222269/dell-xps-13-9340-usage-and-troubleshooting-guide", null, "La documentación Dell describe opciones de procesador, pantalla y memoria para el modelo 9340. La ficha del catálogo no identifica Service Tag ni configuración comercial; queda parcial y no asigna una opción concreta al producto."),
+  ],
+);
+const dellXps16Fuente = "dell-xps-16-9640";
+const dellXps16_9640 = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Procesadores disponibles", "rendimiento", "Intel Core Ultra 7 155H, Core Ultra 7 165H o Core Ultra 9 185H; según configuración", dellXps16Fuente),
+    atributo("graficos", "Opciones gráficas", "rendimiento", "Intel Arc integrados o NVIDIA GeForce RTX 4050, 4060 o 4070; según configuración", dellXps16Fuente),
+    atributo("pantalla", "Opciones de pantalla", "pantalla", "16,3 pulgadas FHD+ 1920 × 1200 WVA no táctil o 4K+ 3840 × 2400 OLED táctil", dellXps16Fuente),
+    atributo("ram", "Memoria RAM disponible", "memoria", "16 GB LPDDR5x con gráficos Intel Arc; hasta 64 GB LPDDR5x integrada según GPU/configuración", dellXps16Fuente),
+    atributo("almacenamiento", "Opciones de SSD", "almacenamiento", "512 GB, 1 TB, 2 TB o 4 TB M.2 PCIe NVMe Gen 4; opciones según configuración", dellXps16Fuente),
+    atributo("peso", "Peso aproximado", "diseno", "Desde 2,13 kg con panel FHD+ o 2,18 kg con panel UHD+", dellXps16Fuente),
+  ],
+  [],
+  [
+    fuente(dellXps16Fuente, "Dell — XPS 16 9640, manual y especificaciones oficiales", "https://www.dell.com/support/manuals/en-us/xps-16-9640-laptop/xps-16-9640-owners-manual/processor", null, "La documentación oficial identifica opciones de CPU, GPU, memoria y pantalla del XPS 16 9640. El registro del catálogo no contiene Service Tag ni SKU; no se determina una configuración individual y la ficha se mantiene parcial."),
+    fuente("dell-xps-16-9640-specs", "Dell — XPS 16 9640, especificaciones de memoria y almacenamiento", "https://www.dell.com/support/kbdoc/en-mk/000222265/dell-xps-16-9640-laptop-usage-and-troubleshooting-guide", null, "Dell detalla RAM integrada y capacidades de SSD disponibles según la configuración."),
+  ],
+);
+
 export const FICHAS_TECNICAS_V2_PILOTO = {
   nothingPhone2aSpecialEdition: nothingPhone,
   samsungGalaxyS24Ultra256: samsung256,
@@ -1027,6 +1066,8 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleMacbookPro16M3Max: macbookPro16M3Max,
   lenovoYoga7_14_2in1: yoga7Familia,
   hpSpectreX36014,
+  dellXps13_9340,
+  dellXps16_9640,
   nothingEar2: nothingEar2,
   sonyWh1000Xm5: sonyWh1000Xm5,
   samsungGalaxyA55: galaxyA55,
@@ -1070,6 +1111,8 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("thinkpad e14 gen 5")) return thinkpadE14Gen5;
   if (n.includes("yoga 7") && n.includes("2 in 1")) return yoga7Familia;
   if (n.includes("hp spectre x360 14")) return hpSpectreX36014;
+  if (n.includes("dell xps 13 9340")) return dellXps13_9340;
+  if (n.includes("dell xps 16 9640")) return dellXps16_9640;
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;

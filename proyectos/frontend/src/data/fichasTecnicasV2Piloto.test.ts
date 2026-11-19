@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(21); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(23); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -76,6 +76,42 @@ describe("fichas técnicas V2 del catálogo", () => {
       precioReferencia: null,
       estado: true,
     });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+
+
+  it("documenta Dell XPS 13 9340 como familia parcial sin inferir configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.dellXps13_9340;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Core Ultra 5 125H") }),
+      expect.objectContaining({ clave: "pantalla", valor: expect.stringContaining("2880 × 1800 OLED") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("64 GB") }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toContain("dell.com");
+    const producto = normalizarDesdeProducto({ idProducto: 30, nombre: "Dell XPS 13 9340", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+  it("documenta Dell XPS 16 9640 como familia parcial sin inferir configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.dellXps16_9640;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    const obtenerAtributo = (clave: string) =>
+      ficha.atributos.find((atributo) => atributo.clave === clave);
+
+    expect(obtenerAtributo("procesador")?.valor).toContain("Core Ultra 9 185H");
+    expect(obtenerAtributo("graficos")?.valor).toContain("RTX 4050, 4060 o 4070");
+    expect(obtenerAtributo("pantalla")?.valor).toContain("3840 × 2400 OLED");
+    expect(obtenerAtributo("ram")?.valor).toContain("64 GB");
+    expect(ficha.fuentes[0]?.url).toContain("dell.com");
+    const producto = normalizarDesdeProducto({ idProducto: 29, nombre: "Dell XPS 16 9640", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
     expect(producto.estado_verificacion).toBe("parcial");
     expect(producto.variantes).toEqual([]);
   });

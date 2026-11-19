@@ -234,12 +234,12 @@ export const FICHAS_TECNICAS_PILOTO: Readonly<Record<string, FichaTecnicaV2>> = 
     thinkPadFuente,
     [
       atributo("sku", "Número de modelo (MTM)", "identificacion", "21JK0005RI", thinkPadFuente.id),
-      atributo("pantalla", "Pantalla", "pantalla", "14 pulgadas IPS WUXGA (1920 × 1200), antirreflejo", thinkPadFuente.id),
+      atributo("pantalla", "Pantalla", "pantalla", "14 pulgadas IPS WUXGA (1920 × 1200), antirreflejo; 300 nits y 45 % NTSC en la configuración documentada", thinkPadFuente.id),
       atributo("procesador", "Procesador", "rendimiento", "Intel Core i5-1335U de 13.ª generación; 10 núcleos y 12 hilos", thinkPadFuente.id),
       atributo("graficos", "Gráficos", "rendimiento", "Intel Iris Xe (según configuración de memoria)", thinkPadFuente.id),
       atributo("memoria", "Memoria RAM", "memoria", "16 GB DDR4-3200 (8 GB soldados + 8 GB SO-DIMM, según MTM)", thinkPadFuente.id),
       atributo("almacenamiento", "Almacenamiento", "almacenamiento", "512 GB SSD M.2 2242 PCIe 4.0 NVMe", thinkPadFuente.id),
-      atributo("puertos", "Puertos e interfaces", "conectividad", "USB-C/USB4, USB-A, HDMI y RJ-45; confirmar distribución exacta en el MTM", thinkPadFuente.id),
+      atributo("puertos", "Puertos e interfaces", "conectividad", "USB-C, USB-A, HDMI y RJ-45; confirmar distribución exacta en el MTM", thinkPadFuente.id),
     ],
   ),
 
@@ -278,7 +278,7 @@ export const FICHAS_TECNICAS_PILOTO: Readonly<Record<string, FichaTecnicaV2>> = 
       atributo("anc", "Cancelación activa de ruido", "audio", "ANC adaptativa con reducción anunciada de hasta 40 dB", nothingEarFuente.id),
       atributo("microfonos", "Micrófonos", "audio", "Tres micrófonos por auricular", nothingEarFuente.id),
       atributo("conectividad", "Conectividad", "conectividad", "Bluetooth 5.3; conexión multipunto", nothingEarFuente.id),
-      atributo("bateria", "Autonomía", "bateria", "Hasta 6,3 horas en auriculares y hasta 36 horas con estuche (condiciones de prueba del fabricante)", nothingEarFuente.id),
+      atributo("bateria", "Autonomía", "bateria", "Hasta 6,3 horas en auriculares y hasta 36 horas con estuche, con ANC desactivada (condiciones de prueba del fabricante)", nothingEarFuente.id),
       atributo("carga", "Carga", "bateria", "USB-C e inalámbrica Qi", nothingEarFuente.id),
       atributo("color", "Color", "diseno", "Transparent White (variante del registro local)", nothingEarFuente.id),
     ],

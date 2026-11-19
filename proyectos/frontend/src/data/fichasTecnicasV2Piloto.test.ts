@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(24); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(25); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -361,6 +361,35 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(ficha.fuentes[0]?.url).toBe("https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI");
   });
 
+  it("documenta MacBook Pro 16 M3 Pro como familia parcial sin inferir memoria ni SSD", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Pro;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("M3 Pro") }),
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("CPU de 12 núcleos") }),
+      expect.objectContaining({ clave: "memoria_unificada", valor: expect.stringContaining("18 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("512 GB") }),
+      expect.objectContaining({ clave: "resolucion", valor: "3456 × 2234 píxeles · 254 ppp" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 100, unidad: "Wh" }),
+      expect.objectContaining({ clave: "peso", valor: 2.14, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.apple.com/es-co/117737");
+    const producto = normalizarDesdeProducto({
+      idProducto: 61,
+      nombre: "Apple MacBook Pro 16 M3 Pro",
+      descripcion: null,
+      idCategoria: 2,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
   it("documenta la configuración exacta MacBook Pro 16 M3 Max de 48 GB y 1 TB", () => {
     const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
     expect(ficha.estado_verificacion).toBe("verificado");
@@ -418,6 +447,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       idProducto: 903,
       nombre: "Apple MacBook Pro 16 pulgadas M3 Max",
     });
+    const macPro = normalizarDesdeProducto({ ...base, idProducto: 915, nombre: "Apple MacBook Pro 16 pulgadas M3 Pro" });
     const sony = normalizarDesdeProducto({
       ...base,
       idProducto: 904,
@@ -441,6 +471,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(s24.variantes[0]?.id).toBe("512gb");
     expect(ipad.variantes[0]?.id).toBe("16gb-1tb");
     expect(mac.variantes[0]?.id).toBe("48gb-1tb");
+    expect(macPro.estado_verificacion).toBe("parcial");
+    expect(macPro.variantes).toEqual([]);
     expect(sony.fuentes[0]?.url).toContain("sony.com");
     expect(a55.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone.variantes[0]?.id).toBe("128gb");

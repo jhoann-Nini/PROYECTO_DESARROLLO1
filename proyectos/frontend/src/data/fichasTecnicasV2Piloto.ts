@@ -10,7 +10,7 @@ import type {
 } from "@/types/fichaTecnica";
 
 /**
- * Fichas técnicas estructuradas del catálogo piloto (23 fichas).
+ * Fichas técnicas estructuradas del catálogo piloto (25 fichas).
  *
  * Solo incluye datos publicados por fuentes identificables. Los precios,
  * disponibilidad y puntuaciones comerciales permanecen fuera de estas fichas.
@@ -303,6 +303,50 @@ const thinkpadE14Gen5 = crearFicha(
 
 const macFuente = "apple-macbook-pro-m3-max";
 const macVariante = "48gb-1tb";
+const macbookPro16M3ProFuente = "apple-macbook-pro-16-m3-pro";
+const macbookPro16M3Pro = crearFicha(
+  "laptops",
+  "parcial",
+  [],
+  [
+    atributo("procesador", "Chip", "rendimiento", "Apple M3 Pro · CPU de 12 núcleos (6 de rendimiento y 6 de eficiencia) · GPU de 18 núcleos · Neural Engine de 16 núcleos", macbookPro16M3ProFuente),
+    atributo("ancho_banda_memoria", "Ancho de banda de memoria", "memoria", "150 GB/s", macbookPro16M3ProFuente),
+    atributo("memoria_unificada", "Memoria unificada disponible", "memoria", "18 GB; configurable a 36 GB", macbookPro16M3ProFuente),
+    atributo("almacenamiento", "Almacenamiento SSD disponible", "almacenamiento", "512 GB; configurable a 1 TB, 2 TB o 4 TB", macbookPro16M3ProFuente),
+    atributo("tamano_pantalla", "Diagonal de pantalla", "pantalla", 16.2, macbookPro16M3ProFuente, "in"),
+    atributo("tipo_pantalla", "Pantalla", "pantalla", "Liquid Retina XDR", macbookPro16M3ProFuente),
+    atributo("resolucion", "Resolución", "pantalla", "3456 × 2234 píxeles · 254 ppp", macbookPro16M3ProFuente),
+    atributo("contraste", "Relación de contraste", "pantalla", "1 000 000:1", macbookPro16M3ProFuente),
+    atributo("brillo_sdr", "Brillo SDR", "pantalla", 600, macbookPro16M3ProFuente, "nits"),
+    atributo("brillo_xdr", "Brillo XDR sostenido", "pantalla", 1000, macbookPro16M3ProFuente, "nits"),
+    atributo("brillo_hdr", "Brillo máximo HDR", "pantalla", 1600, macbookPro16M3ProFuente, "nits"),
+    atributo("gama_color", "Gama de color", "pantalla", "P3 · True Tone · mil millones de colores", macbookPro16M3ProFuente),
+    atributo("tasa_refresco", "Tasa de refresco", "pantalla", 120, macbookPro16M3ProFuente, "Hz"),
+    atributo("energia_bateria", "Capacidad de batería", "bateria", 100, macbookPro16M3ProFuente, "Wh"),
+    atributo("autonomia_video", "Reproducción de vídeo (máximo declarado)", "bateria", 22, macbookPro16M3ProFuente, "h"),
+    atributo("autonomia_web", "Navegación web inalámbrica (máximo declarado)", "bateria", 15, macbookPro16M3ProFuente, "h"),
+    atributo("adaptador", "Adaptador de corriente incluido", "energia", "USB-C de 140 W · carga rápida", macbookPro16M3ProFuente),
+    atributo("wifi", "Wi-Fi", "conectividad", "Wi-Fi 6E (802.11ax)", macbookPro16M3ProFuente),
+    atributo("bluetooth", "Bluetooth", "conectividad", "Bluetooth 5.3", macbookPro16M3ProFuente),
+    atributo("puertos", "Puertos y expansión", "conectividad", "3 × Thunderbolt 4 / USB-C (hasta 40 Gb/s) · HDMI · lector SDXC · MagSafe 3 · jack 3,5 mm", macbookPro16M3ProFuente),
+    atributo("camara", "Cámara", "audio_video", "FaceTime HD 1080p", macbookPro16M3ProFuente),
+    atributo("audio", "Sistema de audio", "audio_video", "6 altavoces de alta fidelidad con woofers de cancelación de fuerza · 3 micrófonos de calidad de estudio · audio espacial y Dolby Atmos", macbookPro16M3ProFuente),
+    atributo("dimensiones", "Dimensiones (alto × ancho × fondo)", "diseno", "1,68 × 35,57 × 24,81 cm", macbookPro16M3ProFuente),
+    atributo("peso", "Peso", "diseno", 2.14, macbookPro16M3ProFuente, "kg"),
+  ],
+  [],
+  [
+    fuente(
+      macbookPro16M3ProFuente,
+      "Apple Support — MacBook Pro de 16 pulgadas (noviembre de 2023), especificaciones técnicas",
+      "https://support.apple.com/es-co/117737",
+      null,
+      "La fuente oficial distingue las opciones M3 Pro y M3 Max. Esta ficha documenta la plataforma M3 Pro y las opciones publicadas de memoria y SSD; el registro del catálogo no identifica capacidad de memoria ni almacenamiento, por lo que permanece parcial y sin variante asignada.",
+      "2026-11-19"
+    ),
+  ],
+);
+
 const macbookPro16M3Max = crearFicha(
   "laptops",
   "verificado",
@@ -1090,6 +1134,7 @@ export const FICHAS_TECNICAS_V2_PILOTO = {
   appleIpadPro11M4: ipadPro11M4,
   lenovoThinkpadE14Gen5: thinkpadE14Gen5,
   lenovoThinkpadT14Gen5: thinkpadT14Gen5,
+  appleMacbookPro16M3Pro: macbookPro16M3Pro,
   appleMacbookPro16M3Max: macbookPro16M3Max,
   lenovoYoga7_14_2in1: yoga7Familia,
   hpSpectreX36014,
@@ -1144,6 +1189,7 @@ export function obtenerFichaTecnicaV2PilotoParaProducto(
   if (n.includes("s24 ultra") && n.includes("512")) return samsung512;
   if (n.includes("s24 ultra") && n.includes("256")) return samsung256;
   if (n.includes("ipad pro") && n.includes("m4")) return ipadPro11M4;
+  if (n.includes("macbook pro") && n.includes("m3 pro") && n.includes("16")) return macbookPro16M3Pro;
   if (n.includes("macbook pro") && n.includes("m3 max")) return macbookPro16M3Max;
   if (n.includes("sony wh 1000xm5")) return sonyWh1000Xm5;
   return null;

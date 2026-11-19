@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(20); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(21); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -52,6 +52,34 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(producto.estado_verificacion).toBe("parcial");
     expect(producto.variantes).toEqual([]);
   });
+
+
+  it("documenta HP Spectre x360 14 como familia parcial sin inferir el SKU", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.hpSpectreX36014;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Core Ultra 5 125H o Core Ultra 7 155H") }),
+      expect.objectContaining({ clave: "pantalla", valor: expect.stringContaining("2880 × 1800") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("16 GB o 32 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("512 GB, 1 TB o 2 TB") }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.hp.com/us-en/document/ish_9687926-9688096-16");
+    const producto = normalizarDesdeProducto({
+      idProducto: 946,
+      nombre: "HP Spectre x360 14",
+      descripcion: null,
+      idCategoria: 2,
+      idMarca: 9,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
 
   it("solo marca verificadas las configuraciones respaldadas por fuentes oficiales", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.nothingPhone2aSpecialEdition.estado_verificacion).toBe("verificado");

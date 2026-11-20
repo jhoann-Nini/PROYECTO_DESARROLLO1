@@ -125,6 +125,18 @@ export default function AdminPanelModal({
   const [productos, setProductos] = useState<ProductoResponse[]>([]);
   const [categorias, setCategorias] = useState<CategoriaResponse[]>([]);
   const [marcas, setMarcas] = useState<MarcaResponse[]>([]);
+  const [busquedaProductos, setBusquedaProductos] = useState("");
+  const [paginaProductos, setPaginaProductos] = useState(1);
+  const productosFiltrados = useMemo(() => {
+    const consulta = busquedaProductos.trim().toLocaleLowerCase("es");
+    if (!consulta) return productos;
+    return productos.filter((producto) =>
+      `${producto.nombre} ${marcas.find((marca) => marca.idMarca === producto.idMarca)?.nombre ?? ""}`
+        .toLocaleLowerCase("es").includes(consulta),
+    );
+  }, [busquedaProductos, marcas, productos]);
+  const paginasProductos = Math.max(1, Math.ceil(productosFiltrados.length / 8));
+  const productosVisibles = productosFiltrados.slice((paginaProductos - 1) * 8, paginaProductos * 8);
 
   // Estados de carga y feedback globales
   const [cargando, setCargando] = useState(false);
@@ -1256,7 +1268,7 @@ export default function AdminPanelModal({
                   </p>
                 </div>
                 {modoFormulario === "ninguno" && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
                       onClick={manejarExportarCsv}
@@ -1634,6 +1646,28 @@ export default function AdminPanelModal({
                 </div>
               )}
 
+              {!cargando && productos.length > 0 && (
+                <div className="space-y-2 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3">
+                  <label htmlFor={`${baseId}-buscar-productos`} className="block text-xs font-semibold text-[var(--color-ink)]">
+                    Buscar productos
+                  </label>
+                  <input
+                    id={`${baseId}-buscar-productos`}
+                    type="search"
+                    aria-label="Buscar en el catálogo"
+                    value={busquedaProductos}
+                    onChange={(evento) => {
+                      setBusquedaProductos(evento.target.value);
+                      setPaginaProductos(1);
+                    }}
+                    placeholder="Nombre del producto o marca…"
+                    className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-2.5 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-[var(--color-brand-solid)]"
+                  />
+                  <p className="text-[11px] text-[var(--color-subtle)]">
+                    {productosFiltrados.length} de {productos.length} productos · Los precios de referencia no representan ofertas verificadas.
+                  </p>
+                </div>
+              )}
               {/* Listado de Productos */}
               {cargando ? (
                 <div className="py-12 text-center text-[var(--color-subtle)] font-sans animate-pulse">
@@ -1654,10 +1688,15 @@ export default function AdminPanelModal({
                     </button>
                   )}
                 </div>
+              ) : productosFiltrados.length === 0 ? (
+                <div role="status" className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6 text-center text-sm text-[var(--color-subtle)]">
+                  No hay productos que coincidan con la búsqueda.
+                </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)]">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] border-b border-[var(--color-hairline)]">
+                <>
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] lg:overflow-x-auto">
+                  <table className="block w-full text-left text-xs lg:table">
+                    <thead className="hidden border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] lg:table-header-group">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Producto</th>
@@ -1667,14 +1706,14 @@ export default function AdminPanelModal({
                         <th className="py-2.5 px-3 text-center">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-hairline)] text-[var(--color-ink)]">
-                      {productos.map((prod) => (
-                        <tr key={prod.idProducto} className="hover:bg-[var(--color-canvas)] transition-colors">
-                          <td className="py-2.5 px-3 font-sans text-[11px] text-[var(--color-subtle)]">
+                    <tbody className="grid gap-3 p-2 text-[var(--color-ink)] lg:table-row-group lg:divide-y lg:divide-[var(--color-hairline)] lg:p-0">
+                      {productosVisibles.map((prod) => (
+                        <tr key={prod.idProducto} className="block min-w-0 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:bg-[var(--color-canvas)] lg:table-row lg:border-0 lg:bg-transparent lg:p-0">
+                          <td className="block py-1 font-sans text-[11px] text-[var(--color-subtle)] lg:table-cell lg:px-3 lg:py-2.5">
                             #{prod.idProducto}
                           </td>
-                          <td className="py-2.5 px-3">
-                            <div className="font-semibold text-[var(--color-ink)]">{prod.nombre}</div>
+                          <td className="block min-w-0 py-1 lg:table-cell lg:px-3 lg:py-2.5">
+                            <div className="break-words font-semibold text-[var(--color-ink)]">{prod.nombre}</div>
                             {prod.descripcion && (
                               <div className="text-[10px] text-[var(--color-subtle)] truncate max-w-xs">
                                 {prod.descripcion}
@@ -1693,29 +1732,29 @@ export default function AdminPanelModal({
                               </div>
                             )}
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-ink)]">
+                          <td data-label="Categoría: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
                             <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
                               {getNombreCategoria(prod.idCategoria)}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-ink)]">
+                          <td data-label="Marca: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
                             <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
                               {getNombreMarca(prod.idMarca)}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-right font-sans text-[var(--color-ink)]">
+                          <td data-label="Precio ref.: " className="block py-1 font-sans text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:text-right lg:before:content-none">
                             {prod.precioReferencia !== null && prod.precioReferencia !== undefined
                               ? formatearCOP(prod.precioReferencia)
                               : "—"}
                           </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <div className="flex items-center justify-center gap-1.5">
+                          <td className="block py-2 lg:table-cell lg:px-3 lg:py-2.5 lg:text-center">
+                            <div className="flex flex-wrap items-center gap-2 lg:justify-center">
                               <button
                                 type="button"
                                 onClick={() => setProductoFichaV3(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Ficha Técnica V3 de ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Ficha V3
                               </button>
@@ -1724,7 +1763,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditar(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Editar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1733,7 +1772,7 @@ export default function AdminPanelModal({
                                 onClick={() => setProductoEliminando(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Eliminar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1744,6 +1783,14 @@ export default function AdminPanelModal({
                     </tbody>
                   </table>
                 </div>
+                <nav aria-label="Paginación de productos" className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--color-subtle)]">
+                    <span>Página {paginaProductos} de {paginasProductos}</span>
+                    {paginasProductos > 1 && <div className="flex gap-2">
+                      <button type="button" disabled={paginaProductos === 1} onClick={() => setPaginaProductos((pagina) => pagina - 1)} aria-label="Página anterior de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Anterior</button>
+                      <button type="button" disabled={paginaProductos === paginasProductos} onClick={() => setPaginaProductos((pagina) => pagina + 1)} aria-label="Siguiente página de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Siguiente</button>
+                    </div>}
+                  </nav>
+                </>
               )}
             </div>
           )}

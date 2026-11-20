@@ -173,6 +173,39 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
     });
   });
 
+  describe("Catálogo adaptable", () => {
+    it("filtra por producto y marca sin alterar el total y comunica una búsqueda sin resultados", async () => {
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce([
+        mockProductos[0],
+        { ...mockProductos[0], idProducto: 102, nombre: "MacBook Air", idMarca: 20, precioReferencia: null },
+      ]);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("MacBook Air");
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "apple" } });
+      expect(screen.getByText("MacBook Air")).toBeDefined();
+      expect(screen.queryByText("Nothing Phone (2)")).toBeNull();
+      expect(screen.getByText(/total registrados:/i).textContent).toContain("2");
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "sin coincidencias" } });
+      expect(screen.getByText(/no hay productos que coincidan/i)).toBeDefined();
+    });
+
+    it("pagina el resultado local y vuelve a la primera página al buscar", async () => {
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce(
+        Array.from({ length: 9 }, (_, index) => ({
+          ...mockProductos[0], idProducto: 101 + index, nombre: `Producto ${index + 1}`,
+        })),
+      );
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Producto 1");
+      expect(screen.queryByText("Producto 9")).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: /siguiente página de productos/i }));
+      expect(screen.getByText("Producto 9")).toBeDefined();
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "Producto 1" } });
+      expect(screen.getByText("Producto 1")).toBeDefined();
+      expect(screen.getByText(/página 1 de 1/i)).toBeDefined();
+    });
+  });
+
   describe("Gestión CRUD de Categorías (Paso 2)", () => {
     it("debe cargar y listar las categorías activas correctamente", async () => {
       render(

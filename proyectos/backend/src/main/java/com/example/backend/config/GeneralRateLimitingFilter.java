@@ -26,121 +26,123 @@ import java.time.LocalDateTime;
 @Component
 public class GeneralRateLimitingFilter extends OncePerRequestFilter {
 
-    public static final String MENSAJE_LIMITE_GENERAL =
-            "Has superado el límite de peticiones permitido. Por favor, intenta de nuevo más tarde.";
+  public static final String MENSAJE_LIMITE_GENERAL =
+    "Has superado el límite de peticiones permitido. Por favor, intenta de nuevo más tarde.";
 
-    private final GeneralRateLimiterService rateLimiterService;
+  private final GeneralRateLimiterService rateLimiterService;
 
-    public GeneralRateLimitingFilter(
-            @org.springframework.beans.factory.annotation.Autowired(required = false) GeneralRateLimiterService rateLimiterService) {
-        this.rateLimiterService = (rateLimiterService != null)
-                ? rateLimiterService
-                : new GeneralRateLimiterService(true, 100, 60);
+  public GeneralRateLimitingFilter(
+    @org.springframework.beans.factory.annotation.Autowired(required = false) GeneralRateLimiterService rateLimiterService) {
+    this.rateLimiterService = (rateLimiterService != null)
+      ? rateLimiterService
+      : new GeneralRateLimiterService(true, 100, 60);
+  }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    // Excluir solicitudes pre-flight CORS (OPTIONS)
+    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+      return true;
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        // Excluir solicitudes pre-flight CORS (OPTIONS)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            return true;
-        }
-
-        String path = request.getRequestURI();
-        if (path == null) {
-            return true;
-        }
-
-        // Excluir endpoints de salud y diagnóstico
-        if (path.equals("/api/health") || path.startsWith("/api/health/")) {
-            return true;
-        }
-
-        // Aplicar rate limiting exclusivamente sobre la API REST (/api/**)
-        return !path.startsWith("/api/");
+    String path = request.getRequestURI();
+    if (path == null) {
+      return true;
     }
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
-
-        if (!rateLimiterService.isEnabled()) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String clientKey = resolveClientKey(request);
-        RateLimitResult result = rateLimiterService.tryAcquire(clientKey);
-
-        // Cabeceras informativas estándar de Rate Limiting
-        response.setHeader("X-RateLimit-Limit", String.valueOf(result.limit()));
-        response.setHeader("X-RateLimit-Remaining", String.valueOf(result.remaining()));
-        response.setHeader("X-RateLimit-Reset", String.valueOf(result.resetEpochSeconds()));
-
-        if (!result.allowed()) {
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.setHeader("Retry-After", String.valueOf(result.retryAfterSeconds()));
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
-            String json = String.format(
-                    "{\"timestamp\":\"%s\",\"status\":%d,\"error\":\"%s\",\"message\":\"%s\",\"path\":\"%s\"}",
-                    LocalDateTime.now(),
-                    HttpStatus.TOO_MANY_REQUESTS.value(),
-                    HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(),
-                    MENSAJE_LIMITE_GENERAL,
-                    request.getRequestURI()
-            );
-            response.getWriter().write(json);
-            return;
-        }
-
-        filterChain.doFilter(request, response);
+    // Excluir endpoints de salud y diagnóstico
+    if (path.equals("/api/health") || path.startsWith("/api/health/")) {
+      return true;
     }
 
-    /**
-     * Resuelve el identificador del cliente (usuario autenticado o IP remota).
-     */
-    public String resolveClientKey(HttpServletRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            String name = auth.getName();
-            if (name != null && !name.isBlank()) {
-                return "user:" + name;
-            }
-        }
+    // Aplicar rate limiting exclusivamente sobre la API REST (/api/**)
+    return !path.startsWith("/api/");
+  }
 
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.regionMatches(true, 0, "Bearer ", 0, 7)) {
-            String token = authHeader.substring(7).trim();
-            if (!token.isBlank()) {
-                return "token:" + Integer.toHexString(token.hashCode());
-            }
-        }
+  @Override
+  protected void doFilterInternal(
+    HttpServletRequest request,
+    HttpServletResponse response,
+    FilterChain filterChain) throws ServletException, IOException {
 
-        String clientIp = extractClientIp(request);
-        return "ip:" + clientIp;
+    if (!rateLimiterService.isEnabled()) {
+      filterChain.doFilter(request, response);
+      return;
     }
 
-    /**
-     * Extrae la IP del cliente considerando proxies inversos comunes (X-Forwarded-For, X-Real-IP).
-     */
-    public String extractClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-            String[] parts = xForwardedFor.split(",");
-            if (parts.length > 0 && !parts[0].trim().isBlank()) {
-                return parts[0].trim();
-            }
-        }
+    String clientKey = resolveClientKey(request);
+    RateLimitResult result = rateLimiterService.tryAcquire(clientKey);
 
-        String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isBlank()) {
-            return xRealIp.trim();
-        }
+    // Cabeceras informativas estándar de Rate Limiting
+    response.setHeader("X-RateLimit-Limit", String.valueOf(result.limit()));
+    response.setHeader("X-RateLimit-Remaining", String.valueOf(result.remaining()));
+    response.setHeader("X-RateLimit-Reset", String.valueOf(result.resetEpochSeconds()));
 
-        String remoteAddr = request.getRemoteAddr();
-        return (remoteAddr != null && !remoteAddr.isBlank()) ? remoteAddr : "unknown";
+    if (!result.allowed()) {
+      response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+      response.setHeader("Retry-After", String.valueOf(result.retryAfterSeconds()));
+      response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+      response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+      String json = String.format(
+        "{\"timestamp\":\"%s\",\"status\":%d,\"error\":\"%s\",\"message\":\"%s\",\"path\":\"%s\"}",
+        LocalDateTime.now(),
+        HttpStatus.TOO_MANY_REQUESTS.value(),
+        HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(),
+        MENSAJE_LIMITE_GENERAL,
+        request.getRequestURI()
+      );
+      response.getWriter().write(json);
+      return;
     }
+
+    filterChain.doFilter(request, response);
+  }
+
+  /**
+   * Identifica al cliente para aplicar el límite de peticiones.
+   * <p>
+   * - Usuario autenticado: se utiliza su identidad validada.
+   * - Usuario anónimo: se utiliza la IP de la conexión.
+   * <p>
+   * Nunca utilizamos tokens sin validar como identificadores.
+   */
+  public String resolveClientKey(HttpServletRequest request) {
+    Authentication auth =
+      SecurityContextHolder.getContext().getAuthentication();
+
+    if (auth != null
+      && auth.isAuthenticated()
+      && !(auth instanceof AnonymousAuthenticationToken)) {
+
+      String name = auth.getName();
+
+      if (name != null && !name.isBlank()) {
+        return "user:" + name;
+      }
+    }
+
+    return "ip:" + extractClientIp(request);
+  }
+
+
+  /**
+   * Obtiene la IP del cliente conectado directamente.
+   * <p>
+   * No confía en X-Forwarded-For ni X-Real-IP porque
+   * esas cabeceras pueden ser manipuladas por el cliente.
+   * <p>
+   * Si se utiliza un proxy inverso, su configuración
+   * debe establecerse explícitamente antes del despliegue.
+   */
+  public String extractClientIp(HttpServletRequest request) {
+    String remoteAddr = request.getRemoteAddr();
+
+    if (remoteAddr == null || remoteAddr.isBlank()) {
+      return "unknown";
+    }
+
+    return remoteAddr;
+  }
+
 }

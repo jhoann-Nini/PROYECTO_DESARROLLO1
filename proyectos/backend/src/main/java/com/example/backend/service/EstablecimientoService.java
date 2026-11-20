@@ -11,7 +11,9 @@ import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.EstablecimientoRepository;
 import com.example.backend.repository.UsuarioEstablecimientoRepository;
+
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -25,166 +27,194 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class EstablecimientoService {
 
-    private static final String ROL_REPRESENTANTE = "Representante de establecimiento";
-    private static final String ROL_ADMINISTRADOR = "Administrador";
+  private static final String ROL_REPRESENTANTE = "Representante de establecimiento";
+  private static final String ROL_ADMINISTRADOR = "Administrador";
 
-    private final UsuarioService usuarioService;
-    private final EstablecimientoRepository establecimientoRepository;
-    private final UsuarioEstablecimientoRepository usuarioEstablecimientoRepository;
+  private final UsuarioService usuarioService;
+  private final EstablecimientoRepository establecimientoRepository;
+  private final UsuarioEstablecimientoRepository usuarioEstablecimientoRepository;
 
-    public EstablecimientoService(
-            UsuarioService usuarioService,
-            EstablecimientoRepository establecimientoRepository,
-            UsuarioEstablecimientoRepository usuarioEstablecimientoRepository) {
-        this.usuarioService = usuarioService;
-        this.establecimientoRepository = establecimientoRepository;
-        this.usuarioEstablecimientoRepository = usuarioEstablecimientoRepository;
+  public EstablecimientoService(
+    UsuarioService usuarioService,
+    EstablecimientoRepository establecimientoRepository,
+    UsuarioEstablecimientoRepository usuarioEstablecimientoRepository) {
+    this.usuarioService = usuarioService;
+    this.establecimientoRepository = establecimientoRepository;
+    this.usuarioEstablecimientoRepository = usuarioEstablecimientoRepository;
+  }
+
+  @Transactional(readOnly = true)
+  public List<EstablecimientoResponse> listarPublicos() {
+    return establecimientoRepository.findByEstadoTrueOrderByNombreAsc()
+      .stream()
+      .map(this::toResponse)
+      .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public EstablecimientoResponse obtenerPublico(Long idEstablecimiento) {
+    return establecimientoRepository.findById(idEstablecimiento)
+      .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
+      .map(this::toResponse)
+      .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+  }
+
+  @Transactional
+  public EstablecimientoResponse crear(EstablecimientoUpdateRequest request) {
+    Establecimiento establecimiento = new Establecimiento();
+    aplicarDatos(establecimiento, request);
+    establecimiento.setEstado(true);
+    return toResponse(establecimientoRepository.save(establecimiento));
+  }
+
+  @Transactional
+  public EstablecimientoResponse actualizarAdministrativo(
+    Long idEstablecimiento,
+    EstablecimientoUpdateRequest request) {
+    Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
+      .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+    aplicarDatos(establecimiento, request);
+    return toResponse(establecimientoRepository.save(establecimiento));
+  }
+
+
+  /**
+   * Actualiza el estado de verificación de un establecimiento.
+   * Este método debe exponerse únicamente mediante una ruta
+   * protegida para administradores.
+   *
+   * @param idEstablecimiento identificador del establecimiento
+   * @param verificado        true para verificar, false para retirar verificación
+   * @return establecimiento con el estado actualizado
+   */
+  @Transactional
+  public EstablecimientoResponse actualizarVerificacion(
+    Long idEstablecimiento,
+    boolean verificado) {
+
+    Establecimiento establecimiento = establecimientoRepository
+      .findById(idEstablecimiento)
+      .filter(e -> Boolean.TRUE.equals(e.getEstado()))
+      .orElseThrow(() ->
+        new ResourceNotFoundException("Establecimiento no encontrado."));
+
+    establecimiento.setVerificado(verificado);
+
+    return toResponse(establecimientoRepository.save(establecimiento));
+  }
+
+
+  @Transactional
+  public void eliminar(Long idEstablecimiento) {
+    Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
+      .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+    if (Boolean.FALSE.equals(establecimiento.getEstado())) {
+      throw new ConflictException("El establecimiento ya está inactivo.");
+    }
+    // Eliminación lógica: conserva el registro y sus asignaciones históricas.
+    establecimiento.setEstado(false);
+    establecimientoRepository.save(establecimiento);
+  }
+
+  @Transactional(readOnly = true)
+  public List<EstablecimientoResponse> listarAsignados(Jwt jwt) {
+    Usuario usuario = obtenerUsuarioActivo(jwt);
+    validarRolRepresentanteOAdministrador(usuario);
+
+    if (tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
+      return establecimientoRepository.findByEstadoTrueOrderByNombreAsc()
+        .stream()
+        .map(this::toResponse)
+        .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<EstablecimientoResponse> listarPublicos() {
-        return establecimientoRepository.findByEstadoTrueOrderByNombreAsc()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    return usuarioEstablecimientoRepository
+      .findAsignacionesActivasConEstablecimiento(usuario.getIdUsuario())
+      .stream()
+      .map(UsuarioEstablecimiento::getEstablecimiento)
+      .map(this::toResponse)
+      .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public EstablecimientoResponse obtenerAsignado(Long idEstablecimiento, Jwt jwt) {
+    Usuario usuario = obtenerUsuarioActivo(jwt);
+    validarRolRepresentanteOAdministrador(usuario);
+    return toResponse(buscarEstablecimientoPermitido(usuario, idEstablecimiento));
+  }
+
+  @Transactional
+  public EstablecimientoResponse actualizarAsignado(
+    Long idEstablecimiento,
+    EstablecimientoUpdateRequest request,
+    Jwt jwt) {
+    Usuario usuario = obtenerUsuarioActivo(jwt);
+    validarRolRepresentanteOAdministrador(usuario);
+
+    Establecimiento establecimiento = buscarEstablecimientoPermitido(usuario, idEstablecimiento);
+    aplicarDatos(establecimiento, request);
+    return toResponse(establecimientoRepository.save(establecimiento));
+  }
+
+  private void aplicarDatos(Establecimiento establecimiento, EstablecimientoUpdateRequest request) {
+    establecimiento.setNombre(request.nombre().trim());
+    establecimiento.setDireccion(request.direccion());
+    establecimiento.setTelefono(request.telefono());
+    establecimiento.setCorreo(request.correo());
+    establecimiento.setDescripcion(request.descripcion());
+    establecimiento.setLatitud(request.latitud());
+    establecimiento.setLongitud(request.longitud());
+  }
+
+  private Usuario obtenerUsuarioActivo(Jwt jwt) {
+    Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    if (!Boolean.TRUE.equals(usuario.getEstado())) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La cuenta está suspendida o inactiva.");
+    }
+    return usuario;
+  }
+
+  private void validarRolRepresentanteOAdministrador(Usuario usuario) {
+    if (!tieneRolActivo(usuario, ROL_REPRESENTANTE)
+      && !tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La cuenta no tiene permisos para gestionar establecimientos.");
+    }
+  }
+
+  private boolean tieneRolActivo(Usuario usuario, String nombreRol) {
+    return usuario.getRoles() != null && usuario.getRoles().stream()
+      .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
+      .map(UsuarioRol::getRol)
+      .map(Rol::getNombre)
+      .anyMatch(nombre -> nombre != null && nombreRol.equalsIgnoreCase(nombre));
+  }
+
+  private Establecimiento buscarEstablecimientoPermitido(Usuario usuario, Long idEstablecimiento) {
+    if (tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
+      return establecimientoRepository.findById(idEstablecimiento)
+        .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
+        .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
     }
 
-    @Transactional(readOnly = true)
-    public EstablecimientoResponse obtenerPublico(Long idEstablecimiento) {
-        return establecimientoRepository.findById(idEstablecimiento)
-                .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
-                .map(this::toResponse)
-                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
-    }
+    return usuarioEstablecimientoRepository
+      .findAsignacionActivaConEstablecimiento(usuario.getIdUsuario(), idEstablecimiento)
+      .map(UsuarioEstablecimiento::getEstablecimiento)
+      .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
+      .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
+  }
 
-    @Transactional
-    public EstablecimientoResponse crear(EstablecimientoUpdateRequest request) {
-        Establecimiento establecimiento = new Establecimiento();
-        aplicarDatos(establecimiento, request);
-        establecimiento.setEstado(true);
-        return toResponse(establecimientoRepository.save(establecimiento));
-    }
-
-    @Transactional
-    public EstablecimientoResponse actualizarAdministrativo(
-            Long idEstablecimiento,
-            EstablecimientoUpdateRequest request) {
-        Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
-                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
-        aplicarDatos(establecimiento, request);
-        return toResponse(establecimientoRepository.save(establecimiento));
-    }
-
-    @Transactional
-    public void eliminar(Long idEstablecimiento) {
-        Establecimiento establecimiento = establecimientoRepository.findById(idEstablecimiento)
-                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
-        if (Boolean.FALSE.equals(establecimiento.getEstado())) {
-            throw new ConflictException("El establecimiento ya está inactivo.");
-        }
-        // Eliminación lógica: conserva el registro y sus asignaciones históricas.
-        establecimiento.setEstado(false);
-        establecimientoRepository.save(establecimiento);
-    }
-
-    @Transactional(readOnly = true)
-    public List<EstablecimientoResponse> listarAsignados(Jwt jwt) {
-        Usuario usuario = obtenerUsuarioActivo(jwt);
-        validarRolRepresentanteOAdministrador(usuario);
-
-        if (tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
-            return establecimientoRepository.findByEstadoTrueOrderByNombreAsc()
-                    .stream()
-                    .map(this::toResponse)
-                    .toList();
-        }
-
-        return usuarioEstablecimientoRepository
-                .findAsignacionesActivasConEstablecimiento(usuario.getIdUsuario())
-                .stream()
-                .map(UsuarioEstablecimiento::getEstablecimiento)
-                .map(this::toResponse)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public EstablecimientoResponse obtenerAsignado(Long idEstablecimiento, Jwt jwt) {
-        Usuario usuario = obtenerUsuarioActivo(jwt);
-        validarRolRepresentanteOAdministrador(usuario);
-        return toResponse(buscarEstablecimientoPermitido(usuario, idEstablecimiento));
-    }
-
-    @Transactional
-    public EstablecimientoResponse actualizarAsignado(
-            Long idEstablecimiento,
-            EstablecimientoUpdateRequest request,
-            Jwt jwt) {
-        Usuario usuario = obtenerUsuarioActivo(jwt);
-        validarRolRepresentanteOAdministrador(usuario);
-
-        Establecimiento establecimiento = buscarEstablecimientoPermitido(usuario, idEstablecimiento);
-        aplicarDatos(establecimiento, request);
-        return toResponse(establecimientoRepository.save(establecimiento));
-    }
-
-    private void aplicarDatos(Establecimiento establecimiento, EstablecimientoUpdateRequest request) {
-        establecimiento.setNombre(request.nombre().trim());
-        establecimiento.setDireccion(request.direccion());
-        establecimiento.setTelefono(request.telefono());
-        establecimiento.setCorreo(request.correo());
-        establecimiento.setDescripcion(request.descripcion());
-        establecimiento.setLatitud(request.latitud());
-        establecimiento.setLongitud(request.longitud());
-    }
-
-    private Usuario obtenerUsuarioActivo(Jwt jwt) {
-        Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
-        if (!Boolean.TRUE.equals(usuario.getEstado())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La cuenta está suspendida o inactiva.");
-        }
-        return usuario;
-    }
-
-    private void validarRolRepresentanteOAdministrador(Usuario usuario) {
-        if (!tieneRolActivo(usuario, ROL_REPRESENTANTE)
-                && !tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "La cuenta no tiene permisos para gestionar establecimientos.");
-        }
-    }
-
-    private boolean tieneRolActivo(Usuario usuario, String nombreRol) {
-        return usuario.getRoles() != null && usuario.getRoles().stream()
-                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
-                .map(UsuarioRol::getRol)
-                .map(Rol::getNombre)
-                .anyMatch(nombre -> nombre != null && nombreRol.equalsIgnoreCase(nombre));
-    }
-
-    private Establecimiento buscarEstablecimientoPermitido(Usuario usuario, Long idEstablecimiento) {
-        if (tieneRolActivo(usuario, ROL_ADMINISTRADOR)) {
-            return establecimientoRepository.findById(idEstablecimiento)
-                    .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
-                    .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
-        }
-
-        return usuarioEstablecimientoRepository
-                .findAsignacionActivaConEstablecimiento(usuario.getIdUsuario(), idEstablecimiento)
-                .map(UsuarioEstablecimiento::getEstablecimiento)
-                .filter(establecimiento -> Boolean.TRUE.equals(establecimiento.getEstado()))
-                .orElseThrow(() -> new ResourceNotFoundException("Establecimiento no encontrado."));
-    }
-
-    private EstablecimientoResponse toResponse(Establecimiento establecimiento) {
-        return new EstablecimientoResponse(
-                establecimiento.getIdEstablecimiento(),
-                establecimiento.getNombre(),
-                establecimiento.getDireccion(),
-                establecimiento.getTelefono(),
-                establecimiento.getCorreo(),
-                establecimiento.getDescripcion(),
-                establecimiento.getLatitud(),
-                establecimiento.getLongitud(),
-                establecimiento.getEstado()
-        );
-    }
+  private EstablecimientoResponse toResponse(Establecimiento establecimiento) {
+    return new EstablecimientoResponse(
+      establecimiento.getIdEstablecimiento(),
+      establecimiento.getNombre(),
+      establecimiento.getDireccion(),
+      establecimiento.getTelefono(),
+      establecimiento.getCorreo(),
+      establecimiento.getDescripcion(),
+      establecimiento.getLatitud(),
+      establecimiento.getLongitud(),
+      establecimiento.getEstado(),
+      establecimiento.getVerificado()
+    );
+  }
 }

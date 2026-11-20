@@ -452,6 +452,9 @@ export default function AdminUsuariosRoles() {
                 </div>
 
                 <div className="rounded-lg border border-[var(--color-hairline)] p-3">
+                  <p className="mb-3 text-xs text-[var(--color-subtle)]">
+                    El historial y las representaciones activas todavía no se pueden consultar desde esta API. Las asignaciones y revocaciones se confirman con la respuesta del backend.
+                  </p>
                   <label
                     htmlFor="admin-rol-asignar"
                     className="block text-xs font-medium text-[var(--color-subtle)]"

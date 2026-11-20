@@ -188,6 +188,37 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
     });
   });
 
+  describe("Foco de los diálogos", () => {
+    it("entra en el panel, contiene Tab y devuelve el foco al activador al cerrar", async () => {
+      const disparador = document.createElement("button");
+      disparador.textContent = "Abrir administración";
+      document.body.appendChild(disparador);
+      disparador.focus();
+      const { rerender } = render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      const cerrar = screen.getByRole("button", { name: "Cerrar panel de administración" });
+      expect(document.activeElement).toBe(cerrar);
+      cerrar.focus();
+      fireEvent.keyDown(screen.getByRole("dialog"), { key: "Tab", shiftKey: true });
+      expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
+      rerender(<AdminPanelModal isOpen={false} onClose={vi.fn()} usuarioSesion={adminUser} />);
+      expect(document.activeElement).toBe(disparador);
+      disparador.remove();
+    });
+
+    it("mantiene el foco en la confirmación y Escape vuelve a la acción sin eliminar", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Nothing Phone (2)");
+      const activar = screen.getByRole("button", { name: "Eliminar Nothing Phone (2)" });
+      activar.focus();
+      fireEvent.click(activar);
+      expect(screen.getByRole("alertdialog").contains(document.activeElement)).toBe(true);
+      fireEvent.keyDown(window, { key: "Escape" });
+      expect(screen.queryByRole("alertdialog")).toBeNull();
+      expect(document.activeElement).toBe(activar);
+      expect(api.eliminarProducto).not.toHaveBeenCalled();
+    });
+  });
+
   describe("Catálogo adaptable", () => {
     it("filtra por producto y marca sin alterar el total y comunica una búsqueda sin resultados", async () => {
       vi.mocked(api.obtenerProductos).mockResolvedValueOnce([

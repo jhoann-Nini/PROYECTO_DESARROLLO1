@@ -16,7 +16,7 @@ import {
   rechazarReportesResenaReportada,
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
-import { CLASE_FOCO } from "@/components/ui/foco";
+import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 
 interface PanelModeracionModalProps {
   isOpen: boolean;
@@ -98,6 +98,7 @@ export default function PanelModeracionModal({
 
   const tituloId = useId();
   const cerrarRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const claveConsulta = `${filtroEstado}|${soloOcultas}|${intento}`;
   const [resultado, setResultado] = useState<{
     clave: string;
@@ -131,6 +132,7 @@ export default function PanelModeracionModal({
     if (!abierto) return;
 
     const overflowPrevio = document.body.style.overflow;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
     cerrarRef.current?.focus();
 
@@ -146,6 +148,7 @@ export default function PanelModeracionModal({
     return () => {
       document.body.style.overflow = overflowPrevio;
       window.removeEventListener("keydown", manejarEscape);
+      activador?.focus();
     };
   }, [abierto, cerrarPanel]);
 
@@ -250,6 +253,8 @@ export default function PanelModeracionModal({
 
   return (
     <div
+      ref={panelRef}
+      onKeyDown={(evento) => atraparTabulacion(evento, panelRef.current)}
       role="dialog"
       aria-modal="true"
       aria-labelledby={tituloId}

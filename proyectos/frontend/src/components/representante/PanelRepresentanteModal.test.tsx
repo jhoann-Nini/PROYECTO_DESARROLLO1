@@ -72,6 +72,22 @@ describe("PanelRepresentanteModal", () => {
     vi.restoreAllMocks();
   });
 
+  it("devuelve el foco al activador y contiene Tab dentro del panel", async () => {
+    mockObtener.mockResolvedValue([ESTABLECIMIENTO]);
+    const disparador = document.createElement("button");
+    document.body.appendChild(disparador);
+    disparador.focus();
+    const { rerender } = render(<PanelRepresentanteModal isOpen onClose={vi.fn()} usuarioSesion={REPRESENTANTE} />);
+    const cerrar = screen.getByRole("button", { name: "Cerrar panel de representante" });
+    expect(document.activeElement).toBe(cerrar);
+    cerrar.focus();
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Tab", shiftKey: true });
+    expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
+    rerender(<PanelRepresentanteModal isOpen={false} onClose={vi.fn()} usuarioSesion={REPRESENTANTE} />);
+    expect(document.activeElement).toBe(disparador);
+    disparador.remove();
+  });
+
   it("no se renderiza si está cerrado o el rol no está autorizado", () => {
     const { container, rerender } = render(
       <PanelRepresentanteModal

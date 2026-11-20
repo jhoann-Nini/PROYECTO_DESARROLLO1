@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useId, useMemo } from "react";
+import { useEffect, useState, useCallback, useId, useMemo, useRef } from "react";
+import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 import type {
   UsuarioSesion,
   ProductoResponse,
@@ -120,6 +121,9 @@ export default function AdminPanelModal({
   onProductoCambiado,
 }: AdminPanelModalProps) {
   const [tabActiva, setTabActiva] = useState<TabAdministracion>("productos");
+  const panelRef = useRef<HTMLDivElement>(null);
+  const cerrarRef = useRef<HTMLButtonElement>(null);
+  const confirmacionRef = useRef<HTMLDivElement>(null);
 
   // Estados de datos
   const [productos, setProductos] = useState<ProductoResponse[]>([]);
@@ -367,6 +371,47 @@ export default function AdminPanelModal({
       activo = false;
     };
   }, [isOpen, usuarioSesion, cargarDatos, cargarReportes]);
+
+  const confirmacionAbierta = Boolean(
+    productoEliminando || categoriaEliminando || marcaEliminando || modalMotivoAccion,
+  );
+  useEffect(() => {
+    if (!isOpen || !esAdministrador(usuarioSesion)) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const overflowPrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    cerrarRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflowPrevio;
+      activador?.focus();
+    };
+  }, [isOpen, usuarioSesion]);
+
+  useEffect(() => {
+    if (!confirmacionAbierta) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialogo = confirmacionRef.current;
+    dialogo?.querySelector<HTMLElement>("textarea, button:not([disabled])")?.focus();
+    return () => activador?.focus();
+  }, [confirmacionAbierta, productoEliminando, categoriaEliminando, marcaEliminando, modalMotivoAccion]);
+
+  useEffect(() => {
+    if (!isOpen || !esAdministrador(usuarioSesion)) return;
+    function manejarEscape(evento: KeyboardEvent) {
+      if (evento.key !== "Escape") return;
+      if (productoFichaV3) return;
+      evento.preventDefault();
+      if (modalMotivoAccion && !ejecutandoAccion) {
+        setModalMotivoAccion(null);
+        setErrorMotivoAccion(false);
+      } else if (productoEliminando && !eliminando) setProductoEliminando(null);
+      else if (categoriaEliminando && !eliminandoCat) setCategoriaEliminando(null);
+      else if (marcaEliminando && !eliminandoMarca) setMarcaEliminando(null);
+      else if (!confirmacionAbierta) onClose();
+    }
+    window.addEventListener("keydown", manejarEscape);
+    return () => window.removeEventListener("keydown", manejarEscape);
+  }, [isOpen, usuarioSesion, onClose, confirmacionAbierta, productoEliminando, categoriaEliminando, marcaEliminando, modalMotivoAccion, ejecutandoAccion, eliminando, eliminandoCat, eliminandoMarca, productoFichaV3]);
 
   // Categoría actual inferida para campos dinámicos
   const categoriaActualTipo = useMemo<CategoriaDispositivo>(() => {
@@ -1056,6 +1101,8 @@ export default function AdminPanelModal({
 
   return (
     <div
+      ref={panelRef}
+      onKeyDown={(evento) => atraparTabulacion(evento, confirmacionRef.current ?? panelRef.current)}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
@@ -1078,9 +1125,10 @@ export default function AdminPanelModal({
             </div>
           </div>
           <button
+            ref={cerrarRef}
             type="button"
             onClick={onClose}
-            className="shrink-0 text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer"
+            className={`shrink-0 text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer ${CLASE_FOCO}`}
             aria-label="Cerrar panel de administración"
           >
             ✕ Cerrar
@@ -2554,6 +2602,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE PRODUCTO */}
         {productoEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar"
@@ -2606,6 +2655,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE CATEGORÍA */}
         {categoriaEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-cat"
@@ -2658,6 +2708,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE MARCA */}
         {marcaEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-marca"
@@ -2710,6 +2761,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ACCIÓN DE MODERACIÓN (S2-72 / TEC-149) */}
         {modalMotivoAccion && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-moderacion"

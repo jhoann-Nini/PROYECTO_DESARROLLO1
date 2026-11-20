@@ -9,6 +9,7 @@ import type {
   MarcaResponse,
 } from "@/types/producto";
 import * as api from "@/services/api";
+import type { ResenaReportadaResponse } from "@/types/moderacion";
 
 vi.mock("@/services/api", async () => {
   const actual = await vi.importActual<typeof import("@/services/api")>("@/services/api");
@@ -28,6 +29,10 @@ vi.mock("@/services/api", async () => {
     eliminarMarca: vi.fn(),
     descargarCatalogoCsv: vi.fn(),
     dispararDescargaArchivo: vi.fn(),
+    obtenerResenasReportadas: vi.fn(),
+    ocultarResenaReportada: vi.fn(),
+    publicarResenaReportada: vi.fn(),
+    rechazarReportesResenaReportada: vi.fn(),
   };
 });
 
@@ -82,12 +87,22 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       estado: true,
     },
   ];
+  const resenaReportada: ResenaReportadaResponse = {
+    idResena: 15, idProducto: 101, nombreProducto: "Nothing Phone (2)",
+    idAutor: 3, nombreAutor: "Persona autora", comentario: "Comentario reportado",
+    puntuacion: 2, fechaCreacion: "2026-11-10T20:00:00",
+    estado: true, ocultaPorReportes: false, ocultaPorModeracion: false,
+    totalReportes: 1, reportesPendientes: 1,
+    reportes: [{ idReporte: 7, idUsuarioReportante: 8, nombreReportante: "Usuario",
+      motivo: "spam", descripcion: null, estado: "PENDIENTE", fechaCreacion: "2026-11-10T21:00:00" }],
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(api.obtenerProductos).mockResolvedValue(mockProductos);
     vi.mocked(api.obtenerCategorias).mockResolvedValue(mockCategorias);
     vi.mocked(api.obtenerMarcas).mockResolvedValue(mockMarcas);
+    vi.mocked(api.obtenerResenasReportadas).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -203,6 +218,26 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "Producto 1" } });
       expect(screen.getByText("Producto 1")).toBeDefined();
       expect(screen.getByText(/página 1 de 1/i)).toBeDefined();
+    });
+  });
+
+  describe("Cola de moderación real", () => {
+    it("explica que solo cubre reseñas y no presenta la cola vacía como resuelta", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+      expect(await screen.findByText(/los reportes de precios y enlaces todavía no están integrados/i)).toBeDefined();
+      expect(screen.getByText(/no hay reseñas reportadas en este momento/i)).toBeDefined();
+    });
+
+    it("exige una justificación al ocultar sin enviarla vacía al backend", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValueOnce([resenaReportada]);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+      await screen.findByText("Comentario reportado", { exact: false });
+      fireEvent.click(screen.getByRole("button", { name: /ocultar reseña/i }));
+      fireEvent.click(screen.getByRole("button", { name: /confirmar acción/i }));
+      expect(screen.getByRole("alert").textContent).toMatch(/justificación obligatoria/i);
+      expect(api.ocultarResenaReportada).not.toHaveBeenCalled();
     });
   });
 

@@ -208,6 +208,7 @@ export default function AdminPanelModal({
     descripcion: string;
   } | null>(null);
   const [motivoAccionTexto, setMotivoAccionTexto] = useState("");
+  const [errorMotivoAccion, setErrorMotivoAccion] = useState(false);
   const [ejecutandoAccion, setEjecutandoAccion] = useState(false);
   const [reportesExpandidos, setReportesExpandidos] = useState<Record<number, boolean>>({});
 
@@ -295,6 +296,10 @@ export default function AdminPanelModal({
 
   const ejecutarAccionModeracion = async () => {
     if (!modalMotivoAccion) return;
+    if (modalMotivoAccion.accion !== "rechazar-reportes" && !motivoAccionTexto.trim()) {
+      setErrorMotivoAccion(true);
+      return;
+    }
     setEjecutandoAccion(true);
     setError(null);
     setMensajeExito(null);
@@ -317,6 +322,7 @@ export default function AdminPanelModal({
       );
       setModalMotivoAccion(null);
       setMotivoAccionTexto("");
+      setErrorMotivoAccion(false);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
@@ -342,6 +348,7 @@ export default function AdminPanelModal({
     descripcion: string,
   ) => {
     setMotivoAccionTexto("");
+    setErrorMotivoAccion(false);
     setModalMotivoAccion({ idResena, accion, titulo, descripcion });
   };
 
@@ -2204,10 +2211,10 @@ export default function AdminPanelModal({
               <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--color-hairline)]">
                 <div>
                   <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider flex items-center gap-2">
-                    <span>🚩</span> Cola de Moderación y Reportes
+                     <span>🚩</span> Cola de reportes de reseñas
                   </h3>
                   <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
-                    Revisión centralizada de reportes de usuarios y moderación de contenido (S2-72 / TEC-149).
+                     Revisión de reseñas reportadas por la comunidad.
                   </p>
                 </div>
                 <button
@@ -2254,8 +2261,8 @@ export default function AdminPanelModal({
               <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 flex items-start gap-2 text-[11px] text-blue-900 leading-relaxed">
                 <span className="text-base select-none shrink-0">ℹ️</span>
                 <div>
-                  <strong className="font-bold">Integración de Moderación (TEC-127 / S2-72):</strong>
-                  {" "}Esta cola consolida las reseñas reportadas por la comunidad y los reportes de anomalías de precios o enlaces. Como Administrador, puedes ocultar contenido inapropiado, restaurar reseñas publicadas o desestimar reportes pendientes con registro de auditoría.
+                   <strong className="font-bold">Alcance actual:</strong>
+                   {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados. Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.
                 </div>
               </div>
 
@@ -2326,12 +2333,12 @@ export default function AdminPanelModal({
                   <span className="text-3xl">🎉</span>
                   <h4 className="font-bold text-sm text-[var(--color-ink)] mt-2">
                     {resenasReportadas.length === 0
-                      ? "No hay reportes pendientes en la cola"
+                       ? "No hay reseñas reportadas en este momento"
                       : "Ninguna reseña coincide con los filtros aplicados"}
                   </h4>
                   <p className="text-xs text-[var(--color-subtle)] mt-1 max-w-sm mx-auto">
                     {resenasReportadas.length === 0
-                      ? "Todas las reseñas reportadas han sido revisadas o no se han emitido reportes en este momento."
+                       ? "La consulta actual no devolvió reseñas reportadas. Esto no confirma que todos los reportes estén resueltos."
                       : "Intenta modificar el filtro de estado o la casilla de reseñas ocultas para ver más resultados."}
                   </p>
                 </div>
@@ -2343,9 +2350,8 @@ export default function AdminPanelModal({
                   {resenasReportadasFiltradas.map((resena) => {
                     const estaOculta = resena.ocultaPorReportes || resena.ocultaPorModeracion;
                     const expandido = Boolean(reportesExpandidos[resena.idResena]);
-                    const tienePendientes = (resena.reportes || []).some(
-                      (r) => r.estado === "PENDIENTE"
-                    );
+                     const puedeRechazar = resena.reportesPendientes === 0 &&
+                       (resena.reportes || []).some((reporte) => reporte.estado === "EN_REVISION");
 
                     return (
                       <div
@@ -2510,7 +2516,7 @@ export default function AdminPanelModal({
                             )}
 
                             {/* Rechazar reportes pendientes */}
-                            {tienePendientes && (
+                             {puedeRechazar && (
                               <button
                                 type="button"
                                 onClick={() =>
@@ -2518,7 +2524,7 @@ export default function AdminPanelModal({
                                     resena.idResena,
                                     "rechazar-reportes",
                                     "Desestimar y Rechazar Reportes",
-                                    `Los reportes pendientes para la reseña #${resena.idResena} serán marcados como RECHAZADOS. Si la reseña fue ocultada automáticamente por reportes, será restaurada.`,
+                                     `Los reportes en revisión para la reseña #${resena.idResena} serán marcados como RECHAZADOS según los permisos del backend.`,
                                   )
                                 }
                                 disabled={ejecutandoAccion}
@@ -2733,16 +2739,22 @@ export default function AdminPanelModal({
                   htmlFor="motivo-accion-moderacion"
                   className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1"
                 >
-                  Motivo o justificación de auditoría (opcional):
+                   Justificación {modalMotivoAccion.accion === "rechazar-reportes" ? "(opcional)" : "(obligatoria)"}:
                 </label>
                 <textarea
                   id="motivo-accion-moderacion"
                   value={motivoAccionTexto}
-                  onChange={(e) => setMotivoAccionTexto(e.target.value)}
+                   onChange={(e) => {
+                     setMotivoAccionTexto(e.target.value);
+                     if (e.target.value.trim()) setErrorMotivoAccion(false);
+                   }}
                   placeholder="Explica la razón de esta acción de moderación..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
-                />
+                   rows={3}
+                   maxLength={2000}
+                   aria-invalid={errorMotivoAccion}
+                   className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
+                 />
+                 {errorMotivoAccion && <p role="alert" className="mt-2 text-xs text-red-600">La justificación obligatoria no puede estar vacía al ocultar o publicar una reseña.</p>}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
@@ -2750,7 +2762,8 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => {
                     setModalMotivoAccion(null);
-                    setMotivoAccionTexto("");
+                     setMotivoAccionTexto("");
+                     setErrorMotivoAccion(false);
                   }}
                   disabled={ejecutandoAccion}
                   className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"

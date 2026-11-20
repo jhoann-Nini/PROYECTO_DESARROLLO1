@@ -333,6 +333,7 @@ describe("OfertasHome", () => {
     mostrarTodas: false,
     onAlternar: vi.fn(),
     onVerDetalle: vi.fn(),
+    onReportar: vi.fn(),
   };
 
   it("muestra la oferta, el descuento y el reintento", () => {
@@ -345,7 +346,7 @@ describe("OfertasHome", () => {
     expect(screen.getByText("-20%")).toBeDefined();
     expect(screen.getByText(/Ahorras:/)).toBeDefined();
 
-    fireEvent.click(screen.getByRole("button", { name: /Oferta Uno/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Imagen pendiente.*Oferta Uno/ }));
     expect(propsBase.onVerDetalle).toHaveBeenCalledWith(propsBase.ofertas[0]);
 
     rerender(
@@ -357,6 +358,20 @@ describe("OfertasHome", () => {
     expect(screen.getByText(/No se pudieron cargar las ofertas/)).toBeDefined();
     fireEvent.click(screen.getByRole("button", { name: "Reintentar ofertas" }));
     expect(propsBase.onReintentar).toHaveBeenCalledTimes(1);
+  });
+
+  it("vincula el botón de reporte de cada oferta a su tienda sin navegar al detalle", () => {
+    const primera = crearOferta();
+    const segunda = { ...crearOferta(), idProducto: 12, idEstablecimiento: 35, nombre: "Oferta Dos", nombreEstablecimiento: "Tienda Sur" };
+    const onReportar = vi.fn();
+    const onVerDetalle = vi.fn();
+    render(<OfertasHome {...propsBase} ofertas={[primera, segunda]} mostrarTodas
+      onReportar={onReportar} onVerDetalle={onVerDetalle} />);
+    const botones = screen.getAllByRole("button", { name: /Reportar precio o enlace/ });
+    expect(botones).toHaveLength(2);
+    fireEvent.click(botones[1]);
+    expect(onReportar).toHaveBeenCalledWith(segunda);
+    expect(onVerDetalle).not.toHaveBeenCalled();
   });
 
   it("muestra el estado vacío y el botón para ver todas", () => {

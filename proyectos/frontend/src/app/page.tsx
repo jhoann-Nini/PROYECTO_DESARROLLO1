@@ -42,6 +42,7 @@ import BottomNav from "@/components/shell/BottomNav";
 import SearchBar from "@/components/SearchBar";
 import SugerenciasBusqueda from "@/components/home/SugerenciasBusqueda";
 import AuthModal from "@/components/AuthModal";
+import ReportarOfertaModal, { type OfertaReportable } from "@/components/ReportarOfertaModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import ResumenSesion from "@/components/home/ResumenSesion";
 import CategoriasHome from "@/components/home/CategoriasHome";
@@ -121,6 +122,8 @@ export default function Home() {
     reintentar: reintentarSincronizacion,
   } = useSesionTecReview();
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
+  const [ofertaReportando, setOfertaReportando] = useState<OfertaReportable | null>(null);
+  const [reporteConfirmado, setReporteConfirmado] = useState("");
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
 
   const esAdmin = useMemo(() => esAdministrador(usuarioSesion), [usuarioSesion]);
@@ -773,7 +776,21 @@ export default function Home() {
                   mostrarTodas={mostrarTodasOfertas}
                   onAlternar={() => setMostrarTodasOfertas((previo) => !previo)}
                   onVerDetalle={verFichaRanking}
+                  onReportar={(oferta) => {
+                    setReporteConfirmado("");
+                    setOfertaReportando({
+                      idProducto: oferta.idProducto,
+                      idEstablecimiento: oferta.idEstablecimiento,
+                      nombreProducto: oferta.nombre,
+                      nombreEstablecimiento: oferta.nombreEstablecimiento,
+                    });
+                  }}
                 />
+                {reporteConfirmado && (
+                  <p role="status" className="mt-2 text-sm text-[var(--color-positive)]">
+                    {reporteConfirmado}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -861,6 +878,20 @@ export default function Home() {
         onClose={() => setModalAuthAbierto(false)}
         onLoginSuccess={establecerUsuario}
       />
+      {ofertaReportando && (
+        <ReportarOfertaModal
+          oferta={ofertaReportando}
+          onCerrar={() => setOfertaReportando(null)}
+          onReportado={() => {
+            setReporteConfirmado("Gracias. Recibimos tu reporte y lo revisaremos.");
+            setOfertaReportando(null);
+          }}
+          onPedirLogin={() => {
+            setOfertaReportando(null);
+            setModalAuthAbierto(true);
+          }}
+        />
+      )}
 
       <AdminPanelModal
         isOpen={modalAdminAbierto}

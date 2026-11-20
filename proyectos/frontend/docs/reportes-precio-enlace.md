@@ -1,61 +1,48 @@
-# TEC-148 — Reporte de precio o enlace incorrecto
+# TEC-148 — Reportar precio o enlace de una oferta
 
-**Estado:** Bloqueada. No implementada.
-**Rama de trabajo:** `adrian` (sin cambios de código para esta tarea).
-**Dependencia:** TEC-147 debe exponer y documentar el endpoint de reportes de
-precio/enlace.
+**Estado:** Implementado en el frontend de la rama `adrian`, sin cambios de backend.
 
----
+## Contrato verificado
 
-## 1. Verificación realizada
+- TEC-147 expone `POST /api/reportes/ofertas`, requiere JWT de Supabase y
+  responde `201 Created` con `idReporte`, `idProducto`, `idEstablecimiento`,
+  `motivo`, `descripcion`, `estado` (`PENDIENTE`) y `fechaCreacion`.
+- Cuerpo: `idProducto` y `idEstablecimiento` (`Long`), `motivo` obligatorio
+  (`precio_incorrecto` o `enlace_incorrecto`) y `descripcion` opcional (máximo
+  2000 caracteres). No se envía usuario ni estado desde el navegador.
+- Errores: validación `400`, autenticación `401`, restricciones del usuario
+  `403` y oferta inexistente `404`. El cliente muestra el campo `message`
+  del formato de error existente, o un mensaje genérico de conexión. TEC-147
+  no implementa actualmente una regla específica de duplicados `409`.
 
-Se revisó el frontend actual en busca de un contrato o endpoint de reportes de
-precio o enlace:
+## Origen de las ofertas y navegación
 
-- `src/services/api.ts` solo contiene el reporte de **reseñas**
-  (`POST /api/resenas/{idResena}/reportes`) y las rutas de moderación de
-  reseñas (`/api/moderacion/...` y `/api/admin/resenas/...`).
-- No existen tipos, formularios ni llamadas relacionadas con precios, tiendas o
-  enlaces reportados.
-- El contrato de moderación documentado cubre únicamente reseñas y sus
-  reportes; no incluye un recurso de reportes de precio/enlace.
+- En portada, «Ofertas destacadas» procede de `GET /api/rankings/ofertas` y
+  ya incluye ambos identificadores y los nombres. Cada tarjeta tiene su
+  botón «Reportar precio o enlace» independiente de «Ver detalle».
+- En `/productos/{id}`, la sección «Dónde comprar» consulta
+  `GET /api/productos/{id}/establecimientos` para obtener el
+  `idEstablecimiento` real junto al precio de cada oferta. El `idProducto`
+  proviene del producto consultado. No se infieren IDs a partir de nombres.
+- Las tiendas heredadas de datos de ficha, si existen y no hay ofertas del
+  endpoint real, se siguen mostrando para compatibilidad, **sin botón de
+  reporte** porque sus filas no contienen un ID de establecimiento fiable.
+  En un error de consulta de ofertas se muestra error y reintento, sin
+  atribuir un ID a esas filas. El DTO público de TEC-134 tampoco trae la URL
+  comercial: no se inventan enlaces «Ver tienda» para las ofertas reales.
 
-Por lo tanto, no hay una ruta real contra la cual construir el botón, el
-formulario o la persistencia sin inventar contrato. La tarea no se marca como
-completada.
+## Flujo y pruebas
 
-## 2. Qué falta antes de implementar
+El botón abre el modal contextual con motivo requerido, descripción opcional
+con contador y límite de 2000 caracteres, cierre por «Cerrar», «Cancelar»,
+Escape y fondo, foco inicial y retorno al botón. El envío utiliza
+`apiFetchAutenticado` (JWT de `supabase.auth.getSession()`), bloquea envíos
+simultáneos y confirma solo al recibir éxito. Un `401` informa que hace falta
+iniciar sesión y ofrece el `AuthModal` ya usado por la aplicación; los demás
+errores conservan el formulario para reintentar.
 
-TEC-147 debe definir y documentar, como mínimo:
-
-1. Ruta y método para crear el reporte (por ejemplo, producto, tienda y enlace
-   afectados).
-2. Autenticación requerida y permisos por rol.
-3. Cuerpo de la petición: identificador de la oferta o enlace, motivo y
-   descripción.
-4. Respuesta exitosa y códigos de error esperados (`400`, `401`, `403`, `404`,
-   `409`, `429`).
-5. Reglas de duplicados, límites por usuario y estado inicial del reporte.
-6. Contrato de consulta para moderación, si el equipo decide revisar estos
-   reportes desde el panel de moderación.
-
-## 3. Propuesta de implementación futura
-
-Cuando exista el contrato:
-
-- Agregar tipos en un módulo dedicado (por ejemplo,
-  `src/types/reportesOferta.ts`) sin mezclarlos con los reportes de reseñas.
-- Añadir la llamada autenticada en `src/services/api.ts` y sus pruebas de ruta,
-  cuerpo y errores.
-- Incorporar el botón **Reportar precio o enlace** en la ficha de producto o en
-  la tarjeta de tienda, con etiqueta accesible y texto de contexto.
-- Mostrar confirmación, error recuperable y estado de envío; no ocultar el
-  botón como única señal de éxito.
-- Cubrir envío exitoso, error de red, error de validación y duplicado.
-- Si el backend lo permite, enlazar los reportes con el panel de moderación
-  mediante una pestaña o filtro separado.
-
-## 4. Decisión
-
-No se simula persistencia ni se crea una ruta ficticia. La tarea permanece
-bloqueada hasta que TEC-147 entregue el contrato real.
+Pruebas automatizadas: `npm test`, más `npm run lint` y `npm run build`.
+Prueba manual: abrir una oferta real en portada y otra en el detalle, comprobar
+los dos motivos y la pareja de IDs en la petición, enviar autenticado, repetir
+sin sesión, provocar `404`/fallo de red y comprobar foco, teclado y pantalla
+estrecha.

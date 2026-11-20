@@ -119,6 +119,21 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   });
 
   describe("Administración de usuarios y roles", () => {
+    it("ofrece una navegación compacta con las seis secciones y mantiene la selección sincronizada", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      const selector = screen.getByRole("combobox", { name: /sección de administración/i });
+      expect(selector.querySelectorAll("option")).toHaveLength(6);
+      fireEvent.change(selector, { target: { value: "usuarios" } });
+      expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
+      expect(screen.getByRole("tab", { name: /usuarios y roles/i }).getAttribute("aria-selected")).toBe("true");
+      expect((selector as HTMLSelectElement).value).toBe("usuarios");
+      fireEvent.click(screen.getByRole("tab", { name: /productos/i }));
+      expect((selector as HTMLSelectElement).value).toBe("productos");
+      expect(screen.getByText("Gestión de Catálogo de Productos")).toBeDefined();
+    });
+
     it("muestra la pestaña de usuarios y roles y su contenido", async () => {
       render(
         <AdminPanelModal

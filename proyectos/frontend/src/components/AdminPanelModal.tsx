@@ -1040,19 +1040,19 @@ export default function AdminPanelModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
+      <div className="relative flex max-h-[96dvh] w-full max-w-[90rem] animate-scale-in flex-col overflow-hidden rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
         
         {/* Encabezado accesible */}
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-hairline)] pb-4">
-          <div className="flex items-center gap-2.5">
+          <div className="flex min-w-0 items-center gap-2.5">
             <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true"></span>
-            <div>
+            <div className="min-w-0">
               <h2 id="modal-admin-panel-titulo" className="text-sm font-semibold tracking-[-0.01em] text-[var(--color-ink)]">
                 Panel de Administración <span className="text-[var(--color-brand-blue)]">/</span> TecReview
               </h2>
-              <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">
+              <p className="mt-0.5 break-words text-[11px] text-[var(--color-subtle)]">
                 Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) • Rol:{" "}
                 <span className="text-[var(--color-brand-blue)] font-semibold">{usuarioSesion?.rol}</span>
               </p>
@@ -1061,7 +1061,7 @@ export default function AdminPanelModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer"
+            className="shrink-0 text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer"
             aria-label="Cerrar panel de administración"
           >
             ✕ Cerrar
@@ -1100,8 +1100,29 @@ export default function AdminPanelModal({
           </div>
         )}
 
-        {/* Selector de pestañas */}
-        <div className="flex items-center gap-2 pt-3 pb-3 border-b border-[var(--color-hairline)] shrink-0" role="tablist">
+        <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+        <label className="block shrink-0 text-xs font-semibold text-[var(--color-ink)] lg:hidden">
+          Sección de administración
+          <select
+            value={tabActiva}
+            onChange={(evento) => {
+              setTabActiva(evento.target.value as TabAdministracion);
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className="mt-2 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-3 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand-solid)]"
+          >
+            <option value="productos">Productos</option>
+            <option value="categorias">Categorías</option>
+            <option value="marcas">Marcas</option>
+            <option value="reportes">Cola de reportes</option>
+            <option value="usuarios">Usuarios y roles</option>
+            <option value="establecimientos">Establecimientos</option>
+          </select>
+        </label>
+        {/* Navegación lateral en escritorio, selector compacto en móvil */}
+        <div className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-2 lg:flex" role="tablist" aria-label="Secciones de administración">
           <button
             type="button"
             role="tab"
@@ -1112,7 +1133,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "productos"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1130,7 +1151,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "categorias"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1148,7 +1169,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "marcas"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1166,7 +1187,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
               tabActiva === "reportes"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1189,7 +1210,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "usuarios"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1207,7 +1228,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "establecimientos"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1218,7 +1239,7 @@ export default function AdminPanelModal({
         </div>
 
         {/* Contenido de pestañas */}
-        <div className="mt-3 overflow-y-auto space-y-4 pr-1 text-xs grow">
+        <div className="min-w-0 flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
           
           {/* ========================================================= */}
           {/* PESTAÑA 1: PRODUCTOS                                      */}
@@ -2474,6 +2495,7 @@ export default function AdminPanelModal({
 
           {/* PESTAÑA 5: ESTABLECIMIENTOS */}
           {tabActiva === "establecimientos" && <AdminEstablecimientos />}
+        </div>
         </div>
 
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE PRODUCTO */}

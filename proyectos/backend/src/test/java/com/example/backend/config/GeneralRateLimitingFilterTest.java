@@ -71,6 +71,7 @@ class GeneralRateLimitingFilterTest {
     @DisplayName("Devuelve unknown si no hay IP disponible")
     void devuelveUnknownSiNoHayIp() {
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr(null);
 
         assertEquals("unknown", filter.extractClientIp(request));
     }

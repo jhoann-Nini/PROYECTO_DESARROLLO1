@@ -79,7 +79,7 @@ const referencia = (
 ): ReferenciaProductoCanonico => ({ coleccion, idRegistro, varianteId });
 
 /**
- * Piloto ampliado de diecisiete modelos. No se copian precios, puntuaciones ni
+ * Catálogo canónico ampliado de dieciocho modelos. No se copian precios, puntuaciones ni
  * especificaciones a esta identidad: permanecen en sus registros de origen.
  */
 export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
@@ -315,6 +315,21 @@ export const CATALOGO_CANONICO_PILOTO: readonly ProductoCanonico[] = [
     variantes: [
       { id: "12gb-512gb-co", nombre: "12 GB RAM · 512 GB", ram: "12 GB LPDDR4X", almacenamiento: "512 GB UFS 2.2", mercado: "Colombia" },
     ],
+  },
+  {
+    id: "redmi-note-13-pro-plus-5g",
+    nombre: "Redmi Note 13 Pro+ 5G",
+    marca: "Xiaomi",
+    categoria: "moviles",
+    estadoVerificacion: "pendiente",
+    referencias: [referencia("vendidos", 101, "12gb-512gb")],
+    variantes: [{
+      id: "12gb-512gb",
+      nombre: "12 GB RAM · 512 GB · Colombia",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    }],
   },
 
 ];

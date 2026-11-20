@@ -694,3 +694,20 @@ Consultas de solo lectura implementadas para apoyar estas operaciones:
   - **Secuencia numérica consolidada:** Los archivos fueron renumerados a `008_multirole_y_representantes.sql` y `009_auditoria_asignaciones.sql` en `proyectos/docs/sql/` y `proyectos/backend/src/main/resources/db/migration/` para respetar la correlación histórica con `005_unificar_valoraciones_resenas.sql`, `006_reportes_resenas.sql` y `007_moderacion_reportes.sql`, evitando colisiones en la tabla `schema_version`.
   - Las migraciones 008 y 009 ya fueron aplicadas y su registro en `schema_version` fue corregido y validado por el equipo. No repetir su ejecución.
 - **Consultas pendientes para iteración posterior:** lectura del historial de auditoría y endpoints para listar asignaciones activas de un usuario o establecimiento. Las consultas de cuentas y catálogo de roles (`GET /api/admin/usuarios` y `GET /api/admin/roles`) ya están implementadas y no sustituyen esos listados de asignaciones.
+
+
+---
+
+## Estado actualizado de migraciones y permisos — 18 de noviembre de 2026
+
+La secuencia de migraciones del backend está implementada y versionada hasta la 012. Además de las migraciones 008 y 009 de asignaciones multirrol y auditoría, el repositorio incorpora:
+
+- 010: auditoría de decisiones de moderación y ocultamiento manual.
+- 011: integridad de las asignaciones multirrol y exigencia de auditoría transaccional para decisiones de moderación.
+- 012: estado de moderación automática de reseñas, independiente del ocultamiento por reportes y de la moderación manual.
+
+La migración 012 introduce el campo resena.estado_moderacion con los valores PUBLICADA y PENDIENTE. La autorización de moderación y administración debe interpretarse a partir de las asignaciones activas del modelo multirrol, no exclusivamente del campo histórico usuario.id_rol.
+
+Los scripts fuente se encuentran en proyectos/backend/src/main/resources/db/migration/ y sus copias documentales en proyectos/docs/sql/. Para conocer el detalle de cada operación, consultar esos archivos y los documentos de Fase 2.
+
+La presencia y versionado de los scripts en Git no sustituye la comprobación de la instancia PostgreSQL concreta. El estado aplicado debe verificarse mediante public.schema_version y los objetos de base de datos del entorno correspondiente.

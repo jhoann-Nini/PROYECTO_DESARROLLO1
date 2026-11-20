@@ -1,0 +1,1454 @@
+{
+  "version_esquema": 3,
+  "categoria": "tablets",
+  "variantes": [
+    {
+      "id": "8gb-128gb-in",
+      "modelo": "OnePlus Pad 2",
+      "sku": null,
+      "mercado": "India",
+      "identificadores": {
+        "ram": "8 GB",
+        "almacenamiento": "128 GB"
+      }
+    },
+    {
+      "id": "12gb-256gb-in",
+      "modelo": "OnePlus Pad 2",
+      "sku": null,
+      "mercado": "India / configuración global publicada",
+      "identificadores": {
+        "ram": "12 GB",
+        "almacenamiento": "256 GB"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-oneplus-pad-2-01-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12.1 in (30.73 cm)",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12.1,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-02-display.panel",
+      "clave": "display.panel",
+      "nombre": "Panel",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "LCD 7:5 ReadFit",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "LCD 7:5 ReadFit"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-03-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "3000 × 2120 px",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 3000,
+          "alto": 2120,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-04-display.ppi",
+      "clave": "display.ppi",
+      "nombre": "Densidad",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "303 PPI",
+        "unidad": "puntos"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 303,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-05-display.refresh_rate",
+      "clave": "display.refresh_rate",
+      "nombre": "Frecuencias listadas",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "30/48/50/60/90/120/144 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "numero",
+          "elementos": [
+            {
+              "tipo": "numero",
+              "valor": 30
+            },
+            {
+              "tipo": "numero",
+              "valor": 48
+            },
+            {
+              "tipo": "numero",
+              "valor": 50
+            },
+            {
+              "tipo": "numero",
+              "valor": 60
+            },
+            {
+              "tipo": "numero",
+              "valor": 90
+            },
+            {
+              "tipo": "numero",
+              "valor": 120
+            },
+            {
+              "tipo": "numero",
+              "valor": 144
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-06-display.peak_brightness",
+      "clave": "display.peak_brightness",
+      "nombre": "Brillo pico",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "900 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 900,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-07-processor.model",
+      "clave": "processor.model",
+      "nombre": "Plataforma",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Snapdragon 8 Gen 3",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Qualcomm Snapdragon 8 Gen 3"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-08-processor.cpu_clock",
+      "clave": "processor.cpu_clock",
+      "nombre": "Reloj máximo",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "hasta 3.3 GHz",
+        "unidad": "GHz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 3.3,
+          "unidad": "GHz"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-09-camera.rear",
+      "clave": "camera.rear",
+      "nombre": "Cámara trasera",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "13 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 13,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-10-camera.front",
+      "clave": "camera.front",
+      "nombre": "Cámara frontal",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 8,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-11-battery.capacity",
+      "clave": "battery.capacity",
+      "nombre": "Capacidad típica",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "9510mAh típica",
+        "unidad": "mAh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 9510,
+          "unidad": "mAh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-12-battery.charge_power",
+      "clave": "battery.charge_power",
+      "nombre": "SUPERVOOC",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "67W",
+        "unidad": "W"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 67,
+          "unidad": "W"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-13-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5.4",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "5.4"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-14-connectivity.wifi",
+      "clave": "connectivity.wifi",
+      "nombre": "Wi-Fi",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Wi-Fi 7, Wi-Fi 6, Wi-Fi 5",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Wi-Fi 7 (802.11be)"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Wi-Fi 6 (802.11ax)"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Wi-Fi 5 (802.11ac)"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-15-ports.usb",
+      "clave": "ports.usb",
+      "nombre": "USB",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "USB-C USB 3.2 Gen1 5Gbps",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "USB Type-C, USB 3.2 Gen 1, hasta 5Gbps"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-16-audio.speakers",
+      "clave": "audio.speakers",
+      "nombre": "Altavoces",
+      "grupo": "audio",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "seis altavoces estéreo",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Seis altavoces estéreo"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-17-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones alto × ancho × grosor",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "268.66 × 195.06 × 6.49 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 268.66,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 195.06,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "grosor",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 6.49,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-18-weight",
+      "clave": "weight",
+      "nombre": "Peso (estimado en la página)",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "584 g ±15 g",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 569,
+            "unidad": "g"
+          },
+          "maximo": {
+            "valor": 599,
+            "unidad": "g"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-19-color",
+      "clave": "color",
+      "nombre": "Color",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Nimbus Gray",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Nimbus Gray"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-19"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-20-memory.ram-8gb-128gb-in",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "8gb-128gb-in",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 8,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-20"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-21-storage.capacity-8gb-128gb-in",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "8gb-128gb-in",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "128 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 128,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-21"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-22-memory.ram-12gb-256gb-in",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb-in",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-22"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-oneplus-pad-2-23-storage.capacity-12gb-256gb-in",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb-in",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "256 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 256,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-oneplus-pad-2-23"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "op",
+      "tipo": "fabricante",
+      "nombre": "OnePlus India — Pad 2 product page",
+      "url": "https://www.oneplus.in/oneplus-pad-2",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "op-launch",
+      "tipo": "fabricante",
+      "nombre": "OnePlus India — official launch release",
+      "url": "https://www.oneplus.in/press/press-release/life-made-smooth-oneplus-unveils-next-gen-flagship-tablet-the-oneplus-pad-2",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "op-store",
+      "tipo": "fabricante",
+      "nombre": "OnePlus India — configuration listings",
+      "url": "https://www.oneplus.in/buy-oneplus-pad-2",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-oneplus-pad-2-01",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Diagonal",
+      "extracto": "12.1 in (30.73 cm)",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-02",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Panel",
+      "extracto": "LCD 7:5 ReadFit",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-03",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "3000 × 2120 px",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-04",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Densidad",
+      "extracto": "303 PPI",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-05",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Frecuencias listadas",
+      "extracto": "30/48/50/60/90/120/144 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-06",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Brillo pico",
+      "extracto": "900 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-07",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Plataforma",
+      "extracto": "Snapdragon 8 Gen 3",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-08",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Reloj máximo",
+      "extracto": "hasta 3.3 GHz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-09",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Cámara trasera",
+      "extracto": "13 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-10",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Cámara frontal",
+      "extracto": "8 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-11",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Capacidad típica",
+      "extracto": "9510mAh típica",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-12",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "SUPERVOOC",
+      "extracto": "67W",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-13",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "5.4",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-14",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Wi-Fi",
+      "extracto": "Wi-Fi 7, Wi-Fi 6, Wi-Fi 5",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-15",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "USB",
+      "extracto": "USB-C USB 3.2 Gen1 5Gbps",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-16",
+      "fuente_id": "op-launch",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Altavoces",
+      "extracto": "seis altavoces estéreo",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-17",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Dimensiones alto × ancho × grosor",
+      "extracto": "268.66 × 195.06 × 6.49 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-18",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Peso (estimado en la página)",
+      "extracto": "584 g ±15 g",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-19",
+      "fuente_id": "op",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb-in",
+          "12gb-256gb-in"
+        ]
+      },
+      "localizador": "Color",
+      "extracto": "Nimbus Gray",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-20",
+      "fuente_id": "op-store",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-128gb-in"
+      },
+      "localizador": "RAM",
+      "extracto": "8 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-21",
+      "fuente_id": "op-store",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-128gb-in"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "128 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-22",
+      "fuente_id": "op-store",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb-in"
+      },
+      "localizador": "RAM",
+      "extracto": "12 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-oneplus-pad-2-23",
+      "fuente_id": "op-store",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb-in"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "256 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

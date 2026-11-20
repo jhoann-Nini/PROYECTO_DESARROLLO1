@@ -1,5 +1,8 @@
 import type { Producto } from "@/types/producto";
 import { normalizarFichaProducto } from "@/data/specsHelper";
+import FichaTecnicaV3Panel from "@/components/FichaTecnicaV3Panel";
+import { clasificarFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
+import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
 
 interface EspecificacionesProductoProps {
   producto: Producto;
@@ -8,6 +11,10 @@ interface EspecificacionesProductoProps {
 export default function EspecificacionesProducto({
   producto,
 }: EspecificacionesProductoProps) {
+  const estadoFicha = clasificarFichaTecnicaProducto(producto);
+  if (estadoFicha.version === "v3") return <FichaTecnicaV3Panel estado={estadoFicha} />;
+  if (estadoFicha.version === "error") return <div role="alert" className="rounded border border-red-300 bg-red-50 p-4 text-sm text-red-900">La ficha técnica tiene una versión o estructura no compatible. El contenido original se conservó.</div>;
+  if (estadoFicha.version === "v2" && estadoFicha.estado === "valida") return <FichaTecnicaV2Panel ficha={estadoFicha.fichaV2} />;
   const ficha = normalizarFichaProducto(producto);
   const tieneSecciones = ficha.secciones.length > 0;
 

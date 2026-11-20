@@ -1,0 +1,1353 @@
+{
+  "version_esquema": 3,
+  "categoria": "celulares",
+  "variantes": [
+    {
+      "id": "8gb-128gb",
+      "modelo": "Phone (2a)",
+      "sku": null,
+      "mercado": "configuración de lanzamiento; mercado por confirmar",
+      "identificadores": {
+        "ram": "8 GB",
+        "almacenamiento": "128 GB"
+      }
+    },
+    {
+      "id": "12gb-256gb",
+      "modelo": "Phone (2a)",
+      "sku": null,
+      "mercado": "configuración de lanzamiento; mercado por confirmar",
+      "identificadores": {
+        "ram": "12 GB",
+        "almacenamiento": "256 GB"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-nothing-phone-2a-01-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal de pantalla",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "6.7”",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 6.7,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-02-display.technology",
+      "clave": "display.technology",
+      "nombre": "Tecnología de pantalla",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Flexible AMOLED",
+        "unidad": null
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Flexible AMOLED"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-03-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1084 x 2412",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 1084,
+          "alto": 2412,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-04-display.refresh_rate",
+      "clave": "display.refresh_rate",
+      "nombre": "Frecuencia adaptativa",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "30–120 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 30,
+            "unidad": "Hz"
+          },
+          "maximo": {
+            "valor": 120,
+            "unidad": "Hz"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-05-display.brightness_peak",
+      "clave": "display.brightness_peak",
+      "nombre": "Brillo máximo",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1300 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1300,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-06-processor.model",
+      "clave": "processor.model",
+      "nombre": "Plataforma",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "MediaTek Dimensity 7200 Pro",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "MediaTek Dimensity 7200 Pro"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-07-processor.max_clock",
+      "clave": "processor.max_clock",
+      "nombre": "Frecuencia máxima",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "hasta 2.8 GHz",
+        "unidad": "GHz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 2.8,
+          "unidad": "GHz"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-08-camera.rear_main",
+      "clave": "camera.rear_main",
+      "nombre": "Cámara principal trasera",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "50 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 50,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-09-camera.rear_ultrawide",
+      "clave": "camera.rear_ultrawide",
+      "nombre": "Cámara ultra gran angular",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "50 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 50,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-10-camera.front",
+      "clave": "camera.front",
+      "nombre": "Cámara frontal",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "32 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 32,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-11-battery.capacity",
+      "clave": "battery.capacity",
+      "nombre": "Capacidad de batería",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5000 mAh",
+        "unidad": "mAh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 5000,
+          "unidad": "mAh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-12-battery.charging_power",
+      "clave": "battery.charging_power",
+      "nombre": "Carga por cable máxima",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "45 W",
+        "unidad": "W"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 45,
+          "unidad": "W"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-13-connectivity.sim",
+      "clave": "connectivity.sim",
+      "nombre": "SIM",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Dual SIM, Nano-SIM",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Dual SIM"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Nano-SIM (4FF)"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-14-connectivity.wifi",
+      "clave": "connectivity.wifi",
+      "nombre": "Wi-Fi",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Wi-Fi 6 (802.11ax)",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Wi-Fi 6 (802.11ax)"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-15-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5.3",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "5.3"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-16-connectivity.nfc",
+      "clave": "connectivity.nfc",
+      "nombre": "NFC",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Sí",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "booleano",
+          "valor": true
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-17-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones (alto × ancho × profundidad)",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "161.74 × 76.32 × 8.55 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 161.74,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 76.32,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "profundidad",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 8.55,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-18-weight",
+      "clave": "weight",
+      "nombre": "Peso",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "190 g",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 190,
+          "unidad": "g"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-19-memory.ram-8gb-128gb",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "8gb-128gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 8,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-19"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-20-storage.capacity-8gb-128gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "8gb-128gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "128 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 128,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-20"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-21-memory.ram-12gb-256gb",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-21"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-nothing-phone-2a-22-storage.capacity-12gb-256gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "256 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 256,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-nothing-phone-2a-22"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "nothing-spec",
+      "tipo": "fabricante",
+      "nombre": "Nothing — Phone (2a), página oficial de producto",
+      "url": "https://checkout.nothing.tech/pages/phone-2a",
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null,
+      "mercado": null
+    },
+    {
+      "id": "nothing-launch",
+      "tipo": "otro",
+      "nombre": "Nothing — comunicado de lanzamiento distribuido por PR Newswire",
+      "url": "https://www.prnewswire.com/news-releases/nothing-introduces-phone-2a-302079831.html",
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null,
+      "mercado": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-nothing-phone-2a-01",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Diagonal de pantalla",
+      "extracto": "6.7”",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-02",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Tecnología de pantalla",
+      "extracto": "Flexible AMOLED",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-03",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "1084 x 2412",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-04",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Frecuencia adaptativa",
+      "extracto": "30–120 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-05",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Brillo máximo",
+      "extracto": "1300 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-06",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Plataforma",
+      "extracto": "MediaTek Dimensity 7200 Pro",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-07",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Frecuencia máxima",
+      "extracto": "hasta 2.8 GHz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-08",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Cámara principal trasera",
+      "extracto": "50 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-09",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Cámara ultra gran angular",
+      "extracto": "50 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-10",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Cámara frontal",
+      "extracto": "32 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-11",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Capacidad de batería",
+      "extracto": "5000 mAh",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-12",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Carga por cable máxima",
+      "extracto": "45 W",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-13",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "SIM",
+      "extracto": "Dual SIM, Nano-SIM",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-14",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Wi-Fi",
+      "extracto": "Wi-Fi 6 (802.11ax)",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-15",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "5.3",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-16",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "NFC",
+      "extracto": "Sí",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-17",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Dimensiones (alto × ancho × profundidad)",
+      "extracto": "161.74 × 76.32 × 8.55 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-18",
+      "fuente_id": "nothing-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-128gb",
+          "12gb-256gb"
+        ]
+      },
+      "localizador": "Peso",
+      "extracto": "190 g",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-19",
+      "fuente_id": "nothing-launch",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-128gb"
+      },
+      "localizador": "RAM",
+      "extracto": "8 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-20",
+      "fuente_id": "nothing-launch",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-128gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "128 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-21",
+      "fuente_id": "nothing-launch",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb"
+      },
+      "localizador": "RAM",
+      "extracto": "12 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-nothing-phone-2a-22",
+      "fuente_id": "nothing-launch",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "256 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

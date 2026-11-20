@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { DispositivoKimovil, Producto } from "@/types/producto";
+import { FICHA_V3_NOTHING_PHONE_2A } from "./fichasTecnicasV3Piloto";
 import {
   adaptarAProductoViewModel,
   convertirKimovilAViewModel,
@@ -280,6 +281,17 @@ describe("convertirKimovilAViewModel", () => {
     };
     const vista = convertirKimovilAViewModel(sinRanking);
     expect(vista.origen).toBe("mock");
+  });
+
+  it("no inyecta fichas V3 piloto en dispositivos Kimovil que coincidan con nombres de piloto", () => {
+    const dispositivoCoincidente: DispositivoKimovil = {
+      ...mockKimovil,
+      id: 202,
+      nombre: "Samsung Galaxy S24 Ultra",
+    };
+    const vista = convertirKimovilAViewModel(dispositivoCoincidente);
+    expect(vista.fichaTecnica?.version).toBe("legacy");
+    expect(vista.fichaTecnica?.version).not.toBe("v3");
   });
 });
 
@@ -635,6 +647,76 @@ describe("idGlobalDeViewModel e idApiDeViewModel", () => {
       expect(res1.idGlobal).toBe(res2.idGlobal);
       expect(res1.claveMock).toBe(res2.claveMock);
       expect(res1.idProducto).toBe(res2.idProducto);
+    });
+  });
+
+  describe("Desacoplamiento V3 de productos API", () => {
+    it("no asigna ficha V3 a productos API sin caracteristicas aunque coincida el nombre o ID con el piloto", () => {
+      const productoSinFicha: Producto = {
+        idProducto: 1,
+        nombre: "Nothing Phone (2a)",
+        descripcion: "Smartphone sin ficha técnica cargada",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Nothing",
+        imagen: null,
+        precioReferencia: 1_800_000,
+        estado: true,
+        caracteristicas: null,
+      };
+
+      const vista = crearProductoViewModel(productoSinFicha);
+      expect(vista.fichaTecnica?.version).not.toBe("v3");
+      expect(vista.fichaTecnica?.version).toBe("legacy");
+    });
+
+    it("asigna ficha V3 válida exclusivamente si viene en producto.caracteristicas desde el backend", () => {
+      const productoConV3: Producto = {
+        idProducto: 99,
+        nombre: "Nuevo Móvil V3",
+        descripcion: "Móvil con ficha V3",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca V3",
+        imagen: null,
+        precioReferencia: 2_000_000,
+        estado: true,
+        caracteristicas: FICHA_V3_NOTHING_PHONE_2A as unknown as Record<string, unknown>,
+      };
+
+      const vista = crearProductoViewModel(productoConV3);
+      expect(vista.fichaTecnica?.version).toBe("v3");
+      expect(vista.fichaTecnica?.estado).toBe("valida");
+      const ficha = vista.fichaTecnica;
+      if (ficha && ficha.version === "v3" && ficha.estado === "valida") {
+        expect(ficha.ficha.especificaciones.length).toBeGreaterThan(0);
+      }
+    });
+
+    it("marca como invalida si las caracteristicas declaran version_esquema: 3 pero no cumplen el contrato", () => {
+      const productoConV3Invalido: Producto = {
+        idProducto: 100,
+        nombre: "Móvil V3 Incompleto",
+        descripcion: "Ficha incompleta",
+        idCategoria: 1,
+        idMarca: 1,
+        nombreCategoria: "Móviles",
+        nombreMarca: "Marca",
+        imagen: null,
+        precioReferencia: 1_000_000,
+        estado: true,
+        caracteristicas: {
+          version_esquema: 3,
+          categoria: "celulares",
+          // faltan especificaciones, variantes, etc.
+        },
+      };
+
+      const vista = crearProductoViewModel(productoConV3Invalido);
+      expect(vista.fichaTecnica?.version).toBe("v3");
+      expect(vista.fichaTecnica?.estado).toBe("invalida");
     });
   });
 });

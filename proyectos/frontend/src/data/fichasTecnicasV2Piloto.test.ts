@@ -17,7 +17,7 @@ import {
 describe("fichas técnicas V2 del catálogo", () => {
   it("mantiene fichas V2 válidas, con fuentes y sin benchmarks no respaldados", () => {
     const fichas = Object.values(FICHAS_TECNICAS_V2_PILOTO);
-    expect(fichas).toHaveLength(18); // S24 Ultra mantiene dos fichas de variante; otros modelos agrupan configuraciones.
+    expect(fichas).toHaveLength(26); // S24 Ultra mantiene dos fichas de variante; iPhone 16 se documenta como familia parcial.
     for (const ficha of fichas) {
       expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
       expect(ficha.fuentes.length).toBeGreaterThan(0);
@@ -25,6 +25,129 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect(ficha.metricasComparables.every((metrica) => metrica.comparable === false)).toBe(true);
     }
   });
+
+
+  it("documenta Yoga 7 14 2-en-1 como familia parcial sin inventar una configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.lenovoYoga7_14_2in1;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Ryzen 5 8640HS o Ryzen 7 8840HS") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("8 GB o 16 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("256 GB, 512 GB o 1 TB") }),
+      expect.objectContaining({ clave: "bateria", valor: 71, unidad: "Wh" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toContain("psref.lenovo.com");
+    const producto = normalizarDesdeProducto({
+      idProducto: 945,
+      nombre: "Lenovo Yoga 7 14 2-in-1",
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+
+  it("documenta HP Spectre x360 14 como familia parcial sin inferir el SKU", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.hpSpectreX36014;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Core Ultra 5 125H o Core Ultra 7 155H") }),
+      expect.objectContaining({ clave: "pantalla", valor: expect.stringContaining("2880 × 1800") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("16 GB o 32 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("512 GB, 1 TB o 2 TB") }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.hp.com/us-en/document/ish_9687926-9688096-16");
+    const producto = normalizarDesdeProducto({
+      idProducto: 946,
+      nombre: "HP Spectre x360 14",
+      descripcion: null,
+      idCategoria: 2,
+      idMarca: 9,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+
+
+  it("documenta Dell XPS 13 9340 como familia parcial sin inferir configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.dellXps13_9340;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Core Ultra 5 125H") }),
+      expect.objectContaining({ clave: "pantalla", valor: expect.stringContaining("2880 × 1800 OLED") }),
+      expect.objectContaining({ clave: "ram", valor: expect.stringContaining("64 GB") }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toContain("dell.com");
+    const producto = normalizarDesdeProducto({ idProducto: 30, nombre: "Dell XPS 13 9340", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+  it("documenta ThinkPad T14 Gen 5 como familia parcial sin inferir plataforma ni MTM", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.lenovoThinkpadT14Gen5;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    const obtenerAtributo = (clave: string) =>
+      ficha.atributos.find((atributo) => atributo.clave === clave);
+
+    expect(obtenerAtributo("procesador_amd")?.valor).toContain("Ryzen 5 PRO 8540U");
+    expect(obtenerAtributo("procesador_intel")?.valor).toContain("165H");
+    expect(obtenerAtributo("graficos_amd")?.valor).toContain("Radeon 780M");
+    expect(obtenerAtributo("ram")?.valor).toContain("64 GB");
+    expect(obtenerAtributo("almacenamiento")?.valor).toContain("2 TB");
+    expect(obtenerAtributo("pantalla")?.valor).toContain("2880 × 1800");
+    expect(ficha.fuentes.map((fuente) => fuente.url)).toEqual(expect.arrayContaining([
+      "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_Intel/ThinkPad_T14_Gen_5_Intel_Spec.PDF",
+      "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_5_AMD/ThinkPad_T14_Gen_5_AMD_Spec.PDF",
+    ]));
+    const producto = normalizarDesdeProducto({
+      idProducto: 44,
+      nombre: "Lenovo ThinkPad T14 Gen 5",
+      descripcion: null,
+      idCategoria: 2,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
+  it("documenta Dell XPS 16 9640 como familia parcial sin inferir configuración", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.dellXps16_9640;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    const obtenerAtributo = (clave: string) =>
+      ficha.atributos.find((atributo) => atributo.clave === clave);
+
+    expect(obtenerAtributo("procesador")?.valor).toContain("Core Ultra 9 185H");
+    expect(obtenerAtributo("graficos")?.valor).toContain("RTX 4050, 4060 o 4070");
+    expect(obtenerAtributo("pantalla")?.valor).toContain("3840 × 2400 OLED");
+    expect(obtenerAtributo("ram")?.valor).toContain("64 GB");
+    expect(ficha.fuentes[0]?.url).toContain("dell.com");
+    const producto = normalizarDesdeProducto({ idProducto: 29, nombre: "Dell XPS 16 9640", descripcion: null, idCategoria: 2, idMarca: 1, imagen: null, precioReferencia: null, estado: true });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
 
   it("solo marca verificadas las configuraciones respaldadas por fuentes oficiales", () => {
     expect(FICHAS_TECNICAS_V2_PILOTO.nothingPhone2aSpecialEdition.estado_verificacion).toBe("verificado");
@@ -77,6 +200,35 @@ describe("fichas técnicas V2 del catálogo", () => {
       expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
     ]));
     expect(iphone.fuentes[0]?.url).toBe("https://support.apple.com/es-la/111872");
+  });
+
+  it("documenta Apple iPhone 16 como familia parcial sin inferir capacidad ni SKU", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleIphone16;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Apple A18") }),
+      expect.objectContaining({ clave: "tamano_pantalla", valor: 6.1, unidad: "in" }),
+      expect.objectContaining({ clave: "resolucion", valor: "2556 × 1179 píxeles · 460 ppi" }),
+      expect.objectContaining({ clave: "camara_principal", valor: 48, unidad: "mpx" }),
+      expect.objectContaining({ clave: "resistencia", valor: expect.stringContaining("IP68") }),
+      expect.objectContaining({ clave: "wifi", valor: "Wi-Fi 7 (802.11be) · MIMO 2×2" }),
+    ]));
+    expect(ficha.atributos.some((atributo) => atributo.clave === "almacenamiento")).toBe(false);
+    expect(ficha.fuentes[0]?.url).toBe("https://www.apple.com/co/iphone-16/specs/");
+    const producto = normalizarDesdeProducto({
+      idProducto: 2,
+      nombre: "Apple iPhone 16",
+      descripcion: null,
+      idCategoria: 1,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
   });
 
   it("verifica Xiaomi 14T Pro 12GB/512GB con especificaciones oficiales Xiaomi Colombia", () => {
@@ -238,6 +390,35 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(ficha.fuentes[0]?.url).toBe("https://psref.lenovo.com/Detail/ThinkPad/ThinkPad_E14_Gen_5_Intel?M=21JK0005RI");
   });
 
+  it("documenta MacBook Pro 16 M3 Pro como familia parcial sin inferir memoria ni SSD", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Pro;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("parcial");
+    expect(ficha.variantes).toEqual([]);
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("M3 Pro") }),
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("CPU de 12 núcleos") }),
+      expect.objectContaining({ clave: "memoria_unificada", valor: expect.stringContaining("18 GB") }),
+      expect.objectContaining({ clave: "almacenamiento", valor: expect.stringContaining("512 GB") }),
+      expect.objectContaining({ clave: "resolucion", valor: "3456 × 2234 píxeles · 254 ppp" }),
+      expect.objectContaining({ clave: "energia_bateria", valor: 100, unidad: "Wh" }),
+      expect.objectContaining({ clave: "peso", valor: 2.14, unidad: "kg" }),
+    ]));
+    expect(ficha.fuentes[0]?.url).toBe("https://support.apple.com/es-co/117737");
+    const producto = normalizarDesdeProducto({
+      idProducto: 61,
+      nombre: "Apple MacBook Pro 16 M3 Pro",
+      descripcion: null,
+      idCategoria: 2,
+      idMarca: 1,
+      imagen: null,
+      precioReferencia: null,
+      estado: true,
+    });
+    expect(producto.estado_verificacion).toBe("parcial");
+    expect(producto.variantes).toEqual([]);
+  });
+
   it("documenta la configuración exacta MacBook Pro 16 M3 Max de 48 GB y 1 TB", () => {
     const ficha = FICHAS_TECNICAS_V2_PILOTO.appleMacbookPro16M3Max;
     expect(ficha.estado_verificacion).toBe("verificado");
@@ -295,6 +476,7 @@ describe("fichas técnicas V2 del catálogo", () => {
       idProducto: 903,
       nombre: "Apple MacBook Pro 16 pulgadas M3 Max",
     });
+    const macPro = normalizarDesdeProducto({ ...base, idProducto: 915, nombre: "Apple MacBook Pro 16 pulgadas M3 Pro" });
     const sony = normalizarDesdeProducto({
       ...base,
       idProducto: 904,
@@ -318,6 +500,8 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(s24.variantes[0]?.id).toBe("512gb");
     expect(ipad.variantes[0]?.id).toBe("16gb-1tb");
     expect(mac.variantes[0]?.id).toBe("48gb-1tb");
+    expect(macPro.estado_verificacion).toBe("parcial");
+    expect(macPro.variantes).toEqual([]);
     expect(sony.fuentes[0]?.url).toContain("sony.com");
     expect(a55.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
     expect(iphone.variantes[0]?.id).toBe("128gb");
@@ -392,6 +576,25 @@ describe("fichas técnicas V2 del catálogo", () => {
     expect(normalizarDesdeKimovil(xiaomi14!).variantes[0]?.id).toBe("16gb-512gb");
     expect(normalizarDesdeKimovil(earA!).variantes[0]?.id).toBe("black");
     expect(normalizarDesdeKimovil(xiaomi14t!).variantes[0]?.id).toBe("12gb-512gb-co");
+  });
+  it("incorpora Redmi Note 13 Pro+ 5G de 12 GB/512 GB con fuentes oficiales", () => {
+    const ficha = FICHAS_TECNICAS_V2_PILOTO.redmiNote13ProPlus;
+    expect(esFichaTecnicaV2Valida(ficha)).toBe(true);
+    expect(ficha.estado_verificacion).toBe("verificado");
+    expect(ficha.variantes[0]).toMatchObject({
+      id: "12gb-512gb",
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
+    expect(ficha.fuentes.map((fuente) => fuente.url)).toContain("https://www.mi.com/co/product/redmi-note-13-pro-plus-5g/specs/");
+    expect(ficha.atributos).toEqual(expect.arrayContaining([
+      expect.objectContaining({ clave: "procesador", valor: expect.stringContaining("Dimensity 7200-Ultra") }),
+      expect.objectContaining({ clave: "camara_principal", valor: expect.stringContaining("200 MP") }),
+      expect.objectContaining({ clave: "carga_rapida", valor: 120, unidad: "W" }),
+    ]));
+    const producto = DISPOSITIVOS_VENDIDOS.find((item) => item.id === 101);
+    expect(normalizarDesdeKimovil(producto!).variantes[0]?.id).toBe("12gb-512gb");
   });
   it("amplía Sony WH-1000XM5 con datos de conectividad, audio y batería de Sony", () => {
     const sony = FICHAS_TECNICAS_V2_PILOTO.sonyWh1000Xm5;

@@ -48,10 +48,10 @@ class ResenaServiceRateLimitTest {
     @Container
     static GenericContainer<?> postgres = new GenericContainer<>("postgres:latest")
             .withExposedPorts(5432)
-            .withEnv("POSTGRES_DB", "testdb")
+            .withEnv("POSTGRES_DB", "testdb_ratelimit")
             .withEnv("POSTGRES_USER", "test")
             .withEnv("POSTGRES_PASSWORD", "test")
-            .waitingFor(Wait.forListeningPort());
+            .waitingFor(Wait.forLogMessage(".*database system is ready to accept connections.*", 2));
 
     @DynamicPropertySource
     static void setDatasourceProperties(DynamicPropertyRegistry registry) {
@@ -64,16 +64,7 @@ class ResenaServiceRateLimitTest {
     }
 
     private static String getJdbcUrl() {
-        String host = "localhost";
-        var bindings = postgres.getContainerInfo().getNetworkSettings().getPorts().getBindings();
-        int port = 5432;
-        for (var entry : bindings.entrySet()) {
-            if (entry.getKey().getPort() == 5432) {
-                port = Integer.parseInt(entry.getValue()[0].getHostPortSpec());
-                break;
-            }
-        }
-        return String.format("jdbc:postgresql://%s:%d/testdb", host, port);
+        return String.format("jdbc:postgresql://%s:%d/testdb_ratelimit", postgres.getHost(), postgres.getMappedPort(5432));
     }
 
     @Autowired

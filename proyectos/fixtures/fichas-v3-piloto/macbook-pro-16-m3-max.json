@@ -1,0 +1,1146 @@
+{
+  "version_esquema": 3,
+  "categoria": "portatiles",
+  "variantes": [
+    {
+      "id": "16c40gpu-48gb-1tb",
+      "modelo": "MacBook Pro 16-inch Nov 2023 M3 Max",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "CPU": "16-core",
+        "GPU": "40-core",
+        "RAM": "48 GB",
+        "storage": "1 TB"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-macbook-pro-16-m3-max-01-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "16.2 in",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 16.2,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-02-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "3456 × 2234 px",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 3456,
+          "alto": 2234,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-03-display.ppi",
+      "clave": "display.ppi",
+      "nombre": "Densidad",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "254 ppi",
+        "unidad": "puntos"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 254,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-04-display.refresh_rate",
+      "clave": "display.refresh_rate",
+      "nombre": "ProMotion",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 120 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 120,
+          "unidad": "Hz"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-05-display.brightness_modes",
+      "clave": "display.brightness_modes",
+      "nombre": "Brillo XDR sostenido / pico HDR",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1000 nits sustained full screen; 1600 nits peak HDR",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "compuesto",
+          "componentes": [
+            {
+              "clave": "sostenido",
+              "nombre": "Sostenido pantalla completa",
+              "valor": {
+                "tipo": "magnitud",
+                "valor": 1000,
+                "unidad": "nits"
+              }
+            },
+            {
+              "clave": "pico_hdr",
+              "nombre": "Pico HDR",
+              "valor": {
+                "tipo": "magnitud",
+                "valor": 1600,
+                "unidad": "nits"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-06-processor.model",
+      "clave": "processor.model",
+      "nombre": "Chip",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Apple M3 Max",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Apple M3 Max"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-07-processor.cpu_cores",
+      "clave": "processor.cpu_cores",
+      "nombre": "CPU cores",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "16 core (12P + 4E)",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 16,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-08-processor.gpu_cores",
+      "clave": "processor.gpu_cores",
+      "nombre": "GPU cores",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "40-core GPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 40,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-09-memory.unified",
+      "clave": "memory.unified",
+      "nombre": "Memoria unificada",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "48 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 48,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-10-memory.bandwidth",
+      "clave": "memory.bandwidth",
+      "nombre": "Ancho de banda",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "400 GB/s",
+        "unidad": "GB/s"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 400,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-11-storage.capacity",
+      "clave": "storage.capacity",
+      "nombre": "SSD",
+      "grupo": "memoria",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1 TB",
+        "unidad": "TB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1,
+          "unidad": "TB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-12-camera.front",
+      "clave": "camera.front",
+      "nombre": "Cámara FaceTime HD",
+      "grupo": "multimedia",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1080p",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 1920,
+          "alto": 1080,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-13-battery.capacity",
+      "clave": "battery.capacity",
+      "nombre": "Batería declarada",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "100 watt-hours",
+        "unidad": "Wh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 100,
+          "unidad": "Wh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-14-battery.video_playback",
+      "clave": "battery.video_playback",
+      "nombre": "Video playback",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "up to 22 hours",
+        "unidad": "h"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 22,
+          "unidad": "h"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-15-ports",
+      "clave": "ports",
+      "nombre": "Puertos",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "3×TB4; HDMI; SDXC; MagSafe 3; 3.5mm",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "3 × Thunderbolt 4 USB-C"
+            },
+            {
+              "tipo": "texto",
+              "valor": "HDMI"
+            },
+            {
+              "tipo": "texto",
+              "valor": "SDXC"
+            },
+            {
+              "tipo": "texto",
+              "valor": "MagSafe 3"
+            },
+            {
+              "tipo": "texto",
+              "valor": "audio 3.5 mm"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-16-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones ancho × profundidad × grosor",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "355.7 × 248.1 × 16.8 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 355.7,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "profundidad",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 248.1,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "grosor",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 16.8,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-17-weight",
+      "clave": "weight",
+      "nombre": "Peso M3 Max",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "2.16 kg",
+        "unidad": "kg"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 2.16,
+          "unidad": "kg"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-macbook-pro-16-m3-max-18-colors",
+      "clave": "colors",
+      "nombre": "Acabados",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Space Black; Silver",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Space Black"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Silver"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-macbook-pro-16-m3-max-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "mac-spec",
+      "tipo": "fabricante",
+      "nombre": "Apple Support ES — MacBook Pro 16-inch Nov 2023 specs",
+      "url": "https://support.apple.com/es-es/117737",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "mac-news",
+      "tipo": "fabricante",
+      "nombre": "Apple Newsroom — MacBook Pro M3 family",
+      "url": "https://www.apple.com/newsroom/2023/10/apple-unveils-new-macbook-pro-featuring-m3-chips/",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-macbook-pro-16-m3-max-01",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Diagonal",
+      "extracto": "16.2 in",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-02",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "3456 × 2234 px",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-03",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Densidad",
+      "extracto": "254 ppi",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-04",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "ProMotion",
+      "extracto": "up to 120 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-05",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Brillo XDR sostenido / pico HDR",
+      "extracto": "1000 nits sustained full screen; 1600 nits peak HDR",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-06",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Chip",
+      "extracto": "Apple M3 Max",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-07",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "CPU cores",
+      "extracto": "16 core (12P + 4E)",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-08",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "GPU cores",
+      "extracto": "40-core GPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-09",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Memoria unificada",
+      "extracto": "48 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-10",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Ancho de banda",
+      "extracto": "400 GB/s",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-11",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "SSD",
+      "extracto": "1 TB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-12",
+      "fuente_id": "mac-news",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Cámara FaceTime HD",
+      "extracto": "1080p",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-13",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Batería declarada",
+      "extracto": "100 watt-hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-14",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Video playback",
+      "extracto": "up to 22 hours",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-15",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Puertos",
+      "extracto": "3×TB4; HDMI; SDXC; MagSafe 3; 3.5mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-16",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Dimensiones ancho × profundidad × grosor",
+      "extracto": "355.7 × 248.1 × 16.8 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-17",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Peso M3 Max",
+      "extracto": "2.16 kg",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-macbook-pro-16-m3-max-18",
+      "fuente_id": "mac-spec",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "16c40gpu-48gb-1tb"
+        ]
+      },
+      "localizador": "Acabados",
+      "extracto": "Space Black; Silver",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

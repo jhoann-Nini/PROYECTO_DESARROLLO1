@@ -1,7 +1,10 @@
 -- ============================================================
--- MIGRACION 013: REPORTES DE PRECIOS Y ENLACES INCORRECTOS
+-- MIGRACION 018: REPORTES DE PRECIOS Y ENLACES INCORRECTOS
 -- Ticket: TEC-147
 -- ============================================================
+-- La versión 013 ya está reservada para imagenes_licenciadas_catalogo.
+-- Esta migración no debe ejecutarse hasta contrastar schema_version
+-- con el historial real del entorno Supabase de destino.
 
 BEGIN;
 
@@ -33,20 +36,20 @@ CREATE TABLE IF NOT EXISTS public.reporte_oferta
   CONSTRAINT chk_reporte_oferta_motivo
     CHECK (
       motivo IN (
-                 'precio_incorrecto',
-                 'enlace_incorrecto'
-        )
-      ),
+        'precio_incorrecto',
+        'enlace_incorrecto'
+      )
+    ),
 
   CONSTRAINT chk_reporte_oferta_estado
     CHECK (
       estado IN (
-                 'PENDIENTE',
-                 'EN_REVISION',
-                 'ACEPTADO',
-                 'RECHAZADO'
-        )
+        'PENDIENTE',
+        'EN_REVISION',
+        'ACEPTADO',
+        'RECHAZADO'
       )
+    )
 );
 
 CREATE INDEX IF NOT EXISTS idx_reporte_oferta_estado
@@ -59,5 +62,12 @@ CREATE INDEX IF NOT EXISTS idx_reporte_oferta_producto_establecimiento
   ON public.reporte_oferta (id_producto, id_establecimiento);
 
 ALTER TABLE public.reporte_oferta ENABLE ROW LEVEL SECURITY;
+
+INSERT INTO public.schema_version (version, descripcion)
+VALUES (
+  '018_reportes_ofertas',
+  'Crea la tabla para reportes de precios y enlaces incorrectos de ofertas'
+)
+ON CONFLICT (version) DO NOTHING;
 
 COMMIT;

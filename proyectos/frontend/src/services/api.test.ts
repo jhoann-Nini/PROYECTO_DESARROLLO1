@@ -442,6 +442,29 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(sesion.idUsuario).toBe(42);
       expect(sesion.activo).toBe(true);
       expect(sesion.usuario).toBe("oficial_user");
+      expect(sesion.avatar).toBeUndefined();
+    });
+
+    it("conserva la foto de perfil cuando Supabase tiene avatar_url", async () => {
+      const { mapearPerfilABusinessSession } = await loadApi(DEFAULT_API_URL);
+
+      const perfilBackend = {
+        idUsuario: 42,
+        nombre: "Nombre Oficial Backend",
+        correo: "oficial@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-14T20:00:00",
+      };
+
+      const sesion = mapearPerfilABusinessSession(perfilBackend, {
+        id: "uuid-supabase-1234",
+        user_metadata: {
+          avatar_url: "https://example.com/avatar.png",
+        },
+      });
+
+      expect(sesion.avatar).toBe("https://example.com/avatar.png");
     });
   });
 
@@ -766,6 +789,51 @@ describe("api.ts - Cliente API del frontend", () => {
           headers: expect.any(Headers),
         }),
       );
+    });
+
+    it("obtenerFichaTecnicaProducto debe consultar GET /api/productos/{id}/ficha-tecnica", async () => {
+      const { obtenerFichaTecnicaProducto } = await loadApi(DEFAULT_API_URL);
+      const fichaV3Mock = { version_esquema: 3, categoria: "celulares", especificaciones: [] };
+
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => fichaV3Mock,
+      } as unknown as Response);
+
+      const res = await obtenerFichaTecnicaProducto(42);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/42/ficha-tecnica",
+      );
+      expect(res).toEqual(fichaV3Mock);
+    });
+
+    it("actualizarFichaTecnicaProducto debe enviar PUT /api/productos/{id}/ficha-tecnica con autenticación", async () => {
+      const { actualizarFichaTecnicaProducto } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({
+        data: { session: { access_token: "token-admin-valido" } },
+        error: null,
+      });
+
+      const fichaActualizada = { version_esquema: 3, categoria: "celulares", especificaciones: [] };
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ idProducto: 42, nombre: "Móvil V3", caracteristicas: fichaActualizada }),
+      } as unknown as Response);
+
+      const res = await actualizarFichaTecnicaProducto(42, fichaActualizada);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "http://localhost:8080/api/productos/42/ficha-tecnica",
+        expect.objectContaining({
+          method: "PUT",
+          headers: expect.any(Headers),
+          body: JSON.stringify(fichaActualizada),
+        }),
+      );
+      expect(res.caracteristicas).toEqual(fichaActualizada);
     });
 
     it("maneja error 403 Forbidden cuando el backend rechaza la operación administrativa", async () => {

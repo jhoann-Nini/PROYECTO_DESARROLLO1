@@ -57,11 +57,17 @@ La migración toma bloqueos `SHARE ROW EXCLUSIVE` en tablas de usuarios, asignac
 
 No ejecutar directamente en producción sin revisar el plan de migración, el tamaño de las tablas y el impacto de los bloqueos.
 
-## Estado
+## Estado de implementación en el repositorio
 
-La migración está preparada en el repositorio en dos ubicaciones idénticas:
+La migración 011 está implementada y versionada en el backend y en su copia documental. Su presencia en el repositorio no permite afirmar el estado de aplicación en cada base de datos remota; para eso se debe consultar public.schema_version y verificar las funciones, columnas y triggers en la instancia correspondiente.
 
-- `proyectos/backend/src/main/resources/db/migration/011_integridad_multirole_y_auditoria_moderacion.sql`
-- `proyectos/docs/sql/011_integridad_multirole_y_auditoria_moderacion.sql`
 
-No se ha ejecutado en Supabase ni en otra base remota.
+---
+
+## Estado actualizado del repositorio — 18 de noviembre de 2026
+
+La secuencia de migraciones del backend se encuentra implementada y versionada en proyectos/backend/src/main/resources/db/migration/, con archivos 001–012. La migración 012 (012_moderacion_automatica_resenas.sql) añade resena.estado_moderacion, cuyo valor inicial es PUBLICADA y cuyo conjunto permitido es PUBLICADA / PENDIENTE. No sustituye la moderación manual ni el ocultamiento por reportes.
+
+La migración 011 continúa siendo la que unifica la consulta de roles activos para validaciones de moderación y exige la correlación transaccional de los eventos de auditoría. La migración 012 amplía el estado de moderación automática de reseñas.
+
+**Importante:** este documento confirma la implementación y versionado de los scripts en el repositorio. Para declarar aplicada una migración en una base concreta (Supabase, staging o local), se debe verificar el registro correspondiente en public.schema_version y los objetos SQL de esa instancia. No se debe deducir la aplicación remota únicamente de la presencia del archivo en Git.

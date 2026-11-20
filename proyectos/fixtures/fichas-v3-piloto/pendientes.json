@@ -1,0 +1,1326 @@
+{
+  "fecha_consulta": "2026-11-19",
+  "resumen": [
+    "Confirmar variante/SKU y mercado exactos antes de atribuir especificaciones por SKU.",
+    "Ningún dato se marca verificado: requieren revisión de evidencia primaria y alcance de variante por responsable autorizado.",
+    "Las ocho imágenes son candidatas y tienen licencia pendiente; no utilizar públicamente hasta permiso.",
+    "Completar los atributos faltantes o no publicados de acuerdo con la plantilla operativa por categoría; el contrato V3 no define por sí solo un set obligatorio exhaustivo.",
+    "Confirmar color/variante de las imágenes y posibles derechos de uso comercial."
+  ],
+  "atributos_no_verificados": [
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.panel",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.ppi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.refresh_rate",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.sdr_brightness",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "display.hdr_brightness_peak",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.gpu_cores",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "camera.rear",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "camera.front",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "weight.radio_models",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "color.options",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.cpu_cores",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "memory.unified",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "storage.capacity",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.cpu_cores",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "memory.unified",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "storage.capacity",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.cpu_cores",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "memory.unified",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "storage.capacity",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "processor.cpu_cores",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "memory.unified",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "ipad-pro-11-m4",
+      "clave": "storage.capacity",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "gpu.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "memory.ram",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "memory.layout",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "storage.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "display.panel",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "display.brightness",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "display.color_gamut",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "webcam",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "battery.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "connectivity.wifi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "ports",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "security.fingerprint",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "lenovo-thinkpad-e14-gen-5",
+      "clave": "software.os",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "display.ppi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "display.refresh_rate",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "display.brightness_modes",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "processor.cpu_cores",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "processor.gpu_cores",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "memory.unified",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "memory.bandwidth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "storage.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "camera.front",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "battery.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "battery.video_playback",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "ports",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "macbook-pro-16-m3-max",
+      "clave": "colors",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "audio.driver",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "audio.codecs",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "audio.anc_max",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "audio.anc_modes",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "battery.playback_anc_off",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "battery.playback_anc_on",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "battery.earbuds",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "battery.case",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "battery.wireless_power",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "protection.earbuds",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "protection.case",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "microphones.count",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "dimensions.earbud",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "weight.earbud",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "dimensions.case",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "weight.case",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-ear-2",
+      "clave": "connectivity.port",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "display.technology",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "display.refresh_rate",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "display.brightness_peak",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "processor.max_clock",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "camera.rear_main",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "camera.rear_ultrawide",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "camera.front",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "battery.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "battery.charging_power",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "connectivity.sim",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "connectivity.wifi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "connectivity.nfc",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "memory.ram",
+      "variante_id": "8gb-128gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "storage.capacity",
+      "variante_id": "8gb-128gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "memory.ram",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "nothing-phone-2a",
+      "clave": "storage.capacity",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.panel",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.ppi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.refresh_rate",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "display.peak_brightness",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "processor.cpu_clock",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "camera.rear",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "camera.front",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "battery.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "battery.charge_power",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "connectivity.wifi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "ports.usb",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "audio.speakers",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "color",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "memory.ram",
+      "variante_id": "8gb-128gb-in",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "storage.capacity",
+      "variante_id": "8gb-128gb-in",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "memory.ram",
+      "variante_id": "12gb-256gb-in",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "oneplus-pad-2",
+      "clave": "storage.capacity",
+      "variante_id": "12gb-256gb-in",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "display.diagonal",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "display.resolution",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "display.refresh_rate",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "display.brightness_peak",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "processor.model",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "camera.ultrawide",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "camera.main",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "camera.telephoto_5x",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "camera.telephoto_3x",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "camera.front",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "battery.capacity",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "battery.charging",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "connectivity.wifi",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "dimensions.body",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "materials.frame",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "memory.ram",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "storage.capacity",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "memory.ram",
+      "variante_id": "12gb-512gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "storage.capacity",
+      "variante_id": "12gb-512gb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "memory.ram",
+      "variante_id": "12gb-1tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "samsung-galaxy-s24-ultra",
+      "clave": "storage.capacity",
+      "variante_id": "12gb-1tb",
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.type",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.driver",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.frequency_response",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.bluetooth_frequency",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.codecs",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "connectivity.bluetooth",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "battery.playback_anc_on",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "battery.playback_anc_off",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "battery.charge_time",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "weight",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.input",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.wearing_style",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "audio.noise_features",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    },
+    {
+      "producto_id": "sony-wh-1000xm5",
+      "clave": "colors",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "estado_verificacion": "con_fuente",
+      "conflicto": "sin_conflicto"
+    }
+  ],
+  "imagenes_pendientes_de_autorizacion": [
+    "nothing-phone-2a",
+    "samsung-galaxy-s24-ultra",
+    "oneplus-pad-2",
+    "ipad-pro-11-m4",
+    "lenovo-thinkpad-e14-gen-5",
+    "macbook-pro-16-m3-max",
+    "nothing-ear-2",
+    "sony-wh-1000xm5"
+  ]
+}

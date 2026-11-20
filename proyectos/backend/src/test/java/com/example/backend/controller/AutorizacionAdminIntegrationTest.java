@@ -11,6 +11,7 @@ import static org.mockito.Mockito.reset;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -290,7 +291,9 @@ class AutorizacionAdminIntegrationTest {
     @Test
     @DisplayName("T-01: Visitante sin credenciales puede consultar el catálogo público con 200 OK")
     void visitanteConsultaCatalogoPublicoResponde200() throws Exception {
+        Producto prod = crearProducto("Producto Para Consulta Publica");
         mockMvc.perform(get("/api/productos")).andExpect(status().isOk());
+        mockMvc.perform(get("/api/productos/" + prod.getIdProducto() + "/ficha-tecnica")).andExpect(status().isOk());
         mockMvc.perform(get("/api/categorias")).andExpect(status().isOk());
         mockMvc.perform(get("/api/marcas")).andExpect(status().isOk());
     }
@@ -305,6 +308,16 @@ class AutorizacionAdminIntegrationTest {
                 .content(buildProductoJson("Producto Anonimo")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(header().string("WWW-Authenticate", containsString("Bearer")));
+
+        mockMvc.perform(put("/api/productos/1/ficha-tecnica")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(patch("/api/productos/1/ficha-tecnica")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post("/api/categorias")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -342,6 +355,20 @@ class AutorizacionAdminIntegrationTest {
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(buildProductoJson("Producto Intento Modificar")))
+                .andExpect(status().isForbidden());
+
+        // PUT ficha-tecnica -> 403
+        mockMvc.perform(put("/api/productos/" + idProd + "/ficha-tecnica")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+                .andExpect(status().isForbidden());
+
+        // PATCH ficha-tecnica -> 403
+        mockMvc.perform(patch("/api/productos/" + idProd + "/ficha-tecnica")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
                 .andExpect(status().isForbidden());
 
         // DELETE -> 403
@@ -505,6 +532,22 @@ class AutorizacionAdminIntegrationTest {
 
         assertThat(productoRepository.findById(prod.getIdProducto()).orElseThrow().getNombre())
                 .isEqualTo("Producto Modificado Por Admin");
+
+        // PUT Ficha Técnica -> 200 OK
+        mockMvc.perform(put("/api/productos/" + prod.getIdProducto() + "/ficha-tecnica")
+                .header("Authorization", "Bearer " + tokenAdmin)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"pantalla\":\"6.7 OLED\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.caracteristicas.pantalla", is("6.7 OLED")));
+
+        // PATCH Ficha Técnica -> 200 OK
+        mockMvc.perform(patch("/api/productos/" + prod.getIdProducto() + "/ficha-tecnica")
+                .header("Authorization", "Bearer " + tokenAdmin)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"pantalla\":\"6.8 AMOLED\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.caracteristicas.pantalla", is("6.8 AMOLED")));
 
         // PUT Categoría -> 200 OK
         mockMvc.perform(put("/api/categorias/" + cat.getIdCategoria())

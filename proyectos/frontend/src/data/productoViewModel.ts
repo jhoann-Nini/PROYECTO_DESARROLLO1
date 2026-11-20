@@ -5,6 +5,7 @@ import type {
   TiendaPrecio,
 } from "@/types/producto";
 import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
+import { categoriaProductoDesdeNombre, clasificarFichaTecnicaProducto, type EstadoFichaTecnicaProducto } from "./fichaTecnicaProducto";
 import type { IdProductoGlobal } from "./identificadores";
 import {
   claveMockDe,
@@ -16,9 +17,9 @@ import { detectarCategoria, formatearCOP } from "./specsHelper";
 import { sanearPrecioCOP } from "./precios";
 import { normalizarDatosFichaTecnica } from "./fichaTecnica";
 import type { DatosFichaTecnica } from "./fichaTecnica";
+import { obtenerFichaTecnicaV3Piloto } from "./fichasTecnicasV3Piloto";
 import {
   normalizarDesdeKimovil,
-  normalizarDesdeProducto,
   normalizarFichaTecnicaV2,
 } from "./normalizadorFicha";
 
@@ -60,6 +61,8 @@ export interface ProductoViewModel {
   precioDesdeCOP?: number | null;
   idGlobal?: IdProductoGlobal;
   fichaTecnicaV2?: FichaTecnicaV2;
+  /** Ficha versionada; conserva el JSON original y los errores de despacho. */
+  fichaTecnica?: EstadoFichaTecnicaProducto;
   origen?: OrigenProductoViewModel;
   idApi?: number | null;
   claveMock?: string | null;
@@ -414,7 +417,6 @@ export function crearProductoViewModel(
     opciones.nombreMarca?.trim() ||
     `Marca #${producto.idMarca}`;
   const especificaciones = extraerEspecificaciones(producto.caracteristicas);
-  const datosFichaTecnica = normalizarDatosFichaTecnica(producto.caracteristicas);
   const tiendas = extraerTiendas(producto.caracteristicas);
   const imagen = producto.imagen?.trim() || null;
   const textoBusqueda = construirTextoBusqueda(
@@ -431,10 +433,31 @@ export function crearProductoViewModel(
 
   const idGlobal =
     opciones.idGlobal ?? (esIdApiValido ? idGlobalApi(producto.idProducto) ?? undefined : undefined);
-  const fichaTecnicaV2 = normalizarDesdeProducto(producto, {
+  const fichaTecnicaClasificada = clasificarFichaTecnicaProducto(producto, {
     idGlobal,
     categoriaPorDefecto: categoria,
+    categoriaProducto: producto.nombreCategoria?.trim() ? categoriaProductoDesdeNombre(producto.nombreCategoria) : null,
   });
+  // Para productos de la API, la ficha V3 procede exclusivamente de producto.caracteristicas.
+  // Solo los mocks locales explícitos (opciones.origen === "mock") pueden usar los fixtures del piloto.
+  const tieneEsquemaExplicito = typeof producto.caracteristicas === "object" && producto.caracteristicas !== null && "version_esquema" in producto.caracteristicas;
+  const fichaV3Piloto = opciones.origen === "mock" && fichaTecnicaClasificada.version !== "v3" && fichaTecnicaClasificada.version !== "error" && !tieneEsquemaExplicito
+    ? obtenerFichaTecnicaV3Piloto({ id: producto.idProducto, nombre: producto.nombre })
+    : null;
+  const fichaTecnica: EstadoFichaTecnicaProducto = fichaV3Piloto
+    ? {
+        version: "v3",
+        estado: "valida",
+        original: fichaV3Piloto as unknown as Record<string, unknown>,
+        ficha: fichaV3Piloto,
+      }
+    : fichaTecnicaClasificada;
+  const fichaTecnicaV2 = fichaTecnica.estado === "valida" && fichaTecnica.version !== "v3"
+    ? fichaTecnica.fichaV2
+    : undefined;
+  const datosFichaTecnica = fichaTecnica.version === "v3" || fichaTecnica.estado === "invalida"
+    ? normalizarDatosFichaTecnica(null)
+    : normalizarDatosFichaTecnica(producto.caracteristicas);
 
   return {
     idProducto: producto.idProducto,
@@ -455,6 +478,7 @@ export function crearProductoViewModel(
     especificaciones,
     datosFichaTecnica,
     fichaTecnicaV2,
+    fichaTecnica,
     caracteristicas: detectarCaracteristicas(
       especificaciones,
       textoBusqueda
@@ -576,10 +600,17 @@ export function convertirKimovilAViewModel(
       ? Math.min(5, Math.max(0, dispositivo.puntuacion / 2))
       : normalizarRating(opciones.rating);
 
-  const fichaTecnicaV2 = normalizarDesdeKimovil(dispositivo, {
+  const v2 = normalizarDesdeKimovil(dispositivo, {
     idGlobal: idGlobal ?? undefined,
     categoriaPorDefecto: categoria,
   });
+  const fichaTecnica: EstadoFichaTecnicaProducto = {
+    version: "legacy",
+    estado: "valida",
+    original: caracteristicasObj,
+    fichaV2: v2,
+  };
+  const fichaTecnicaV2 = v2;
 
   return {
     idProducto,
@@ -600,6 +631,7 @@ export function convertirKimovilAViewModel(
     especificaciones,
     datosFichaTecnica,
     fichaTecnicaV2,
+    fichaTecnica,
     caracteristicas: detectarCaracteristicas(
       especificaciones,
       textoBusqueda
@@ -636,12 +668,13 @@ export function adaptarAProductoViewModel(
         (vm.idProducto > 0
           ? (idGlobalApi(vm.idProducto) ?? undefined)
           : (idGlobalMock(`mock-${Math.abs(vm.idProducto)}`) ?? undefined));
-      const fichaTecnicaV2 =
-        vm.fichaTecnicaV2 ??
-        normalizarFichaTecnicaV2(vm.datosFichaTecnica, {
-          idGlobal,
-          categoriaPorDefecto: vm.categoria,
-        });
+      const esFichaIndependienteV3 = vm.fichaTecnica?.version === "v3" || vm.fichaTecnica?.estado === "invalida";
+      const fichaTecnicaV2 = vm.fichaTecnicaV2 ?? (esFichaIndependienteV3
+        ? undefined
+        : normalizarFichaTecnicaV2(vm.datosFichaTecnica, {
+            idGlobal,
+            categoriaPorDefecto: vm.categoria,
+          }));
       return {
         ...vm,
         idGlobal,

@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  CLAVE_FAVORITOS,
   EVENTO_FAVORITOS,
   alternarIdFavorito,
+  claveFavoritos,
+  eliminarFavoritosLegados,
   emitirCambioFavoritos,
   guardarIdsFavoritos,
   leerIdsFavoritos,
@@ -13,6 +14,7 @@ import {
   type DetalleEventoFavoritos,
   type ResultadoAlternarFavorito,
 } from "@/data/favoritos";
+import { createClient } from "@/lib/supabase/client";
 
 function obtenerStorage(): Storage | null {
   if (typeof window === "undefined") return null;
@@ -27,6 +29,7 @@ function obtenerStorage(): Storage | null {
 export interface UseFavoritosResultado {
   ids: number[];
   hidratado: boolean;
+  autenticado: boolean;
   alternar: (id: number) => ResultadoAlternarFavorito;
   quitar: (id: number) => void;
   limpiar: () => void;
@@ -34,42 +37,104 @@ export interface UseFavoritosResultado {
 }
 
 /**
- * Mantiene los favoritos en localStorage y los sincroniza entre pestañas.
- * El ref evita perder clics rápidos antes de que React aplique el estado.
+ * Mantiene los favoritos de la cuenta autenticada en localStorage.
+ * Sin sesión no se hidrata ni se escribe nada: los visitantes solo pueden
+ * iniciar sesión para usar favoritos. La clave es propia de cada cuenta y la
+ * clave histórica anónima se elimina al montar.
  */
 export function useFavoritos(): UseFavoritosResultado {
   const [ids, setIds] = useState<number[]>([]);
+  const [idSesion, setIdSesion] = useState<string | null>(null);
+  const [idCargado, setIdCargado] = useState<string | null>(null);
+  const [sesionLista, setSesionLista] = useState(false);
   const [hidratado, setHidratado] = useState(false);
   const idsRef = useRef<number[]>([]);
 
-  const aplicar = useCallback((nuevos: number[]) => {
-    idsRef.current = nuevos;
-    setIds(nuevos);
-    guardarIdsFavoritos(obtenerStorage(), nuevos);
-    emitirCambioFavoritos(nuevos);
+  useEffect(() => {
+    let montado = true;
+
+    try {
+      const supabase = createClient();
+
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        (_evento, session) => {
+          if (!montado) return;
+          setIdSesion(session?.user?.id ?? null);
+          setSesionLista(true);
+        },
+      );
+
+      supabase.auth
+        .getSession()
+        .then(({ data: { session }, error }) => {
+          if (!montado || error) return;
+          setIdSesion(session?.user?.id ?? null);
+          setSesionLista(true);
+        })
+        .catch(() => {
+          if (montado) setSesionLista(true);
+        });
+
+      return () => {
+        montado = false;
+        authListener.subscription.unsubscribe();
+      };
+    } catch {
+      queueMicrotask(() => {
+        if (montado) setSesionLista(true);
+      });
+
+      return () => {
+        montado = false;
+      };
+    }
   }, []);
 
   useEffect(() => {
+    if (!sesionLista) return;
+
+    const storage = obtenerStorage();
+    eliminarFavoritosLegados(storage);
     let montado = true;
-    const inicial = leerIdsFavoritos(obtenerStorage());
+
+    if (!idSesion) {
+      idsRef.current = [];
+      queueMicrotask(() => {
+        if (!montado) return;
+        setIds([]);
+        setIdCargado(null);
+        setHidratado(true);
+      });
+
+      return () => {
+        montado = false;
+      };
+    }
+
+    const clave = claveFavoritos(idSesion);
+    const inicial = leerIdsFavoritos(storage, clave);
     idsRef.current = inicial;
 
     queueMicrotask(() => {
       if (!montado) return;
       setIds(inicial);
+      setIdCargado(idSesion);
       setHidratado(true);
     });
 
     const alCambiarStorage = (event: StorageEvent) => {
-      if (event.key !== CLAVE_FAVORITOS && event.key !== null) return;
+      if (event.key !== clave && event.key !== null) return;
 
-      const actualizados = leerIdsFavoritos(obtenerStorage());
+      const actualizados = leerIdsFavoritos(obtenerStorage(), clave);
       idsRef.current = actualizados;
       setIds(actualizados);
+      setIdCargado(idSesion);
     };
 
     const alCambiarEnLaPestana = (event: Event) => {
       const detalle = (event as CustomEvent<DetalleEventoFavoritos>).detail;
+      if (detalle?.clave && detalle.clave !== clave) return;
+
       const actualizados = normalizarIdsFavoritos(detalle?.ids);
       const sinCambios =
         actualizados.length === idsRef.current.length &&
@@ -79,6 +144,7 @@ export function useFavoritos(): UseFavoritosResultado {
 
       idsRef.current = actualizados;
       setIds(actualizados);
+      setIdCargado(idSesion);
     };
 
     window.addEventListener("storage", alCambiarStorage);
@@ -88,17 +154,47 @@ export function useFavoritos(): UseFavoritosResultado {
       window.removeEventListener("storage", alCambiarStorage);
       window.removeEventListener(EVENTO_FAVORITOS, alCambiarEnLaPestana);
     };
-  }, []);
+  }, [idSesion, sesionLista]);
+
+  const aplicar = useCallback(
+    (nuevos: number[]) => {
+      if (!idSesion) return;
+
+      const clave = claveFavoritos(idSesion);
+      idsRef.current = nuevos;
+      setIds(nuevos);
+      setIdCargado(idSesion);
+      guardarIdsFavoritos(obtenerStorage(), nuevos, clave);
+      emitirCambioFavoritos(nuevos, clave);
+    },
+    [idSesion],
+  );
 
   const alternar = useCallback(
     (id: number) => {
+      if (!idSesion) {
+        return {
+          ids: [],
+          agregado: false,
+          motivo: "sin-sesion",
+        } satisfies ResultadoAlternarFavorito;
+      }
+
+      if (idCargado !== idSesion) {
+        return {
+          ids: [],
+          agregado: false,
+          motivo: "invalido",
+        } satisfies ResultadoAlternarFavorito;
+      }
+
       const resultado = alternarIdFavorito(idsRef.current, id);
       if (resultado.motivo === "agregado" || resultado.motivo === "quitado") {
         aplicar(resultado.ids);
       }
       return resultado;
     },
-    [aplicar],
+    [aplicar, idCargado, idSesion],
   );
 
   const quitar = useCallback(
@@ -113,5 +209,15 @@ export function useFavoritos(): UseFavoritosResultado {
     [],
   );
 
-  return { ids, hidratado, alternar, quitar, limpiar, contiene };
+  const datosListos = Boolean(idSesion) && idCargado === idSesion;
+
+  return {
+    ids: datosListos ? ids : [],
+    hidratado: hidratado && (idSesion === null || datosListos),
+    autenticado: Boolean(idSesion),
+    alternar,
+    quitar,
+    limpiar,
+    contiene,
+  };
 }

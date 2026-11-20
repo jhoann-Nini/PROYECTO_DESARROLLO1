@@ -9,6 +9,7 @@ import type {
   MarcaResponse,
 } from "@/types/producto";
 import * as api from "@/services/api";
+import type { ResenaReportadaResponse } from "@/types/moderacion";
 
 vi.mock("@/services/api", async () => {
   const actual = await vi.importActual<typeof import("@/services/api")>("@/services/api");
@@ -28,6 +29,10 @@ vi.mock("@/services/api", async () => {
     eliminarMarca: vi.fn(),
     descargarCatalogoCsv: vi.fn(),
     dispararDescargaArchivo: vi.fn(),
+    obtenerResenasReportadas: vi.fn(),
+    ocultarResenaReportada: vi.fn(),
+    publicarResenaReportada: vi.fn(),
+    rechazarReportesResenaReportada: vi.fn(),
   };
 });
 
@@ -82,12 +87,22 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       estado: true,
     },
   ];
+  const resenaReportada: ResenaReportadaResponse = {
+    idResena: 15, idProducto: 101, nombreProducto: "Nothing Phone (2)",
+    idAutor: 3, nombreAutor: "Persona autora", comentario: "Comentario reportado",
+    puntuacion: 2, fechaCreacion: "2026-11-10T20:00:00",
+    estado: true, ocultaPorReportes: false, ocultaPorModeracion: false,
+    totalReportes: 1, reportesPendientes: 1,
+    reportes: [{ idReporte: 7, idUsuarioReportante: 8, nombreReportante: "Usuario",
+      motivo: "spam", descripcion: null, estado: "PENDIENTE", fechaCreacion: "2026-11-10T21:00:00" }],
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(api.obtenerProductos).mockResolvedValue(mockProductos);
     vi.mocked(api.obtenerCategorias).mockResolvedValue(mockCategorias);
     vi.mocked(api.obtenerMarcas).mockResolvedValue(mockMarcas);
+    vi.mocked(api.obtenerResenasReportadas).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -119,6 +134,21 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   });
 
   describe("Administración de usuarios y roles", () => {
+    it("ofrece una navegación compacta con las seis secciones y mantiene la selección sincronizada", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Gestión de Catálogo de Productos");
+
+      const selector = screen.getByRole("combobox", { name: /sección de administración/i });
+      expect(selector.querySelectorAll("option")).toHaveLength(6);
+      fireEvent.change(selector, { target: { value: "usuarios" } });
+      expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
+      expect(screen.getByRole("tab", { name: /usuarios y roles/i }).getAttribute("aria-selected")).toBe("true");
+      expect((selector as HTMLSelectElement).value).toBe("usuarios");
+      fireEvent.click(screen.getByRole("tab", { name: /productos/i }));
+      expect((selector as HTMLSelectElement).value).toBe("productos");
+      expect(screen.getByText("Gestión de Catálogo de Productos")).toBeDefined();
+    });
+
     it("muestra la pestaña de usuarios y roles y su contenido", async () => {
       render(
         <AdminPanelModal
@@ -155,6 +185,135 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       );
 
       expect(screen.getByTestId("admin-establecimientos")).toBeDefined();
+    });
+  });
+
+  describe("Foco de los diálogos", () => {
+    it("entra en el panel, contiene Tab y devuelve el foco al activador al cerrar", async () => {
+      const disparador = document.createElement("button");
+      disparador.textContent = "Abrir administración";
+      document.body.appendChild(disparador);
+      disparador.focus();
+      const { rerender } = render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      const cerrar = screen.getByRole("button", { name: "Cerrar panel de administración" });
+      expect(document.activeElement).toBe(cerrar);
+      cerrar.focus();
+      fireEvent.keyDown(screen.getByRole("dialog"), { key: "Tab", shiftKey: true });
+      expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
+      rerender(<AdminPanelModal isOpen={false} onClose={vi.fn()} usuarioSesion={adminUser} />);
+      expect(document.activeElement).toBe(disparador);
+      disparador.remove();
+    });
+
+    it("mantiene el foco en la confirmación y Escape vuelve a la acción sin eliminar", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Nothing Phone (2)");
+      const activar = screen.getByRole("button", { name: "Eliminar Nothing Phone (2)" });
+      activar.focus();
+      fireEvent.click(activar);
+      expect(screen.getByRole("alertdialog").contains(document.activeElement)).toBe(true);
+      fireEvent.keyDown(window, { key: "Escape" });
+      expect(screen.queryByRole("alertdialog")).toBeNull();
+      expect(document.activeElement).toBe(activar);
+      expect(api.eliminarProducto).not.toHaveBeenCalled();
+    });
+
+    it("mantiene el foco en el editor Ficha V3 y vuelve a su activador al cerrarlo", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Nothing Phone (2)");
+      const activar = screen.getByRole("button", { name: "Ficha Técnica V3 de Nothing Phone (2)" });
+      activar.focus();
+      fireEvent.click(activar);
+      const cerrarFicha = screen.getByRole("button", { name: "Cerrar modal de ficha técnica" });
+      expect(document.activeElement).toBe(cerrarFicha);
+      fireEvent.click(cerrarFicha);
+      expect(document.activeElement).toBe(activar);
+    });
+  });
+
+  describe("Catálogo adaptable", () => {
+    it("filtra por producto y marca sin alterar el total y comunica una búsqueda sin resultados", async () => {
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce([
+        mockProductos[0],
+        { ...mockProductos[0], idProducto: 102, nombre: "MacBook Air", idMarca: 20, precioReferencia: null },
+      ]);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("MacBook Air");
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "apple" } });
+      expect(screen.getByText("MacBook Air")).toBeDefined();
+      expect(screen.queryByText("Nothing Phone (2)")).toBeNull();
+      expect(screen.getByText(/total registrados:/i).textContent).toContain("2");
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "sin coincidencias" } });
+      expect(screen.getByText(/no hay productos que coincidan/i)).toBeDefined();
+    });
+
+    it("pagina el resultado local y vuelve a la primera página al buscar", async () => {
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce(
+        Array.from({ length: 9 }, (_, index) => ({
+          ...mockProductos[0], idProducto: 101 + index, nombre: `Producto ${index + 1}`,
+        })),
+      );
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Producto 1");
+      expect(screen.queryByText("Producto 9")).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: /siguiente página de productos/i }));
+      expect(screen.getByText("Producto 9")).toBeDefined();
+      fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "Producto 1" } });
+      expect(screen.getByText("Producto 1")).toBeDefined();
+      expect(screen.getByText(/página 1 de 1/i)).toBeDefined();
+    });
+
+    it("vuelve a una página válida al eliminar el último producto de la última página", async () => {
+      const lista = Array.from({ length: 9 }, (_, index) => ({
+        ...mockProductos[0], idProducto: 101 + index, nombre: `Producto ${index + 1}`,
+      }));
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce(lista).mockResolvedValueOnce(lista.slice(0, 8));
+      vi.mocked(api.eliminarProducto).mockResolvedValueOnce(undefined);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Producto 1");
+      fireEvent.click(screen.getByRole("button", { name: /siguiente página de productos/i }));
+      fireEvent.click(screen.getByRole("button", { name: "Eliminar Producto 9" }));
+      fireEvent.click(screen.getByRole("button", { name: "Eliminar Producto" }));
+      await waitFor(() => expect(api.eliminarProducto).toHaveBeenCalledWith(109));
+      await screen.findByText("Producto 1");
+      expect(screen.getByText("Página 1 de 1")).toBeDefined();
+    });
+  });
+
+  describe("Cola de moderación real", () => {
+    it("mantiene las métricas y el aviso sobre superficies del tema sin fondos claros fijos", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+
+      const pendientes = await screen.findByText("Reportes Pendientes");
+      const ocultas = screen.getByText("Reseñas Ocultas");
+      const aviso = screen.getByText("Alcance actual:");
+
+      for (const etiqueta of [pendientes, ocultas]) {
+        expect(etiqueta.parentElement?.className).toContain("bg-[var(--color-canvas)]");
+        expect(etiqueta.parentElement?.className).toContain("border-[var(--color-hairline)]");
+      }
+      expect(aviso.parentElement?.parentElement?.className).toContain("bg-[var(--color-canvas)]");
+      expect(aviso.parentElement?.parentElement?.className).toContain("border-l-[var(--color-brand-blue)]");
+      expect(aviso.parentElement?.parentElement?.className).toContain("text-[var(--color-ink)]");
+    });
+
+    it("explica que solo cubre reseñas y no presenta la cola vacía como resuelta", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+      expect(await screen.findByText(/los reportes de precios y enlaces todavía no están integrados/i)).toBeDefined();
+      expect(screen.getByText(/no hay reseñas reportadas en este momento/i)).toBeDefined();
+    });
+
+    it("exige una justificación al ocultar sin enviarla vacía al backend", async () => {
+      vi.mocked(api.obtenerResenasReportadas).mockResolvedValueOnce([resenaReportada]);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+      await screen.findByText("Comentario reportado", { exact: false });
+      fireEvent.click(screen.getByRole("button", { name: /ocultar reseña/i }));
+      fireEvent.click(screen.getByRole("button", { name: /confirmar acción/i }));
+      expect(screen.getByRole("alert").textContent).toMatch(/justificación obligatoria/i);
+      expect(api.ocultarResenaReportada).not.toHaveBeenCalled();
     });
   });
 

@@ -173,6 +173,12 @@ describe("PerfilCliente", () => {
     expect(screen.getByText("ana@example.com")).toBeDefined();
     expect(screen.getByText("Usuario registrado")).toBeDefined();
     expect(screen.getByText("Cuenta activa")).toBeDefined();
+    expect(
+      screen.getByTestId("avatar-placeholder").querySelector("svg"),
+    ).not.toBeNull();
+    expect(
+      screen.queryByRole("img", { name: "Avatar de Ana Torres" }),
+    ).toBeNull();
     expect(screen.queryByText("Reseña de otra persona.")).toBeNull();
     expect(screen.getByText("3")).toBeDefined();
     expect(screen.getByText("2")).toBeDefined();

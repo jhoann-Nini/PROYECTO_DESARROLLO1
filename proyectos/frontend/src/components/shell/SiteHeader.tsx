@@ -44,7 +44,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-[var(--color-hairline)] bg-[var(--color-paper)]/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 sm:px-6 lg:px-8">
           <Link
             href="/"
             className={`group flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight ${CLASE_FOCO}`}
@@ -68,7 +68,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
           <nav
             aria-label="Navegación principal"
-            className="hidden items-center gap-1 md:flex"
+            className="order-3 hidden w-full items-center justify-center gap-1 md:flex 2xl:order-none 2xl:w-auto"
           >
             {ENLACES.map((enlace) =>
               enlace.href ? (
@@ -133,6 +133,28 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
             <BotonTema />
             {children}
+            {!children && (
+              <Link
+                href="/perfil"
+                aria-label="Iniciar sesión o ver mi perfil"
+                title="Iniciar sesión o ver mi perfil"
+                className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.75}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20a7 7 0 0 1 14 0" />
+                </svg>
+              </Link>
+            )}
 
             <Link
               href="/productos"

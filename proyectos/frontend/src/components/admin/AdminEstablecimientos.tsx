@@ -336,9 +336,9 @@ export default function AdminEstablecimientos() {
           descripcion="Crea el primer establecimiento para que aparezca en el catálogo público."
         />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
+        <div className="lg:overflow-x-auto">
+          <table className="block w-full text-left text-xs lg:table">
+            <thead className="hidden lg:table-header-group">
               <tr className="border-b border-[var(--color-hairline)] text-[var(--color-subtle)]">
                 <th scope="col" className="px-2 py-2 font-semibold">
                   Establecimiento
@@ -354,27 +354,28 @@ export default function AdminEstablecimientos() {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="grid gap-3 lg:table-row-group">
               {establecimientos.map((establecimiento) => (
                 <tr
                   key={establecimiento.idEstablecimiento}
-                  className="border-b border-[var(--color-hairline)] last:border-0"
+                  data-testid={`establecimiento-card-${establecimiento.idEstablecimiento}`}
+                  className="block min-w-0 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 lg:table-row lg:rounded-none lg:border-0 lg:border-b lg:bg-transparent lg:p-0 lg:last:border-0"
                 >
-                  <td className="px-2 py-3">
-                    <p className="font-semibold text-[var(--color-ink)]">
+                  <td className="block py-1 lg:table-cell lg:px-2 lg:py-3">
+                    <p className="break-words font-semibold text-[var(--color-ink)]">
                       {establecimiento.nombre}
                     </p>
                     <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">
                       {establecimiento.descripcion || "Sin descripción"}
                     </p>
                   </td>
-                  <td className="px-2 py-3 text-[var(--color-subtle)]">
+                  <td className="block py-1 text-[var(--color-subtle)] lg:table-cell lg:px-2 lg:py-3">
                     <p>{establecimiento.correo || "Sin correo"}</p>
                     <p className="mt-0.5">
                       {establecimiento.telefono || "Sin teléfono"}
                     </p>
                   </td>
-                  <td className="px-2 py-3 text-[var(--color-subtle)]">
+                  <td className="block py-1 text-[var(--color-subtle)] lg:table-cell lg:px-2 lg:py-3">
                     <p>{establecimiento.direccion || "Sin dirección"}</p>
                     <p className="mt-0.5">
                       {establecimiento.latitud !== null &&
@@ -383,13 +384,13 @@ export default function AdminEstablecimientos() {
                         : "Sin coordenadas"}
                     </p>
                   </td>
-                  <td className="px-2 py-3">
+                  <td className="block py-2 lg:table-cell lg:px-2 lg:py-3">
                     <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
                         onClick={() => abrirEditar(establecimiento)}
                         aria-label={`Editar ${establecimiento.nombre}`}
-                        className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                        className={`min-h-10 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                       >
                         Editar
                       </button>
@@ -399,7 +400,7 @@ export default function AdminEstablecimientos() {
                           setEstablecimientoEliminando(establecimiento)
                         }
                         aria-label={`Desactivar ${establecimiento.nombre}`}
-                        className={`cursor-pointer rounded-md border border-red-200 px-2.5 py-1 text-[11px] font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 ${CLASE_FOCO}`}
+                        className={`min-h-10 cursor-pointer rounded-md border border-red-200 px-2.5 py-1 text-[11px] font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 ${CLASE_FOCO}`}
                       >
                         Desactivar
                       </button>

@@ -279,7 +279,7 @@ export function mapearPerfilABusinessSession(
     fechaRegistro: perfil.fechaRegistro,
     avatar: metadata.avatar_url
       ? String(metadata.avatar_url)
-      : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
+      : undefined,
   };
 }
 
@@ -576,6 +576,29 @@ export async function actualizarProducto(
 export async function eliminarProducto(id: number): Promise<void> {
   return apiFetchAutenticado<void>(`/api/productos/${id}`, {
     method: "DELETE",
+  });
+}
+
+/**
+ * Consulta la ficha técnica de un producto por su ID.
+ */
+export async function obtenerFichaTecnicaProducto(
+  id: number,
+): Promise<Record<string, unknown>> {
+  return apiFetch<Record<string, unknown>>(`/api/productos/${id}/ficha-tecnica`);
+}
+
+/**
+ * Actualiza exclusivamente la ficha técnica de un producto de forma independiente.
+ * Requiere rol Administrador.
+ */
+export async function actualizarFichaTecnicaProducto(
+  id: number,
+  fichaTecnica: Record<string, unknown>,
+): Promise<ProductoResponse> {
+  return apiFetchAutenticado<ProductoResponse>(`/api/productos/${id}/ficha-tecnica`, {
+    method: "PUT",
+    body: JSON.stringify(fichaTecnica),
   });
 }
 

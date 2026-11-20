@@ -18,9 +18,11 @@ vi.mock("@/services/api", async (importOriginal) => {
 });
 
 const mockPush = vi.fn();
+let mockSearchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+  useSearchParams: () => mockSearchParams,
 }));
 
 import {
@@ -126,6 +128,7 @@ const productosFiltros: Producto[] = [
 describe("CatalogoCliente", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSearchParams = new URLSearchParams();
   });
 
   afterEach(() => {
@@ -140,6 +143,119 @@ describe("CatalogoCliente", () => {
     render(<CatalogoCliente />);
 
     expect(screen.getByText(/Cargando catálogo/i)).toBeDefined();
+  });
+
+  it("aplica el presupuesto de URL a todas las categorías, inclusive el límite exacto", async () => {
+    configurarExito([
+      crearProducto(1, { nombre: "Celular económico", precioReferencia: 600000 }),
+      crearProducto(2, { nombre: "Tablet al límite", nombreCategoria: "Tablets", precioReferencia: 1000000 }),
+      crearProducto(3, { nombre: "Auriculares", nombreCategoria: "Auriculares", precioReferencia: 400000 }),
+      crearProducto(4, { nombre: "Portátil", idCategoria: 2, precioReferencia: 900000 }),
+      crearProducto(5, { nombre: "Producto caro", precioReferencia: 1000001 }),
+      crearProducto(6, { nombre: "Precio desconocido", precioReferencia: null }),
+      crearProducto(7, { nombre: "Precio cero", precioReferencia: 0 }),
+      crearProducto(8, { nombre: "Precio inválido", precioReferencia: -1 }),
+    ]);
+    mockSearchParams = new URLSearchParams("precioMax=1000000");
+    render(<CatalogoCliente />);
+
+    const resultados = await screen.findByRole("region", { name: "Resultados del catálogo" });
+    expect(within(resultados).getAllByRole("heading", { level: 3 }).map((titulo) => titulo.textContent))
+      .toEqual(["Celular económico", "Tablet al límite", "Auriculares", "Portátil"]);
+    expect(screen.getByRole("button", { name: /Quitar filtro Hasta.*1\.000\.000.*COP/ })).toBeDefined();
+    expect((screen.getByRole("checkbox", { name: /Móviles/ }) as HTMLInputElement).checked).toBe(false);
+    expect((screen.getByRole("checkbox", { name: /Laptops \/ PCs/ }) as HTMLInputElement).checked).toBe(false);
+  });
+
+  it("permite quitar el presupuesto inicial y recuperar también productos sin precio", async () => {
+    configurarExito([
+      crearProducto(1, { precioReferencia: 400000 }),
+      crearProducto(2, { precioReferencia: 1500000 }),
+      crearProducto(3, { precioReferencia: null }),
+    ]);
+    mockSearchParams = new URLSearchParams("precioMax=500000");
+    render(<CatalogoCliente />);
+    fireEvent.click(await screen.findByRole("button", { name: /Quitar filtro Hasta/ }));
+    expect(screen.getByText("Producto 2")).toBeDefined();
+    expect(screen.getByText("Producto 3")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Quitar filtro Hasta/ })).toBeNull();
+  });
+
+  it("no aumenta un presupuesto menor que el producto más barato", async () => {
+    configurarExito([crearProducto(1, { precioReferencia: 500000 })]);
+    mockSearchParams = new URLSearchParams("precioMax=100000");
+    render(<CatalogoCliente />);
+    expect(await screen.findByText("No encontramos productos con esos filtros")).toBeDefined();
+    expect(screen.queryByText("Producto 1")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Borrar filtros" }));
+    expect(screen.getByText("Producto 1")).toBeDefined();
+  });
+
+  it.each([200000, 1000000, 4000000])(
+    "conserva un presupuesto de %s COP al enfocar y abandonar el máximo sin editar",
+    async (presupuesto) => {
+      configurarExito([
+        crearProducto(1, { precioReferencia: 500000 }),
+        crearProducto(2, { precioReferencia: 1000000 }),
+        crearProducto(3, { precioReferencia: null }),
+      ]);
+      mockSearchParams = new URLSearchParams(`precioMax=${presupuesto}`);
+      render(<CatalogoCliente />);
+      const resultados = await screen.findByRole("region", { name: "Resultados del catálogo" });
+      const maximo = screen.getByLabelText("Precio máximo en pesos") as HTMLInputElement;
+      fireEvent.focus(maximo);
+      fireEvent.blur(maximo);
+      expect(within(resultados).queryAllByRole("heading", { level: 3 }).map((titulo) => titulo.textContent))
+        .toEqual(presupuesto < 500000 ? [] : ["Producto 1", "Producto 2"]);
+      expect(maximo.value).toBe(String(presupuesto));
+      expect(screen.getByRole("button", { name: /Quitar filtro Hasta/ })).toBeDefined();
+    },
+  );
+
+  it("habilita la limpieza lateral aunque el presupuesto supere los precios conocidos", async () => {
+    configurarExito([
+      crearProducto(1, { precioReferencia: 500000 }),
+      crearProducto(2, { precioReferencia: null }),
+    ]);
+    mockSearchParams = new URLSearchParams("precioMax=4000000");
+    render(<CatalogoCliente />);
+    await screen.findByText("Producto 1");
+    const limpiar = screen.getByRole("button", { name: "Limpiar filtros" }) as HTMLButtonElement;
+    expect(limpiar.disabled).toBe(false);
+    fireEvent.click(limpiar);
+    expect(screen.getByText("Producto 2")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Quitar filtro Hasta/ })).toBeNull();
+  });
+
+  it.each([
+    "precioMax=inválido", "precioMax=-1", "precioMax=0",
+    "precioMax=1000000&precioMax=2000000",
+  ])("no aplica un presupuesto ambiguo o inválido: %s", async (parametro) => {
+    configurarExito([crearProducto(1), crearProducto(2, { precioReferencia: null })]);
+    mockSearchParams = new URLSearchParams(parametro);
+    render(<CatalogoCliente />);
+    expect(await screen.findByText("Producto 1")).toBeDefined();
+    expect(screen.getByText("Producto 2")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Quitar filtro Hasta/ })).toBeNull();
+  });
+
+  it("aplica un nuevo presupuesto de URL sin conservar búsqueda o categoría anteriores", async () => {
+    configurarExito([
+      crearProducto(1, { precioReferencia: 400000 }),
+      crearProducto(2, { precioReferencia: 1500000, idCategoria: 2 }),
+    ]);
+    mockSearchParams = new URLSearchParams("precioMax=500000");
+    const { rerender } = render(<CatalogoCliente />);
+    await screen.findByText("Producto 1");
+    fireEvent.click(screen.getByRole("checkbox", { name: /Móviles/ }));
+    fireEvent.change(screen.getByRole("searchbox", { name: /Buscar dispositivos tecnológicos/ }), {
+      target: { value: "inexistente" },
+    });
+    mockSearchParams = new URLSearchParams("precioMax=2000000");
+    rerender(<CatalogoCliente />);
+    expect(await screen.findByText("Producto 2")).toBeDefined();
+    expect(screen.getByText("Producto 1")).toBeDefined();
+    expect((screen.getByRole("checkbox", { name: /Móviles/ }) as HTMLInputElement).checked).toBe(false);
   });
 
   it("muestra los productos sin esperar a que terminen de cargar categorías y marcas", async () => {

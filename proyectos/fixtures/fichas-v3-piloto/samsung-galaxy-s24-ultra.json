@@ -1,0 +1,1434 @@
+{
+  "version_esquema": 3,
+  "categoria": "celulares",
+  "variantes": [
+    {
+      "id": "12gb-256gb",
+      "modelo": "Galaxy S24 Ultra",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "ram": "12 GB",
+        "almacenamiento": "256 GB"
+      }
+    },
+    {
+      "id": "12gb-512gb",
+      "modelo": "Galaxy S24 Ultra",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "ram": "12 GB",
+        "almacenamiento": "512 GB"
+      }
+    },
+    {
+      "id": "12gb-1tb",
+      "modelo": "Galaxy S24 Ultra",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "ram": "12 GB",
+        "almacenamiento": "1 TB"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-01-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "6.8 pulgadas",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 6.8,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-02-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "QHD+ 3120 × 1440 px",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 3120,
+          "alto": 1440,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-03-display.refresh_rate",
+      "clave": "display.refresh_rate",
+      "nombre": "Tasa adaptativa",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1–120 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 1,
+            "unidad": "Hz"
+          },
+          "maximo": {
+            "valor": 120,
+            "unidad": "Hz"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-04-display.brightness_peak",
+      "clave": "display.brightness_peak",
+      "nombre": "Brillo pico",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "2600 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 2600,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-05-processor.model",
+      "clave": "processor.model",
+      "nombre": "Procesador",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Snapdragon 8 Gen 3 Mobile Platform for Galaxy",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Snapdragon 8 Gen 3 Mobile Platform for Galaxy"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-06-camera.ultrawide",
+      "clave": "camera.ultrawide",
+      "nombre": "Ultra gran angular",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 MP f/2.2 120°",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "12 MP, f/2.2, FOV 120°"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-07-camera.main",
+      "clave": "camera.main",
+      "nombre": "Principal",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "200 MP f/1.7 OIS",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "200 MP, f/1.7, OIS"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-08-camera.telephoto_5x",
+      "clave": "camera.telephoto_5x",
+      "nombre": "Teleobjetivo 5×",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "50 MP, zoom óptico 5×, OIS",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "50 MP, zoom óptico 5×, OIS"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-09-camera.telephoto_3x",
+      "clave": "camera.telephoto_3x",
+      "nombre": "Teleobjetivo 3×",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "10 MP, zoom óptico 3×, OIS",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "10 MP, zoom óptico 3×, OIS"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-10-camera.front",
+      "clave": "camera.front",
+      "nombre": "Frontal",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-11-battery.capacity",
+      "clave": "battery.capacity",
+      "nombre": "Capacidad típica",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "5000 mAh (típica), 4855 mAh mínima",
+        "unidad": "mAh"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 5000,
+          "unidad": "mAh"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-12-battery.charging",
+      "clave": "battery.charging",
+      "nombre": "Carga cableada",
+      "grupo": "batería",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "hasta 65% en ~30 min con adaptador 45W",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Hasta 65% en aprox. 30 min con adaptador 45 W"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-13-connectivity.wifi",
+      "clave": "connectivity.wifi",
+      "nombre": "Wi-Fi",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Wi-Fi 7",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Wi-Fi 7"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-14-connectivity.bluetooth",
+      "clave": "connectivity.bluetooth",
+      "nombre": "Bluetooth",
+      "grupo": "conectividad",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Bluetooth 5.3",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Bluetooth 5.3"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-15-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones alto × ancho × grosor",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "162.3 × 79 × 8.6 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 162.3,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 79,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "grosor",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 8.6,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-16-weight",
+      "clave": "weight",
+      "nombre": "Peso",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "232g Sub-6 / 233g mmWave; depende de mercado",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 232,
+            "unidad": "g"
+          },
+          "maximo": {
+            "valor": 233,
+            "unidad": "g"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-17-materials.frame",
+      "clave": "materials.frame",
+      "nombre": "Marco",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Titanium frame",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Titanio"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-18-memory.ram-12gb-256gb",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-19-storage.capacity-12gb-256gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "12gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "256 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 256,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-19"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-20-memory.ram-12gb-512gb",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "12gb-512gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-20"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-21-storage.capacity-12gb-512gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "12gb-512gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "512 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 512,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-21"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-22-memory.ram-12gb-1tb",
+      "clave": "memory.ram",
+      "nombre": "RAM",
+      "grupo": "memoria",
+      "variante_id": "12gb-1tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-22"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-samsung-galaxy-s24-ultra-23-storage.capacity-12gb-1tb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "12gb-1tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1 TB",
+        "unidad": "TB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1,
+          "unidad": "TB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-samsung-galaxy-s24-ultra-23"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "sam",
+      "tipo": "fabricante",
+      "nombre": "Samsung Newsroom Global — especificaciones Galaxy S24 series",
+      "url": "https://news.samsung.com/global/enter-the-new-era-of-mobile-ai-with-galaxy-s24-series",
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null,
+      "mercado": null
+    },
+    {
+      "id": "sampdf",
+      "tipo": "fabricante",
+      "nombre": "Samsung B2B specification sheet",
+      "url": "https://images.samsung.com/is/content/samsung/assets/us/2401/business/mobile/phones/galaxy/Galaxy_S24_Series_B2B_Spec_Sheet.pdf",
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null,
+      "mercado": null
+    },
+    {
+      "id": "samnet",
+      "tipo": "fabricante",
+      "nombre": "Samsung Newsroom US — conectividad",
+      "url": "https://news.samsung.com/us/enter-new-era-mobile-ai-samsung-galaxy-s24-series/?na=s",
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null,
+      "mercado": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-01",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Diagonal",
+      "extracto": "6.8 pulgadas",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-02",
+      "fuente_id": "sampdf",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "QHD+ 3120 × 1440 px",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-03",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Tasa adaptativa",
+      "extracto": "1–120 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-04",
+      "fuente_id": "sampdf",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Brillo pico",
+      "extracto": "2600 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-05",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Procesador",
+      "extracto": "Snapdragon 8 Gen 3 Mobile Platform for Galaxy",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-06",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Ultra gran angular",
+      "extracto": "12 MP f/2.2 120°",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-07",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Principal",
+      "extracto": "200 MP f/1.7 OIS",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-08",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Teleobjetivo 5×",
+      "extracto": "50 MP, zoom óptico 5×, OIS",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-09",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Teleobjetivo 3×",
+      "extracto": "10 MP, zoom óptico 3×, OIS",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-10",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Frontal",
+      "extracto": "12 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-11",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Capacidad típica",
+      "extracto": "5000 mAh (típica), 4855 mAh mínima",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-12",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Carga cableada",
+      "extracto": "hasta 65% en ~30 min con adaptador 45W",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-13",
+      "fuente_id": "samnet",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Wi-Fi",
+      "extracto": "Wi-Fi 7",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-14",
+      "fuente_id": "samnet",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Bluetooth",
+      "extracto": "Bluetooth 5.3",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-15",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Dimensiones alto × ancho × grosor",
+      "extracto": "162.3 × 79 × 8.6 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-16",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Peso",
+      "extracto": "232g Sub-6 / 233g mmWave; depende de mercado",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-17",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "12gb-256gb",
+          "12gb-512gb",
+          "12gb-1tb"
+        ]
+      },
+      "localizador": "Marco",
+      "extracto": "Titanium frame",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-18",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb"
+      },
+      "localizador": "RAM",
+      "extracto": "12 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-19",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-256gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "256 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-20",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-512gb"
+      },
+      "localizador": "RAM",
+      "extracto": "12 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-21",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-512gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "512 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-22",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-1tb"
+      },
+      "localizador": "RAM",
+      "extracto": "12 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-samsung-galaxy-s24-ultra-23",
+      "fuente_id": "sam",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "12gb-1tb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "1 TB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

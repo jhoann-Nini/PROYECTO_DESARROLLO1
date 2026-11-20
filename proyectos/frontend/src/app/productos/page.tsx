@@ -1,4 +1,5 @@
 import CatalogoCliente from "@/components/catalogo/CatalogoCliente";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Catálogo de productos | TecReview",
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function ProductosPage() {
-  return <CatalogoCliente />;
+  return (
+    <Suspense fallback={<p role="status">Cargando catálogo de productos…</p>}>
+      <CatalogoCliente />
+    </Suspense>
+  );
 }

@@ -17,7 +17,7 @@ import {
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import CamposEstablecimiento from "@/components/establecimientos/CamposEstablecimiento";
-import { CLASE_FOCO } from "@/components/ui/foco";
+import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 
 interface PanelRepresentanteModalProps {
   isOpen: boolean;
@@ -49,6 +49,7 @@ export default function PanelRepresentanteModal({
 
   const tituloId = useId();
   const cerrarRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const idBase = useId();
 
   const cerrarPanel = useCallback(() => {
@@ -67,6 +68,7 @@ export default function PanelRepresentanteModal({
     if (!abierto) return;
 
     const overflowPrevio = document.body.style.overflow;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
     cerrarRef.current?.focus();
 
@@ -82,6 +84,7 @@ export default function PanelRepresentanteModal({
     return () => {
       document.body.style.overflow = overflowPrevio;
       window.removeEventListener("keydown", manejarEscape);
+      activador?.focus();
     };
   }, [abierto, cerrarPanel]);
 
@@ -189,21 +192,23 @@ export default function PanelRepresentanteModal({
 
   return (
     <div
+      ref={panelRef}
+      onKeyDown={(evento) => atraparTabulacion(evento, panelRef.current)}
       role="dialog"
       aria-modal="true"
       aria-labelledby={tituloId}
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-5xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
+      <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[var(--color-hairline)] pb-4">
-          <div>
+          <div className="min-w-0">
             <h2
               id={tituloId}
               className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
             >
               Panel de representante
             </h2>
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 break-words text-xs text-[var(--color-subtle)]">
               Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) · Rol:{" "}
               {usuarioSesion?.rol}
             </p>

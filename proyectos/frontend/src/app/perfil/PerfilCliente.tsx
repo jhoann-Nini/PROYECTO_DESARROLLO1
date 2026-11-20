@@ -24,12 +24,6 @@ function formatearFecha(valor?: string): string {
   }).format(fecha);
 }
 
-function iniciales(nombre: string): string {
-  const partes = nombre.trim().split(/\s+/).filter(Boolean);
-  if (partes.length === 0) return "U";
-  return `${partes[0].charAt(0)}${partes[1]?.charAt(0) ?? ""}`.toUpperCase();
-}
-
 export default function PerfilCliente() {
   const {
     usuario,
@@ -227,9 +221,22 @@ export default function PerfilCliente() {
             ) : (
               <span
                 aria-hidden="true"
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-xl font-bold text-[var(--color-brand-blue)]"
+                data-testid="avatar-placeholder"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"
               >
-                {iniciales(usuario.nombre)}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                  className="h-8 w-8"
+                >
+                  <circle cx="12" cy="8.25" r="3.75" />
+                  <path
+                    strokeLinecap="round"
+                    d="M4.5 20.25a7.5 7.5 0 0 1 15 0"
+                  />
+                </svg>
               </span>
             )}
 

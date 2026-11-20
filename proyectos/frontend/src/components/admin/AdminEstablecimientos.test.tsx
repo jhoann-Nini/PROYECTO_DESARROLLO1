@@ -112,6 +112,14 @@ describe("AdminEstablecimientos", () => {
     ).toBeDefined();
   });
 
+  it("ofrece una tarjeta compacta de cada establecimiento sin perder sus acciones", async () => {
+    render(<AdminEstablecimientos />);
+    const card = await screen.findByTestId("establecimiento-card-7");
+    expect(within(card).getByRole("button", { name: "Editar Tienda Tecnológica" })).toBeDefined();
+    expect(within(card).getByRole("button", { name: "Desactivar Tienda Tecnológica" })).toBeDefined();
+    expect(card.textContent).toContain("Carrera 10 # 20-30");
+  });
+
   it("crea un establecimiento con el contrato POST y actualiza la lista", async () => {
     render(<AdminEstablecimientos />);
 

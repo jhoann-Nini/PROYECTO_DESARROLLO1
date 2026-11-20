@@ -66,6 +66,12 @@ public class ProductoService {
         return toResponse(buscarActivoOFallar(id));
     }
 
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerFichaTecnica(Long id) {
+        Producto producto = buscarActivoOFallar(id);
+        return producto.getCaracteristicas() != null ? producto.getCaracteristicas() : Map.of();
+    }
+
 
     @Transactional
     public ProductoResponse crear(ProductoRequest request) {
@@ -110,6 +116,17 @@ public class ProductoService {
 
 
     @Transactional
+    public ProductoResponse actualizarFichaTecnica(Long id, Map<String, Object> fichaTecnica) {
+        validarCaracteristicas(fichaTecnica);
+
+        Producto producto = buscarActivoOFallar(id);
+        producto.setCaracteristicas(fichaTecnica);
+
+        return toResponse(productoRepository.save(producto));
+    }
+
+
+    @Transactional
     public void eliminar(Long id) {
 
         Producto producto = buscarActivoOFallar(id);
@@ -124,6 +141,8 @@ public class ProductoService {
         if (caracteristicas == null) {
             return;
         }
+
+        FichaTecnicaV3Dispatcher.validateAndRoute(caracteristicas);
 
         if (caracteristicas.size() > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Las características no pueden superar los 100 atributos");

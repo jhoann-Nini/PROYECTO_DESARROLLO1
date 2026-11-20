@@ -196,13 +196,34 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   convierten a COP con tasa 4.000. Los demás se consideran COP. Esta regla se
   centraliza en `src/data/precios.ts` y se eliminará cuando todos los datos
   estén normalizados.
-- El comparador se persiste en `localStorage` y no requiere backend. Guarda
-  máximo 4 ids en `tecreview:comparador`.
-- Favoritos usa `localStorage` con la clave `tecreview:favoritos`, normaliza
-  ids enteros positivos, evita duplicados y admite hasta 100 productos. Se
-  sincroniza entre pestañas con `storage` y dentro de la misma pestaña con el
-  evento `tecreview:favoritos:cambio`. No requiere sesión ni backend y no se
-  sincroniza entre dispositivos.
+- El comparador persiste máximo 4 ids en `localStorage`
+  (`tecreview:comparador`). No requiere sesión ni persistencia de comparaciones
+  en backend; sí consulta el catálogo real para validar los productos y su
+  `idCategoria`. El primer producto válido fija la categoría.
+- El presupuesto de home se confirma navegando al catálogo general con
+  `/productos?precioMax=<entero COP>`. El máximo es inclusivo, abarca todas las
+  categorías y excluye precios desconocidos/no positivos. Destacados, rankings
+  y ofertas de home no reciben este filtro ni badges de presupuesto.
+  El parámetro inicial es validado y los cambios manuales de filtros siguen
+  siendo locales. Detalle:
+  [`presupuesto-catalogo-general.md`](presupuesto-catalogo-general.md).
+- Las filas técnicas del comparador se construyen desde las características
+  registradas de los seleccionados: campos planos, secciones y métricas
+  comparables. Se omiten campos reconocidos ajenos a la categoría y filas sin
+  datos; las celdas ausentes muestran «Sin dato». No se usa una plantilla fija
+  de móviles ni datos simulados. Reglas y formatos:
+  [`comparador-filas-por-categoria.md`](comparador-filas-por-categoria.md).
+- Favoritos exige una sesión activa de Supabase: sin sesión no se hidratan ni
+  se escriben favoritos y el botón abre `AuthModal`. Con sesión, se guardan por
+  cuenta en `localStorage` con `tecreview:favoritos:<idSesion>`, se normalizan
+  ids enteros positivos, se evitan duplicados y se admiten hasta 100 productos.
+  La clave anónima histórica `tecreview:favoritos` se elimina. Se sincroniza
+  entre pestañas con `storage` y dentro de la misma pestaña con el evento
+  `tecreview:favoritos:cambio`; el botón anuncia cuando la lista está llena. No
+  se sincroniza entre dispositivos y el ranking de «más deseados» se presenta
+  como favoritos vinculados a una cuenta, sin alimentarse con la lista local.
+  Detalle y propuesta de sincronización:
+  [`favoritos-revision.md`](favoritos-revision.md).
 - `/favoritos` cruza los ids guardados con el catálogo real, muestra los
   productos disponibles y avisa cuántos ya no aparecen; no inventa datos.
 - El tema se persiste en `tecreview:tema`; tampoco se sincroniza entre
@@ -216,8 +237,9 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   `/api/productos/{id}/valoracion-stats`. Las estrellas y el texto de la
   reseña son fuentes distintas: una reseña no implica una valoración.
 - La sugerencia del comparador se deriva de disponibilidad, precio de
-  referencia y cantidad de especificaciones registradas. No declara un ganador
-  absoluto ni una calificación editorial.
+  referencia y cantidad de valores registrados en sus filas técnicas pertinentes,
+  sin un total fijo de seis campos. No declara un ganador absoluto ni una
+  calificación editorial.
 - Reseñas: se consumen las existentes de `/api/resenas`. `/resenas` permite
   buscar, filtrar por producto y ordenar por fecha; publicar exige sesión y usa
   `crearResena`. “Compra verificada” no está modelada; se omite hasta que el
@@ -226,7 +248,10 @@ crearon con nombre propio quedaron integradas en los componentes anteriores.
   `valoracion-stats`; nunca se derivan de una reseña.
 - Blog: cuatro artículos editoriales estáticos en `src/data/blog.ts`, sin
   autores, métricas, precios ni afirmaciones inventadas. Enlazan a categorías
-  reales y no crean endpoints ni CMS.
+  reales, al comparador y a reseñas. La guía de comparación documenta el límite
+  de cuatro productos de la misma categoría, las filas técnicas registradas por
+  categoría y «Sin dato». El blog no crea endpoints ni CMS. Detalle de la
+  revisión: [`blog-revision.md`](blog-revision.md).
 - Perfil: usa la sesión de Supabase y `GET /api/usuarios/me`; muestra rol,
   fecha de registro, estado y las reseñas propias filtradas desde
   `/api/resenas`. Sin sesión ofrece `AuthModal`; con sesión permite cerrar
@@ -440,7 +465,7 @@ aplicación rota.
 - [x] `/resenas` lista reseñas reales, permite buscar, filtrar por producto y ordenar por fecha; publicar exige sesión.
 - [x] Las estrellas de `/resenas` salen de rankings o `valoracion-stats`; no se derivan de una reseña.
 - [x] `/blog` y `/blog/[slug]` sirven cuatro artículos estáticos, sin autores, métricas ni datos inventados.
-- [x] `/favoritos` persiste en `tecreview:favoritos`, permite quitar y vaciar, y se sincroniza dentro de la pestaña y entre pestañas.
+- [x] `/favoritos` exige sesión, persiste por cuenta en `localStorage`, permite quitar y vaciar, y se sincroniza dentro de la pestaña y entre pestañas.
 - [x] `/favoritos` avisa de los ids guardados que ya no aparecen en el catálogo real.
 - [x] `/perfil` usa la sesión de Supabase y `/api/usuarios/me`, muestra rol, fecha, estado y reseñas propias, y permite cerrar sesión.
 - [x] Sin sesión, `/perfil` ofrece `AuthModal`; con rol administrador abre el panel.
@@ -458,8 +483,9 @@ aplicación rota.
 
 ### Desviaciones registradas del Bloque F
 
-1. Favoritos es local y admite hasta 100 ids; no se sincroniza entre
-   dispositivos ni se asocia a la cuenta.
+1. Favoritos es local por cuenta autenticada (`tecreview:favoritos:<idSesion>`)
+   y admite hasta 100 ids; no se sincroniza entre dispositivos. Sin sesión no
+   se hidrata ni se guarda nada y la clave anónima histórica se elimina.
 2. El tema también es local; no se sincroniza entre dispositivos.
 3. El blog es contenido estático en el repositorio. No hay CMS, autores ni
    métricas de lectura inventadas.
@@ -552,6 +578,11 @@ aplicación rota.
 ---
 
 ## 8.7 Criterios de aceptación del Bloque I — Filtro automático por presupuesto
+
+> Registro histórico, sustituido por la mejora 3 del 16/11/2026: confirmar ahora
+> abre `/productos?precioMax=<COP>`, sin filtrar ni desplazar la vista a
+> destacados. La búsqueda de home se mantiene independiente de esta navegación.
+> Véase [`presupuesto-catalogo-general.md`](presupuesto-catalogo-general.md).
 
 - [x] El valor “Hasta: $ X COP” y el límite mostrado bajo el slider se
   actualizan en vivo mientras se arrastra (`onChange`).
@@ -863,6 +894,15 @@ aplicación rota.
 5. La moderación no incluye historial de auditoría ni paginación en el panel;
    el detalle del contrato y sus límites está en `docs/moderacion-resenas.md`.
 
+### Ajuste visual de la cola de reportes
+
+Las tres métricas y el aviso «Alcance actual» comparten la superficie neutra
+`--color-canvas` y los bordes `--color-hairline` en ambos temas. Los pendientes
+y las reseñas ocultas distinguen sus cifras con ámbar y rojo de contraste
+adaptado al tema, sin fondos claros sobre el panel oscuro. El aviso usa el
+texto `--color-ink` y un borde lateral kiwi `--color-brand-blue`, en lugar
+del azul heredado.
+
 ---
 
 ## 9. Criterios de aceptación del Bloque A
@@ -899,6 +939,10 @@ aplicación rota.
    ajustables con datos reales.
 8. 404 del detalle: resuelto con `notFound()` en el Server Component. La doble
    consulta del producto queda como deuda técnica aceptada.
+9. Favoritos entre dispositivos: evaluado en
+   [`favoritos-revision.md`](favoritos-revision.md) y no aprobado por ahora.
+   El flujo actual exige sesión y usa una caché local por cuenta; no hay
+   favoritos anónimos ni cambios de backend, JPA o base de datos.
 
 ---
 
@@ -1315,5 +1359,33 @@ el historial antiguo y el reescrito.
   `docs/reportes-precio-enlace.md`, con el contrato mínimo que TEC-147 debe
   entregar antes de implementar la UI.
 - No se agregaron cambios de código para esta tarea.
+
+### 12.10 Paneles por rol — adaptación del boceto Figma
+
+Referencia visual editable: [TecReview — Paneles por rol](https://www.figma.com/design/ff4S5udP2dalpJBbfUvlQu).
+Las cinco pantallas son ilustrativas: usuarios, cifras y precios no se trasladan
+al producto. Se mantienen las APIs, permisos y operaciones CRUD existentes.
+
+- **Administrador:** navegación lateral a partir de `lg` y selector nativo de
+  seis secciones en móvil; el catálogo permite búsqueda local por nombre o
+  marca, paginación de ocho productos y filas convertidas en tarjetas por CSS
+  sin duplicar acciones. La búsqueda no sustituye la carga ni los errores de
+  backend. Las acciones de establecimientos conservan un solo control por
+  registro también en pantallas estrechas.
+- **Moderación:** ambas vistas hablan de *reseñas reportadas* y advierten que
+  los reportes de precios y enlaces todavía no están integrados. Ocultar y
+  publicar exigen justificación en frontend; rechazar solo se ofrece a
+  reportes en revisión sin pendientes. Los mensajes de vacío distinguen
+  ausencia de resultados de filtros activos y no suponen que todo esté resuelto.
+- **Representante y roles:** el formulario de establecimientos conserva datos
+  y validaciones existentes; se aclara que el historial y las representaciones
+  activas no pueden consultarse en la vista administrativa actual.
+- **Accesibilidad:** se agrega foco inicial, contención de Tab y retorno al
+  activador al cerrar los paneles de administrador, moderador y representante;
+  Escape cierra la confirmación administrativa sin ejecutar la acción.
+
+No se añadió selección masiva, contador ficticio de reportes ni verificación
+de precios inexistente. El control Ficha V3 que ya existía conserva su
+comportamiento real y no se interpreta como estado verificado del boceto.
 
 

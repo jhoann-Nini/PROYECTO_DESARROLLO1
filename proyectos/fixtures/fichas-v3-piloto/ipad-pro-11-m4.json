@@ -1,0 +1,1622 @@
+{
+  "version_esquema": 3,
+  "categoria": "tablets",
+  "variantes": [
+    {
+      "id": "8gb-256gb",
+      "modelo": "iPad Pro 11-inch M4",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "RAM": "8 GB unified",
+        "storage": "256GB",
+        "CPU": "9-core"
+      }
+    },
+    {
+      "id": "8gb-512gb",
+      "modelo": "iPad Pro 11-inch M4",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "RAM": "8 GB unified",
+        "storage": "512GB",
+        "CPU": "9-core"
+      }
+    },
+    {
+      "id": "16gb-1tb",
+      "modelo": "iPad Pro 11-inch M4",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "RAM": "16 GB unified",
+        "storage": "1TB",
+        "CPU": "10-core"
+      }
+    },
+    {
+      "id": "16gb-2tb",
+      "modelo": "iPad Pro 11-inch M4",
+      "sku": null,
+      "mercado": null,
+      "identificadores": {
+        "RAM": "16 GB unified",
+        "storage": "2TB",
+        "CPU": "10-core"
+      }
+    }
+  ],
+  "especificaciones": [
+    {
+      "id": "spec-ipad-pro-11-m4-01-display.diagonal",
+      "clave": "display.diagonal",
+      "nombre": "Diagonal",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "11 inch diagonal",
+        "unidad": "in"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 11,
+          "unidad": "in"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-01"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-02-display.panel",
+      "clave": "display.panel",
+      "nombre": "Panel",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Ultra Retina XDR, Tandem OLED",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Ultra Retina XDR, Tandem OLED"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-02"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-03-display.resolution",
+      "clave": "display.resolution",
+      "nombre": "Resolución",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "2420 × 1668 px",
+        "unidad": "px"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "resolucion",
+          "ancho": 2420,
+          "alto": 1668,
+          "unidad": "px"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-03"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-04-display.ppi",
+      "clave": "display.ppi",
+      "nombre": "Densidad",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "264 ppi",
+        "unidad": "puntos"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 264,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-04"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-05-display.refresh_rate",
+      "clave": "display.refresh_rate",
+      "nombre": "ProMotion",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "10–120 Hz",
+        "unidad": "Hz"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 10,
+            "unidad": "Hz"
+          },
+          "maximo": {
+            "valor": 120,
+            "unidad": "Hz"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-05"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-06-display.sdr_brightness",
+      "clave": "display.sdr_brightness",
+      "nombre": "Brillo SDR máximo",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1000 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1000,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-06"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-07-display.hdr_brightness_peak",
+      "clave": "display.hdr_brightness_peak",
+      "nombre": "Brillo pico HDR",
+      "grupo": "pantalla",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1600 nits",
+        "unidad": "nits"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1600,
+          "unidad": "nits"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-07"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-08-processor.model",
+      "clave": "processor.model",
+      "nombre": "Chip",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Apple M4",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "texto",
+          "valor": "Apple M4"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-08"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-09-processor.gpu_cores",
+      "clave": "processor.gpu_cores",
+      "nombre": "GPU",
+      "grupo": "rendimiento",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "10-core GPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 10,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-09"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-10-camera.rear",
+      "clave": "camera.rear",
+      "nombre": "Cámara trasera",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 MP",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-10"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-11-camera.front",
+      "clave": "camera.front",
+      "nombre": "Cámara frontal",
+      "grupo": "cámaras",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "12 MP landscape Ultra Wide",
+        "unidad": "MP"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 12,
+          "unidad": "mpx"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-11"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-12-dimensions.body",
+      "clave": "dimensions.body",
+      "nombre": "Dimensiones alto × ancho × grosor",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "249.7 × 177.5 × 5.3 mm",
+        "unidad": "mm"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "dimensiones",
+          "ejes": [
+            {
+              "eje": "alto",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 249.7,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "ancho",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 177.5,
+                "unidad": "mm"
+              }
+            },
+            {
+              "eje": "grosor",
+              "magnitud": {
+                "tipo": "magnitud",
+                "valor": 5.3,
+                "unidad": "mm"
+              }
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-12"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-13-weight.radio_models",
+      "clave": "weight.radio_models",
+      "nombre": "Peso por radio",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "444g Wi-Fi / 446g Wi-Fi + Cellular",
+        "unidad": "g"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "rango",
+          "minimo": {
+            "valor": 444,
+            "unidad": "g"
+          },
+          "maximo": {
+            "valor": 446,
+            "unidad": "g"
+          }
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-13"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-14-color.options",
+      "clave": "color.options",
+      "nombre": "Acabados",
+      "grupo": "diseño",
+      "variante_id": null,
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "Silver; Space Black",
+        "unidad": ""
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "lista",
+          "semantica": "secuencia",
+          "tipo_elemento": "texto",
+          "elementos": [
+            {
+              "tipo": "texto",
+              "valor": "Silver"
+            },
+            {
+              "tipo": "texto",
+              "valor": "Space Black"
+            }
+          ]
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-14"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-15-processor.cpu_cores-8gb-256gb",
+      "clave": "processor.cpu_cores",
+      "nombre": "CPU cores",
+      "grupo": "rendimiento",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "9-core CPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 9,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-15"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-16-memory.unified-8gb-256gb",
+      "clave": "memory.unified",
+      "nombre": "Memoria unificada",
+      "grupo": "memoria",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 8,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-16"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-17-storage.capacity-8gb-256gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "8gb-256gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "256GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 256,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-17"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-18-processor.cpu_cores-8gb-512gb",
+      "clave": "processor.cpu_cores",
+      "nombre": "CPU cores",
+      "grupo": "rendimiento",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "9-core CPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 9,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-18"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-19-memory.unified-8gb-512gb",
+      "clave": "memory.unified",
+      "nombre": "Memoria unificada",
+      "grupo": "memoria",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "8 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 8,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-19"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-20-storage.capacity-8gb-512gb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "8gb-512gb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "512GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 512,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-20"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-21-processor.cpu_cores-16gb-1tb",
+      "clave": "processor.cpu_cores",
+      "nombre": "CPU cores",
+      "grupo": "rendimiento",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "10-core CPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 10,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-21"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-22-memory.unified-16gb-1tb",
+      "clave": "memory.unified",
+      "nombre": "Memoria unificada",
+      "grupo": "memoria",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "16 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 16,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-22"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-23-storage.capacity-16gb-1tb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "16gb-1tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "1TB",
+        "unidad": "TB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 1,
+          "unidad": "TB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-23"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-24-processor.cpu_cores-16gb-2tb",
+      "clave": "processor.cpu_cores",
+      "nombre": "CPU cores",
+      "grupo": "rendimiento",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "10-core CPU",
+        "unidad": "cores"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 10,
+          "unidad": "puntos"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-24"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-25-memory.unified-16gb-2tb",
+      "clave": "memory.unified",
+      "nombre": "Memoria unificada",
+      "grupo": "memoria",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "16 GB",
+        "unidad": "GB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 16,
+          "unidad": "GB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-25"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    },
+    {
+      "id": "spec-ipad-pro-11-m4-26-storage.capacity-16gb-2tb",
+      "clave": "storage.capacity",
+      "nombre": "Almacenamiento",
+      "grupo": "memoria",
+      "variante_id": "16gb-2tb",
+      "estado_dato": "conocido",
+      "justificacion_estado": null,
+      "valor_original": {
+        "texto": "2TB",
+        "unidad": "TB"
+      },
+      "normalizacion": {
+        "estado": "normalizada",
+        "valor": {
+          "tipo": "magnitud",
+          "valor": 2,
+          "unidad": "TB"
+        },
+        "regla_conversion_id": null,
+        "precision": null
+      },
+      "evidencia_ids": [
+        "ev-ipad-pro-11-m4-26"
+      ],
+      "revision_conflicto": {
+        "estado": "sin_conflicto",
+        "resuelto_en": null,
+        "resuelto_por": null,
+        "resolucion": null
+      },
+      "verificacion": {
+        "estado": "con_fuente",
+        "verificado_en": null,
+        "verificado_por": null,
+        "evento_auditoria_id": null,
+        "motivo_revision": null
+      },
+      "comparacion": {
+        "habilitada": false
+      }
+    }
+  ],
+  "fuentes": [
+    {
+      "id": "ipad-tech",
+      "tipo": "fabricante",
+      "nombre": "Apple Support — iPad Pro 11-inch (M4) technical specs",
+      "url": "https://support.apple.com/en-am/119892",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    },
+    {
+      "id": "ipad-news",
+      "tipo": "fabricante",
+      "nombre": "Apple Newsroom — iPad Pro M4",
+      "url": "https://www.apple.com/newsroom/2024/05/apple-unveils-stunning-new-ipad-pro-with-m4-chip-and-apple-pencil-pro/",
+      "mercado": null,
+      "localizador": null,
+      "consultada_en": "2026-11-19",
+      "variante_id": null
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "ev-ipad-pro-11-m4-01",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Diagonal",
+      "extracto": "11 inch diagonal",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-02",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Panel",
+      "extracto": "Ultra Retina XDR, Tandem OLED",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-03",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Resolución",
+      "extracto": "2420 × 1668 px",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-04",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Densidad",
+      "extracto": "264 ppi",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-05",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "ProMotion",
+      "extracto": "10–120 Hz",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-06",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Brillo SDR máximo",
+      "extracto": "1000 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-07",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Brillo pico HDR",
+      "extracto": "1600 nits",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-08",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Chip",
+      "extracto": "Apple M4",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-09",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "GPU",
+      "extracto": "10-core GPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-10",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Cámara trasera",
+      "extracto": "12 MP",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-11",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Cámara frontal",
+      "extracto": "12 MP landscape Ultra Wide",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-12",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Dimensiones alto × ancho × grosor",
+      "extracto": "249.7 × 177.5 × 5.3 mm",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-13",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Peso por radio",
+      "extracto": "444g Wi-Fi / 446g Wi-Fi + Cellular",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-14",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "todas_las_variantes",
+        "variante_ids": [
+          "8gb-256gb",
+          "8gb-512gb",
+          "16gb-1tb",
+          "16gb-2tb"
+        ]
+      },
+      "localizador": "Acabados",
+      "extracto": "Silver; Space Black",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-15",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-256gb"
+      },
+      "localizador": "CPU cores",
+      "extracto": "9-core CPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-16",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-256gb"
+      },
+      "localizador": "Memoria unificada",
+      "extracto": "8 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-17",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-256gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "256GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-18",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-512gb"
+      },
+      "localizador": "CPU cores",
+      "extracto": "9-core CPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-19",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-512gb"
+      },
+      "localizador": "Memoria unificada",
+      "extracto": "8 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-20",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "8gb-512gb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "512GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-21",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-1tb"
+      },
+      "localizador": "CPU cores",
+      "extracto": "10-core CPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-22",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-1tb"
+      },
+      "localizador": "Memoria unificada",
+      "extracto": "16 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-23",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-1tb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "1TB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-24",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-2tb"
+      },
+      "localizador": "CPU cores",
+      "extracto": "10-core CPU",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-25",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-2tb"
+      },
+      "localizador": "Memoria unificada",
+      "extracto": "16 GB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    },
+    {
+      "id": "ev-ipad-pro-11-m4-26",
+      "fuente_id": "ipad-tech",
+      "alcance": {
+        "tipo": "variante",
+        "variante_id": "16gb-2tb"
+      },
+      "localizador": "Almacenamiento",
+      "extracto": "2TB",
+      "postura": "respalda",
+      "registrada_en": "2026-11-19",
+      "registrada_por": null
+    }
+  ],
+  "benchmarks": []
+}

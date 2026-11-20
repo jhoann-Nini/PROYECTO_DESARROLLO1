@@ -7,9 +7,9 @@ import {
 } from "./catalogoCanonico";
 
 describe("catálogo canónico piloto", () => {
-  it("define exactamente ocho productos y cubre las cuatro categorías", () => {
-    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(8);
-    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(8);
+  it("define exactamente dieciocho productos y cubre las cuatro categorías", () => {
+    expect(CATALOGO_CANONICO_PILOTO).toHaveLength(18);
+    expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.id)).size).toBe(18);
     expect(new Set(CATALOGO_CANONICO_PILOTO.map((item) => item.categoria))).toEqual(
       new Set(["moviles", "tablets", "laptops", "auriculares"]),
     );
@@ -75,6 +75,28 @@ describe("catálogo canónico piloto", () => {
     });
   });
 
+  it("mantiene separadas las variantes de A55 y las configuraciones identificadas de iPhone y Redmi", () => {
+    const a55 = obtenerProductoCanonico("samsung-galaxy-a55-5g");
+    const iphone = obtenerProductoCanonico("apple-iphone-13");
+    const redmi = obtenerProductoCanonico("xiaomi-redmi-note-14-pro-plus-5g");
+    const oneplus = obtenerProductoCanonico("oneplus-13");
+    const iphone15 = obtenerProductoCanonico("apple-iphone-15-pro-max");
+    const s25 = obtenerProductoCanonico("samsung-galaxy-s25-ultra");
+    const xiaomi14 = obtenerProductoCanonico("xiaomi-14-ultra");
+    const earA = obtenerProductoCanonico("nothing-ear-a-black");
+    const xiaomi14t = obtenerProductoCanonico("xiaomi-14t-pro");
+    expect(a55?.referencias[0]).toMatchObject({ coleccion: "vendidos", idRegistro: 102, varianteId: null });
+    expect(a55?.variantes.map((v) => v.id)).toEqual(["8gb-128gb", "8gb-256gb"]);
+    expect(iphone?.referencias[0].varianteId).toBe("128gb");
+    expect(redmi?.referencias[0].varianteId).toBe("12gb-512gb-co");
+    expect(oneplus?.referencias[0].varianteId).toBe("16gb-512gb");
+    expect(iphone15?.referencias[0].varianteId).toBe("256gb");
+    expect(s25?.referencias[0].varianteId).toBe("12gb-1tb");
+    expect(xiaomi14?.referencias[0].varianteId).toBe("16gb-512gb");
+    expect(earA?.referencias[0].varianteId).toBe("black");
+    expect(xiaomi14t?.referencias[0].varianteId).toBe("12gb-512gb-co");
+  });
+
   it("no fusiona Nothing Phone (2a) Plus con Special Edition", () => {
     const nothing = obtenerProductoCanonico("nothing-phone-2a-special-edition");
     expect(nothing?.nombre).toBe("Nothing Phone (2a) Special Edition");
@@ -106,12 +128,21 @@ describe("catálogo canónico piloto", () => {
     const ear = obtenerProductoCanonico("nothing-ear-2");
     const special = obtenerProductoCanonico("nothing-phone-2a-special-edition");
     const sony = obtenerProductoCanonico("sony-wh-1000xm5");
+    const a55 = obtenerProductoCanonico("samsung-galaxy-a55-5g");
+    const iphone = obtenerProductoCanonico("apple-iphone-13");
+    const redmi = obtenerProductoCanonico("xiaomi-redmi-note-14-pro-plus-5g");
+    const oneplus = obtenerProductoCanonico("oneplus-13");
+    const iphone15 = obtenerProductoCanonico("apple-iphone-15-pro-max");
+    const s25 = obtenerProductoCanonico("samsung-galaxy-s25-ultra");
+    const xiaomi14 = obtenerProductoCanonico("xiaomi-14-ultra");
+    const earA = obtenerProductoCanonico("nothing-ear-a-black");
+    const xiaomi14t = obtenerProductoCanonico("xiaomi-14t-pro");
 
-    for (const producto of [samsung, onePlus, ipad, ear, special, sony]) {
+    for (const producto of [samsung, onePlus, ipad, ear, special, sony, a55, iphone, redmi, oneplus, iphone15, s25, xiaomi14, earA, xiaomi14t]) {
       expect(producto?.imagen.url).toMatch(/^https:\/\//);
       expect(producto?.imagen.estadoVerificacion).toBe("verificada");
-      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0"]).toContain(producto?.imagen.licencia);
-      expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/licenses\//);
+      expect(["CC BY-SA 4.0", "CC BY 4.0", "CC BY-ND 2.0", "CC0 1.0"]).toContain(producto?.imagen.licencia);
+      expect(producto?.imagen.licenciaUrl).toMatch(/^https:\/\/creativecommons\.org\/(licenses|publicdomain)\//);
       expect(producto?.imagen.paginaOrigen).toMatch(/^https:\/\//);
       expect(producto?.imagen.autor).not.toBeNull();
       expect(producto?.imagen.atribucion).not.toBeNull();
@@ -121,6 +152,15 @@ describe("catálogo canónico piloto", () => {
     expect(ear?.imagen.estadoVerificacion).toBe("verificada");
     expect(special?.imagen.licencia).toBe("CC BY 4.0");
     expect(sony?.imagen.licencia).toBe("CC BY-ND 2.0");
+    expect(a55?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(iphone?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(redmi?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(oneplus?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(iphone15?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(s25?.imagen.licencia).toBe("CC BY-SA 4.0");
+    expect(xiaomi14?.imagen.licencia).toBe("CC0 1.0");
+    expect(earA?.imagen.licencia).toBe("CC BY 4.0");
+    expect(xiaomi14t?.imagen.licencia).toBe("CC BY-SA 4.0");
 
     const pendientes = [
       obtenerProductoCanonico("lenovo-thinkpad-e14-gen-5"),
@@ -128,7 +168,8 @@ describe("catálogo canónico piloto", () => {
     ];
 
     for (const producto of pendientes) {
-      expect(producto?.imagen.estadoVerificacion).toBe("pendiente");
+      expect(producto?.imagen.estadoVerificacion).toBe("sin_imagen");
+      expect(producto?.imagen.url).toBeNull();
       expect(producto?.imagen.licencia).toBeNull();
       expect(producto?.imagen.atribucion).toBeNull();
     }
@@ -140,5 +181,18 @@ describe("catálogo canónico piloto", () => {
 
   it("devuelve null para un ID canónico desconocido", () => {
     expect(obtenerProductoCanonico("producto-inexistente")).toBeNull();
+  });
+  it("incorpora Redmi Note 13 Pro+ 5G como modelo distinto con variante colombiana identificada", () => {
+    const redmi = obtenerProductoCanonico("redmi-note-13-pro-plus-5g");
+    expect(redmi?.referencias).toEqual([
+      expect.objectContaining({ coleccion: "vendidos", idRegistro: 101, varianteId: "12gb-512gb" }),
+    ]);
+    expect(redmi?.variantes[0]).toMatchObject({
+      ram: "12 GB LPDDR5",
+      almacenamiento: "512 GB UFS 3.1",
+      mercado: "Colombia",
+    });
+    expect(redmi?.imagen.estadoVerificacion).toBe("sin_imagen");
+    expect(redmi?.imagen.url).toBeNull();
   });
 });

@@ -127,22 +127,20 @@ public class GeneralRateLimitingFilter extends OncePerRequestFilter {
 
 
   /**
-   * Obtiene la IP real del cliente detrás del proxy de Render.
+   * Obtiene la IP real del cliente detrás de la infraestructura de Render.
    * <p>
-   * Render documenta que las solicitudes pasan por Cloudflare y sus
-   * balanceadores, por lo que getRemoteAddr() identifica al proxy.
-   * En este despliegue se usa la primera IP de X-Forwarded-For,
-   * que representa al cliente según el orden de la cadena recibida.
-   * Si la cabecera no está disponible, se conserva remoteAddr como fallback.
+   * Render enruta las solicitudes entrantes a través de Cloudflare. Se prioriza
+   * CF-Connecting-IP, que Cloudflare agrega desde su edge y mantiene en un
+   * formato de una sola IP. No se confía en X-Forwarded-For porque puede incluir
+   * valores aportados por el cliente. Si falta la cabecera confiable, se usa
+   * remoteAddr como respaldo conservador (IP del proxy).
    */
   public String extractClientIp(HttpServletRequest request) {
-    String forwardedFor = request.getHeader("X-Forwarded-For");
+    String cloudflareClientIp = request.getHeader("CF-Connecting-IP");
 
-    if (forwardedFor != null && !forwardedFor.isBlank()) {
-      String clientIp = forwardedFor.split(",", 2)[0].trim();
-      if (!clientIp.isBlank() && !"unknown".equalsIgnoreCase(clientIp)) {
-        return clientIp;
-      }
+    if (cloudflareClientIp != null && !cloudflareClientIp.isBlank()
+        && !"unknown".equalsIgnoreCase(cloudflareClientIp.trim())) {
+      return cloudflareClientIp.trim();
     }
 
     String remoteAddr = request.getRemoteAddr();

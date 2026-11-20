@@ -894,6 +894,15 @@ aplicación rota.
 5. La moderación no incluye historial de auditoría ni paginación en el panel;
    el detalle del contrato y sus límites está en `docs/moderacion-resenas.md`.
 
+### Ajuste visual de la cola de reportes
+
+Las tres métricas y el aviso «Alcance actual» comparten la superficie neutra
+`--color-canvas` y los bordes `--color-hairline` en ambos temas. Los pendientes
+y las reseñas ocultas distinguen sus cifras con ámbar y rojo de contraste
+adaptado al tema, sin fondos claros sobre el panel oscuro. El aviso usa el
+texto `--color-ink` y un borde lateral kiwi `--color-brand-blue`, en lugar
+del azul heredado.
+
 ---
 
 ## 9. Criterios de aceptación del Bloque A

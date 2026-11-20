@@ -281,6 +281,23 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   });
 
   describe("Cola de moderación real", () => {
+    it("mantiene las métricas y el aviso sobre superficies del tema sin fondos claros fijos", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
+
+      const pendientes = await screen.findByText("Reportes Pendientes");
+      const ocultas = screen.getByText("Reseñas Ocultas");
+      const aviso = screen.getByText("Alcance actual:");
+
+      for (const etiqueta of [pendientes, ocultas]) {
+        expect(etiqueta.parentElement?.className).toContain("bg-[var(--color-canvas)]");
+        expect(etiqueta.parentElement?.className).toContain("border-[var(--color-hairline)]");
+      }
+      expect(aviso.parentElement?.parentElement?.className).toContain("bg-[var(--color-canvas)]");
+      expect(aviso.parentElement?.parentElement?.className).toContain("border-l-[var(--color-brand-blue)]");
+      expect(aviso.parentElement?.parentElement?.className).toContain("text-[var(--color-ink)]");
+    });
+
     it("explica que solo cubre reseñas y no presenta la cola vacía como resuelta", async () => {
       render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
       fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));

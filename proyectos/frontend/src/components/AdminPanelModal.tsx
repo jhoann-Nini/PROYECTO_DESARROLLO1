@@ -2298,27 +2298,27 @@ export default function AdminPanelModal({
                     {resenasReportadas.length}
                   </p>
                 </div>
-                <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
-                  <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
                     Reportes Pendientes
                   </span>
-                  <p className="text-xl font-extrabold text-amber-700 mt-1">
+                  <p className="text-xl font-extrabold text-amber-800 dark:text-amber-300 mt-1">
                     {totalReportesPendientes}
                   </p>
                 </div>
-                <div className="rounded-xl border border-red-200 bg-red-50/60 p-3">
-                  <span className="text-[10px] uppercase font-bold text-red-800 tracking-wider">
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
                     Reseñas Ocultas
                   </span>
-                  <p className="text-xl font-extrabold text-red-700 mt-1">
+                  <p className="text-xl font-extrabold text-red-700 dark:text-red-300 mt-1">
                     {resenasReportadas.filter((r) => r.ocultaPorReportes || r.ocultaPorModeracion).length}
                   </p>
                 </div>
               </div>
 
               {/* Tarjeta de contexto TEC-127 / S2-72 */}
-              <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 flex items-start gap-2 text-[11px] text-blue-900 leading-relaxed">
-                <span className="text-base select-none shrink-0">ℹ️</span>
+              <div className="rounded-xl border border-[var(--color-hairline)] border-l-2 border-l-[var(--color-brand-blue)] bg-[var(--color-canvas)] p-3 flex items-start gap-2 text-[11px] text-[var(--color-ink)] leading-relaxed">
+                <span className="text-base select-none shrink-0 text-[var(--color-brand-blue)]" aria-hidden="true">ℹ</span>
                 <div>
                    <strong className="font-bold">Alcance actual:</strong>
                    {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados. Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.

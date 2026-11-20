@@ -894,6 +894,15 @@ aplicación rota.
 5. La moderación no incluye historial de auditoría ni paginación en el panel;
    el detalle del contrato y sus límites está en `docs/moderacion-resenas.md`.
 
+### Ajuste visual de la cola de reportes
+
+Las tres métricas y el aviso «Alcance actual» comparten la superficie neutra
+`--color-canvas` y los bordes `--color-hairline` en ambos temas. Los pendientes
+y las reseñas ocultas distinguen sus cifras con ámbar y rojo de contraste
+adaptado al tema, sin fondos claros sobre el panel oscuro. El aviso usa el
+texto `--color-ink` y un borde lateral kiwi `--color-brand-blue`, en lugar
+del azul heredado.
+
 ---
 
 ## 9. Criterios de aceptación del Bloque A
@@ -1350,5 +1359,33 @@ el historial antiguo y el reescrito.
   `docs/reportes-precio-enlace.md`, con el contrato mínimo que TEC-147 debe
   entregar antes de implementar la UI.
 - No se agregaron cambios de código para esta tarea.
+
+### 12.10 Paneles por rol — adaptación del boceto Figma
+
+Referencia visual editable: [TecReview — Paneles por rol](https://www.figma.com/design/ff4S5udP2dalpJBbfUvlQu).
+Las cinco pantallas son ilustrativas: usuarios, cifras y precios no se trasladan
+al producto. Se mantienen las APIs, permisos y operaciones CRUD existentes.
+
+- **Administrador:** navegación lateral a partir de `lg` y selector nativo de
+  seis secciones en móvil; el catálogo permite búsqueda local por nombre o
+  marca, paginación de ocho productos y filas convertidas en tarjetas por CSS
+  sin duplicar acciones. La búsqueda no sustituye la carga ni los errores de
+  backend. Las acciones de establecimientos conservan un solo control por
+  registro también en pantallas estrechas.
+- **Moderación:** ambas vistas hablan de *reseñas reportadas* y advierten que
+  los reportes de precios y enlaces todavía no están integrados. Ocultar y
+  publicar exigen justificación en frontend; rechazar solo se ofrece a
+  reportes en revisión sin pendientes. Los mensajes de vacío distinguen
+  ausencia de resultados de filtros activos y no suponen que todo esté resuelto.
+- **Representante y roles:** el formulario de establecimientos conserva datos
+  y validaciones existentes; se aclara que el historial y las representaciones
+  activas no pueden consultarse en la vista administrativa actual.
+- **Accesibilidad:** se agrega foco inicial, contención de Tab y retorno al
+  activador al cerrar los paneles de administrador, moderador y representante;
+  Escape cierra la confirmación administrativa sin ejecutar la acción.
+
+No se añadió selección masiva, contador ficticio de reportes ni verificación
+de precios inexistente. El control Ficha V3 que ya existía conserva su
+comportamiento real y no se interpreta como estado verificado del boceto.
 
 

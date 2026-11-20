@@ -140,7 +140,8 @@ export default function AdminPanelModal({
     );
   }, [busquedaProductos, marcas, productos]);
   const paginasProductos = Math.max(1, Math.ceil(productosFiltrados.length / 8));
-  const productosVisibles = productosFiltrados.slice((paginaProductos - 1) * 8, paginaProductos * 8);
+  const paginaActualProductos = Math.min(paginaProductos, paginasProductos);
+  const productosVisibles = productosFiltrados.slice((paginaActualProductos - 1) * 8, paginaActualProductos * 8);
 
   // Estados de carga y feedback globales
   const [cargando, setCargando] = useState(false);
@@ -396,12 +397,19 @@ export default function AdminPanelModal({
   }, [confirmacionAbierta, productoEliminando, categoriaEliminando, marcaEliminando, modalMotivoAccion]);
 
   useEffect(() => {
+    if (!productoFichaV3) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panelRef.current?.querySelector<HTMLElement>('[aria-label="Cerrar modal de ficha técnica"]')?.focus();
+    return () => activador?.focus();
+  }, [productoFichaV3]);
+
+  useEffect(() => {
     if (!isOpen || !esAdministrador(usuarioSesion)) return;
     function manejarEscape(evento: KeyboardEvent) {
       if (evento.key !== "Escape") return;
-      if (productoFichaV3) return;
       evento.preventDefault();
-      if (modalMotivoAccion && !ejecutandoAccion) {
+      if (productoFichaV3) setProductoFichaV3(null);
+      else if (modalMotivoAccion && !ejecutandoAccion) {
         setModalMotivoAccion(null);
         setErrorMotivoAccion(false);
       } else if (productoEliminando && !eliminando) setProductoEliminando(null);
@@ -1102,7 +1110,10 @@ export default function AdminPanelModal({
   return (
     <div
       ref={panelRef}
-      onKeyDown={(evento) => atraparTabulacion(evento, confirmacionRef.current ?? panelRef.current)}
+      onKeyDown={(evento) => atraparTabulacion(evento,
+        confirmacionRef.current ??
+        (productoFichaV3 ? panelRef.current?.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"]') ?? null : panelRef.current),
+      )}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
@@ -1839,10 +1850,10 @@ export default function AdminPanelModal({
                   </table>
                 </div>
                 <nav aria-label="Paginación de productos" className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--color-subtle)]">
-                    <span>Página {paginaProductos} de {paginasProductos}</span>
+                    <span>Página {paginaActualProductos} de {paginasProductos}</span>
                     {paginasProductos > 1 && <div className="flex gap-2">
-                      <button type="button" disabled={paginaProductos === 1} onClick={() => setPaginaProductos((pagina) => pagina - 1)} aria-label="Página anterior de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Anterior</button>
-                      <button type="button" disabled={paginaProductos === paginasProductos} onClick={() => setPaginaProductos((pagina) => pagina + 1)} aria-label="Siguiente página de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Siguiente</button>
+                      <button type="button" disabled={paginaActualProductos === 1} onClick={() => setPaginaProductos(paginaActualProductos - 1)} aria-label="Página anterior de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Anterior</button>
+                      <button type="button" disabled={paginaActualProductos === paginasProductos} onClick={() => setPaginaProductos(paginaActualProductos + 1)} aria-label="Siguiente página de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Siguiente</button>
                     </div>}
                   </nav>
                 </>

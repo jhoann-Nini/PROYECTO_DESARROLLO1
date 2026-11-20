@@ -217,6 +217,18 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       expect(document.activeElement).toBe(activar);
       expect(api.eliminarProducto).not.toHaveBeenCalled();
     });
+
+    it("mantiene el foco en el editor Ficha V3 y vuelve a su activador al cerrarlo", async () => {
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Nothing Phone (2)");
+      const activar = screen.getByRole("button", { name: "Ficha Técnica V3 de Nothing Phone (2)" });
+      activar.focus();
+      fireEvent.click(activar);
+      const cerrarFicha = screen.getByRole("button", { name: "Cerrar modal de ficha técnica" });
+      expect(document.activeElement).toBe(cerrarFicha);
+      fireEvent.click(cerrarFicha);
+      expect(document.activeElement).toBe(activar);
+    });
   });
 
   describe("Catálogo adaptable", () => {
@@ -249,6 +261,22 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       fireEvent.change(screen.getByRole("searchbox", { name: /buscar en el catálogo/i }), { target: { value: "Producto 1" } });
       expect(screen.getByText("Producto 1")).toBeDefined();
       expect(screen.getByText(/página 1 de 1/i)).toBeDefined();
+    });
+
+    it("vuelve a una página válida al eliminar el último producto de la última página", async () => {
+      const lista = Array.from({ length: 9 }, (_, index) => ({
+        ...mockProductos[0], idProducto: 101 + index, nombre: `Producto ${index + 1}`,
+      }));
+      vi.mocked(api.obtenerProductos).mockResolvedValueOnce(lista).mockResolvedValueOnce(lista.slice(0, 8));
+      vi.mocked(api.eliminarProducto).mockResolvedValueOnce(undefined);
+      render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
+      await screen.findByText("Producto 1");
+      fireEvent.click(screen.getByRole("button", { name: /siguiente página de productos/i }));
+      fireEvent.click(screen.getByRole("button", { name: "Eliminar Producto 9" }));
+      fireEvent.click(screen.getByRole("button", { name: "Eliminar Producto" }));
+      await waitFor(() => expect(api.eliminarProducto).toHaveBeenCalledWith(109));
+      await screen.findByText("Producto 1");
+      expect(screen.getByText("Página 1 de 1")).toBeDefined();
     });
   });
 

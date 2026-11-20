@@ -7,7 +7,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("HU-S2-14 / TEC-121: resolución de IP detrás del proxy")
+@DisplayName("HU-S2-14 / TEC-121: resolución segura de IP detrás de Render")
 class GeneralRateLimitingFilterTest {
 
     private GeneralRateLimitingFilter filter;
@@ -18,27 +18,38 @@ class GeneralRateLimitingFilterTest {
     }
 
     @Test
-    @DisplayName("Usa la primera IP de X-Forwarded-For como IP del cliente")
-    void usaPrimeraIpDeForwardedFor() {
+    @DisplayName("Usa CF-Connecting-IP como IP del cliente")
+    void usaIpDeCloudflare() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("10.0.0.15");
-        request.addHeader("X-Forwarded-For", "203.0.113.25, 172.16.0.10, 10.0.0.15");
+        request.addHeader("CF-Connecting-IP", "203.0.113.25");
 
         assertEquals("203.0.113.25", filter.extractClientIp(request));
     }
 
     @Test
-    @DisplayName("Usa X-Forwarded-For cuando contiene una sola IP")
-    void usaForwardedForConUnaIp() {
+    @DisplayName("No confía en una X-Forwarded-For manipulable por el cliente")
+    void ignoraForwardedForYUsaRemoteAddr() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("10.0.0.15");
         request.addHeader("X-Forwarded-For", "198.51.100.42");
 
-        assertEquals("198.51.100.42", filter.extractClientIp(request));
+        assertEquals("10.0.0.15", filter.extractClientIp(request));
     }
 
     @Test
-    @DisplayName("Usa remoteAddr cuando no existe X-Forwarded-For")
+    @DisplayName("Prioriza CF-Connecting-IP aunque X-Forwarded-For contenga otra IP")
+    void priorizaIpConfiableSobreForwardedFor() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("10.0.0.15");
+        request.addHeader("X-Forwarded-For", "198.51.100.42, 172.16.0.10");
+        request.addHeader("CF-Connecting-IP", "203.0.113.25");
+
+        assertEquals("203.0.113.25", filter.extractClientIp(request));
+    }
+
+    @Test
+    @DisplayName("Usa remoteAddr si Cloudflare no proporciona su cabecera")
     void usaRemoteAddrComoRespaldo() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("10.0.0.15");
@@ -47,11 +58,11 @@ class GeneralRateLimitingFilterTest {
     }
 
     @Test
-    @DisplayName("Usa remoteAddr cuando X-Forwarded-For está vacío")
-    void usaRemoteAddrSiForwardedForEstaVacio() {
+    @DisplayName("Usa remoteAddr si CF-Connecting-IP está vacío")
+    void usaRemoteAddrSiCabeceraCloudflareVacia() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("10.0.0.15");
-        request.addHeader("X-Forwarded-For", "  ");
+        request.addHeader("CF-Connecting-IP", "  ");
 
         assertEquals("10.0.0.15", filter.extractClientIp(request));
     }

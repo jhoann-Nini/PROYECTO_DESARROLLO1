@@ -1547,3 +1547,77 @@ La respuesta de crear o editar una reseña (`POST /api/resenas`, `PUT /api/resen
 - **Errores:** `400` motivo vacío o de más de 2000 caracteres; `401`; `403`; `404`; `409` igual que en 30.2.
 
 El historial de estas decisiones se consulta con el endpoint existente `GET /api/moderacion/resenas/{idResena}/historial`, que ahora puede devolver las acciones `APROBAR` y `RECHAZAR` además de `OCULTAR` y `RESTAURAR`.
+
+---
+
+# 31. Reportes de precio y enlace de ofertas (TEC-147, TEC-148 y Fase 2, migraciones 018 y 021)
+
+Un usuario registrado puede reportar que el precio o el enlace de una oferta (`producto_establecimiento`) es incorrecto. Los moderadores revisan esos reportes en una cola propia, separada de la de reseñas.
+
+**Ciclo de estados:** `PENDIENTE` → `EN_REVISION` → `ACEPTADO` | `RECHAZADO`. Los dos últimos son finales.
+
+**Reglas:**
+- Un usuario solo puede tener **un reporte abierto** (`PENDIENTE` o `EN_REVISION`) por oferta. Cuando se cierra, puede volver a reportarla.
+- **Límite compartido:** como máximo **10 reportes por hora** por usuario, sumando reportes de reseñas y de ofertas. Aplica también a `POST /api/resenas/{idResena}/reportes` y sus alias.
+- Cada cambio de estado registra primero un evento en `reporte_oferta_historial` (moderador, estado anterior y nuevo, justificación y fecha) y después cambia el estado, en la misma transacción. La migración 021 lo exige en PostgreSQL y el historial no admite `UPDATE`, `DELETE` ni `TRUNCATE`.
+- Un moderador no puede resolver un reporte creado por él (`403`).
+- **Aceptar no modifica la oferta.** El moderador corrige el precio desde la administración de establecimientos. El motivo `enlace_incorrecto` se conserva, aunque las ofertas todavía no tienen un campo de URL (pendiente de la Fase 3).
+
+## 31.1 Crear un reporte de oferta
+- **Ruta:** `POST /api/reportes/ofertas` (requiere JWT)
+- **Cuerpo:**
+  ```json
+  { "idProducto": 3, "idEstablecimiento": 8, "motivo": "precio_incorrecto", "descripcion": "En la tienda cuesta 120.000" }
+  ```
+  `motivo`: `precio_incorrecto` o `enlace_incorrecto`. `descripcion`: opcional, máximo 2000 caracteres. El usuario se toma del JWT.
+- **Respuesta `201`:** `{ idReporte, idProducto, idEstablecimiento, motivo, descripcion, estado: "PENDIENTE", fechaCreacion }`.
+- **Errores:**
+  - `400` validación;
+  - `401` sin token;
+  - `403` usuario inactivo;
+  - `404` la oferta no existe;
+  - `409` `Ya tienes un reporte abierto sobre esta oferta. Espera a que moderación lo revise.`;
+  - `429` `Alcanzaste el límite de 10 reportes por hora. Intenta de nuevo más tarde.`
+
+## 31.2 Listar reportes de ofertas (moderación)
+- **Ruta:** `GET /api/moderacion/ofertas/reportes?estado=PENDIENTE` (`estado` es opcional)
+- **Respuesta `200`:** lista de `ReporteOfertaModeracionResponse`, del más antiguo al más reciente:
+  ```json
+  [{
+    "idReporte": 5,
+    "idProducto": 3, "nombreProducto": "Samsung Galaxy Buds FE",
+    "idEstablecimiento": 8, "nombreEstablecimiento": "Tienda Centro",
+    "precioActual": 95000.00, "disponibilidadActual": true,
+    "idUsuario": 11, "nombreUsuario": "laura",
+    "motivo": "precio_incorrecto", "descripcion": "En la tienda cuesta 120.000",
+    "estado": "EN_REVISION",
+    "fechaCreacion": "2026-11-20T10:00:00", "fechaActualizacion": "2026-11-20T11:00:00",
+    "historial": [{
+      "idHistorial": 1, "estadoAnterior": "PENDIENTE", "estadoNuevo": "EN_REVISION",
+      "idModerador": 2, "nombreModerador": "mod", "justificacion": null,
+      "fechaEvento": "2026-11-20T11:00:00"
+    }]
+  }]
+  ```
+  `precioActual` y `disponibilidadActual` son los valores vigentes de la oferta, para contrastarlos con el reporte.
+- **Errores:** `400` estado inválido; `401`; `403` sin rol activo de `Moderador` o `Administrador`.
+
+## 31.3 Consultar un reporte
+- **Ruta:** `GET /api/moderacion/ofertas/reportes/{idReporte}`
+- **Respuesta `200`:** `ReporteOfertaModeracionResponse` con su historial.
+- **Errores:** `401`; `403`; `404`.
+
+## 31.4 Tomar, aceptar o rechazar
+- **Rutas** (alias `POST`):
+  - `PUT /api/moderacion/ofertas/reportes/{idReporte}/en-revision`: solo desde `PENDIENTE`.
+  - `PUT /api/moderacion/ofertas/reportes/{idReporte}/aceptar`
+  - `PUT /api/moderacion/ofertas/reportes/{idReporte}/rechazar`
+- **Cuerpo:** `{ "motivo": "El precio coincide con la tienda" }`. Es obligatorio para rechazar y opcional para tomar o aceptar.
+- Aceptar o rechazar un reporte `PENDIENTE` lo pasa antes por `EN_REVISION` en la misma transacción, así que el historial registra los dos pasos.
+- **Respuesta `200`:** `ReporteOfertaModeracionResponse` actualizado.
+- **Errores:**
+  - `400` justificación vacía al rechazar, o de más de 2000 caracteres;
+  - `401`;
+  - `403` sin rol, o reporte propio;
+  - `404`;
+  - `409` el reporte ya fue resuelto, o se intenta tomar uno que no está `PENDIENTE`.

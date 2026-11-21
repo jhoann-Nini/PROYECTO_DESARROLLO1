@@ -1,6 +1,6 @@
 # TEC-148 — Reportar precio o enlace de una oferta
 
-**Estado:** Implementado en el frontend de la rama `adrian`, sin cambios de backend.
+**Estado:** Implementado en el frontend (rama `adrian`, integrada en `nini` el 20 de noviembre de 2026). La moderación de estos reportes se agregó en la Fase 2 (ver «Moderación» más abajo y `docs/api.md`, sección 31).
 
 ## Contrato verificado
 
@@ -12,8 +12,11 @@
   2000 caracteres). No se envía usuario ni estado desde el navegador.
 - Errores: validación `400`, autenticación `401`, restricciones del usuario
   `403` y oferta inexistente `404`. El cliente muestra el campo `message`
-  del formato de error existente, o un mensaje genérico de conexión. TEC-147
-  no implementa actualmente una regla específica de duplicados `409`.
+  del formato de error existente, o un mensaje genérico de conexión.
+- Desde la Fase 2 (migración 021) el backend también responde `409` si el
+  usuario ya tiene un reporte abierto sobre esa oferta y `429` si supera 10
+  reportes por hora (reseñas y ofertas juntas). El modal muestra el mensaje
+  del backend sin cerrarse.
 
 ## Origen de las ofertas y navegación
 
@@ -46,3 +49,16 @@ Prueba manual: abrir una oferta real en portada y otra en el detalle, comprobar
 los dos motivos y la pareja de IDs en la petición, enviar autenticado, repetir
 sin sesión, provocar `404`/fallo de red y comprobar foco, teclado y pantalla
 estrecha.
+
+## Moderación (Fase 2)
+
+- Los moderadores y administradores revisan los reportes en el panel de
+  moderación, pestaña «Reportes de ofertas» (`ColaReportesOfertas`).
+- La cola muestra producto, tienda, precio y disponibilidad actuales, motivo,
+  descripción e historial. El filtro por defecto, «Abiertos», muestra los
+  reportes `PENDIENTE` y `EN_REVISION`.
+- Acciones: «Tomar para revisar», «Aceptar» y «Rechazar». Rechazar exige
+  justificación. Aceptar **no** cambia el precio: el moderador corrige la
+  oferta desde la administración de establecimientos.
+- El motivo `enlace_incorrecto` se mantiene, aunque las ofertas todavía no
+  tienen un campo de URL; la Fase 3 añadirá `url_oferta`.

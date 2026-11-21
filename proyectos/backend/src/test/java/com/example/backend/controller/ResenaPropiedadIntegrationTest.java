@@ -583,7 +583,7 @@ class ResenaPropiedadIntegrationTest {
           .header("Authorization", "Bearer " + tokenAutor)
           .contentType(MediaType.APPLICATION_JSON)
           .content("{\"idProducto\":" + idOtroProducto
-            + ",\"comentario\":\"Este producto es una estafa\",\"puntuacion\":1}"))
+            + ",\"comentario\":\"Este producto es una basura\",\"puntuacion\":1}"))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.estadoModeracion").value("PENDIENTE"))
         .andReturn()

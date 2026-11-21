@@ -90,13 +90,12 @@ public class ResenaCreateTransaction {
       resena.setComentario(comentario);
       resena.setPuntuacion(request.puntuacion());
 
-      // Si ya estaba pendiente, conserva ese estado.
-      // De lo contrario, analiza el nuevo comentario.
-      if (resena.getEstadoModeracion() != EstadoModeracion.PENDIENTE) {
-        resena.setEstadoModeracion(
-          resenaModerationService.determinarEstado(comentario)
-        );
-      }
+      // PENDIENTE se conserva, RECHAZADA vuelve a revisión
+      // y PUBLICADA se analiza de nuevo.
+      resena.setEstadoModeracion(
+        resenaModerationService.estadoTrasEdicion(
+          resena.getEstadoModeracion(), comentario)
+      );
 
     } else {
 

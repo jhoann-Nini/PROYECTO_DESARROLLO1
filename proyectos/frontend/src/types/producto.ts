@@ -196,6 +196,17 @@ export interface DispositivoKimovil {
   detalleSpecs?: EspecificacionesDetalladas;
 }
 
+/**
+ * Resumen público de ofertas disponibles de un producto (Fase 4,
+ * `GET /api/productos/resumen-ofertas`). Un producto sin ofertas no aparece.
+ */
+export interface ResumenOfertasProducto {
+  idProducto: number;
+  tiendasDisponibles: number;
+  menorPrecio: number | null;
+  fechaActualizacionMasReciente: string | null;
+}
+
 export interface UsuarioSesion {
   id: string;
   nombre: string;

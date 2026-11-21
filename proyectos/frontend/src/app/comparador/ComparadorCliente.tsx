@@ -12,18 +12,17 @@ import type {
   MarcaResponse,
   Producto,
 } from "@/types/producto";
-import { construirCatalogo } from "@/data/catalogoApi";
-import {
-  normalizarTexto,
-  type ProductoViewModel,
-} from "@/data/productoViewModel";
+import { aplicarResumenOfertasAVistas, construirCatalogo } from "@/data/catalogoApi";
+import { coincideProductoConBusqueda } from "@/data/catalogo";
+import type { ProductoViewModel } from "@/data/productoViewModel";
 import {
   MAX_COMPARADOR,
   construirFilasComparacion,
-  generarRecomendacion,
+  generarInsignias,
 } from "@/data/comparador";
 import type { VarianteFichaV3 } from "@/types/fichaTecnicaV3";
 import { useComparador } from "@/hooks/useComparador";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 
@@ -88,25 +87,32 @@ export default function ComparadorCliente() {
     };
   }, [intento]);
 
+  // Fase 4 (H-04): disponibilidad y precio en tiendas desde las ofertas del backend.
+  const resumenOfertas = useResumenOfertas();
+  const productosConOfertas = useMemo(
+    () => aplicarResumenOfertasAVistas(productos, resumenOfertas),
+    [productos, resumenOfertas],
+  );
+
   const seleccionados = useMemo(() => {
     const porId = new Map(
-      productos.map((producto) => [producto.idProducto, producto]),
+      productosConOfertas.map((producto) => [producto.idProducto, producto]),
     );
 
     return ids
       .map((id) => porId.get(id))
       .filter((producto): producto is ProductoViewModel => Boolean(producto));
-  }, [ids, productos]);
+  }, [ids, productosConOfertas]);
 
   const productosRecientes = useMemo(() => {
     const porId = new Map(
-      productos.map((producto) => [producto.idProducto, producto]),
+      productosConOfertas.map((producto) => [producto.idProducto, producto]),
     );
 
     return recientes
       .map((id) => porId.get(id))
       .filter((producto): producto is ProductoViewModel => Boolean(producto));
-  }, [recientes, productos]);
+  }, [recientes, productosConOfertas]);
 
   const filas = useMemo(
     () => construirFilasComparacion(seleccionados, catalogo ?? [], variantesSeleccionadas),
@@ -115,13 +121,12 @@ export default function ComparadorCliente() {
   const filasVisibles = soloDiferencias
     ? filas.filter((fila) => fila.difiere)
     : filas;
-  const recomendacion = useMemo(
-    () => generarRecomendacion(seleccionados, filas),
+  const insignias = useMemo(
+    () => generarInsignias(seleccionados, filas),
     [seleccionados, filas],
   );
 
   const resultadosSelector = useMemo(() => {
-    const termino = normalizarTexto(busqueda);
     const compatibles = new Set(
       (catalogo ?? [])
         .filter((producto) =>
@@ -130,13 +135,13 @@ export default function ComparadorCliente() {
         )
         .map((producto) => producto.idProducto),
     );
-    const filtrados = productos.filter((producto) =>
+    const filtrados = productosConOfertas.filter((producto) =>
       compatibles.has(producto.idProducto) &&
-      (!termino || producto.textoBusqueda.includes(termino)),
+      coincideProductoConBusqueda(producto, busqueda),
     );
 
     return filtrados.slice(0, 8);
-  }, [productos, busqueda, catalogo, idCategoria]);
+  }, [productosConOfertas, busqueda, catalogo, idCategoria]);
 
   function agregarProducto(producto: ProductoViewModel) {
     const categoriaActual = seleccionados[0]?.categoria;
@@ -493,6 +498,11 @@ export default function ComparadorCliente() {
                             Distinto
                           </span>
                         )}
+                        {fila.incompleta && (
+                          <span className="mt-1 inline-flex rounded-full bg-[var(--color-hairline)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+                            Datos incompletos
+                          </span>
+                        )}
                       </th>
                       {seleccionados.map((producto, indice) => {
                         const valor = fila.valores[indice];
@@ -533,34 +543,42 @@ export default function ComparadorCliente() {
                   id="titulo-recomendacion"
                   className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
                 >
-                  Sugerencia del comparador
+                  En qué destaca cada producto
                 </h2>
 
                 <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink)]">
-                  {recomendacion.idProducto !== null ? (
-                    <>
-                      Con los datos disponibles,{" "}
-                      <strong>{recomendacion.nombre}</strong> es la opción que
-                      mejor se ajusta a los criterios de esta comparación.
-                    </>
-                  ) : (
-                    recomendacion.mensaje
-                  )}
+                  {insignias.mensaje}
                 </p>
 
-                {recomendacion.motivos.length > 0 && (
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-[var(--color-subtle)]">
-                    {recomendacion.motivos.map((motivo) => (
-                      <li key={motivo}>{motivo}</li>
+                {insignias.insignias.length > 0 && (
+                  <ul className="mt-3 space-y-2" aria-label="Insignias por criterio">
+                    {insignias.insignias.map((item) => (
+                      <li
+                        key={`${item.criterio}-${item.idsProductos.join("-")}`}
+                        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-sm"
+                      >
+                        <p className="font-semibold text-[var(--color-ink)]">
+                          {item.criterio}: {item.nombres.join(", ")}
+                        </p>
+                        <p className="mt-0.5 text-[var(--color-ink)]">{item.dato}</p>
+                        <p className="mt-0.5 text-xs text-[var(--color-subtle)]">Fuente: {item.fuente}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {insignias.notas.length > 0 && (
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-[var(--color-subtle)]">
+                    {insignias.notas.map((nota) => (
+                      <li key={nota}>{nota}</li>
                     ))}
                   </ul>
                 )}
 
                 <p className="mt-3 text-xs leading-relaxed text-[var(--color-subtle)]">
-                  Esta sugerencia es informativa y se basa solo en
-                  disponibilidad, precio de referencia y cantidad de
-                  especificaciones registradas. No es una calificación
-                  editorial ni declara un ganador absoluto.
+                  Cada insignia se basa en un único criterio con datos registrados. No es una
+                  calificación editorial y no declara un ganador global: revisa la tabla y decide
+                  según lo que te importa.
                 </p>
               </section>
             )}

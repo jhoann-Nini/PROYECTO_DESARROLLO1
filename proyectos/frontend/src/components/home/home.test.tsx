@@ -485,11 +485,36 @@ describe("DestacadosHome", () => {
       />,
     );
 
+    // Fase 4 (H-12): aclara que se trata del catálogo de TecReview, no del mercado.
     expect(
-      screen.getByText(/No encontramos productos con/),
+      screen.getByText(/“pixel” no está registrado en el catálogo de TecReview/),
     ).toBeDefined();
+    expect(screen.getByText(/no significa que no exista en el mercado/)).toBeDefined();
+    expect(screen.queryByText("Productos registrados similares")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Limpiar búsqueda" }));
     expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);
+  });
+
+  it("pide marca o nombre del dispositivo si la búsqueda es solo genérica", () => {
+    render(<DestacadosHome {...propsDestacados({ busqueda: "Teléfono" })} />);
+
+    expect(screen.getByText("Coloca la marca o el nombre del dispositivo.")).toBeDefined();
+    expect(screen.getByText(/“Teléfono” es muy general/)).toBeDefined();
+    expect(screen.queryByText(/no está registrado en el catálogo/)).toBeNull();
+  });
+
+  it("ofrece productos registrados similares y abre su detalle", () => {
+    const onVerDetalle = vi.fn();
+    const alternativa = crearVista({ idProducto: 7, nombre: "Pixel 8", marca: "Google" });
+    render(
+      <DestacadosHome
+        {...propsDestacados({ busqueda: "pixel 10", onVerDetalle, alternativas: [alternativa] })}
+      />,
+    );
+
+    const lista = screen.getByRole("list", { name: "Productos registrados similares" });
+    fireEvent.click(within(lista).getByRole("button", { name: /Pixel 8/ }));
+    expect(onVerDetalle).toHaveBeenCalledWith(alternativa);
   });
 
   it("muestra un vacío general sin mezclar el presupuesto", () => {

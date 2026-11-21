@@ -65,11 +65,23 @@ describe("TarjetaProducto", () => {
     expect(screen.getByText("Consultar disponibilidad")).toBeDefined();
   });
 
-  it("muestra 'No disponible' cuando estado es false", () => {
-    render(<TarjetaProducto producto={crearProducto({ disponible: false })} />);
+  // Fase 4 (H-04): la etiqueta depende de las ofertas, no del estado del producto.
+  it("muestra 'Disponible' solo con ofertas confirmadas", () => {
+    render(<TarjetaProducto producto={crearProducto({ disponibilidadConsultada: true, numeroTiendas: 2, precioDesdeCOP: 900_000 })} />);
+    expect(screen.getByText("Disponible")).toBeDefined();
+  });
 
-    expect(screen.getByText("No disponible")).toBeDefined();
+  it("muestra 'Sin tiendas registradas' si el backend confirma que no hay ofertas", () => {
+    render(<TarjetaProducto producto={crearProducto({ disponibilidadConsultada: true, numeroTiendas: 0 })} />);
+    expect(screen.getByText("Sin tiendas registradas")).toBeDefined();
     expect(screen.queryByText("Disponible")).toBeNull();
+  });
+
+  it("no afirma disponibilidad si no se pudo consultar, aunque el producto esté activo", () => {
+    render(<TarjetaProducto producto={crearProducto({ disponible: true })} />);
+    expect(screen.queryByText("Disponible")).toBeNull();
+    expect(screen.queryByText("No disponible")).toBeNull();
+    expect(screen.queryByText("Sin tiendas registradas")).toBeNull();
   });
 
   it("muestra 'Sin opiniones' cuando no hay rating", () => {

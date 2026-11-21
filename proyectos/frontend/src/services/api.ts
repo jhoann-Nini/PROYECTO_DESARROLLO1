@@ -11,6 +11,7 @@ import type {
   ProductoDeseado,
   ProductoMasComentado,
   ProductoOferta,
+  ResumenOfertasProducto,
 } from "@/types/producto";
 import type {
   AccionReporteOferta,
@@ -406,6 +407,18 @@ export async function crearReporteResena(
     method: "POST",
     body: JSON.stringify(request),
   });
+}
+
+/**
+ * Fase 4 (H-04): resumen de ofertas disponibles de todos los productos.
+ * Un producto ausente de la lista no tiene ofertas disponibles.
+ */
+export async function obtenerResumenOfertas(): Promise<ResumenOfertasProducto[]> {
+  const datos = await apiFetch<unknown>("/api/productos/resumen-ofertas");
+  if (!Array.isArray(datos)) {
+    throw new ApiError("La respuesta del servidor no tiene el formato esperado (resumen de ofertas).");
+  }
+  return datos as ResumenOfertasProducto[];
 }
 
 /** Consulta las ofertas de producto/establecimiento con IDs reales de TEC-134. */

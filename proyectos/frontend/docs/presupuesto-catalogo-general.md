@@ -90,3 +90,32 @@ superiores al rango del catálogo.
 Cierre posterior a revisión: **750 pruebas correctas en 62 archivos**,
 TypeScript, lint y build correctos. No quedan hallazgos de esta revisión
 pendientes de atender.
+
+## Búsqueda por palabras y productos no registrados (Fase 4, H-12)
+
+- La búsqueda usa solo la **identidad del dispositivo**: nombre, marca y
+  categoría (`coincideProductoConBusqueda` en `data/catalogo.ts`). Ya no busca
+  en especificaciones ni descripciones: «iphone 18» encontraba los iPhone 16
+  porque su chip se llama A18, y «audífonos» devolvía un portátil porque su
+  descripción menciona el conector de audífonos.
+- Cada palabra debe ser el inicio de una palabra del nombre («16» coincide con
+  «16», no «18» con «16»), en cualquier orden («pro iphone»). También vale la
+  búsqueda sin espacios («iphone16» → «iPhone 16»).
+- **Palabras genéricas** (teléfono, celular, móvil, smartphone, audífonos,
+  auriculares, portátil, laptop, computador, PC, tablet, tableta, dispositivo…):
+  si la búsqueda solo tiene esas palabras, no se muestran productos y aparece
+  «Coloca la marca o el nombre del dispositivo» con ejemplos. Si van con otras
+  palabras («audífonos sony»), limitan la categoría.
+- Aplica en el buscador de la barra, la portada y sus rankings, el catálogo,
+  las páginas de categoría y el selector del comparador. Los textos de ayuda
+  de los campos dicen «marca o nombre del dispositivo».
+- Sin resultados, la portada y el buscador de la barra dicen que el término
+  «no está registrado en el catálogo de TecReview» y que eso no significa que
+  no exista en el mercado. El catálogo general añade la misma aclaración.
+- Debajo, «Productos registrados similares» (`buscarAlternativas`) lista hasta
+  cuatro productos reales de la marca mencionada o con una palabra del nombre
+  en común (palabras de al menos 3 letras que no sean solo números). Si no hay
+  ninguno, la sección no aparece.
+- Las tarjetas del catálogo solo afirman «Disponible» con ofertas confirmadas
+  por `GET /api/productos/resumen-ofertas`; si la consulta falla, no muestran
+  la etiqueta.

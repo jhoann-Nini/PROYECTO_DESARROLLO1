@@ -26,7 +26,8 @@ import {
   type ProductoOferta,
 } from "@/types/producto";
 import { construirCatalogo } from "@/data/catalogoApi";
-import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
+import { buscarAlternativas, coincideConBusqueda, filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { rutaCatalogoPresupuesto } from "@/data/presupuesto";
 import { seleccionarDestacados } from "@/data/destacados";
 import {
@@ -65,16 +66,13 @@ interface ItemRankingFiltrable {
   precioReferencia: number | null;
 }
 
-function coincideBusqueda(
-  nombre: string,
-  descripcion: string | null,
-  termino: string,
-): boolean {
+/**
+ * Busca por el nombre del dispositivo, como el catálogo: la descripción
+ * menciona otros productos y accesorios y daba falsos positivos.
+ */
+function coincideBusqueda(nombre: string, termino: string): boolean {
   if (!termino) return true;
-  return (
-    normalizarTexto(nombre).includes(termino) ||
-    (descripcion ? normalizarTexto(descripcion).includes(termino) : false)
-  );
+  return coincideConBusqueda(nombre, termino);
 }
 
 function filtrarRanking<T extends ItemRankingFiltrable>(
@@ -83,7 +81,7 @@ function filtrarRanking<T extends ItemRankingFiltrable>(
 ): T[] {
   const termino = normalizarTexto(busqueda);
 
-  return items.filter((item) => coincideBusqueda(item.nombre, item.descripcion, termino));
+  return items.filter((item) => coincideBusqueda(item.nombre, termino));
 }
 
 function filtrarOfertas(
@@ -95,7 +93,7 @@ function filtrarOfertas(
   return ofertas.filter((oferta) => {
     if (termino) {
       return (
-        coincideBusqueda(oferta.nombre, oferta.descripcion, termino) ||
+        coincideBusqueda(oferta.nombre, termino) ||
         normalizarTexto(oferta.nombreEstablecimiento).includes(termino)
       );
     }
@@ -477,14 +475,16 @@ export default function Home() {
   // El slider ya entrega el límite en COP: no hay nada que convertir.
   const limitePresupuestoCOP = presupuestoMax;
 
+  const resumenOfertas = useResumenOfertas();
   const vistas = useMemo(
     () =>
       construirCatalogo({
         productos: productosBackend,
         categorias: categoriasApi,
         marcas: marcasApi,
+        resumenOfertas,
       }),
-    [productosBackend, categoriasApi, marcasApi],
+    [productosBackend, categoriasApi, marcasApi, resumenOfertas],
   );
 
   const productosSugeridos = useMemo(
@@ -538,6 +538,15 @@ export default function Home() {
         : seleccionarDestacados(productosFiltrados, mejorValorados),
     [hayFiltrosHome, productosFiltrados, mejorValorados],
   );
+  // Fase 4 (H-12): alternativas reales solo cuando la búsqueda no encuentra nada.
+  const alternativasBusqueda = useMemo(
+    () =>
+      busqueda.trim() && productosDestacados.length === 0
+        ? buscarAlternativas(vistas, busqueda)
+        : [],
+    [busqueda, productosDestacados, vistas],
+  );
+
 
   const mejorValoradosFiltrados = useMemo(
     () =>
@@ -821,6 +830,7 @@ export default function Home() {
           busqueda={busqueda}
           onVerDetalle={abrirDetalle}
           onLimpiarBusqueda={() => setBusqueda("")}
+          alternativas={alternativasBusqueda}
         />
 
         <RankingsHome

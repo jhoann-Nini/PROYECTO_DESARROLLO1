@@ -1,6 +1,7 @@
 
 package com.example.backend.service;
 
+import com.example.backend.dto.ResumenOfertasProductoResponse;
 import com.example.backend.dto.TiendaProductoResponse;
 import com.example.backend.entity.Establecimiento;
 import com.example.backend.entity.ProductoEstablecimiento;
@@ -48,6 +49,15 @@ public class TiendaProductoService {
       .stream()
       .map(this::toResponse)
       .toList();
+  }
+
+  /**
+   * Fase 4 (H-04): cuántas ofertas disponibles tiene cada producto, su menor
+   * precio y la fecha más reciente. Los productos sin ofertas no aparecen.
+   */
+  @Transactional(readOnly = true)
+  public List<ResumenOfertasProductoResponse> resumirOfertas() {
+    return productoEstablecimientoRepository.resumirOfertasDisponibles();
   }
 
   /**

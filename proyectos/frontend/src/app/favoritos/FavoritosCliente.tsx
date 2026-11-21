@@ -13,7 +13,8 @@ import type {
   MarcaResponse,
   Producto,
 } from "@/types/producto";
-import { construirCatalogo } from "@/data/catalogoApi";
+import { aplicarResumenOfertasAVistas, construirCatalogo } from "@/data/catalogoApi";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import { ORDENES_CATALOGO, type OrdenCatalogo } from "@/data/catalogo";
 import {
   filtrarFavoritos,
@@ -43,6 +44,11 @@ export default function FavoritosCliente() {
 
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [productos, setProductos] = useState<ProductoViewModel[]>([]);
+  const resumenOfertas = useResumenOfertas();
+  const productosConOfertas = useMemo(
+    () => aplicarResumenOfertasAVistas(productos, resumenOfertas),
+    [productos, resumenOfertas],
+  );
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
@@ -101,12 +107,12 @@ export default function FavoritosCliente() {
 
   const favoritos = useMemo(() => {
     const porId = new Map(
-      productos.map((producto) => [producto.idProducto, producto]),
+      productosConOfertas.map((producto) => [producto.idProducto, producto]),
     );
     return ids
       .map((id) => porId.get(id))
       .filter((producto): producto is ProductoViewModel => Boolean(producto));
-  }, [ids, productos]);
+  }, [ids, productosConOfertas]);
 
   const opcionesCategoria = useMemo(
     () => opcionesCategoriaFavoritos(favoritos),

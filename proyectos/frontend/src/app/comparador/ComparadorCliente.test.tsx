@@ -21,6 +21,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerProductos: vi.fn(),
     obtenerCategorias: vi.fn(),
     obtenerMarcas: vi.fn(),
+    obtenerResumenOfertas: vi.fn(),
   };
 });
 
@@ -29,6 +30,7 @@ import {
   obtenerCategorias,
   obtenerMarcas,
   obtenerProductos,
+  obtenerResumenOfertas,
 } from "@/services/api";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
 import { CLAVE_COMPARADOS_RECIENTES } from "@/data/comparadosRecientes";
@@ -38,6 +40,7 @@ import ComparadorCliente from "./ComparadorCliente";
 const mockProductos = vi.mocked(obtenerProductos);
 const mockCategorias = vi.mocked(obtenerCategorias);
 const mockMarcas = vi.mocked(obtenerMarcas);
+const mockResumen = vi.mocked(obtenerResumenOfertas);
 
 const CATEGORIAS: CategoriaResponse[] = [
   { idCategoria: 1, nombre: "Móviles", descripcion: null, estado: true },
@@ -82,6 +85,7 @@ function seleccionarEnStorage(ids: number[]) {
 beforeEach(() => {
   localStorage.clear();
   vi.clearAllMocks();
+  mockResumen.mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -211,12 +215,14 @@ describe("ComparadorCliente", () => {
     ]);
     seleccionarEnStorage([1, 2]);
     render(<ComparadorCliente />);
-    const sugerencia = await screen.findByRole("region", { name: "Sugerencia del comparador" });
-    expect(within(sugerencia).getByText("Producto 2")).toBeDefined();
-    expect(within(sugerencia).getByText(/Registra más especificaciones.*\(3\)/)).toBeDefined();
+    // Fase 4 (H-10): la cantidad de datos es una nota informativa, no un mérito.
+    const sugerencia = await screen.findByRole("region", { name: "En qué destaca cada producto" });
+    const nota = within(sugerencia).getByText(/Datos técnicos registrados \(informativo, no es un mérito\)/);
+    expect(nota.textContent).toContain("Producto 1 1 · Producto 2 3");
     expect(sugerencia.textContent).not.toContain("de 6");
+    expect(within(sugerencia).queryByRole("list", { name: "Insignias por criterio" })).toBeNull();
     fireEvent.click(screen.getByRole("checkbox", { name: "Solo diferencias" }));
-    expect(within(sugerencia).getByText(/Registra más especificaciones.*\(3\)/)).toBeDefined();
+    expect(within(sugerencia).getByText(/Producto 1 1 · Producto 2 3/)).toBeDefined();
   });
 
   it("identifica la categoría activa por su nombre registrado, no por el tipo visual", async () => {
@@ -563,28 +569,46 @@ describe("ComparadorCliente", () => {
     expect(screen.getByRole("rowheader", { name: /Precio de referencia/ })).toBeDefined();
   });
 
-  it("muestra la recomendación derivada y su carácter informativo", async () => {
+  it("muestra insignias por criterio con dato y fuente, sin ganador global", async () => {
     configurarExito([crearProducto(1), crearProducto(2)]);
     seleccionarEnStorage([1, 2]);
 
     render(<ComparadorCliente />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("region", { name: "Sugerencia del comparador" }),
-      ).toBeDefined();
-    });
+    const region = await screen.findByRole("region", { name: "En qué destaca cada producto" });
+    const lista = await within(region).findByRole("list", { name: "Insignias por criterio" });
+    expect(within(lista).getByText("Menor precio de referencia: Producto 1")).toBeDefined();
+    expect(within(lista).getByText(/Fuente: Precio de referencia del catálogo/)).toBeDefined();
+    expect(within(region).getByText(/No es una calificación editorial/i)).toBeDefined();
+    expect(region.textContent).toMatch(/no declara un ganador global/i);
+    expect(region.textContent).not.toMatch(/es la opción que/i);
+  });
 
-    const recomendacion = screen.getByRole("region", {
-      name: "Sugerencia del comparador",
-    });
-    expect(within(recomendacion).getByText("Producto 1")).toBeDefined();
-    expect(
-      within(recomendacion).getByText(/Su precio de referencia es el más bajo/i),
-    ).toBeDefined();
-    expect(
-      within(recomendacion).getByText(/No es una calificación editorial/i),
-    ).toBeDefined();
+  it("muestra la disponibilidad y el precio en tiendas desde el resumen de ofertas", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+    mockResumen.mockResolvedValue([
+      { idProducto: 1, tiendasDisponibles: 2, menorPrecio: 900_000, fechaActualizacionMasReciente: "2026-11-18T10:00:00" },
+    ]);
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    expect(await screen.findByText("Disponible en 2 tiendas")).toBeDefined();
+    expect(screen.getByText("Sin tiendas registradas")).toBeDefined();
+    expect(screen.getByRole("rowheader", { name: /Menor precio en tiendas/ })).toBeDefined();
+    const region = screen.getByRole("region", { name: "En qué destaca cada producto" });
+    expect(within(region).getByText("Disponible en más tiendas: Producto 1")).toBeDefined();
+  });
+
+  it("deja la disponibilidad sin confirmar si el resumen de ofertas falla", async () => {
+    configurarExito([crearProducto(1), crearProducto(2)]);
+    mockResumen.mockRejectedValue(new ApiError("Sin conexión", 503));
+    seleccionarEnStorage([1, 2]);
+
+    render(<ComparadorCliente />);
+
+    expect((await screen.findAllByText("Disponibilidad sin confirmar")).length).toBe(2);
+    expect(screen.queryByText(/^Disponible$/)).toBeNull();
   });
 
   it("muestra un estado de error si el catálogo no carga y permite reintentar", async () => {

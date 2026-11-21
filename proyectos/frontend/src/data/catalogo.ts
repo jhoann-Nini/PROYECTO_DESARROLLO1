@@ -138,6 +138,123 @@ export function prepararCatalogo(
   };
 }
 
+/** Quita todo lo que no sea letra o dígito: «iPhone 16» → «iphone16». */
+function compactar(texto: string): string {
+  return texto.replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Palabras genéricas de tipo de dispositivo (ya normalizadas). Solas no
+ * identifican un dispositivo; junto a otras palabras limitan la categoría.
+ */
+const PALABRAS_GENERICAS: Record<string, CategoriaDispositivo | null> = {
+  telefono: "moviles", telefonos: "moviles", celular: "moviles", celulares: "moviles",
+  movil: "moviles", moviles: "moviles", smartphone: "moviles", smartphones: "moviles",
+  audifono: "auriculares", audifonos: "auriculares", auricular: "auriculares",
+  auriculares: "auriculares", cascos: "auriculares", diadema: "auriculares",
+  portatil: "laptops", portatiles: "laptops", laptop: "laptops", laptops: "laptops",
+  computador: "laptops", computadores: "laptops", computadora: "laptops", computadoras: "laptops",
+  pc: "laptops", pcs: "laptops",
+  tablet: "tablets", tablets: "tablets", tableta: "tablets", tabletas: "tablets",
+  dispositivo: null, dispositivos: null, equipo: null, equipos: null, producto: null, productos: null,
+};
+
+/** Palabras sin significado para identificar un dispositivo. */
+const PALABRAS_VACIAS = new Set(["un", "una", "unos", "unas", "el", "la", "los", "las", "de", "del", "para", "con", "y", "o"]);
+
+/** Aviso cuando la búsqueda solo tiene palabras genéricas («teléfono», «audífonos»). */
+export const MENSAJE_BUSQUEDA_GENERICA = "Coloca la marca o el nombre del dispositivo.";
+export const EJEMPLO_BUSQUEDA_GENERICA = "Por ejemplo: «Samsung Galaxy S24», «iPhone 16» o «Sony WH-1000XM5».";
+
+export interface AnalisisBusqueda {
+  /** Palabras que deben coincidir con el nombre, la marca o la categoría. */
+  palabras: string[];
+  /** Categoría indicada por una palabra genérica («celular» → móviles). */
+  categoria: CategoriaDispositivo | null;
+  /** La búsqueda solo tiene palabras genéricas: hay que pedir marca o nombre. */
+  generica: boolean;
+  vacia: boolean;
+}
+
+/** Separa las palabras específicas de las genéricas de una búsqueda. */
+export function analizarBusqueda(busqueda: string): AnalisisBusqueda {
+  const todas = normalizarTexto(busqueda).split(/\s+/).filter(Boolean);
+  if (todas.length === 0) return { palabras: [], categoria: null, generica: false, vacia: true };
+  let categoria: CategoriaDispositivo | null = null;
+  const palabras: string[] = [];
+  let hayGenerica = false;
+  for (const palabra of todas) {
+    if (palabra in PALABRAS_GENERICAS) {
+      hayGenerica = true;
+      categoria = categoria ?? PALABRAS_GENERICAS[palabra];
+    } else if (!PALABRAS_VACIAS.has(palabra)) {
+      palabras.push(palabra);
+    }
+  }
+  return { palabras, categoria, generica: palabras.length === 0 && hayGenerica, vacia: false };
+}
+
+/** Nombre, marca y categoría del producto: lo único que identifica al dispositivo. */
+export function textoIdentidad(producto: Pick<ProductoViewModel, "nombre" | "marca" | "categoriaEtiqueta">): string {
+  return normalizarTexto(`${producto.nombre} ${producto.marca} ${producto.categoriaEtiqueta}`);
+}
+
+/**
+ * Coincide si cada palabra específica de la búsqueda es el inicio de una
+ * palabra del texto («16» coincide con «16», no «18» con «16»), en cualquier
+ * orden, o si la búsqueda sin espacios aparece en el texto compactado
+ * («iphone16» → «iPhone 16»). Las palabras genéricas no cuentan; una búsqueda
+ * solo genérica no coincide con nada. Pasa el texto de identidad del producto,
+ * no sus especificaciones: los números de una ficha dan falsos positivos.
+ */
+export function coincideConBusqueda(texto: string, busqueda: string): boolean {
+  const analisis = analizarBusqueda(busqueda);
+  if (analisis.vacia) return true;
+  if (analisis.palabras.length === 0) return false;
+  const normalizado = normalizarTexto(texto);
+  const palabrasTexto = normalizado.split(/[^a-z0-9]+/).filter(Boolean);
+  if (analisis.palabras.every((palabra) => {
+    const limpia = compactar(palabra);
+    return limpia.length > 0 && palabrasTexto.some((actual) => actual.startsWith(limpia));
+  })) return true;
+  const terminoCompacto = compactar(analisis.palabras.join(""));
+  return terminoCompacto.length >= 3 && compactar(normalizado).includes(terminoCompacto);
+}
+
+/** Búsqueda de productos del catálogo por identidad y categoría genérica. */
+export function coincideProductoConBusqueda(
+  producto: Pick<ProductoViewModel, "nombre" | "marca" | "categoriaEtiqueta" | "categoria">,
+  busqueda: string,
+): boolean {
+  const analisis = analizarBusqueda(busqueda);
+  if (analisis.vacia) return true;
+  if (analisis.categoria && producto.categoria !== analisis.categoria) return false;
+  return coincideConBusqueda(textoIdentidad(producto), busqueda);
+}
+
+/**
+ * Fase 4 (H-12): alternativas para una búsqueda sin resultados, solo entre
+ * productos registrados. Coinciden por marca o por una palabra del nombre de
+ * al menos 3 letras que no sea solo un número. Conserva el orden del catálogo.
+ */
+export function buscarAlternativas(
+  productos: ProductoViewModel[],
+  busqueda: string,
+  maximo = 4,
+): ProductoViewModel[] {
+  const palabras = normalizarTexto(busqueda)
+    .split(/\s+/)
+    .filter((palabra) => palabra.length >= 3 && !/^\d+$/.test(palabra));
+  if (palabras.length === 0) return [];
+  return productos
+    .filter((producto) => {
+      const marca = normalizarTexto(producto.marca);
+      const nombre = normalizarTexto(producto.nombre).split(/[^a-z0-9]+/);
+      return palabras.some((palabra) => palabra === marca || nombre.includes(palabra));
+    })
+    .slice(0, maximo);
+}
+
 export function filtrarProductos(
   productos: ProductoViewModel[],
   filtros: FiltrosCatalogo
@@ -147,7 +264,7 @@ export function filtrarProductos(
     filtros.precioMin > 0 || filtros.precioMax < Number.MAX_SAFE_INTEGER;
 
   return productos.filter((producto) => {
-    if (busqueda && !producto.textoBusqueda.includes(busqueda)) {
+    if (busqueda && !coincideProductoConBusqueda(producto, busqueda)) {
       return false;
     }
 

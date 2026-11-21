@@ -4,6 +4,7 @@ import Link from "next/link";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import type { ProductoViewModel } from "@/data/productoViewModel";
+import { EJEMPLO_BUSQUEDA_GENERICA, MENSAJE_BUSQUEDA_GENERICA, analizarBusqueda } from "@/data/catalogo";
 
 export interface DestacadosHomeProps {
   productos: ProductoViewModel[];
@@ -15,6 +16,8 @@ export interface DestacadosHomeProps {
   busqueda: string;
   onVerDetalle: (producto: ProductoViewModel) => void;
   onLimpiarBusqueda: () => void;
+  /** Fase 4 (H-12): productos registrados similares cuando la búsqueda no encuentra nada. */
+  alternativas?: ProductoViewModel[];
   error?: string | null;
   onReintentar?: () => void;
 }
@@ -28,6 +31,7 @@ export default function DestacadosHome({
   busqueda,
   onVerDetalle,
   onLimpiarBusqueda,
+  alternativas = [],
   error = null,
   onReintentar,
 }: DestacadosHomeProps) {
@@ -155,16 +159,53 @@ export default function DestacadosHome({
         </div>
       ) : (
         <div className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center text-sm sm:p-12">
-          {busqueda.trim() ? (
+          {busqueda.trim() && analizarBusqueda(busqueda).generica ? (
             <div className="space-y-3">
-              <p className="text-base font-semibold text-[var(--color-ink)]">
-                No encontramos productos con &ldquo;{busqueda.trim()}&rdquo;.
+              <p role="status" className="text-base font-semibold text-[var(--color-ink)]">
+                {MENSAJE_BUSQUEDA_GENERICA}
               </p>
               <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
-                Prueba con menos palabras, revisa la escritura o busca por marca,
-                modelo o tipo de dispositivo (por ejemplo, Samsung, Asus o
-                audífonos).
+                &ldquo;{busqueda.trim()}&rdquo; es muy general. {EJEMPLO_BUSQUEDA_GENERICA}
               </p>
+              <button
+                type="button"
+                onClick={onLimpiarBusqueda}
+                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              >
+                Limpiar búsqueda
+              </button>
+            </div>
+          ) : busqueda.trim() ? (
+            <div className="space-y-3">
+              <p role="status" className="text-base font-semibold text-[var(--color-ink)]">
+                &ldquo;{busqueda.trim()}&rdquo; no está registrado en el catálogo de TecReview.
+              </p>
+              <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
+                Esto no significa que no exista en el mercado: solo que aún no lo
+                tenemos en nuestro catálogo. Prueba con menos palabras, revisa la
+                escritura o busca por marca o tipo de dispositivo.
+              </p>
+              {alternativas.length > 0 && (
+                <div className="mx-auto max-w-md text-left">
+                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                    Productos registrados similares
+                  </p>
+                  <ul className="mt-2 space-y-1" aria-label="Productos registrados similares">
+                    {alternativas.map((producto) => (
+                      <li key={producto.idProducto}>
+                        <button
+                          type="button"
+                          onClick={() => onVerDetalle(producto)}
+                          className="cursor-pointer text-xs font-medium text-[var(--color-brand-blue)] hover:underline"
+                        >
+                          {producto.nombre}
+                          <span className="text-[var(--color-subtle)]"> · {producto.marca}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={onLimpiarBusqueda}

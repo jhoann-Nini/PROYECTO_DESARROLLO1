@@ -210,6 +210,38 @@ class AdministracionOfertasIntegrationTest {
   }
 
   @Test
+  @DisplayName("Fase 4: el resumen público cuenta solo ofertas disponibles de tiendas activas")
+  void resumenDeOfertas() throws Exception {
+    Establecimiento otra = new Establecimiento();
+    otra.setNombre("Tienda " + UUID.randomUUID());
+    otra.setEstado(true);
+    otra = establecimientoRepository.saveAndFlush(otra);
+    Establecimiento inactiva = new Establecimiento();
+    inactiva.setNombre("Tienda " + UUID.randomUUID());
+    inactiva.setEstado(false);
+    inactiva = establecimientoRepository.saveAndFlush(inactiva);
+
+    guardar(administrador, "{\"precio\":95000,\"disponibilidad\":true}").andExpect(status().isOk());
+    guardarEn(otra, "{\"precio\":89000,\"disponibilidad\":true}");
+    guardarEn(inactiva, "{\"precio\":50000,\"disponibilidad\":true}");
+
+    String filtro = "$[?(@.idProducto == " + producto.getIdProducto() + ")]";
+    // Público: sin token.
+    mockMvc.perform(get("/api/productos/resumen-ofertas"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath(filtro + ".tiendasDisponibles").value(2))
+      .andExpect(jsonPath(filtro + ".menorPrecio").value(89000.0))
+      .andExpect(jsonPath(filtro + ".fechaActualizacionMasReciente").exists());
+
+    // Una oferta no disponible deja de contar; sin ofertas, el producto no aparece.
+    guardarEn(otra, "{\"precio\":89000,\"disponibilidad\":false}");
+    guardar(administrador, "{\"precio\":95000,\"disponibilidad\":false}").andExpect(status().isOk());
+    mockMvc.perform(get("/api/productos/resumen-ofertas"))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath(filtro).isEmpty());
+  }
+
+  @Test
   @DisplayName("Sin token 401; moderador y usuario registrado 403")
   void autorizacion() throws Exception {
     String cuerpo = "{\"precio\":1000,\"disponibilidad\":true}";
@@ -238,6 +270,13 @@ class AdministracionOfertasIntegrationTest {
   private ResultActions guardar(Usuario usuario, String cuerpo) throws Exception {
     return mockMvc.perform(put(urlOferta()).with(como(usuario))
       .contentType(MediaType.APPLICATION_JSON).content(cuerpo));
+  }
+
+  private void guardarEn(Establecimiento otra, String cuerpo) throws Exception {
+    mockMvc.perform(put("/api/admin/productos/" + producto.getIdProducto()
+        + "/establecimientos/" + otra.getIdEstablecimiento())
+        .with(como(administrador)).contentType(MediaType.APPLICATION_JSON).content(cuerpo))
+      .andExpect(status().isOk());
   }
 
   private String urlOferta() {

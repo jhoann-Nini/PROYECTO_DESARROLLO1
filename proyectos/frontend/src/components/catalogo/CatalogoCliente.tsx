@@ -13,7 +13,10 @@ import {
   obtenerProductos,
 } from "@/services/api";
 import {
+  EJEMPLO_BUSQUEDA_GENERICA,
+  MENSAJE_BUSQUEDA_GENERICA,
   ORDENES_CATALOGO,
+  analizarBusqueda,
   construirChips,
   filtrarProductos,
   hayFiltrosActivos,
@@ -25,6 +28,7 @@ import {
   type OrdenCatalogo,
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { normalizarPresupuestoCOP } from "@/data/presupuesto";
 import SearchBar from "@/components/SearchBar";
@@ -121,14 +125,16 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
     };
   }, [intento]);
 
+  const resumenOfertas = useResumenOfertas();
   const vistas = useMemo(
     () =>
       construirCatalogo({
         productos: productosApi,
         categorias: categoriasApi,
         marcas: marcasApi,
+        resumenOfertas,
       }),
-    [productosApi, categoriasApi, marcasApi]
+    [productosApi, categoriasApi, marcasApi, resumenOfertas]
   );
 
   const catalogo = useMemo(() => prepararCatalogo(vistas), [vistas]);
@@ -348,11 +354,19 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
                   descripcion="Aún no hay productos registrados en la plataforma."
                 />
               ) : (
-                <EstadoVacio
-                  titulo="No encontramos productos con esos filtros"
-                  descripcion="Ajusta la búsqueda o limpia los filtros para ver más resultados."
-                  accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
-                />
+                analizarBusqueda(filtros.busqueda).generica ? (
+                  <EstadoVacio
+                    titulo={MENSAJE_BUSQUEDA_GENERICA}
+                    descripcion={`«${filtros.busqueda.trim()}» es muy general. ${EJEMPLO_BUSQUEDA_GENERICA} Para ver todos los productos de un tipo, usa el filtro de categoría.`}
+                    accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
+                  />
+                ) : (
+                  <EstadoVacio
+                    titulo="No encontramos productos con esos filtros"
+                    descripcion="Ningún producto del catálogo de TecReview coincide. Eso no significa que no exista en el mercado. Ajusta la búsqueda o limpia los filtros para ver más resultados."
+                    accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
+                  />
+                )
               )
             ) : (
               <>

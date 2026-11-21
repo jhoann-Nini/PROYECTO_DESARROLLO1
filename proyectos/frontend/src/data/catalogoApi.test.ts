@@ -80,3 +80,36 @@ describe("construirCatalogo", () => {
     expect(vistas[0].marca).toBe("Apple");
   });
 });
+
+describe("construirCatalogo con resumen de ofertas (Fase 4, H-04)", () => {
+  it("toma las tiendas y el menor precio del resumen del backend", () => {
+    const [con, sin] = construirCatalogo({
+      productos: [producto({ idProducto: 1 }), producto({ idProducto: 2 })],
+      categorias,
+      marcas,
+      resumenOfertas: [
+        { idProducto: 1, tiendasDisponibles: 3, menorPrecio: 4_200_000, fechaActualizacionMasReciente: "2026-11-18T10:00:00" },
+      ],
+    });
+    expect(con.disponibilidadConsultada).toBe(true);
+    expect(con.numeroTiendas).toBe(3);
+    expect(con.precioDesdeCOP).toBe(4_200_000);
+    expect(con.fechaPrecioTiendas).toBe("2026-11-18T10:00:00");
+    // Un producto ausente del resumen no tiene ofertas disponibles.
+    expect(sin.disponibilidadConsultada).toBe(true);
+    expect(sin.numeroTiendas).toBe(0);
+    expect(sin.precioDesdeCOP).toBeNull();
+  });
+
+  it("sin resumen, la disponibilidad queda sin confirmar y no usa el JSON heredado", () => {
+    const [vista] = construirCatalogo({
+      productos: [producto({ caracteristicas: { tiendas: [{ nombre: "Vieja", precio: 100 }] } })],
+      categorias,
+      marcas,
+    });
+    expect(vista.disponibilidadConsultada).toBe(false);
+    expect(vista.numeroTiendas).toBe(0);
+    expect(vista.precioDesdeCOP).toBeNull();
+  });
+});
+

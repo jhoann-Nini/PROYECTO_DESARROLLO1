@@ -5,6 +5,11 @@ Mejora 2. Se mantiene la restricción de misma categoría de la mejora 1.
 ## Qué muestra la tabla
 
 - Siempre conserva precio de referencia, disponibilidad, marca y categoría.
+  Desde la Fase 4, la disponibilidad sale del resumen de ofertas del backend
+  (`GET /api/productos/resumen-ofertas`): «Disponible en N tiendas», «Sin
+  tiendas registradas» o «Disponibilidad sin confirmar» si la consulta falla.
+  Ya no significa «producto activo en el catálogo».
+- Si algún producto tiene ofertas, se añade la fila «Menor precio en tiendas».
 - Las filas técnicas se construyen con las características del catálogo real,
   alineadas por ID de producto y en el orden de la selección.
 - Aparece una fila técnica si al menos uno de los productos aporta un valor.
@@ -12,8 +17,12 @@ Mejora 2. Se mantiene la restricción de misma categoría de la mejora 1.
   vacías de una plantilla.
 - Si no hay características técnicas, se informa y se muestran solo los datos
   generales.
-- «Solo diferencias» compara los textos registrados, incluyendo los valores
-  ausentes. No convierte ni equipara mediciones o unidades distintas.
+- «Solo diferencias» compara los textos registrados sin distinguir mayúsculas
+  ni espacios («8 GB» = «8gb»). No convierte ni equipara mediciones o unidades
+  distintas.
+- Fase 4 (H-11): si a un producto le falta el dato, la fila no se marca
+  «Distinto», sino «Datos incompletos». Sigue visible en la tabla completa y
+  queda fuera de «Solo diferencias».
 
 ## Categorías y campos
 
@@ -62,15 +71,25 @@ Los metadatos de versión, variante, fuentes, verificación, tiendas,
 benchmarks y puntuaciones no se convierten en filas técnicas. No se incorporan
 datos simulados ni se crean valores, unidades o puntuaciones.
 
-## Sugerencia informativa
+## En qué destaca cada producto (Fase 4, H-10)
 
-Disponibilidad y precio mantienen su prioridad. Para desempatar por cantidad
-de información, se cuentan solo los valores presentes en las filas técnicas
-de esta comparación, sin el denominador fijo «de 6».
+La antigua «sugerencia», que elegía un ganador por disponibilidad, precio y
+cantidad de datos, se reemplazó por **insignias por criterio**
+(`generarInsignias` en `data/comparador.ts`). Nunca hay un ganador global.
+Cada insignia muestra el criterio, los productos, el dato y su fuente:
 
-Cambiar «Solo diferencias» no modifica ese conteo: se sigue usando el conjunto
-completo de filas de la selección, no el subconjunto visible tras el filtro.
-Más información registrada no equivale a mayor calidad del producto.
+| Insignia | Condición |
+|---|---|
+| Menor precio de referencia | Todos tienen precio de referencia y no empatan todos. Si falta alguno, una nota lo indica y no se compara. |
+| Menor precio en tiendas | Al menos dos productos con ofertas; la fuente incluye la fecha del precio. |
+| Disponible en más tiendas | Disponibilidad confirmada para todos y no empatan todos. |
+| Destaca en «atributo» | Fila V3 comparable con `orden_numerico` (mayor, menor u objetivo). Dentro de la tolerancia, los productos empatan. |
+
+- Las filas técnicas legacy no tienen regla declarada y no dan insignias.
+- La cantidad de datos técnicos registrados es una **nota informativa**, nunca
+  un mérito. Se cuenta sobre todas las filas de la selección, sin el
+  denominador fijo «de 6», y no cambia con «Solo diferencias».
+- Si nadie destaca, el mensaje lo dice y remite a la tabla.
 
 ## Alcance y pruebas
 

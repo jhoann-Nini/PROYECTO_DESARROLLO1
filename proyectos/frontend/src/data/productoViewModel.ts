@@ -59,6 +59,13 @@ export interface ProductoViewModel {
   posicionRanking?: number | null;
   numeroTiendas?: number;
   precioDesdeCOP?: number | null;
+  /**
+   * Fase 4 (H-04): true si `numeroTiendas` y `precioDesdeCOP` vienen del
+   * resumen de ofertas del backend. false o ausente: disponibilidad sin confirmar.
+   */
+  disponibilidadConsultada?: boolean;
+  /** Fecha más reciente de actualización de precio entre las ofertas disponibles. */
+  fechaPrecioTiendas?: string | null;
   idGlobal?: IdProductoGlobal;
   fichaTecnicaV2?: FichaTecnicaV2;
   /** Ficha versionada; conserva el JSON original y los errores de despacho. */

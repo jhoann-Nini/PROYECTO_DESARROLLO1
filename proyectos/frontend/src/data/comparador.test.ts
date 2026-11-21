@@ -10,7 +10,7 @@ import {
   MAX_COMPARADOR,
   agregarIdComparador,
   construirFilasComparacion,
-  generarRecomendacion,
+  generarInsignias,
   guardarIdsComparador,
   leerIdsComparador,
   normalizarIdsComparador,
@@ -118,8 +118,21 @@ describe("comparación V3", () => {
     const diagonal = filas.find((item) => item.clave === "tecnica:v3:display.diagonal");
     expect(diagonal?.difiere).toBe(false);
     expect(diagonal?.comparabilidad).toContain("tolerancia 0.1 in");
-    expect(generarRecomendacion(productos, filas).idProducto).toBeNull();
-    expect(generarRecomendacion(productos, filas).mensaje).toContain("no generan un ganador global");
+    const resultado = generarInsignias(productos, filas);
+    // Dentro de la tolerancia empatan: no hay insignia exclusiva ni ganador global.
+    expect(resultado.insignias.filter((i) => i.criterio.includes("Diagonal") || i.fuente.includes("V3"))).toEqual([]);
+    expect(resultado).not.toHaveProperty("idProducto");
+  });
+  it("da una insignia V3 al producto que destaca fuera de la tolerancia, con dato y fuente", () => {
+    const productos = [viewV3(131, 5), viewV3(132, 5.5)];
+    const filas = construirFilasComparacion(productos);
+    const diagonal = filas.find((item) => item.clave === "tecnica:v3:display.diagonal");
+    expect(diagonal?.destacados).toEqual([1]);
+    const insignia = generarInsignias(productos, filas).insignias.find((i) => i.fuente.includes("V3"));
+    expect(insignia?.idsProductos).toEqual([132]);
+    expect(insignia?.criterio).toContain(diagonal!.etiqueta);
+    expect(insignia?.dato).toBe(diagonal!.valores[1]);
+    expect(insignia?.fuente).toContain("mayor es mejor");
   });
   it("marca una diferencia fuera de la tolerancia y no mezcla fichas legacy", () => {
     const actual = viewV3(103, 5);
@@ -324,13 +337,15 @@ describe("construirFilasComparacion", () => {
         nombre: "Producto Dos",
         precioCOP: 2_000_000,
         precioFormateado: "$ 2.000.000 COP",
-        disponible: false,
+        disponibilidadConsultada: true,
+        numeroTiendas: 0,
         especificaciones: {
           ...crearVista().especificaciones,
           pantalla: "6.7'' AMOLED",
         },
       }),
     ];
+    vistas[0] = { ...vistas[0], disponibilidadConsultada: true, numeroTiendas: 2 };
     const filas = construirFilasComparacion(vistas, vistas.map((vista) => productoApi(vista)));
 
     const porClave = new Map(filas.map((fila) => [fila.clave, fila]));
@@ -344,9 +359,49 @@ describe("construirFilasComparacion", () => {
       "$ 1.000.000 COP",
       "$ 2.000.000 COP",
     ]);
+    // Fase 4 (H-04): la disponibilidad sale de las ofertas, no del estado del producto.
+    expect(porClave.get("disponibilidad")?.valores).toEqual([
+      "Disponible en 2 tiendas",
+      "Sin tiendas registradas",
+    ]);
   });
 
-  it("usa null cuando falta un dato y lo considera distinto de un valor real", () => {
+  it("muestra la disponibilidad sin confirmar si no se consultaron las ofertas", () => {
+    const vistas = [crearVista(), crearVista({ idProducto: 2, disponible: false })];
+    const filas = construirFilasComparacion(vistas, vistas.map((vista) => productoApi(vista)));
+    const disponibilidad = filas.find((fila) => fila.clave === "disponibilidad");
+    expect(disponibilidad?.valores).toEqual(["Disponibilidad sin confirmar", "Disponibilidad sin confirmar"]);
+    expect(disponibilidad?.difiere).toBe(false);
+  });
+
+  it("agrega la fila de menor precio en tiendas solo si algún producto tiene ofertas", () => {
+    const sinOfertas = [crearVista(), crearVista({ idProducto: 2 })];
+    expect(construirFilasComparacion(sinOfertas, sinOfertas.map((v) => productoApi(v)))
+      .some((fila) => fila.clave === "precio-tiendas")).toBe(false);
+
+    const conOfertas = [
+      crearVista({ disponibilidadConsultada: true, numeroTiendas: 2, precioDesdeCOP: 950_000 }),
+      crearVista({ idProducto: 2, disponibilidadConsultada: true, numeroTiendas: 0, precioDesdeCOP: null }),
+    ];
+    const fila = construirFilasComparacion(conOfertas, conOfertas.map((v) => productoApi(v)))
+      .find((item) => item.clave === "precio-tiendas");
+    expect(fila?.etiqueta).toBe("Menor precio en tiendas");
+    expect(fila?.valores[0]).toMatch(/950\.000/);
+    expect(fila?.valores[1]).toBeNull();
+  });
+
+  it("compara los textos legacy sin distinguir mayúsculas ni espacios", () => {
+    const vistas = [crearVista(), crearVista({ idProducto: 2 })];
+    const filas = construirFilasComparacion(vistas, [
+      productoApi(vistas[0], { caracteristicas: { ram: "8 GB" } }),
+      productoApi(vistas[1], { caracteristicas: { ram: "8gb" } }),
+    ]);
+    const ram = filas.find((fila) => fila.clave === "tecnica:ram");
+    expect(ram?.valores).toEqual(["8 GB", "8gb"]);
+    expect(ram?.difiere).toBe(false);
+  });
+
+  it("usa null cuando falta un dato y marca la fila incompleta, no distinta", () => {
     const vistas = [
       crearVista(),
       crearVista({
@@ -361,7 +416,8 @@ describe("construirFilasComparacion", () => {
 
     const pantalla = filas.find((fila) => fila.clave === "tecnica:pantalla");
     expect(pantalla?.valores).toEqual(["6.1'' AMOLED", null]);
-    expect(pantalla?.difiere).toBe(true);
+    expect(pantalla?.difiere).toBe(false);
+    expect(pantalla?.incompleta).toBe(true);
   });
 
   it("alinea por ID los datos de audio y omite campos ajenos o vacíos para todos", () => {
@@ -401,105 +457,93 @@ describe("construirFilasComparacion", () => {
   });
 });
 
-describe("generarRecomendacion", () => {
+describe("generarInsignias (Fase 4, H-10)", () => {
   it("pide al menos dos productos", () => {
-    const resultado = generarRecomendacion([crearVista()], []);
-    expect(resultado.idProducto).toBeNull();
+    const resultado = generarInsignias([crearVista()], []);
+    expect(resultado.insignias).toEqual([]);
     expect(resultado.mensaje).toMatch(/al menos dos/i);
   });
 
-  it("prefiere un producto disponible frente a uno no disponible", () => {
-    const resultado = generarRecomendacion([
-      crearVista({ idProducto: 1, nombre: "No disponible", disponible: false }),
-      crearVista({ idProducto: 2, nombre: "Disponible", disponible: true }),
+  it("requiere productos de la misma categoría", () => {
+    const resultado = generarInsignias([
+      crearVista(),
+      crearVista({ idProducto: 2, categoria: "tablets" }),
     ], []);
-
-    expect(resultado.idProducto).toBe(2);
-    expect(resultado.nombre).toBe("Disponible");
-    expect(resultado.motivos.join(" ")).toMatch(/disponibilidad/i);
+    expect(resultado.insignias).toEqual([]);
+    expect(resultado.mensaje).toMatch(/misma categoría/i);
   });
 
-  it("prefiere el menor precio cuando ambos están disponibles", () => {
-    const resultado = generarRecomendacion([
-      crearVista({
-        idProducto: 1,
-        nombre: "Económico",
-        precioCOP: 900_000,
-        precioFormateado: "$ 900.000 COP",
-      }),
-      crearVista({
-        idProducto: 2,
-        nombre: "Costoso",
-        precioCOP: 2_500_000,
-        precioFormateado: "$ 2.500.000 COP",
-      }),
+  it("nunca declara un ganador global", () => {
+    const resultado = generarInsignias([
+      crearVista({ idProducto: 1, precioCOP: 900_000, precioFormateado: "$ 900.000 COP" }),
+      crearVista({ idProducto: 2 }),
     ], []);
-
-    expect(resultado.idProducto).toBe(1);
-    expect(resultado.motivos.join(" ")).toMatch(/precio/i);
+    expect(resultado).not.toHaveProperty("idProducto");
+    expect(resultado.mensaje).toMatch(/no hay un ganador global/i);
   });
 
-  it("no usa el precio si algún candidato no lo tiene registrado", () => {
-    const resultado = generarRecomendacion([
-      crearVista({
-        idProducto: 1,
-        nombre: "Sin precio",
-        precioCOP: 0,
-        precioFormateado: "Consultar disponibilidad",
-        especificaciones: {
-          pantalla: null,
-          procesador: null,
-          ram: null,
-          almacenamiento: null,
-          camaras: null,
-          bateria: null,
-        },
-      }),
-      crearVista({ idProducto: 2, nombre: "Con precio" }),
-    ], [{
-      clave: "tecnica:ram",
-      etiqueta: "Memoria RAM",
-      valores: [null, "8 GB"],
-      difiere: true,
-    }]);
-
-    expect(resultado.idProducto).toBe(2);
-    expect(resultado.motivos.join(" ")).toMatch(/especificaciones/i);
-  });
-
-  it("no inventa un ganador cuando hay empate técnico", () => {
-    const resultado = generarRecomendacion([
-      crearVista({ idProducto: 1, nombre: "Uno" }),
-      crearVista({ idProducto: 2, nombre: "Dos" }),
+  it("da la insignia de menor precio de referencia con su dato y su fuente", () => {
+    const resultado = generarInsignias([
+      crearVista({ idProducto: 1, nombre: "Económico", precioCOP: 900_000, precioFormateado: "$ 900.000 COP" }),
+      crearVista({ idProducto: 2, nombre: "Costoso", precioCOP: 2_500_000, precioFormateado: "$ 2.500.000 COP" }),
     ], []);
-
-    expect(resultado.idProducto).toBeNull();
-    expect(resultado.mensaje).toMatch(/empate/i);
+    const insignia = resultado.insignias.find((i) => i.criterio === "Menor precio de referencia");
+    expect(insignia?.idsProductos).toEqual([1]);
+    expect(insignia?.nombres).toEqual(["Económico"]);
+    expect(insignia?.dato).toBe("$ 900.000 COP");
+    expect(insignia?.fuente).toMatch(/precio de referencia/i);
   });
 
-  it("no recomienda si ninguno tiene disponibilidad confirmada", () => {
-    const resultado = generarRecomendacion([
-      crearVista({ idProducto: 1, disponible: false }),
-      crearVista({ idProducto: 2, disponible: false }),
+  it("no compara precios si a un producto le falta el precio y lo explica", () => {
+    const resultado = generarInsignias([
+      crearVista({ idProducto: 1, nombre: "Sin precio", precioCOP: 0, precioFormateado: "Consultar disponibilidad" }),
+      crearVista({ idProducto: 2, nombre: "Con precio", precioCOP: 3_000_000, precioFormateado: "$ 3.000.000 COP" }),
     ], []);
-
-    expect(resultado.idProducto).toBeNull();
-    expect(resultado.mensaje).toMatch(/disponibilidad/i);
+    expect(resultado.insignias.some((i) => i.criterio === "Menor precio de referencia")).toBe(false);
+    expect(resultado.notas.join(" ")).toMatch(/Sin precio de referencia registrado: Sin precio/);
   });
 
-  it("cuenta solo las filas técnicas vigentes, no las seis especificaciones del view model", () => {
-    const resultado = generarRecomendacion([
+  it("no da insignia de precio cuando hay empate", () => {
+    const resultado = generarInsignias([crearVista({ idProducto: 1 }), crearVista({ idProducto: 2 })], []);
+    expect(resultado.insignias).toEqual([]);
+    expect(resultado.mensaje).toMatch(/ningún producto destaca/i);
+  });
+
+  it("da las insignias de tiendas solo con disponibilidad consultada", () => {
+    const resultado = generarInsignias([
+      crearVista({ idProducto: 1, nombre: "Uno", disponibilidadConsultada: true, numeroTiendas: 3, precioDesdeCOP: 980_000, fechaPrecioTiendas: "2026-11-18T10:00:00" }),
+      crearVista({ idProducto: 2, nombre: "Dos", disponibilidadConsultada: true, numeroTiendas: 1, precioDesdeCOP: 940_000, fechaPrecioTiendas: "2026-11-19T10:00:00" }),
+    ], []);
+    const masTiendas = resultado.insignias.find((i) => i.criterio === "Disponible en más tiendas");
+    expect(masTiendas?.idsProductos).toEqual([1]);
+    expect(masTiendas?.dato).toBe("3 tiendas");
+    const menorTiendas = resultado.insignias.find((i) => i.criterio === "Menor precio en tiendas");
+    expect(menorTiendas?.idsProductos).toEqual([2]);
+    expect(menorTiendas?.dato).toMatch(/940\.000/);
+    expect(menorTiendas?.fuente).toMatch(/actualizado el 19/);
+
+    const sinConsulta = generarInsignias([
+      crearVista({ idProducto: 1, numeroTiendas: 3 }),
+      crearVista({ idProducto: 2, numeroTiendas: 1 }),
+    ], []);
+    expect(sinConsulta.insignias.some((i) => i.criterio.includes("tiendas"))).toBe(false);
+    expect(sinConsulta.notas.join(" ")).toMatch(/no se pudo confirmar/i);
+  });
+
+  it("no da insignias por filas técnicas legacy y presenta la cantidad de datos solo como nota", () => {
+    const resultado = generarInsignias([
       crearVista({ idProducto: 1, nombre: "Sin audio registrado" }),
       crearVista({ idProducto: 2, nombre: "Con audio registrado" }),
     ], [{
       clave: "tecnica:transductores",
       etiqueta: "Transductores / drivers",
       valores: [null, "40 mm"],
-      difiere: true,
+      difiere: false,
+      incompleta: true,
     }]);
-    expect(resultado.idProducto).toBe(2);
-    expect(resultado.motivos.join(" ")).toContain("1");
-    expect(resultado.motivos.join(" ")).not.toContain("de 6");
+    expect(resultado.insignias).toEqual([]);
+    expect(resultado.notas.join(" ")).toMatch(/informativo/i);
+    expect(resultado.notas.join(" ")).toContain("Con audio registrado 1");
   });
 
   it("cuenta puertos de audio pero no residuos de memoria o chipset al sugerir un producto", () => {
@@ -522,6 +566,6 @@ describe("generarRecomendacion", () => {
       "precio", "disponibilidad", "marca", "categoria",
       "tecnica:transductores", "tecnica:puertos",
     ]);
-    expect(generarRecomendacion(vistas, filas).idProducto).toBe(2);
+    expect(generarInsignias(vistas, filas).insignias).toEqual([]);
   });
 });

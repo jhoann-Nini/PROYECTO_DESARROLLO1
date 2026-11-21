@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import AdminFichaTecnicaModal from "./AdminFichaTecnicaModal";
+import AdminFichaTecnicaModal, { describirResponsable } from "./AdminFichaTecnicaModal";
 import type { ProductoResponse } from "@/types/producto";
 import * as api from "@/services/api";
 
@@ -250,5 +250,17 @@ describe("AdminFichaTecnicaModal", () => {
       );
       expect(onGuardada).toHaveBeenCalled();
     });
+  });
+});
+
+describe("describirResponsable (Fase 3, H-03)", () => {
+  it("identifica al administrador por nombre e id", () => {
+    expect(describirResponsable({ nombre: "Laura Gómez", idUsuario: 12 })).toBe("Laura Gómez (id 12)");
+    expect(describirResponsable({ nombre: "Laura Gómez" })).toBe("Laura Gómez");
+  });
+
+  it("conserva el valor genérico anterior si no hay sesión", () => {
+    expect(describirResponsable(null)).toBe("administrador");
+    expect(describirResponsable({ nombre: "  " })).toBe("administrador");
   });
 });

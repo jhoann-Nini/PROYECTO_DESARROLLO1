@@ -268,7 +268,7 @@ describe("DetalleProductoCliente", () => {
     expect(mockProducto).toHaveBeenCalledTimes(2);
   });
 
-  it("renderiza nombre, marca, categoría, precio y disponibilidad reales", async () => {
+  it("renderiza nombre, marca, categoría, precio de referencia y disponibilidad según las ofertas", async () => {
     render(<DetalleProductoCliente idProducto={204} />);
 
     await waitFor(() => {
@@ -277,7 +277,10 @@ describe("DetalleProductoCliente", () => {
       ).toBeDefined();
     });
 
-    expect(screen.getByText("Disponible")).toBeDefined();
+    // Fase 3 (H-04): un producto activo sin ofertas no se presenta como «Disponible».
+    expect(await screen.findByText("Sin tiendas con disponibilidad registrada")).toBeDefined();
+    expect(screen.queryByText("Disponible")).toBeNull();
+    expect(screen.getByText("Precio de referencia")).toBeDefined();
     expect(screen.getByText(/5\.499\.000/)).toBeDefined();
     expect(screen.getByText("Smartphone insignia con cámara de alta resolución.")).toBeDefined();
 
@@ -342,8 +345,38 @@ describe("DetalleProductoCliente", () => {
     ).toBeDefined();
   });
 
-  it("presenta los enlaces a tiendas con contexto accesible y apertura externa", async () => {
+  it("calcula la disponibilidad con las ofertas del backend", async () => {
+    mockTiendas.mockResolvedValue([
+      { idEstablecimiento: 17, nombre: "Tienda Norte", precio: 5_200_000, disponibilidad: true, direccion: null, telefono: null, correo: null, latitud: null, longitud: null },
+      { idEstablecimiento: 32, nombre: "Tienda Sur", precio: 5_100_000, disponibilidad: true, direccion: null, telefono: null, correo: null, latitud: null, longitud: null },
+    ]);
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    expect(await screen.findByText("Disponible en 2 tiendas")).toBeDefined();
+  });
+
+  it("no usa las tiendas del JSON heredado de la ficha como ofertas", async () => {
     mockProducto.mockResolvedValue(PRODUCTO_CON_TIENDAS);
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    expect(await screen.findByText("Aún no hay tiendas con precios publicados para este producto.")).toBeDefined();
+    expect(screen.queryByText("Tienda Central")).toBeNull();
+  });
+
+  it("presenta los enlaces a tiendas con contexto accesible y apertura externa", async () => {
+    mockTiendas.mockResolvedValue([
+      {
+        idEstablecimiento: 17, nombre: "Tienda Central", precio: 5_250_000, disponibilidad: true,
+        direccion: null, telefono: null, correo: null, latitud: null, longitud: null,
+        verificado: true, urlOferta: "https://tienda.example.com/s25-ultra",
+        fechaActualizacionPrecio: "2026-11-18T09:30:00",
+      },
+      {
+        idEstablecimiento: 32, nombre: "Tienda Local", precio: 5_100_000, disponibilidad: true,
+        direccion: null, telefono: null, correo: null, latitud: null, longitud: null,
+        verificado: false, urlOferta: null, fechaActualizacionPrecio: null,
+      },
+    ]);
 
     render(<DetalleProductoCliente idProducto={204} />);
 
@@ -361,6 +394,10 @@ describe("DetalleProductoCliente", () => {
     ).toBeDefined();
     expect(screen.getByText("Precio en Tienda Central:")).toBeDefined();
     expect(screen.queryByRole("link", { name: /Tienda Local/ })).toBeNull();
+    // Fase 3 (H-03): el sello solo aparece si establecimiento.verificado es true.
+    expect(screen.getByLabelText("Tienda Central verificada por TecReview")).toBeDefined();
+    expect(screen.queryByLabelText("Tienda Local verificada por TecReview")).toBeNull();
+    expect(screen.getByText(/Precio actualizado el 18\b.*2026/)).toBeDefined();
   });
 
   it("muestra un vacío limpio cuando no hay especificaciones registradas", async () => {

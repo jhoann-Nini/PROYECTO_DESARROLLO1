@@ -15,9 +15,11 @@ import {
 } from "@/lib/categorias";
 import {
   crearProductoViewModel,
-  normalizarTexto,
   type ProductoViewModel,
 } from "@/data/productoViewModel";
+import { aplicarResumenOfertasAVistas } from "@/data/catalogoApi";
+import { coincideConBusqueda } from "@/data/catalogo";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 
 type OrdenProductos = "nombre" | "precio-asc" | "precio-desc";
@@ -128,13 +130,13 @@ export default function CategoriaPageContent({
     setIntento((valor) => valor + 1);
   };
 
+  // Fase 4 (H-04, H-12): disponibilidad desde las ofertas y búsqueda por palabras.
+  const resumenOfertas = useResumenOfertas();
   const productosFiltrados = useMemo(() => {
-    const termino = normalizarTexto(busqueda);
-    const filtrados = termino
-      ? productos.filter((producto) =>
-          producto.textoBusqueda.includes(termino),
-        )
-      : productos;
+    const conOfertas = aplicarResumenOfertasAVistas(productos, resumenOfertas);
+    const filtrados = busqueda.trim()
+      ? conOfertas.filter((producto) => coincideConBusqueda(producto.textoBusqueda, busqueda))
+      : conOfertas;
 
     return [...filtrados].sort((a, b) => {
       if (orden === "precio-asc" || orden === "precio-desc") {
@@ -147,7 +149,7 @@ export default function CategoriaPageContent({
       }
       return a.nombre.localeCompare(b.nombre, "es");
     });
-  }, [productos, busqueda, orden]);
+  }, [productos, resumenOfertas, busqueda, orden]);
 
   const nombreCategoria =
     categoria?.categorias.map((item) => item.nombre).join(" · ") ||

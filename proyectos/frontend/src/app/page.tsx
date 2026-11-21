@@ -26,7 +26,8 @@ import {
   type ProductoOferta,
 } from "@/types/producto";
 import { construirCatalogo } from "@/data/catalogoApi";
-import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
+import { buscarAlternativas, coincideConBusqueda, filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { rutaCatalogoPresupuesto } from "@/data/presupuesto";
 import { seleccionarDestacados } from "@/data/destacados";
 import {
@@ -71,10 +72,8 @@ function coincideBusqueda(
   termino: string,
 ): boolean {
   if (!termino) return true;
-  return (
-    normalizarTexto(nombre).includes(termino) ||
-    (descripcion ? normalizarTexto(descripcion).includes(termino) : false)
-  );
+  // Fase 4 (H-12): palabras en cualquier orden, como en el catálogo.
+  return coincideConBusqueda(normalizarTexto(`${nombre} ${descripcion ?? ""}`), termino);
 }
 
 function filtrarRanking<T extends ItemRankingFiltrable>(
@@ -477,14 +476,16 @@ export default function Home() {
   // El slider ya entrega el límite en COP: no hay nada que convertir.
   const limitePresupuestoCOP = presupuestoMax;
 
+  const resumenOfertas = useResumenOfertas();
   const vistas = useMemo(
     () =>
       construirCatalogo({
         productos: productosBackend,
         categorias: categoriasApi,
         marcas: marcasApi,
+        resumenOfertas,
       }),
-    [productosBackend, categoriasApi, marcasApi],
+    [productosBackend, categoriasApi, marcasApi, resumenOfertas],
   );
 
   const productosSugeridos = useMemo(
@@ -538,6 +539,15 @@ export default function Home() {
         : seleccionarDestacados(productosFiltrados, mejorValorados),
     [hayFiltrosHome, productosFiltrados, mejorValorados],
   );
+  // Fase 4 (H-12): alternativas reales solo cuando la búsqueda no encuentra nada.
+  const alternativasBusqueda = useMemo(
+    () =>
+      busqueda.trim() && productosDestacados.length === 0
+        ? buscarAlternativas(vistas, busqueda)
+        : [],
+    [busqueda, productosDestacados, vistas],
+  );
+
 
   const mejorValoradosFiltrados = useMemo(
     () =>
@@ -821,6 +831,7 @@ export default function Home() {
           busqueda={busqueda}
           onVerDetalle={abrirDetalle}
           onLimpiarBusqueda={() => setBusqueda("")}
+          alternativas={alternativasBusqueda}
         />
 
         <RankingsHome

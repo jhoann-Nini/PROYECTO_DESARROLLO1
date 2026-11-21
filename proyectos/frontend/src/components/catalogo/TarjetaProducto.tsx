@@ -131,15 +131,18 @@ export default function TarjetaProducto({
             <span>{producto.categoriaEtiqueta}</span>
           </p>
 
-          <span
-            className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${
-              producto.disponible
-                ? "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
-                : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
-            }`}
-          >
-            {producto.disponible ? "Disponible" : "No disponible"}
-          </span>
+          {/* Fase 4 (H-04): solo se afirma disponibilidad con ofertas confirmadas por el backend. */}
+          {producto.disponibilidadConsultada && (
+            <span
+              className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                numeroTiendas > 0
+                  ? "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
+                  : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
+              }`}
+            >
+              {numeroTiendas > 0 ? "Disponible" : "Sin tiendas registradas"}
+            </span>
+          )}
         </div>
 
         <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-[var(--color-ink)]">

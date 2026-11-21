@@ -138,6 +138,49 @@ export function prepararCatalogo(
   };
 }
 
+/** Quita todo lo que no sea letra o dígito: «iPhone 16» → «iphone16». */
+function compactar(texto: string): string {
+  return texto.replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Fase 4 (H-12): coincide si todas las palabras de la búsqueda aparecen, en
+ * cualquier orden, o si la búsqueda escrita sin espacios aparece en el texto
+ * compactado («iphone16» encuentra «iPhone 16»). `textoNormalizado` ya viene
+ * sin acentos y en minúsculas (`textoBusqueda` del view model).
+ */
+export function coincideConBusqueda(textoNormalizado: string, busqueda: string): boolean {
+  const termino = normalizarTexto(busqueda);
+  if (!termino) return true;
+  const palabras = termino.split(/\s+/);
+  if (palabras.every((palabra) => textoNormalizado.includes(palabra))) return true;
+  const terminoCompacto = compactar(termino);
+  return terminoCompacto.length >= 2 && compactar(textoNormalizado).includes(terminoCompacto);
+}
+
+/**
+ * Fase 4 (H-12): alternativas para una búsqueda sin resultados, solo entre
+ * productos registrados. Coinciden por marca o por una palabra del nombre de
+ * al menos 3 letras que no sea solo un número. Conserva el orden del catálogo.
+ */
+export function buscarAlternativas(
+  productos: ProductoViewModel[],
+  busqueda: string,
+  maximo = 4,
+): ProductoViewModel[] {
+  const palabras = normalizarTexto(busqueda)
+    .split(/\s+/)
+    .filter((palabra) => palabra.length >= 3 && !/^\d+$/.test(palabra));
+  if (palabras.length === 0) return [];
+  return productos
+    .filter((producto) => {
+      const marca = normalizarTexto(producto.marca);
+      const nombre = normalizarTexto(producto.nombre).split(/[^a-z0-9]+/);
+      return palabras.some((palabra) => palabra === marca || nombre.includes(palabra));
+    })
+    .slice(0, maximo);
+}
+
 export function filtrarProductos(
   productos: ProductoViewModel[],
   filtros: FiltrosCatalogo
@@ -147,7 +190,7 @@ export function filtrarProductos(
     filtros.precioMin > 0 || filtros.precioMax < Number.MAX_SAFE_INTEGER;
 
   return productos.filter((producto) => {
-    if (busqueda && !producto.textoBusqueda.includes(busqueda)) {
+    if (busqueda && !coincideConBusqueda(producto.textoBusqueda, busqueda)) {
       return false;
     }
 

@@ -15,6 +15,8 @@ export interface DestacadosHomeProps {
   busqueda: string;
   onVerDetalle: (producto: ProductoViewModel) => void;
   onLimpiarBusqueda: () => void;
+  /** Fase 4 (H-12): productos registrados similares cuando la búsqueda no encuentra nada. */
+  alternativas?: ProductoViewModel[];
   error?: string | null;
   onReintentar?: () => void;
 }
@@ -28,6 +30,7 @@ export default function DestacadosHome({
   busqueda,
   onVerDetalle,
   onLimpiarBusqueda,
+  alternativas = [],
   error = null,
   onReintentar,
 }: DestacadosHomeProps) {
@@ -158,13 +161,34 @@ export default function DestacadosHome({
           {busqueda.trim() ? (
             <div className="space-y-3">
               <p className="text-base font-semibold text-[var(--color-ink)]">
-                No encontramos productos con &ldquo;{busqueda.trim()}&rdquo;.
+                &ldquo;{busqueda.trim()}&rdquo; no está registrado en el catálogo de TecReview.
               </p>
               <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
-                Prueba con menos palabras, revisa la escritura o busca por marca,
-                modelo o tipo de dispositivo (por ejemplo, Samsung, Asus o
-                audífonos).
+                Esto no significa que no exista en el mercado: solo que aún no lo
+                tenemos en nuestro catálogo. Prueba con menos palabras, revisa la
+                escritura o busca por marca o tipo de dispositivo.
               </p>
+              {alternativas.length > 0 && (
+                <div className="mx-auto max-w-md text-left">
+                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                    Productos registrados similares
+                  </p>
+                  <ul className="mt-2 space-y-1" aria-label="Productos registrados similares">
+                    {alternativas.map((producto) => (
+                      <li key={producto.idProducto}>
+                        <button
+                          type="button"
+                          onClick={() => onVerDetalle(producto)}
+                          className="cursor-pointer text-xs font-medium text-[var(--color-brand-blue)] hover:underline"
+                        >
+                          {producto.nombre}
+                          <span className="text-[var(--color-subtle)]"> · {producto.marca}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <button
                 type="button"
                 onClick={onLimpiarBusqueda}

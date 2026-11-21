@@ -3,6 +3,8 @@ import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoViewModel } from "./productoViewModel";
 import {
   ORDENES_CATALOGO,
+  buscarAlternativas,
+  coincideConBusqueda,
   construirChips,
   filtrarProductos,
   hayFiltrosActivos,
@@ -388,5 +390,54 @@ describe("hayFiltrosActivos", () => {
   it("un máximo superior al rango sigue excluyendo precios desconocidos y es un filtro activo", () => {
     const filtros = { ...filtrosVacios(), precioMax: 10000000 };
     expect(hayFiltrosActivos(filtros, { min: 1000000, max: 6000000 })).toBe(true);
+  });
+});
+
+describe("coincideConBusqueda (Fase 4, H-12)", () => {
+  const texto = "apple iphone 16 pro camara 48 mp 5g celulares";
+
+  it("encuentra palabras en cualquier orden", () => {
+    expect(coincideConBusqueda(texto, "pro iphone")).toBe(true);
+    expect(coincideConBusqueda(texto, "  IPHONE   Pro ")).toBe(true);
+  });
+
+  it("encuentra la búsqueda escrita sin espacios", () => {
+    expect(coincideConBusqueda(texto, "iphone16")).toBe(true);
+    expect(coincideConBusqueda(texto, "iPhone16Pro")).toBe(true);
+  });
+
+  it("exige todas las palabras", () => {
+    expect(coincideConBusqueda(texto, "iphone 18")).toBe(false);
+    expect(coincideConBusqueda(texto, "galaxy pro")).toBe(false);
+  });
+
+  it("una búsqueda vacía coincide con todo", () => {
+    expect(coincideConBusqueda(texto, "   ")).toBe(true);
+  });
+
+  it("filtrarProductos usa la coincidencia por palabras", () => {
+    const resultado = filtrarProductos(productos, { ...filtrosVacios(), busqueda: "ultra galaxy" });
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([1]);
+  });
+});
+
+describe("buscarAlternativas (Fase 4, H-12)", () => {
+  it("sugiere productos registrados de la marca mencionada", () => {
+    const alternativas = buscarAlternativas(productos, "iPhone 18 Apple");
+    expect(alternativas.map((producto) => producto.idProducto)).toEqual([2, 4]);
+  });
+
+  it("sugiere productos que coinciden en alguna palabra significativa", () => {
+    const alternativas = buscarAlternativas(productos, "galaxy z fold 7");
+    expect(alternativas.map((producto) => producto.idProducto)).toEqual([1, 6]);
+  });
+
+  it("no sugiere nada si ninguna palabra coincide, ni por números sueltos", () => {
+    expect(buscarAlternativas(productos, "nokia 3310")).toEqual([]);
+    expect(buscarAlternativas(productos, "5")).toEqual([]);
+  });
+
+  it("respeta el máximo de alternativas", () => {
+    expect(buscarAlternativas(productos, "samsung apple sony", 2)).toHaveLength(2);
   });
 });

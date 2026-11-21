@@ -1326,7 +1326,7 @@ describe("Página principal / (Home)", () => {
         target: { value: "Modelo Inexistente XYZ 999" },
       });
       expect(
-        screen.getByText(/No encontramos productos con “Modelo Inexistente XYZ 999”/i)
+        screen.getByText(/“Modelo Inexistente XYZ 999” no está registrado en el catálogo de TecReview/i)
       ).toBeDefined();
       expect(screen.getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
     });

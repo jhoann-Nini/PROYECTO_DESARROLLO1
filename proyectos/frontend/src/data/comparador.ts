@@ -2,6 +2,7 @@ import type { ProductoViewModel } from "@/data/productoViewModel";
 import type { Producto } from "@/types/producto";
 import { obtenerFilasTecnicasComparador } from "./especificacionesComparador";
 import { formatearValorFichaV3 } from "./fichaTecnicaProducto";
+import { formatearCOP } from "./specsHelper";
 import { esAlcanceCompatibleConVariante, valoresEstructuralmenteIgualesV3, type DatosFichaTecnicaV3, type EspecificacionFichaV3 } from "@/types/fichaTecnicaV3";
 
 export const CLAVE_COMPARADOR = "tecreview:comparador";
@@ -14,6 +15,7 @@ export interface ProductoComparable {
 
 export type ClaveFilaComparacion =
   | "precio"
+  | "precio-tiendas"
   | "disponibilidad"
   | "marca"
   | "categoria"
@@ -26,12 +28,30 @@ export interface FilaComparacion {
   valores: Array<string | null>;
   difiere: boolean;
   comparabilidad?: string;
+  /** Fase 4 (H-11): a algún producto le falta el dato; no se marca como diferencia. */
+  incompleta?: boolean;
+  /**
+   * Fase 4 (H-10): índices de los productos que destacan en una fila V3
+   * comparable con orden numérico (fuera de la tolerancia del mejor valor).
+   */
+  destacados?: number[];
+  /** Dirección de la regla V3 de la que salen los destacados. */
+  direccionRegla?: "mayor_es_mejor" | "menor_es_mejor" | "objetivo";
 }
 
-export interface ResultadoRecomendacion {
-  idProducto: number | null;
-  nombre: string | null;
-  motivos: string[];
+/** Un criterio en el que destacan uno o varios productos, con su dato y su fuente. */
+export interface InsigniaComparacion {
+  criterio: string;
+  idsProductos: number[];
+  nombres: string[];
+  dato: string;
+  fuente: string;
+}
+
+/** Fase 4 (H-10): reemplaza al «ganador»; nunca hay un ganador global. */
+export interface ResultadoInsignias {
+  insignias: InsigniaComparacion[];
+  notas: string[];
   mensaje: string;
 }
 
@@ -163,8 +183,20 @@ export function quitarIdComparador(ids: number[], id: number): number[] {
   return normalizarIdsComparador(ids).filter((actual) => actual !== id);
 }
 
-function hayDiferencia(valores: Array<string | null>): boolean {
-  return new Set(valores.map((valor) => valor ?? "\u0000")).size > 1;
+/** Compara textos sin distinguir mayúsculas ni espacios: «8 GB» = «8gb». No convierte unidades. */
+function normalizarValorComparado(valor: string): string {
+  return valor.toLowerCase().replace(/\s+/g, "");
+}
+
+/**
+ * Fase 4 (H-11): solo hay diferencia si todos los productos tienen dato y
+ * los datos no coinciden. Un dato faltante marca la fila como incompleta.
+ */
+function analizarDiferencia(valores: Array<string | null>): { difiere: boolean; incompleta: boolean } {
+  const presentes = valores.filter((valor): valor is string => valor !== null);
+  const incompleta = presentes.length > 0 && presentes.length < valores.length;
+  const difiere = !incompleta && new Set(presentes.map(normalizarValorComparado)).size > 1;
+  return { difiere, incompleta };
 }
 
 function fila(
@@ -172,7 +204,24 @@ function fila(
   etiqueta: string,
   valores: Array<string | null>,
 ): FilaComparacion {
-  return { clave, etiqueta, valores, difiere: hayDiferencia(valores) };
+  const { difiere, incompleta } = analizarDiferencia(valores);
+  return incompleta ? { clave, etiqueta, valores, difiere, incompleta } : { clave, etiqueta, valores, difiere };
+}
+
+function textoTiendas(cantidad: number): string {
+  return `${cantidad} ${cantidad === 1 ? "tienda" : "tiendas"}`;
+}
+
+/** Fase 4 (H-04): disponibilidad según las ofertas del backend, no según el estado del producto. */
+function textoDisponibilidad(producto: ProductoViewModel): string {
+  if (!producto.disponibilidadConsultada) return "Disponibilidad sin confirmar";
+  const tiendas = producto.numeroTiendas ?? 0;
+  return tiendas > 0 ? `Disponible en ${textoTiendas(tiendas)}` : "Sin tiendas registradas";
+}
+
+function tieneOfertas(producto: ProductoViewModel): boolean {
+  return Boolean(producto.disponibilidadConsultada) && (producto.numeroTiendas ?? 0) > 0
+    && typeof producto.precioDesdeCOP === "number" && producto.precioDesdeCOP > 0;
 }
 
 function claveFilaTecnica(origen: "legacy" | "v3", clave: string): ClaveFilaComparacion {
@@ -199,12 +248,17 @@ export function construirFilasComparacion(
         producto.precioCOP > 0 ? producto.precioFormateado : null,
       ),
     ),
+    ...(productos.some(tieneOfertas)
+      ? [fila(
+          "precio-tiendas",
+          "Menor precio en tiendas",
+          productos.map((producto) => tieneOfertas(producto) ? formatearCOP(producto.precioDesdeCOP!) : null),
+        )]
+      : []),
     fila(
       "disponibilidad",
       "Disponibilidad",
-      productos.map((producto) =>
-        producto.disponible ? "Disponible" : "No disponible",
-      ),
+      productos.map(textoDisponibilidad),
     ),
     fila(
       "marca",
@@ -259,6 +313,7 @@ function construirFilasV3(productos: ProductoViewModel[], variantes: Record<numb
     );
     let comparable = Boolean(allApplicable && sameRule && toleranciaCompatible);
     let differs = false;
+    let destacados: number[] | undefined;
     let note = !evidenciasCompatibles
       ? "No comparable: una evidencia enlazada no cubre la variante de la especificación."
       : !toleranciaCompatible
@@ -276,6 +331,14 @@ function construirFilasV3(productos: ProductoViewModel[], variantes: Record<numb
         const tol = rule.tolerancia?.unidad === rule.unidad ? rule.tolerancia.valor : 0;
         const scores = rule.direccion === "objetivo" && rule.objetivo !== null ? numbers.map((n) => Math.abs(n - rule.objetivo!)) : numbers;
         differs = Math.max(...scores) - Math.min(...scores) > tol;
+        if (differs) {
+          // Mayor es mejor: el mejor es el máximo. Menor u objetivo: el mínimo
+          // (para objetivo, la menor distancia). Dentro de la tolerancia, empatan.
+          const mejor = rule.direccion === "mayor_es_mejor" ? Math.max(...scores) : Math.min(...scores);
+          destacados = scores
+            .map((score, indice) => (Math.abs(score - mejor) <= tol ? indice : -1))
+            .filter((indice) => indice >= 0);
+        }
         note = `Regla ${rule.direccion} · ${rule.unidad}${rule.tolerancia ? ` · tolerancia ${rule.tolerancia.valor} ${rule.tolerancia.unidad}` : ""}. Sin ganador global.`;
       }
     } else if (comparable && rule.habilitada && rule.modo === "igualdad_estructural") {
@@ -283,7 +346,12 @@ function construirFilasV3(productos: ProductoViewModel[], variantes: Record<numb
       note = "Igualdad estructural según la regla V3; no determina un ganador.";
     }
     if (comparable && rule.habilitada && rule.modo === "orden_numerico" && !note.startsWith("Regla")) note = "No comparable: el valor no es una magnitud escalar en la unidad definida.";
-    return { clave: claveFilaTecnica("v3", clave), etiqueta: primera.nombre, valores, difiere: comparable && differs, comparabilidad: note };
+    const resultado: FilaComparacion = { clave: claveFilaTecnica("v3", clave), etiqueta: primera.nombre, valores, difiere: comparable && differs, comparabilidad: note };
+    if (comparable && destacados && destacados.length < productos.length && rule.habilitada && rule.modo === "orden_numerico") {
+      resultado.destacados = destacados;
+      resultado.direccionRegla = rule.direccion;
+    }
+    return resultado;
   });
 }
 
@@ -361,111 +429,124 @@ function construirFilasBenchmarks(productos: ProductoViewModel[]): FilaComparaci
   });
 }
 
+const TEXTO_DIRECCION: Record<NonNullable<FilaComparacion["direccionRegla"]>, string> = {
+  mayor_es_mejor: "mayor es mejor",
+  menor_es_mejor: "menor es mejor",
+  objetivo: "más cercano al objetivo",
+};
+
+function formatearFechaCorta(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return null;
+  return new Intl.DateTimeFormat("es-CO", { dateStyle: "medium" }).format(fecha);
+}
+
 /**
- * Genera una sugerencia informativa usando solo datos reales:
- * disponibilidad, precio de referencia y cantidad de especificaciones.
- * Nunca declara un ganador absoluto ni inventa una calificación editorial.
+ * Productos con el menor (o mayor) valor, si no empatan todos.
+ * Devuelve null cuando todos comparten el mejor valor.
  */
-export function generarRecomendacion(
+function mejores(
+  productos: ProductoViewModel[],
+  valor: (producto: ProductoViewModel) => number,
+  modo: "menor" | "mayor",
+): ProductoViewModel[] | null {
+  const valores = productos.map(valor);
+  const objetivo = modo === "menor" ? Math.min(...valores) : Math.max(...valores);
+  const elegidos = productos.filter((_, indice) => valores[indice] === objetivo);
+  return elegidos.length < productos.length ? elegidos : null;
+}
+
+function insignia(criterio: string, elegidos: ProductoViewModel[], dato: string, fuente: string): InsigniaComparacion {
+  return {
+    criterio,
+    idsProductos: elegidos.map((producto) => producto.idProducto),
+    nombres: elegidos.map((producto) => producto.nombre),
+    dato,
+    fuente,
+  };
+}
+
+/**
+ * Fase 4 (H-10): reemplaza al «ganador» por insignias por criterio. Cada
+ * insignia muestra el dato y su fuente; nunca hay un ganador global.
+ * - Precio de referencia y tiendas: solo si todos los productos tienen el dato.
+ * - Fichas V3: una insignia por fila comparable con orden numérico; dentro de
+ *   la tolerancia los productos empatan.
+ * - Filas técnicas legacy: no tienen regla declarada, así que no dan insignias.
+ * - La cantidad de datos registrados es una nota informativa, nunca un mérito.
+ */
+export function generarInsignias(
   productos: ProductoViewModel[],
   filas: FilaComparacion[],
-): ResultadoRecomendacion {
-  if (productos.some((producto) => producto.fichaTecnica?.version === "v3")) return {
-    idProducto: null, nombre: null, motivos: [],
-    mensaje: "Las fichas V3 no generan un ganador global automático. Compara cada atributo con su regla explícita.",
-  };
+): ResultadoInsignias {
   if (productos.length < 2) {
-    return {
-      idProducto: null,
-      nombre: null,
-      motivos: [],
-      mensaje: "Agrega al menos dos productos para generar una recomendación.",
-    };
+    return { insignias: [], notas: [], mensaje: "Agrega al menos dos productos para ver en qué destaca cada uno." };
   }
-
   if (new Set(productos.map((producto) => producto.categoria)).size !== 1) {
-    return {
-      idProducto: null,
-      nombre: null,
-      motivos: [],
-      mensaje: "La recomendación requiere productos de la misma categoría.",
-    };
+    return { insignias: [], notas: [], mensaje: "Las insignias requieren productos de la misma categoría." };
   }
 
-  const disponibles = productos.filter((producto) => producto.disponible);
+  const insignias: InsigniaComparacion[] = [];
+  const notas: string[] = [];
 
-  if (disponibles.length === 0) {
-    return {
-      idProducto: null,
-      nombre: null,
-      motivos: [],
-      mensaje:
-        "Ninguno de los productos seleccionados tiene disponibilidad confirmada; no es posible recomendar uno.",
-    };
-  }
-
-  let candidatos = disponibles;
-  const motivos: string[] = [];
-
-  motivos.push(
-    disponibles.length < productos.length
-      ? "Tiene disponibilidad confirmada y se descartaron los productos no disponibles."
-      : "Tiene disponibilidad confirmada.",
-  );
-
-  if (
-    candidatos.length > 1 &&
-    candidatos.every((producto) => producto.precioCOP > 0)
-  ) {
-    const menorPrecio = Math.min(
-      ...candidatos.map((producto) => producto.precioCOP),
-    );
-    const masBaratos = candidatos.filter(
-      (producto) => producto.precioCOP === menorPrecio,
-    );
-
-    if (masBaratos.length < candidatos.length) {
-      candidatos = masBaratos;
-      motivos.push(
-        `Su precio de referencia es el más bajo entre los candidatos (${candidatos[0].precioFormateado}).`,
-      );
+  // Precio de referencia.
+  const sinPrecio = productos.filter((producto) => producto.precioCOP <= 0);
+  if (sinPrecio.length > 0) {
+    notas.push(`Sin precio de referencia registrado: ${sinPrecio.map((p) => p.nombre).join(", ")}.`);
+  } else {
+    const elegidos = mejores(productos, (producto) => producto.precioCOP, "menor");
+    if (elegidos) {
+      insignias.push(insignia("Menor precio de referencia", elegidos, elegidos[0].precioFormateado,
+        "Precio de referencia del catálogo de TecReview"));
     }
   }
 
-  if (candidatos.length > 1) {
-    const cantidades = new Map(productos.map((producto, indice) => [
-      producto.idProducto,
-      contarEspecificaciones(filas, indice),
-    ]));
-    const mayorCantidad = Math.max(
-      ...candidatos.map((producto) => cantidades.get(producto.idProducto) ?? 0),
-    );
-    const masCompletos = candidatos.filter(
-      (producto) => cantidades.get(producto.idProducto) === mayorCantidad,
-    );
-
-    if (masCompletos.length < candidatos.length) {
-      candidatos = masCompletos;
-      motivos.push(
-        `Registra más especificaciones de la comparación (${mayorCantidad}).`,
-      );
+  // Tiendas: solo con la disponibilidad confirmada por el backend.
+  if (productos.some((producto) => !producto.disponibilidadConsultada)) {
+    notas.push("La disponibilidad en tiendas no se pudo confirmar; no se comparan tiendas.");
+  } else {
+    const conOfertas = productos.filter(tieneOfertas);
+    if (conOfertas.length >= 2) {
+      const elegidos = mejores(conOfertas, (producto) => producto.precioDesdeCOP!, "menor");
+      if (elegidos) {
+        const fecha = formatearFechaCorta(elegidos[0].fechaPrecioTiendas);
+        insignias.push(insignia("Menor precio en tiendas", elegidos, formatearCOP(elegidos[0].precioDesdeCOP!),
+          `Ofertas registradas en tiendas${fecha ? ` · actualizado el ${fecha}` : ""}`));
+      }
+    }
+    if (conOfertas.length < productos.length && conOfertas.length > 0) {
+      notas.push(`Sin ofertas disponibles registradas: ${productos.filter((p) => !tieneOfertas(p)).map((p) => p.nombre).join(", ")}.`);
+    }
+    const elegidos = mejores(productos, (producto) => producto.numeroTiendas ?? 0, "mayor");
+    if (elegidos && (elegidos[0].numeroTiendas ?? 0) > 0) {
+      insignias.push(insignia("Disponible en más tiendas", elegidos, textoTiendas(elegidos[0].numeroTiendas ?? 0),
+        "Ofertas disponibles registradas en TecReview"));
     }
   }
 
-  if (candidatos.length !== 1) {
-    return {
-      idProducto: null,
-      nombre: null,
-      motivos,
-      mensaje:
-        "Hay un empate técnico con los datos disponibles; revisa la tabla antes de decidir.",
-    };
+  // Filas V3 comparables con orden numérico.
+  for (const filaV3 of filas) {
+    if (!filaV3.destacados || !filaV3.direccionRegla) continue;
+    const elegidos = filaV3.destacados.map((indice) => productos[indice]).filter(Boolean);
+    if (elegidos.length === 0) continue;
+    const dato = filaV3.destacados.map((indice) => filaV3.valores[indice]).filter(Boolean).join(" · ");
+    insignias.push(insignia(`Destaca en «${filaV3.etiqueta}»`, elegidos, dato,
+      `Ficha técnica V3 · ${TEXTO_DIRECCION[filaV3.direccionRegla]}`));
+  }
+
+  // Cantidad de datos: solo informativa.
+  const cantidades = productos.map((_, indice) => contarEspecificaciones(filas, indice));
+  if (new Set(cantidades).size > 1) {
+    notas.push(`Datos técnicos registrados (informativo, no es un mérito): ${productos
+      .map((producto, indice) => `${producto.nombre} ${cantidades[indice]}`).join(" · ")}.`);
   }
 
   return {
-    idProducto: candidatos[0].idProducto,
-    nombre: candidatos[0].nombre,
-    motivos,
-    mensaje: "Sugerencia basada en los datos disponibles.",
+    insignias,
+    notas,
+    mensaje: insignias.length > 0
+      ? "Cada insignia indica un criterio, su dato y su fuente. No hay un ganador global."
+      : "Con los datos disponibles, ningún producto destaca en un criterio comparable. Revisa la tabla.",
   };
 }

@@ -25,6 +25,7 @@ import {
   type OrdenCatalogo,
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
+import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { normalizarPresupuestoCOP } from "@/data/presupuesto";
 import SearchBar from "@/components/SearchBar";
@@ -121,14 +122,16 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
     };
   }, [intento]);
 
+  const resumenOfertas = useResumenOfertas();
   const vistas = useMemo(
     () =>
       construirCatalogo({
         productos: productosApi,
         categorias: categoriasApi,
         marcas: marcasApi,
+        resumenOfertas,
       }),
-    [productosApi, categoriasApi, marcasApi]
+    [productosApi, categoriasApi, marcasApi, resumenOfertas]
   );
 
   const catalogo = useMemo(() => prepararCatalogo(vistas), [vistas]);
@@ -350,7 +353,7 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
               ) : (
                 <EstadoVacio
                   titulo="No encontramos productos con esos filtros"
-                  descripcion="Ajusta la búsqueda o limpia los filtros para ver más resultados."
+                  descripcion="Ningún producto del catálogo de TecReview coincide. Eso no significa que no exista en el mercado. Ajusta la búsqueda o limpia los filtros para ver más resultados."
                   accion={{ etiqueta: "Limpiar filtros", onClick: limpiarFiltros }}
                 />
               )

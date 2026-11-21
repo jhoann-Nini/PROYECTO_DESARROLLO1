@@ -56,6 +56,7 @@ import CategoriasHome from "@/components/home/CategoriasHome";
 import PresupuestoHome from "@/components/home/PresupuestoHome";
 import OfertasHome from "@/components/home/OfertasHome";
 import DestacadosHome from "@/components/home/DestacadosHome";
+import EstadoBusquedaHome from "@/components/home/EstadoBusquedaHome";
 import RankingsHome from "@/components/home/RankingsHome";
 import OpinionesHome from "@/components/home/OpinionesHome";
 import CtaComparador from "@/components/home/CtaComparador";
@@ -747,8 +748,8 @@ export default function Home() {
                     <SearchBar
                       value={busqueda}
                       onChange={setBusqueda}
-                      placeholder="Buscar por marca, modelo o categoría (ej. Xiaomi, Samsung, Lenovo)..."
-                      ariaLabel="Buscar dispositivos por marca, modelo o características"
+                      placeholder="Busca por marca o modelo. Ej.: Galaxy S24, iPhone 16"
+                      ariaLabel="Buscar dispositivos por marca o modelo"
                       onFocus={() => setBuscadorEnfocado(true)}
                       onBlur={(event) => {
                         const siguiente = event.relatedTarget as Node | null;
@@ -767,6 +768,13 @@ export default function Home() {
                       />
                     )}
                   </div>
+                  {!cargandoApi && (
+                    <EstadoBusquedaHome
+                      busqueda={busqueda}
+                      totalResultados={productosDestacados.length}
+                      hayAlternativas={alternativasBusqueda.length > 0}
+                    />
+                  )}
                   <p className="mt-2 text-xs text-[var(--color-subtle)]">
                     Presupuesto de referencia: hasta{" "}
                     {formatearCOP(presupuestoMax)}. Confirma para ver productos

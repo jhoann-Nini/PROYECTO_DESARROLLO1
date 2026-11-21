@@ -241,3 +241,14 @@ button:disabled {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Buscadores que ya tienen su propio botón para borrar: se oculta la «X»
+ * que el navegador añade a los campos type="search" para no mostrar dos.
+ */
+.sin-x-nativa::-webkit-search-cancel-button,
+.sin-x-nativa::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}

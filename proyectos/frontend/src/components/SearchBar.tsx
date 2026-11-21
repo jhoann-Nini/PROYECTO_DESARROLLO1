@@ -14,7 +14,7 @@ interface SearchBarProps {
 export default function SearchBar({
   value = "",
   onChange,
-  placeholder = "Buscar por marca, modelo o categoría (ej. iPhone, Lenovo)...",
+  placeholder = "Busca por marca o modelo. Ej.: Galaxy S24, iPhone 16",
   ariaLabel = "Buscar dispositivos tecnológicos por marca o modelo",
   onFocus,
   onBlur,
@@ -50,7 +50,7 @@ export default function SearchBar({
         aria-label={ariaLabel}
         onFocus={onFocus}
         onBlur={onBlur}
-        className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-3.5 pl-11 pr-12 text-sm text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-colors placeholder:text-[var(--color-subtle)] hover:border-[var(--color-subtle)]/40 focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+        className="sin-x-nativa w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-3.5 pl-11 pr-12 text-sm text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-colors placeholder:text-[var(--color-subtle)] hover:border-[var(--color-subtle)]/40 focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
       />
 
       {/* Botón para limpiar búsqueda con etiqueta accesible */}

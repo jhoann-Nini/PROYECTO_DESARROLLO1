@@ -138,9 +138,17 @@ export function prepararCatalogo(
   };
 }
 
+/**
+ * El «+» forma parte del modelo («Galaxy Tab S10+» no es «Galaxy Tab S10
+ * Ultra»): se convierte en «plus» pegado a la palabra anterior para no perderlo.
+ */
+function conservarPlus(texto: string): string {
+  return texto.replace(/\s*\+/g, "plus");
+}
+
 /** Quita todo lo que no sea letra o dígito: «iPhone 16» → «iphone16». */
 function compactar(texto: string): string {
-  return texto.replace(/[^a-z0-9]+/g, "");
+  return conservarPlus(texto).replace(/[^a-z0-9]+/g, "");
 }
 
 /**
@@ -162,9 +170,31 @@ const PALABRAS_GENERICAS: Record<string, CategoriaDispositivo | null> = {
 /** Palabras sin significado para identificar un dispositivo. */
 const PALABRAS_VACIAS = new Set(["un", "una", "unos", "unas", "el", "la", "los", "las", "de", "del", "para", "con", "y", "o"]);
 
-/** Aviso cuando la búsqueda solo tiene palabras genéricas («teléfono», «audífonos»). */
-export const MENSAJE_BUSQUEDA_GENERICA = "Coloca la marca o el nombre del dispositivo.";
-export const EJEMPLO_BUSQUEDA_GENERICA = "Por ejemplo: «Samsung Galaxy S24», «iPhone 16» o «Sony WH-1000XM5».";
+/*
+ * Textos de los buscadores, definidos una sola vez para que la portada, la
+ * barra superior y el catálogo digan lo mismo. Criterio: tuteo, imperativo,
+ * comillas «», sin doble negación.
+ */
+
+/** Búsqueda solo con palabras genéricas («teléfono», «audífonos»). */
+export const MENSAJE_BUSQUEDA_GENERICA = "Escribe la marca o el modelo del dispositivo.";
+
+export function ayudaBusquedaGenerica(termino: string): string {
+  return `«${termino.trim()}» es muy general. Prueba con «Samsung Galaxy S24» o «iPhone 16».`;
+}
+
+/** Búsqueda sin resultados: el producto no está en el catálogo. */
+export function mensajeNoEnCatalogo(termino: string): string {
+  return `«${termino.trim()}» no está en nuestro catálogo.`;
+}
+
+export const AYUDA_NO_EN_CATALOGO = "Puede existir en el mercado, pero aún no lo tenemos.";
+
+export const TITULO_ALTERNATIVAS = "Productos parecidos en nuestro catálogo";
+
+export function textoProductosEncontrados(total: number): string {
+  return total === 1 ? "Encontramos 1 producto." : `Encontramos ${total} productos.`;
+}
 
 export interface AnalisisBusqueda {
   /** Palabras que deben coincidir con el nombre, la marca o la categoría. */
@@ -211,7 +241,7 @@ export function coincideConBusqueda(texto: string, busqueda: string): boolean {
   const analisis = analizarBusqueda(busqueda);
   if (analisis.vacia) return true;
   if (analisis.palabras.length === 0) return false;
-  const normalizado = normalizarTexto(texto);
+  const normalizado = conservarPlus(normalizarTexto(texto));
   const palabrasTexto = normalizado.split(/[^a-z0-9]+/).filter(Boolean);
   if (analisis.palabras.every((palabra) => {
     const limpia = compactar(palabra);

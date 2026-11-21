@@ -487,10 +487,10 @@ describe("DestacadosHome", () => {
 
     // Fase 4 (H-12): aclara que se trata del catálogo de TecReview, no del mercado.
     expect(
-      screen.getByText(/“pixel” no está registrado en el catálogo de TecReview/),
+      screen.getByText(/«pixel» no está en nuestro catálogo\./),
     ).toBeDefined();
-    expect(screen.getByText(/no significa que no exista en el mercado/)).toBeDefined();
-    expect(screen.queryByText("Productos registrados similares")).toBeNull();
+    expect(screen.getByText(/Puede existir en el mercado, pero aún no lo tenemos/)).toBeDefined();
+    expect(screen.queryByText("Productos parecidos en nuestro catálogo")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Limpiar búsqueda" }));
     expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);
   });
@@ -498,9 +498,9 @@ describe("DestacadosHome", () => {
   it("pide marca o nombre del dispositivo si la búsqueda es solo genérica", () => {
     render(<DestacadosHome {...propsDestacados({ busqueda: "Teléfono" })} />);
 
-    expect(screen.getByText("Coloca la marca o el nombre del dispositivo.")).toBeDefined();
-    expect(screen.getByText(/“Teléfono” es muy general/)).toBeDefined();
-    expect(screen.queryByText(/no está registrado en el catálogo/)).toBeNull();
+    expect(screen.getByText("Escribe la marca o el modelo del dispositivo.")).toBeDefined();
+    expect(screen.getByText(/«Teléfono» es muy general/)).toBeDefined();
+    expect(screen.queryByText(/no está en nuestro catálogo/)).toBeNull();
   });
 
   it("ofrece productos registrados similares y abre su detalle", () => {
@@ -512,7 +512,7 @@ describe("DestacadosHome", () => {
       />,
     );
 
-    const lista = screen.getByRole("list", { name: "Productos registrados similares" });
+    const lista = screen.getByRole("list", { name: "Productos parecidos en nuestro catálogo" });
     fireEvent.click(within(lista).getByRole("button", { name: /Pixel 8/ }));
     expect(onVerDetalle).toHaveBeenCalledWith(alternativa);
   });

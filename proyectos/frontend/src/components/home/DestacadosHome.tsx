@@ -4,7 +4,14 @@ import Link from "next/link";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import type { ProductoViewModel } from "@/data/productoViewModel";
-import { EJEMPLO_BUSQUEDA_GENERICA, MENSAJE_BUSQUEDA_GENERICA, analizarBusqueda } from "@/data/catalogo";
+import {
+  AYUDA_NO_EN_CATALOGO,
+  MENSAJE_BUSQUEDA_GENERICA,
+  TITULO_ALTERNATIVAS,
+  analizarBusqueda,
+  ayudaBusquedaGenerica,
+  mensajeNoEnCatalogo,
+} from "@/data/catalogo";
 
 export interface DestacadosHomeProps {
   productos: ProductoViewModel[];
@@ -165,7 +172,7 @@ export default function DestacadosHome({
                 {MENSAJE_BUSQUEDA_GENERICA}
               </p>
               <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
-                &ldquo;{busqueda.trim()}&rdquo; es muy general. {EJEMPLO_BUSQUEDA_GENERICA}
+                {ayudaBusquedaGenerica(busqueda)}
               </p>
               <button
                 type="button"
@@ -178,19 +185,17 @@ export default function DestacadosHome({
           ) : busqueda.trim() ? (
             <div className="space-y-3">
               <p role="status" className="text-base font-semibold text-[var(--color-ink)]">
-                &ldquo;{busqueda.trim()}&rdquo; no está registrado en el catálogo de TecReview.
+                {mensajeNoEnCatalogo(busqueda)}
               </p>
               <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
-                Esto no significa que no exista en el mercado: solo que aún no lo
-                tenemos en nuestro catálogo. Prueba con menos palabras, revisa la
-                escritura o busca por marca o tipo de dispositivo.
+                {AYUDA_NO_EN_CATALOGO} Prueba con menos palabras o revisa la escritura.
               </p>
               {alternativas.length > 0 && (
                 <div className="mx-auto max-w-md text-left">
                   <p className="text-xs font-semibold text-[var(--color-ink)]">
-                    Productos registrados similares
+                    {TITULO_ALTERNATIVAS}
                   </p>
-                  <ul className="mt-2 space-y-1" aria-label="Productos registrados similares">
+                  <ul className="mt-2 space-y-1" aria-label={TITULO_ALTERNATIVAS}>
                     {alternativas.map((producto) => (
                       <li key={producto.idProducto}>
                         <button

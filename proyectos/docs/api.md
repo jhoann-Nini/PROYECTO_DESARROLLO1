@@ -99,6 +99,10 @@ backend/
 | Establecimiento  | POST   | `/api/establecimientos`            | Administrador      |
 | Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Administrador      |
 | Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Administrador      |
+| Ofertas de producto | GET | `/api/productos/{id}/establecimientos` | Público (§32.1) |
+| Ofertas (admin)  | GET    | `/api/admin/ofertas`               | Administrador (§32.2) |
+| Oferta (admin)   | PUT    | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.3) |
+| Oferta (admin)   | DELETE | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.4) |
 
 # 3. Arquitectura de la API
 
@@ -1621,3 +1625,52 @@ Un usuario registrado puede reportar que el precio o el enlace de una oferta (`p
   - `403` sin rol, o reporte propio;
   - `404`;
   - `409` el reporte ya fue resuelto, o se intenta tomar uno que no está `PENDIENTE`.
+
+---
+
+# 32. Ofertas por tienda: consulta pública y administración (Fase 3, migración 022)
+
+Una oferta (`producto_establecimiento`) es el precio, la disponibilidad y el enlace de un producto en una tienda. **Es la única fuente de «Dónde comprar»** en el detalle del producto; el JSON `caracteristicas.tiendas` solo existe en los datos mock.
+
+**Reglas:**
+- `fechaActualizacionPrecio` la fija PostgreSQL: un trigger la actualiza al crear la oferta y cuando cambian el precio, la disponibilidad o el enlace. El cliente no la envía.
+- `urlOferta` es opcional; si se envía, debe empezar por `http://` o `https://`, sin espacios y con máximo 2048 caracteres. Un enlace vacío se guarda como `null`.
+- `verificado` refleja `establecimiento.verificado` (TEC-151). El frontend muestra el sello «Verificada» solo cuando vale `true`.
+- Una oferta con reportes (§31) no se puede eliminar, porque su historial depende de ella: se marca como no disponible.
+
+## 32.1 Ofertas disponibles de un producto (público)
+- **Ruta:** `GET /api/productos/{idProducto}/establecimientos`
+- **Respuesta `200`:** ofertas disponibles de tiendas activas, de menor a mayor precio:
+  ```json
+  [{
+    "idEstablecimiento": 8, "nombre": "Tienda Centro",
+    "direccion": null, "telefono": null, "correo": null, "latitud": null, "longitud": null,
+    "precio": 95000.00, "disponibilidad": true,
+    "verificado": true,
+    "urlOferta": "https://tienda.co/buds",
+    "fechaActualizacionPrecio": "2026-11-20T10:00:00"
+  }]
+  ```
+  Los tres últimos campos se añadieron en la Fase 3; el resto del contrato no cambia.
+- **Errores:** `404` producto inexistente o inactivo.
+
+## 32.2 Listar ofertas (administración)
+- **Ruta:** `GET /api/admin/ofertas?idProducto=3` (`idProducto` es opcional)
+- **Respuesta `200`:** lista de `OfertaAdminResponse`, incluidas las no disponibles: `idProducto`, `nombreProducto`, `idEstablecimiento`, `nombreEstablecimiento`, `establecimientoActivo`, `establecimientoVerificado`, `precio`, `disponibilidad`, `urlOferta`, `fechaActualizacionPrecio` y `reportesAbiertos` (reportes `PENDIENTE` o `EN_REVISION`).
+- **Errores:** `401`; `403` sin rol activo de `Administrador` o con la cuenta suspendida.
+
+## 32.3 Crear o actualizar una oferta
+- **Ruta:** `PUT /api/admin/productos/{idProducto}/establecimientos/{idEstablecimiento}`
+- **Cuerpo:**
+  ```json
+  { "precio": 95000, "disponibilidad": true, "urlOferta": "https://tienda.co/buds" }
+  ```
+  `precio`: obligatorio, mayor que cero, hasta 10 enteros y 2 decimales. `disponibilidad`: obligatoria. `urlOferta`: opcional.
+- Si la oferta no existe, la crea; si existe, la actualiza.
+- **Respuesta `200`:** `OfertaAdminResponse`.
+- **Errores:** `400` validación; `401`; `403`; `404` producto o tienda inexistentes; `409` dos administradores crearon la misma oferta a la vez.
+
+## 32.4 Eliminar una oferta
+- **Ruta:** `DELETE /api/admin/productos/{idProducto}/establecimientos/{idEstablecimiento}`
+- **Respuesta `204`.**
+- **Errores:** `401`; `403`; `404` la oferta no existe; `409` `La oferta tiene reportes asociados y no se puede eliminar. Márcala como no disponible.`

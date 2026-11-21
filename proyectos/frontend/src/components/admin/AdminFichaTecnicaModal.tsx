@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
-import type { ProductoResponse } from "@/types/producto";
+import type { ProductoResponse, UsuarioSesion } from "@/types/producto";
 import {
   actualizarFichaTecnicaProducto,
   ApiError,
@@ -24,6 +24,22 @@ interface AdminFichaTecnicaModalProps {
   abierto: boolean;
   onCerrar: () => void;
   onFichaGuardada?: (productoActualizado: ProductoResponse) => void;
+  /** Administrador de la sesión; se guarda como `verificado_por` (Fase 3, H-03). */
+  responsable?: Pick<UsuarioSesion, "nombre" | "idUsuario"> | null;
+}
+
+/**
+ * Identifica a quien verifica una especificación. Sin sesión conserva el
+ * valor genérico anterior para no romper la compatibilidad.
+ */
+export function describirResponsable(
+  responsable?: Pick<UsuarioSesion, "nombre" | "idUsuario"> | null,
+): string {
+  const nombre = responsable?.nombre?.trim();
+  if (!nombre) return "administrador";
+  return typeof responsable?.idUsuario === "number"
+    ? `${nombre} (id ${responsable.idUsuario})`
+    : nombre;
 }
 
 type TabFicha = "especificaciones" | "variantes" | "fuentes_evidencias" | "json";
@@ -71,6 +87,7 @@ export default function AdminFichaTecnicaModal({
   abierto,
   onCerrar,
   onFichaGuardada,
+  responsable,
 }: AdminFichaTecnicaModalProps) {
   if (!abierto || !producto) {
     return null;
@@ -82,6 +99,7 @@ export default function AdminFichaTecnicaModal({
       producto={producto}
       onCerrar={onCerrar}
       onFichaGuardada={onFichaGuardada}
+      responsable={responsable}
     />
   );
 }
@@ -90,12 +108,14 @@ interface AdminFichaTecnicaDialogProps {
   producto: ProductoResponse;
   onCerrar: () => void;
   onFichaGuardada?: (productoActualizado: ProductoResponse) => void;
+  responsable?: Pick<UsuarioSesion, "nombre" | "idUsuario"> | null;
 }
 
 function AdminFichaTecnicaDialog({
   producto,
   onCerrar,
   onFichaGuardada,
+  responsable,
 }: AdminFichaTecnicaDialogProps) {
   const [tab, setTab] = useState<TabFicha>("especificaciones");
   const [ficha, setFicha] = useState<DatosFichaTecnicaV3 | null>(null);
@@ -267,7 +287,7 @@ function AdminFichaTecnicaDialog({
       verificacion: {
         estado: nuevoEstadoVerif,
         verificado_en: nuevoEstadoVerif === "verificado" ? new Date().toISOString() : null,
-        verificado_por: nuevoEstadoVerif === "verificado" ? "administrador" : null,
+        verificado_por: nuevoEstadoVerif === "verificado" ? describirResponsable(responsable) : null,
         evento_auditoria_id: null,
         motivo_revision: null,
       },
@@ -316,7 +336,7 @@ function AdminFichaTecnicaDialog({
             ...s.verificacion,
             estado: nuevoEstado,
             verificado_en: nuevoEstado === "verificado" ? new Date().toISOString() : null,
-            verificado_por: nuevoEstado === "verificado" ? "administrador" : null,
+            verificado_por: nuevoEstado === "verificado" ? describirResponsable(responsable) : null,
           },
         };
       }),

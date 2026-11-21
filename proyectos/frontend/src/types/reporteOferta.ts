@@ -9,6 +9,12 @@ export interface TiendaProductoResponse {
   longitud: number | null;
   precio: number;
   disponibilidad: boolean;
+  /** Fase 3: `establecimiento.verificado` (TEC-151). Opcional por compatibilidad. */
+  verificado?: boolean;
+  /** Fase 3 (migración 022): enlace de la oferta en la tienda. */
+  urlOferta?: string | null;
+  /** Fase 3 (migración 022): último cambio de precio, disponibilidad o enlace. */
+  fechaActualizacionPrecio?: string | null;
 }
 
 export interface CrearReporteOfertaRequest {

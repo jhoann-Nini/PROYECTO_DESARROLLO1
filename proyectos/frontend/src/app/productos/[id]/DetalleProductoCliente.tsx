@@ -37,6 +37,14 @@ interface DetalleProductoClienteProps {
 
 type PestanaDetalle = "especificaciones" | "opiniones";
 
+/** Fecha corta de la última actualización del precio; null si no hay o no es válida. */
+function formatearFechaPrecio(valor: string | null): string | null {
+  if (!valor) return null;
+  const fecha = new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return null;
+  return new Intl.DateTimeFormat("es-CO", { dateStyle: "medium" }).format(fecha);
+}
+
 function enriquecerProducto(
   producto: Producto,
   categorias: CategoriaResponse[],
@@ -211,17 +219,35 @@ export default function DetalleProductoCliente({
     [producto],
   );
 
-  // Los datos de ficha heredados no tienen idEstablecimiento: nunca se les asigna uno por nombre.
-  const tiendas: (TiendaPrecio & { idEstablecimiento?: number })[] = errorTiendas
-    ? []
-    : tiendasReales?.length
-      ? tiendasReales.map((tienda) => ({
+  // Fase 3 (H-06): las ofertas del backend son la única fuente de tiendas.
+  // El JSON heredado de la ficha (`tiendas`) solo existe en los mocks y no se
+  // mezcla con datos reales ni recibe identificadores inventados.
+  const tiendas: (TiendaPrecio & { idEstablecimiento: number; fechaActualizacionPrecio: string | null })[] =
+    errorTiendas || !tiendasReales
+      ? []
+      : tiendasReales.map((tienda) => ({
           idEstablecimiento: tienda.idEstablecimiento,
           nombre: tienda.nombre,
           precio: tienda.precio,
           envioGratis: false,
-        }))
-      : ficha?.tiendas ?? [];
+          url: tienda.urlOferta ?? undefined,
+          verificada: tienda.verificado === true,
+          fechaActualizacionPrecio: tienda.fechaActualizacionPrecio ?? null,
+        }));
+
+  // Fase 3 (H-04): la disponibilidad sale de las ofertas, no del estado del producto.
+  const estadoDisponibilidad: { texto: string; positivo: boolean } = !producto?.estado
+    ? { texto: "Retirado del catálogo", positivo: false }
+    : errorTiendas
+      ? { texto: "Disponibilidad sin confirmar", positivo: false }
+      : tiendasReales === null
+        ? { texto: "Consultando tiendas…", positivo: false }
+        : tiendas.length > 0
+          ? {
+              texto: `Disponible en ${tiendas.length} ${tiendas.length === 1 ? "tienda" : "tiendas"}`,
+              positivo: true,
+            }
+          : { texto: "Sin tiendas con disponibilidad registrada", positivo: false };
 
   const precio =
     producto?.precioReferencia && producto.precioReferencia > 0
@@ -350,12 +376,12 @@ export default function DetalleProductoCliente({
             </span>
             <span
               className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${
-                producto.estado
+                estadoDisponibilidad.positivo
                   ? "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
                   : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
               }`}
             >
-              {producto.estado ? "Disponible" : "No disponible"}
+              {estadoDisponibilidad.texto}
             </span>
           </div>
 
@@ -378,7 +404,10 @@ export default function DetalleProductoCliente({
             />
           </div>
 
-          <p className="mt-5 text-3xl font-bold tracking-tight text-[var(--color-ink)]">
+          <p className="mt-5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            Precio de referencia
+          </p>
+          <p className="mt-1 text-3xl font-bold tracking-tight text-[var(--color-ink)]">
             {precio}
           </p>
 
@@ -449,9 +478,10 @@ export default function DetalleProductoCliente({
                           )}
                         </p>
                         <p className="mt-1 text-sm text-[var(--color-subtle)]">
-                          {idEstablecimiento
-                            ? "Envío no especificado"
-                            : tienda.envioGratis ? "Envío gratis" : "Envío no especificado"}
+                          Envío no especificado
+                          {formatearFechaPrecio(tienda.fechaActualizacionPrecio) && (
+                            <> · Precio actualizado el {formatearFechaPrecio(tienda.fechaActualizacionPrecio)}</>
+                          )}
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
@@ -472,7 +502,6 @@ export default function DetalleProductoCliente({
                             Ver tienda
                           </a>
                         )}
-                        {idEstablecimiento && (
                           <button type="button"
                             onClick={() => {
                               setReporteConfirmado("");
@@ -486,7 +515,6 @@ export default function DetalleProductoCliente({
                             aria-label={`Reportar precio o enlace de ${producto.nombre} en ${tienda.nombre}`}
                             className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-medium text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
                           >Reportar precio o enlace</button>
-                        )}
                       </div>
                     </li>
                   );

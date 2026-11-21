@@ -19,6 +19,12 @@ public interface ReporteOfertaRepository
   boolean existsByUsuarioIdUsuarioAndProductoIdProductoAndEstablecimientoIdEstablecimientoAndEstadoIn(
     Long idUsuario, Long idProducto, Long idEstablecimiento, Collection<EstadoReporte> estados);
 
+  /** Fase 3: una oferta con reportes no se puede eliminar (el historial depende de ella). */
+  boolean existsByProductoIdProductoAndEstablecimientoIdEstablecimiento(Long idProducto, Long idEstablecimiento);
+
+  long countByProductoIdProductoAndEstablecimientoIdEstablecimientoAndEstadoIn(
+    Long idProducto, Long idEstablecimiento, Collection<EstadoReporte> estados);
+
   /** Base del límite de reportes por hora. */
   long countByUsuarioIdUsuarioAndFechaCreacionAfter(Long idUsuario, LocalDateTime desde);
 

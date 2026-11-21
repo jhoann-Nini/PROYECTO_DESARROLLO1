@@ -44,6 +44,10 @@ vi.mock("@/components/admin/AdminEstablecimientos", () => ({
   default: () => <div data-testid="admin-establecimientos" />,
 }));
 
+vi.mock("@/components/admin/AdminOfertas", () => ({
+  default: () => <div data-testid="admin-ofertas" />,
+}));
+
 describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   const adminUser: UsuarioSesion = {
     id: "admin-1",
@@ -134,12 +138,12 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   });
 
   describe("Administración de usuarios y roles", () => {
-    it("ofrece una navegación compacta con las seis secciones y mantiene la selección sincronizada", async () => {
+    it("ofrece una navegación compacta con las siete secciones y mantiene la selección sincronizada", async () => {
       render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
       await screen.findByText("Gestión de Catálogo de Productos");
 
       const selector = screen.getByRole("combobox", { name: /sección de administración/i });
-      expect(selector.querySelectorAll("option")).toHaveLength(6);
+      expect(selector.querySelectorAll("option")).toHaveLength(7);
       fireEvent.change(selector, { target: { value: "usuarios" } });
       expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
       expect(screen.getByRole("tab", { name: /usuarios y roles/i }).getAttribute("aria-selected")).toBe("true");
@@ -185,6 +189,21 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       );
 
       expect(screen.getByTestId("admin-establecimientos")).toBeDefined();
+    });
+
+    it("muestra la pestaña de ofertas por tienda (Fase 3)", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      fireEvent.click(screen.getByRole("tab", { name: /Ofertas por tienda/i }));
+
+      expect(screen.getByTestId("admin-ofertas")).toBeDefined();
     });
   });
 

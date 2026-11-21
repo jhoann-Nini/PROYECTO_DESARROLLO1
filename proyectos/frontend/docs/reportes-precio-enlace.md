@@ -33,6 +33,12 @@
   En un error de consulta de ofertas se muestra error y reintento, sin
   atribuir un ID a esas filas. El DTO público de TEC-134 tampoco trae la URL
   comercial: no se inventan enlaces «Ver tienda» para las ofertas reales.
+- **Actualización Fase 3:** el detalle ya no muestra las tiendas heredadas del
+  JSON; solo las ofertas del backend. El DTO público añade `urlOferta`,
+  `verificado` y `fechaActualizacionPrecio` (migración 022), así que «Ver
+  tienda», el sello «Verificada» y «Precio actualizado el…» salen de datos
+  reales. Las ofertas se registran en la pestaña «Ofertas por tienda» del
+  panel de administración.
 
 ## Flujo y pruebas
 

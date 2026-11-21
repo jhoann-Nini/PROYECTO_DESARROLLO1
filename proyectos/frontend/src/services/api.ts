@@ -24,6 +24,8 @@ import type {
 import type {
   Establecimiento,
   EstablecimientoRequest,
+  OfertaAdmin,
+  OfertaAdminRequest,
 } from "@/types/establecimiento";
 import type { RolAdmin, UsuarioAdmin } from "@/types/administracion";
 import type {
@@ -1062,6 +1064,39 @@ export async function eliminarEstablecimiento(id: number): Promise<void> {
   return apiFetchAutenticado<void>(`/api/establecimientos/${id}`, {
     method: "DELETE",
   });
+}
+
+// ============================================================================
+// ADMINISTRACIÓN DE OFERTAS (Fase 3)
+// ============================================================================
+
+/** Lista las ofertas, incluidas las no disponibles. Requiere rol Administrador. */
+export async function obtenerOfertasAdmin(idProducto?: number): Promise<OfertaAdmin[]> {
+  const consulta = idProducto ? `?idProducto=${idProducto}` : "";
+  return apiFetchAutenticado<OfertaAdmin[]>(`/api/admin/ofertas${consulta}`, { method: "GET" });
+}
+
+/** Crea o actualiza la oferta de un producto en una tienda. Requiere rol Administrador. */
+export async function guardarOfertaAdmin(
+  idProducto: number,
+  idEstablecimiento: number,
+  request: OfertaAdminRequest,
+): Promise<OfertaAdmin> {
+  return apiFetchAutenticado<OfertaAdmin>(
+    `/api/admin/productos/${idProducto}/establecimientos/${idEstablecimiento}`,
+    { method: "PUT", body: JSON.stringify(request) },
+  );
+}
+
+/**
+ * Elimina una oferta sin reportes. Si tiene reportes, el backend responde 409
+ * y la oferta debe marcarse como no disponible.
+ */
+export async function eliminarOfertaAdmin(idProducto: number, idEstablecimiento: number): Promise<void> {
+  return apiFetchAutenticado<void>(
+    `/api/admin/productos/${idProducto}/establecimientos/${idEstablecimiento}`,
+    { method: "DELETE" },
+  );
 }
 
 // ============================================================================

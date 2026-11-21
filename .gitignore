@@ -25,7 +25,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-.claude/
+.claude/*
+# Skills de proyecto compartidas con el equipo
+!.claude/skills/
 
 # Cobertura de tests
 coverage/

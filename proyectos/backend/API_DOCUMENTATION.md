@@ -94,6 +94,19 @@ El servidor escucha por defecto en `http://localhost:8080`.
 
 ---
 
+## Rutas añadidas en la auditoría (fases 1 a 3)
+Este archivo describe en detalle solo `CategoriaController`. La referencia completa de la API está en `proyectos/docs/api.md`. Las rutas añadidas en la auditoría son:
+
+| Fase | Controlador | Rutas | Documentación |
+|---|---|---|---|
+| 1 | `RevisionResenasController` | `/api/moderacion/resenas/en-revision`, `/{id}/revision/{aprobar\|rechazar}` | `docs/api.md` §30 |
+| 2 | `ModeracionReportesOfertaController` | `/api/moderacion/ofertas/reportes/**` | `docs/api.md` §31 |
+| 3 | `AdministracionOfertasController` | `/api/admin/ofertas`, `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | `docs/api.md` §32 |
+
+Con `spring.jpa.hibernate.ddl-auto=validate`, el backend no arranca si la base no tiene aplicadas las migraciones que usan sus entidades. Antes de desplegar, aplica en Supabase la migración más reciente (`022_enlace_y_fecha_ofertas.sql`).
+
+---
+
 ## OpenAPI / Swagger
 Actualmente el proyecto **no incluye** ninguna dependencia ni configuración de OpenAPI/Swagger (búsqueda en `pom.xml` no encontró `springdoc` ni `swagger`). Si se desea, se puede añadir en el futuro la dependencia `springdoc-openapi-starter-webmvc-ui` y generar la especificación a partir del código existente.
 

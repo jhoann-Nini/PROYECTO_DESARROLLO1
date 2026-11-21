@@ -14,16 +14,27 @@ proyectos/
 
 ## Backend
 
-- Java
-- Spring Boot
-- Spring Data JPA
-- PostgreSQL
+- Java 21
+- Spring Boot 4 (spring-boot-starter-webmvc)
+- Spring Data JPA (`ddl-auto=validate`)
+- Spring Security con JWT de Supabase
+- PostgreSQL (pruebas con H2 y Testcontainers)
 - Maven
 
 ## Frontend
 
-- React
-- JavaScript/TypeScript según el código existente
+- Next.js 16 (App Router; ver `proyectos/frontend/AGENTS.md`:
+  tiene cambios incompatibles con versiones anteriores)
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Vitest + Testing Library
+
+## Skills de Claude Code
+
+Las skills de proyecto están en `.claude/skills/`:
+`ficha-tecnica-auditor`, `comparador-tecreview`, `moderacion-inteligente`,
+`supabase-auditor`, `springboot-api-auditor` y `tecreview-qa`.
 
 ## Base de datos
 

@@ -38,6 +38,9 @@ class ReporteOfertaServiceTest {
   private UsuarioService usuarioService;
 
   @Mock
+  private LimiteReportesService limiteReportesService;
+
+  @Mock
   private Jwt jwt;
 
   @InjectMocks
@@ -49,6 +52,7 @@ class ReporteOfertaServiceTest {
   void configurar() {
     usuario = new Usuario();
     usuario.setIdUsuario(1L);
+    usuario.setEstado(true);
   }
 
   @Test

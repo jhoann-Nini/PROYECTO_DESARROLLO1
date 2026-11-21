@@ -9,8 +9,11 @@ import com.example.backend.entity.Producto;
 import com.example.backend.entity.ProductoEstablecimientoId;
 import com.example.backend.entity.ReporteOferta;
 import com.example.backend.entity.Usuario;
+import com.example.backend.exception.ConflictException;
 import com.example.backend.repository.ProductoEstablecimientoRepository;
 import com.example.backend.repository.ReporteOfertaRepository;
+import java.util.List;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -23,15 +26,24 @@ public class ReporteOfertaService {
   private final ReporteOfertaRepository reporteOfertaRepository;
   private final ProductoEstablecimientoRepository productoEstablecimientoRepository;
   private final UsuarioService usuarioService;
+  private final LimiteReportesService limiteReportesService;
+
+  static final String MENSAJE_REPORTE_ABIERTO =
+    "Ya tienes un reporte abierto sobre esta oferta. Espera a que moderación lo revise.";
+
+  private static final List<EstadoReporte> ESTADOS_ABIERTOS =
+    List.of(EstadoReporte.PENDIENTE, EstadoReporte.EN_REVISION);
 
   public ReporteOfertaService(
     ReporteOfertaRepository reporteOfertaRepository,
     ProductoEstablecimientoRepository productoEstablecimientoRepository,
-    UsuarioService usuarioService) {
+    UsuarioService usuarioService,
+    LimiteReportesService limiteReportesService) {
 
     this.reporteOfertaRepository = reporteOfertaRepository;
     this.productoEstablecimientoRepository = productoEstablecimientoRepository;
     this.usuarioService = usuarioService;
+    this.limiteReportesService = limiteReportesService;
   }
 
   /**
@@ -45,6 +57,10 @@ public class ReporteOfertaService {
 
     // 1. Obtener al usuario autenticado.
     Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    if (!Boolean.TRUE.equals(usuario.getEstado())) {
+      throw new ResponseStatusException(
+        HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
+    }
 
     // 2. Comprobar que la oferta realmente existe.
     ProductoEstablecimientoId ofertaId =
@@ -60,14 +76,23 @@ public class ReporteOfertaService {
       );
     }
 
-    // 3. Referenciar el producto y el establecimiento.
+    // 3. Un solo reporte abierto por usuario y oferta (migración 021),
+    //    y no más de 10 reportes por hora entre reseñas y ofertas.
+    if (reporteOfertaRepository
+      .existsByUsuarioIdUsuarioAndProductoIdProductoAndEstablecimientoIdEstablecimientoAndEstadoIn(
+        usuario.getIdUsuario(), request.idProducto(), request.idEstablecimiento(), ESTADOS_ABIERTOS)) {
+      throw new ConflictException(MENSAJE_REPORTE_ABIERTO);
+    }
+    limiteReportesService.verificarLimite(usuario);
+
+    // 4. Referenciar el producto y el establecimiento.
     Producto producto = new Producto();
     producto.setIdProducto(request.idProducto());
 
     Establecimiento establecimiento = new Establecimiento();
     establecimiento.setIdEstablecimiento(request.idEstablecimiento());
 
-    // 4. Construir el reporte.
+    // 5. Construir el reporte.
     ReporteOferta reporte = new ReporteOferta();
     reporte.setProducto(producto);
     reporte.setEstablecimiento(establecimiento);
@@ -76,10 +101,20 @@ public class ReporteOfertaService {
     reporte.setDescripcion(request.descripcion());
     reporte.setEstado(EstadoReporte.PENDIENTE);
 
-    // 5. Guardar en PostgreSQL.
-    ReporteOferta guardado = reporteOfertaRepository.save(reporte);
+    // 6. Guardar en PostgreSQL. El índice único parcial cubre la carrera
+    //    entre dos peticiones simultáneas del mismo usuario.
+    ReporteOferta guardado;
+    try {
+      guardado = reporteOfertaRepository.save(reporte);
+      reporteOfertaRepository.flush();
+    } catch (DataIntegrityViolationException ex) {
+      if (esReporteAbiertoDuplicado(ex)) {
+        throw new ConflictException(MENSAJE_REPORTE_ABIERTO);
+      }
+      throw ex;
+    }
 
-    // 6. Preparar la respuesta HTTP.
+    // 7. Preparar la respuesta HTTP.
     return new ReporteOfertaResponse(
       guardado.getIdReporte(),
       guardado.getProducto().getIdProducto(),
@@ -89,5 +124,11 @@ public class ReporteOfertaService {
       guardado.getEstado(),
       guardado.getFechaCreacion()
     );
+  }
+
+  private static boolean esReporteAbiertoDuplicado(DataIntegrityViolationException ex) {
+    String mensaje = ex.getMostSpecificCause().getMessage();
+    return mensaje != null
+      && mensaje.toLowerCase().contains("uq_reporte_oferta_abierto_usuario");
   }
 }

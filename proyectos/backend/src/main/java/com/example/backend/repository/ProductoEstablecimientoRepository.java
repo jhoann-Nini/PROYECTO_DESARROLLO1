@@ -40,4 +40,15 @@ public interface ProductoEstablecimientoRepository
   List<ProductoEstablecimiento> findTiendasDisponiblesPorProducto(
     @Param("idProducto") Long idProducto
   );
+
+  // Fase 3: administración de ofertas, incluidas las no disponibles.
+  @Query("""
+        SELECT pe
+        FROM ProductoEstablecimiento pe
+        JOIN FETCH pe.producto p
+        JOIN FETCH pe.establecimiento e
+        WHERE (:idProducto IS NULL OR p.idProducto = :idProducto)
+        ORDER BY p.nombre ASC, e.nombre ASC
+        """)
+  List<ProductoEstablecimiento> findParaAdministracion(@Param("idProducto") Long idProducto);
 }

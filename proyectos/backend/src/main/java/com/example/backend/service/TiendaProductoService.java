@@ -67,7 +67,10 @@ public class TiendaProductoService {
       tienda.getLatitud(),
       tienda.getLongitud(),
       relacion.getPrecio(),
-      relacion.getDisponibilidad()
+      relacion.getDisponibilidad(),
+      Boolean.TRUE.equals(tienda.getVerificado()),
+      relacion.getUrlOferta(),
+      relacion.getFechaActualizacionPrecio()
     );
   }
 }

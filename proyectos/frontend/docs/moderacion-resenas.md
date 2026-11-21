@@ -78,7 +78,12 @@ reportes. Por eso el panel decide entre “Ocultar” y “Publicar” usando
 - El estado “Oculta por moderación” se muestra a partir de
   `ocultaPorModeracion`.
 - Tras una acción exitosa se reemplaza localmente la reseña con la respuesta del
-  backend. Los errores del backend se muestran sin inventar un resultado.
+  backend y se excluye de la vista si deja de coincidir con el filtro activo.
+  Los errores del backend se muestran sin inventar un resultado.
+- El panel distingue el vacío sin filtros del vacío por filtros y advierte que
+  los reportes de precios y enlaces no forman parte de esta API.
+- Al abrir el diálogo el foco entra en él; Tab permanece dentro del panel y
+  al cerrarlo vuelve al activador.
 
 ### Filtros
 

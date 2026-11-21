@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useId, useMemo } from "react";
+import { useEffect, useState, useCallback, useId, useMemo, useRef } from "react";
+import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 import type {
   UsuarioSesion,
   ProductoResponse,
@@ -120,11 +121,27 @@ export default function AdminPanelModal({
   onProductoCambiado,
 }: AdminPanelModalProps) {
   const [tabActiva, setTabActiva] = useState<TabAdministracion>("productos");
+  const panelRef = useRef<HTMLDivElement>(null);
+  const cerrarRef = useRef<HTMLButtonElement>(null);
+  const confirmacionRef = useRef<HTMLDivElement>(null);
 
   // Estados de datos
   const [productos, setProductos] = useState<ProductoResponse[]>([]);
   const [categorias, setCategorias] = useState<CategoriaResponse[]>([]);
   const [marcas, setMarcas] = useState<MarcaResponse[]>([]);
+  const [busquedaProductos, setBusquedaProductos] = useState("");
+  const [paginaProductos, setPaginaProductos] = useState(1);
+  const productosFiltrados = useMemo(() => {
+    const consulta = busquedaProductos.trim().toLocaleLowerCase("es");
+    if (!consulta) return productos;
+    return productos.filter((producto) =>
+      `${producto.nombre} ${marcas.find((marca) => marca.idMarca === producto.idMarca)?.nombre ?? ""}`
+        .toLocaleLowerCase("es").includes(consulta),
+    );
+  }, [busquedaProductos, marcas, productos]);
+  const paginasProductos = Math.max(1, Math.ceil(productosFiltrados.length / 8));
+  const paginaActualProductos = Math.min(paginaProductos, paginasProductos);
+  const productosVisibles = productosFiltrados.slice((paginaActualProductos - 1) * 8, paginaActualProductos * 8);
 
   // Estados de carga y feedback globales
   const [cargando, setCargando] = useState(false);
@@ -196,6 +213,7 @@ export default function AdminPanelModal({
     descripcion: string;
   } | null>(null);
   const [motivoAccionTexto, setMotivoAccionTexto] = useState("");
+  const [errorMotivoAccion, setErrorMotivoAccion] = useState(false);
   const [ejecutandoAccion, setEjecutandoAccion] = useState(false);
   const [reportesExpandidos, setReportesExpandidos] = useState<Record<number, boolean>>({});
 
@@ -283,6 +301,10 @@ export default function AdminPanelModal({
 
   const ejecutarAccionModeracion = async () => {
     if (!modalMotivoAccion) return;
+    if (modalMotivoAccion.accion !== "rechazar-reportes" && !motivoAccionTexto.trim()) {
+      setErrorMotivoAccion(true);
+      return;
+    }
     setEjecutandoAccion(true);
     setError(null);
     setMensajeExito(null);
@@ -305,6 +327,7 @@ export default function AdminPanelModal({
       );
       setModalMotivoAccion(null);
       setMotivoAccionTexto("");
+      setErrorMotivoAccion(false);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
@@ -330,6 +353,7 @@ export default function AdminPanelModal({
     descripcion: string,
   ) => {
     setMotivoAccionTexto("");
+    setErrorMotivoAccion(false);
     setModalMotivoAccion({ idResena, accion, titulo, descripcion });
   };
 
@@ -348,6 +372,54 @@ export default function AdminPanelModal({
       activo = false;
     };
   }, [isOpen, usuarioSesion, cargarDatos, cargarReportes]);
+
+  const confirmacionAbierta = Boolean(
+    productoEliminando || categoriaEliminando || marcaEliminando || modalMotivoAccion,
+  );
+  useEffect(() => {
+    if (!isOpen || !esAdministrador(usuarioSesion)) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const overflowPrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    cerrarRef.current?.focus();
+    return () => {
+      document.body.style.overflow = overflowPrevio;
+      activador?.focus();
+    };
+  }, [isOpen, usuarioSesion]);
+
+  useEffect(() => {
+    if (!confirmacionAbierta) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialogo = confirmacionRef.current;
+    dialogo?.querySelector<HTMLElement>("textarea, button:not([disabled])")?.focus();
+    return () => activador?.focus();
+  }, [confirmacionAbierta, productoEliminando, categoriaEliminando, marcaEliminando, modalMotivoAccion]);
+
+  useEffect(() => {
+    if (!productoFichaV3) return;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panelRef.current?.querySelector<HTMLElement>('[aria-label="Cerrar modal de ficha técnica"]')?.focus();
+    return () => activador?.focus();
+  }, [productoFichaV3]);
+
+  useEffect(() => {
+    if (!isOpen || !esAdministrador(usuarioSesion)) return;
+    function manejarEscape(evento: KeyboardEvent) {
+      if (evento.key !== "Escape") return;
+      evento.preventDefault();
+      if (productoFichaV3) setProductoFichaV3(null);
+      else if (modalMotivoAccion && !ejecutandoAccion) {
+        setModalMotivoAccion(null);
+        setErrorMotivoAccion(false);
+      } else if (productoEliminando && !eliminando) setProductoEliminando(null);
+      else if (categoriaEliminando && !eliminandoCat) setCategoriaEliminando(null);
+      else if (marcaEliminando && !eliminandoMarca) setMarcaEliminando(null);
+      else if (!confirmacionAbierta) onClose();
+    }
+    window.addEventListener("keydown", manejarEscape);
+    return () => window.removeEventListener("keydown", manejarEscape);
+  }, [isOpen, usuarioSesion, onClose, confirmacionAbierta, productoEliminando, categoriaEliminando, marcaEliminando, modalMotivoAccion, ejecutandoAccion, eliminando, eliminandoCat, eliminandoMarca, productoFichaV3]);
 
   // Categoría actual inferida para campos dinámicos
   const categoriaActualTipo = useMemo<CategoriaDispositivo>(() => {
@@ -1037,31 +1109,37 @@ export default function AdminPanelModal({
 
   return (
     <div
+      ref={panelRef}
+      onKeyDown={(evento) => atraparTabulacion(evento,
+        confirmacionRef.current ??
+        (productoFichaV3 ? panelRef.current?.querySelector<HTMLElement>('[role="dialog"][aria-modal="true"]') ?? null : panelRef.current),
+      )}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
+      <div className="relative flex max-h-[96dvh] w-full max-w-[90rem] animate-scale-in flex-col overflow-hidden rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
         
         {/* Encabezado accesible */}
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-hairline)] pb-4">
-          <div className="flex items-center gap-2.5">
+          <div className="flex min-w-0 items-center gap-2.5">
             <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true"></span>
-            <div>
+            <div className="min-w-0">
               <h2 id="modal-admin-panel-titulo" className="text-sm font-semibold tracking-[-0.01em] text-[var(--color-ink)]">
                 Panel de Administración <span className="text-[var(--color-brand-blue)]">/</span> TecReview
               </h2>
-              <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">
+              <p className="mt-0.5 break-words text-[11px] text-[var(--color-subtle)]">
                 Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) • Rol:{" "}
                 <span className="text-[var(--color-brand-blue)] font-semibold">{usuarioSesion?.rol}</span>
               </p>
             </div>
           </div>
           <button
+            ref={cerrarRef}
             type="button"
             onClick={onClose}
-            className="text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer"
+            className={`shrink-0 text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer ${CLASE_FOCO}`}
             aria-label="Cerrar panel de administración"
           >
             ✕ Cerrar
@@ -1100,8 +1178,29 @@ export default function AdminPanelModal({
           </div>
         )}
 
-        {/* Selector de pestañas */}
-        <div className="flex items-center gap-2 pt-3 pb-3 border-b border-[var(--color-hairline)] shrink-0" role="tablist">
+        <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
+        <label className="block shrink-0 text-xs font-semibold text-[var(--color-ink)] lg:hidden">
+          Sección de administración
+          <select
+            value={tabActiva}
+            onChange={(evento) => {
+              setTabActiva(evento.target.value as TabAdministracion);
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className="mt-2 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-3 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand-solid)]"
+          >
+            <option value="productos">Productos</option>
+            <option value="categorias">Categorías</option>
+            <option value="marcas">Marcas</option>
+            <option value="reportes">Cola de reportes</option>
+            <option value="usuarios">Usuarios y roles</option>
+            <option value="establecimientos">Establecimientos</option>
+          </select>
+        </label>
+        {/* Navegación lateral en escritorio, selector compacto en móvil */}
+        <div className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-2 lg:flex" role="tablist" aria-label="Secciones de administración">
           <button
             type="button"
             role="tab"
@@ -1112,7 +1211,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "productos"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1130,7 +1229,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "categorias"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1148,7 +1247,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "marcas"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1166,7 +1265,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
               tabActiva === "reportes"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1189,7 +1288,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "usuarios"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1207,7 +1306,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`uppercase tracking-wider px-3.5 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
               tabActiva === "establecimientos"
                 ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
                 : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
@@ -1218,7 +1317,7 @@ export default function AdminPanelModal({
         </div>
 
         {/* Contenido de pestañas */}
-        <div className="mt-3 overflow-y-auto space-y-4 pr-1 text-xs grow">
+        <div className="min-w-0 flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
           
           {/* ========================================================= */}
           {/* PESTAÑA 1: PRODUCTOS                                      */}
@@ -1235,7 +1334,7 @@ export default function AdminPanelModal({
                   </p>
                 </div>
                 {modoFormulario === "ninguno" && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
                       onClick={manejarExportarCsv}
@@ -1613,6 +1712,28 @@ export default function AdminPanelModal({
                 </div>
               )}
 
+              {!cargando && productos.length > 0 && (
+                <div className="space-y-2 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3">
+                  <label htmlFor={`${baseId}-buscar-productos`} className="block text-xs font-semibold text-[var(--color-ink)]">
+                    Buscar productos
+                  </label>
+                  <input
+                    id={`${baseId}-buscar-productos`}
+                    type="search"
+                    aria-label="Buscar en el catálogo"
+                    value={busquedaProductos}
+                    onChange={(evento) => {
+                      setBusquedaProductos(evento.target.value);
+                      setPaginaProductos(1);
+                    }}
+                    placeholder="Nombre del producto o marca…"
+                    className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-2.5 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-[var(--color-brand-solid)]"
+                  />
+                  <p className="text-[11px] text-[var(--color-subtle)]">
+                    {productosFiltrados.length} de {productos.length} productos · Los precios de referencia no representan ofertas verificadas.
+                  </p>
+                </div>
+              )}
               {/* Listado de Productos */}
               {cargando ? (
                 <div className="py-12 text-center text-[var(--color-subtle)] font-sans animate-pulse">
@@ -1633,10 +1754,15 @@ export default function AdminPanelModal({
                     </button>
                   )}
                 </div>
+              ) : productosFiltrados.length === 0 ? (
+                <div role="status" className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6 text-center text-sm text-[var(--color-subtle)]">
+                  No hay productos que coincidan con la búsqueda.
+                </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)]">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] border-b border-[var(--color-hairline)]">
+                <>
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] lg:overflow-x-auto">
+                  <table className="block w-full text-left text-xs lg:table">
+                    <thead className="hidden border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] lg:table-header-group">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Producto</th>
@@ -1646,14 +1772,14 @@ export default function AdminPanelModal({
                         <th className="py-2.5 px-3 text-center">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-hairline)] text-[var(--color-ink)]">
-                      {productos.map((prod) => (
-                        <tr key={prod.idProducto} className="hover:bg-[var(--color-canvas)] transition-colors">
-                          <td className="py-2.5 px-3 font-sans text-[11px] text-[var(--color-subtle)]">
+                    <tbody className="grid gap-3 p-2 text-[var(--color-ink)] lg:table-row-group lg:divide-y lg:divide-[var(--color-hairline)] lg:p-0">
+                      {productosVisibles.map((prod) => (
+                        <tr key={prod.idProducto} className="block min-w-0 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:bg-[var(--color-canvas)] lg:table-row lg:border-0 lg:bg-transparent lg:p-0">
+                          <td className="block py-1 font-sans text-[11px] text-[var(--color-subtle)] lg:table-cell lg:px-3 lg:py-2.5">
                             #{prod.idProducto}
                           </td>
-                          <td className="py-2.5 px-3">
-                            <div className="font-semibold text-[var(--color-ink)]">{prod.nombre}</div>
+                          <td className="block min-w-0 py-1 lg:table-cell lg:px-3 lg:py-2.5">
+                            <div className="break-words font-semibold text-[var(--color-ink)]">{prod.nombre}</div>
                             {prod.descripcion && (
                               <div className="text-[10px] text-[var(--color-subtle)] truncate max-w-xs">
                                 {prod.descripcion}
@@ -1672,29 +1798,29 @@ export default function AdminPanelModal({
                               </div>
                             )}
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-ink)]">
+                          <td data-label="Categoría: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
                             <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
                               {getNombreCategoria(prod.idCategoria)}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-ink)]">
+                          <td data-label="Marca: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
                             <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
                               {getNombreMarca(prod.idMarca)}
                             </span>
                           </td>
-                          <td className="py-2.5 px-3 text-right font-sans text-[var(--color-ink)]">
+                          <td data-label="Precio ref.: " className="block py-1 font-sans text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:text-right lg:before:content-none">
                             {prod.precioReferencia !== null && prod.precioReferencia !== undefined
                               ? formatearCOP(prod.precioReferencia)
                               : "—"}
                           </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <div className="flex items-center justify-center gap-1.5">
+                          <td className="block py-2 lg:table-cell lg:px-3 lg:py-2.5 lg:text-center">
+                            <div className="flex flex-wrap items-center gap-2 lg:justify-center">
                               <button
                                 type="button"
                                 onClick={() => setProductoFichaV3(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Ficha Técnica V3 de ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Ficha V3
                               </button>
@@ -1703,7 +1829,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditar(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Editar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1712,7 +1838,7 @@ export default function AdminPanelModal({
                                 onClick={() => setProductoEliminando(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Eliminar ${prod.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1723,6 +1849,14 @@ export default function AdminPanelModal({
                     </tbody>
                   </table>
                 </div>
+                <nav aria-label="Paginación de productos" className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--color-subtle)]">
+                    <span>Página {paginaActualProductos} de {paginasProductos}</span>
+                    {paginasProductos > 1 && <div className="flex gap-2">
+                      <button type="button" disabled={paginaActualProductos === 1} onClick={() => setPaginaProductos(paginaActualProductos - 1)} aria-label="Página anterior de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Anterior</button>
+                      <button type="button" disabled={paginaActualProductos === paginasProductos} onClick={() => setPaginaProductos(paginaActualProductos + 1)} aria-label="Siguiente página de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Siguiente</button>
+                    </div>}
+                  </nav>
+                </>
               )}
             </div>
           )}
@@ -2136,10 +2270,10 @@ export default function AdminPanelModal({
               <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--color-hairline)]">
                 <div>
                   <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider flex items-center gap-2">
-                    <span>🚩</span> Cola de Moderación y Reportes
+                     <span>🚩</span> Cola de reportes de reseñas
                   </h3>
                   <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
-                    Revisión centralizada de reportes de usuarios y moderación de contenido (S2-72 / TEC-149).
+                     Revisión de reseñas reportadas por la comunidad.
                   </p>
                 </div>
                 <button
@@ -2164,30 +2298,30 @@ export default function AdminPanelModal({
                     {resenasReportadas.length}
                   </p>
                 </div>
-                <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
-                  <span className="text-[10px] uppercase font-bold text-amber-800 tracking-wider">
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
                     Reportes Pendientes
                   </span>
-                  <p className="text-xl font-extrabold text-amber-700 mt-1">
+                  <p className="text-xl font-extrabold text-amber-800 dark:text-amber-300 mt-1">
                     {totalReportesPendientes}
                   </p>
                 </div>
-                <div className="rounded-xl border border-red-200 bg-red-50/60 p-3">
-                  <span className="text-[10px] uppercase font-bold text-red-800 tracking-wider">
+                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
                     Reseñas Ocultas
                   </span>
-                  <p className="text-xl font-extrabold text-red-700 mt-1">
+                  <p className="text-xl font-extrabold text-red-700 dark:text-red-300 mt-1">
                     {resenasReportadas.filter((r) => r.ocultaPorReportes || r.ocultaPorModeracion).length}
                   </p>
                 </div>
               </div>
 
               {/* Tarjeta de contexto TEC-127 / S2-72 */}
-              <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 flex items-start gap-2 text-[11px] text-blue-900 leading-relaxed">
-                <span className="text-base select-none shrink-0">ℹ️</span>
+              <div className="rounded-xl border border-[var(--color-hairline)] border-l-2 border-l-[var(--color-brand-blue)] bg-[var(--color-canvas)] p-3 flex items-start gap-2 text-[11px] text-[var(--color-ink)] leading-relaxed">
+                <span className="text-base select-none shrink-0 text-[var(--color-brand-blue)]" aria-hidden="true">ℹ</span>
                 <div>
-                  <strong className="font-bold">Integración de Moderación (TEC-127 / S2-72):</strong>
-                  {" "}Esta cola consolida las reseñas reportadas por la comunidad y los reportes de anomalías de precios o enlaces. Como Administrador, puedes ocultar contenido inapropiado, restaurar reseñas publicadas o desestimar reportes pendientes con registro de auditoría.
+                   <strong className="font-bold">Alcance actual:</strong>
+                   {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados. Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.
                 </div>
               </div>
 
@@ -2258,12 +2392,12 @@ export default function AdminPanelModal({
                   <span className="text-3xl">🎉</span>
                   <h4 className="font-bold text-sm text-[var(--color-ink)] mt-2">
                     {resenasReportadas.length === 0
-                      ? "No hay reportes pendientes en la cola"
+                       ? "No hay reseñas reportadas en este momento"
                       : "Ninguna reseña coincide con los filtros aplicados"}
                   </h4>
                   <p className="text-xs text-[var(--color-subtle)] mt-1 max-w-sm mx-auto">
                     {resenasReportadas.length === 0
-                      ? "Todas las reseñas reportadas han sido revisadas o no se han emitido reportes en este momento."
+                       ? "La consulta actual no devolvió reseñas reportadas. Esto no confirma que todos los reportes estén resueltos."
                       : "Intenta modificar el filtro de estado o la casilla de reseñas ocultas para ver más resultados."}
                   </p>
                 </div>
@@ -2275,9 +2409,8 @@ export default function AdminPanelModal({
                   {resenasReportadasFiltradas.map((resena) => {
                     const estaOculta = resena.ocultaPorReportes || resena.ocultaPorModeracion;
                     const expandido = Boolean(reportesExpandidos[resena.idResena]);
-                    const tienePendientes = (resena.reportes || []).some(
-                      (r) => r.estado === "PENDIENTE"
-                    );
+                     const puedeRechazar = resena.reportesPendientes === 0 &&
+                       (resena.reportes || []).some((reporte) => reporte.estado === "EN_REVISION");
 
                     return (
                       <div
@@ -2442,7 +2575,7 @@ export default function AdminPanelModal({
                             )}
 
                             {/* Rechazar reportes pendientes */}
-                            {tienePendientes && (
+                             {puedeRechazar && (
                               <button
                                 type="button"
                                 onClick={() =>
@@ -2450,7 +2583,7 @@ export default function AdminPanelModal({
                                     resena.idResena,
                                     "rechazar-reportes",
                                     "Desestimar y Rechazar Reportes",
-                                    `Los reportes pendientes para la reseña #${resena.idResena} serán marcados como RECHAZADOS. Si la reseña fue ocultada automáticamente por reportes, será restaurada.`,
+                                     `Los reportes en revisión para la reseña #${resena.idResena} serán marcados como RECHAZADOS según los permisos del backend.`,
                                   )
                                 }
                                 disabled={ejecutandoAccion}
@@ -2475,10 +2608,12 @@ export default function AdminPanelModal({
           {/* PESTAÑA 5: ESTABLECIMIENTOS */}
           {tabActiva === "establecimientos" && <AdminEstablecimientos />}
         </div>
+        </div>
 
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE PRODUCTO */}
         {productoEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar"
@@ -2531,6 +2666,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE CATEGORÍA */}
         {categoriaEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-cat"
@@ -2583,6 +2719,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ELIMINACIÓN DE MARCA */}
         {marcaEliminando && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-marca"
@@ -2635,6 +2772,7 @@ export default function AdminPanelModal({
         {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ACCIÓN DE MODERACIÓN (S2-72 / TEC-149) */}
         {modalMotivoAccion && (
           <div
+            ref={confirmacionRef}
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="titulo-confirmar-moderacion"
@@ -2664,16 +2802,22 @@ export default function AdminPanelModal({
                   htmlFor="motivo-accion-moderacion"
                   className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1"
                 >
-                  Motivo o justificación de auditoría (opcional):
+                   Justificación {modalMotivoAccion.accion === "rechazar-reportes" ? "(opcional)" : "(obligatoria)"}:
                 </label>
                 <textarea
                   id="motivo-accion-moderacion"
                   value={motivoAccionTexto}
-                  onChange={(e) => setMotivoAccionTexto(e.target.value)}
+                   onChange={(e) => {
+                     setMotivoAccionTexto(e.target.value);
+                     if (e.target.value.trim()) setErrorMotivoAccion(false);
+                   }}
                   placeholder="Explica la razón de esta acción de moderación..."
-                  rows={3}
-                  className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
-                />
+                   rows={3}
+                   maxLength={2000}
+                   aria-invalid={errorMotivoAccion}
+                   className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
+                 />
+                 {errorMotivoAccion && <p role="alert" className="mt-2 text-xs text-red-600">La justificación obligatoria no puede estar vacía al ocultar o publicar una reseña.</p>}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
@@ -2681,7 +2825,8 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => {
                     setModalMotivoAccion(null);
-                    setMotivoAccionTexto("");
+                     setMotivoAccionTexto("");
+                     setErrorMotivoAccion(false);
                   }}
                   disabled={ejecutandoAccion}
                   className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"

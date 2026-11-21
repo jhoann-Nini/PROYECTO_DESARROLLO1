@@ -442,6 +442,29 @@ describe("api.ts - Cliente API del frontend", () => {
       expect(sesion.idUsuario).toBe(42);
       expect(sesion.activo).toBe(true);
       expect(sesion.usuario).toBe("oficial_user");
+      expect(sesion.avatar).toBeUndefined();
+    });
+
+    it("conserva la foto de perfil cuando Supabase tiene avatar_url", async () => {
+      const { mapearPerfilABusinessSession } = await loadApi(DEFAULT_API_URL);
+
+      const perfilBackend = {
+        idUsuario: 42,
+        nombre: "Nombre Oficial Backend",
+        correo: "oficial@tecreview.com",
+        rol: "Usuario registrado",
+        activo: true,
+        fechaRegistro: "2026-10-14T20:00:00",
+      };
+
+      const sesion = mapearPerfilABusinessSession(perfilBackend, {
+        id: "uuid-supabase-1234",
+        user_metadata: {
+          avatar_url: "https://example.com/avatar.png",
+        },
+      });
+
+      expect(sesion.avatar).toBe("https://example.com/avatar.png");
     });
   });
 

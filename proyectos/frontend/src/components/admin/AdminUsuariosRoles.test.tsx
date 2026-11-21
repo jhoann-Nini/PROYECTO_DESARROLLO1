@@ -160,6 +160,11 @@ describe("AdminUsuariosRoles", () => {
     ).toBeDefined();
   });
 
+  it("aclara que la API no entrega historial ni lista de representaciones activas", async () => {
+    await renderizarYSeleccionar();
+    expect(screen.getByText(/historial y las representaciones activas todavía no se pueden consultar/i)).toBeDefined();
+  });
+
   it("busca cuentas por correo y conserva el filtro aplicado", async () => {
     await renderizarYSeleccionar();
 

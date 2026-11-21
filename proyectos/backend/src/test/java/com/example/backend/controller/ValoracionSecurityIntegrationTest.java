@@ -441,6 +441,70 @@ class ValoracionSecurityIntegrationTest {
                 .andExpect(jsonPath("$.nombreUsuario").value("Usuario Valoraciones Test"));
     }
 
+
+    @Test
+    @DisplayName("TEC-145: cada usuario consulta exclusivamente su propia valoración")
+    void cadaUsuarioSoloConsultaSuPropiaValoracion() throws Exception {
+      // Dos usuarios distintos y un mismo producto.
+      Usuario usuarioA = usuarioRepository.findBySupabaseUid(TEST_SUB)
+        .orElseThrow();
+      Usuario usuarioB = usuarioRepository.findBySupabaseUid(TEST_SUB_2)
+        .orElseThrow();
+
+      Producto producto = productoRepository.findById(idProductoValido)
+        .orElseThrow();
+
+      // Valoración del usuario A: 5 estrellas.
+      Resena resenaA = new Resena();
+      resenaA.setUsuario(usuarioA);
+      resenaA.setProducto(producto);
+      resenaA.setComentario("Valoración privada del usuario A");
+      resenaA.setPuntuacion(5);
+      resenaA.setEstado(true);
+      resenaA.setFechaCreacion(LocalDateTime.now());
+      resenaA = resenaRepository.saveAndFlush(resenaA);
+
+      // Valoración del usuario B: 2 estrellas.
+      Resena resenaB = new Resena();
+      resenaB.setUsuario(usuarioB);
+      resenaB.setProducto(producto);
+      resenaB.setComentario("Valoración privada del usuario B");
+      resenaB.setPuntuacion(2);
+      resenaB.setEstado(true);
+      resenaB.setFechaCreacion(LocalDateTime.now());
+      resenaB = resenaRepository.saveAndFlush(resenaB);
+
+      String tokenA = generarToken(
+        TEST_SUB,
+        "val_test@example.com",
+        "Usuario Valoraciones Test"
+      );
+
+      String tokenB = generarToken(
+        TEST_SUB_2,
+        "val_test2@example.com",
+        "Segundo Usuario Test"
+      );
+
+      // El usuario A solo debe recibir su propia valoración.
+      mockMvc.perform(get("/api/valoraciones/mi-valoracion")
+          .param("idProducto", idProductoValido.toString())
+          .header("Authorization", "Bearer " + tokenA))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.idValoracion").value(resenaA.getIdResena()))
+        .andExpect(jsonPath("$.idUsuario").value(usuarioA.getIdUsuario()))
+        .andExpect(jsonPath("$.puntuacion").value(5));
+
+      // El usuario B solo debe recibir su propia valoración.
+      mockMvc.perform(get("/api/valoraciones/mi-valoracion")
+          .param("idProducto", idProductoValido.toString())
+          .header("Authorization", "Bearer " + tokenB))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.idValoracion").value(resenaB.getIdResena()))
+        .andExpect(jsonPath("$.idUsuario").value(usuarioB.getIdUsuario()))
+        .andExpect(jsonPath("$.puntuacion").value(2));
+    }
+
     @Test
     @DisplayName("Una cuenta suspendida no puede consultar su valoración")
     void cuentaSuspendidaNoPuedeConsultarMiValoracion() throws Exception {

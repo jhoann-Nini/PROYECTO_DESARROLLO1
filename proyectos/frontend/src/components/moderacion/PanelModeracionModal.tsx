@@ -16,7 +16,7 @@ import {
   rechazarReportesResenaReportada,
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
-import { CLASE_FOCO } from "@/components/ui/foco";
+import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 
 interface PanelModeracionModalProps {
   isOpen: boolean;
@@ -98,6 +98,7 @@ export default function PanelModeracionModal({
 
   const tituloId = useId();
   const cerrarRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const claveConsulta = `${filtroEstado}|${soloOcultas}|${intento}`;
   const [resultado, setResultado] = useState<{
     clave: string;
@@ -131,6 +132,7 @@ export default function PanelModeracionModal({
     if (!abierto) return;
 
     const overflowPrevio = document.body.style.overflow;
+    const activador = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     document.body.style.overflow = "hidden";
     cerrarRef.current?.focus();
 
@@ -146,6 +148,7 @@ export default function PanelModeracionModal({
     return () => {
       document.body.style.overflow = overflowPrevio;
       window.removeEventListener("keydown", manejarEscape);
+      activador?.focus();
     };
   }, [abierto, cerrarPanel]);
 
@@ -212,9 +215,12 @@ export default function PanelModeracionModal({
         previo && previo.clave === claveConsulta
           ? {
               clave: previo.clave,
-              resenas: previo.resenas.map((item) =>
-                item.idResena === actualizada.idResena ? actualizada : item,
-              ),
+              resenas: previo.resenas
+                .map((item) => item.idResena === actualizada.idResena ? actualizada : item)
+                .filter((item) =>
+                  (!soloOcultas || item.ocultaPorReportes || item.ocultaPorModeracion) &&
+                  (!filtroEstado || item.reportes.some((reporte) => reporte.estado === filtroEstado)),
+                ),
             }
           : previo,
       );
@@ -247,21 +253,23 @@ export default function PanelModeracionModal({
 
   return (
     <div
+      ref={panelRef}
+      onKeyDown={(evento) => atraparTabulacion(evento, panelRef.current)}
       role="dialog"
       aria-modal="true"
       aria-labelledby={tituloId}
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+       className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
+       <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[var(--color-hairline)] pb-4">
-          <div>
+           <div className="min-w-0">
             <h2
               id={tituloId}
               className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
             >
               Moderación de reseñas
             </h2>
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+             <p className="mt-1 break-words text-xs text-[var(--color-subtle)]">
               Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) · Rol:{" "}
               {usuarioSesion?.rol}
             </p>
@@ -276,6 +284,9 @@ export default function PanelModeracionModal({
             ✕ Cerrar
           </button>
         </div>
+        <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
+          Esta cola incluye solo reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados.
+        </p>
 
         <div
           role="group"
@@ -357,8 +368,10 @@ export default function PanelModeracionModal({
             />
           ) : resenasActuales.length === 0 ? (
             <EstadoVacio
-              titulo="No hay reseñas reportadas"
-              descripcion="No hay reportes que coincidan con los filtros seleccionados."
+               titulo={filtroEstado || soloOcultas ? "Ninguna reseña coincide con los filtros" : "No hay reseñas reportadas"}
+               descripcion={filtroEstado || soloOcultas
+                 ? "Prueba otro estado o desactiva el filtro de reseñas ocultas."
+                 : "La consulta actual no devolvió reseñas reportadas; esto no confirma que todos los reportes estén resueltos."}
             />
           ) : (
             <ul className="space-y-4" aria-label="Reseñas reportadas">

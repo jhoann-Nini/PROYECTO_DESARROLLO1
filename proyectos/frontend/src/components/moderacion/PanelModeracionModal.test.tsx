@@ -216,6 +216,15 @@ describe("PanelModeracionModal", () => {
     ).toBeDefined();
   });
 
+  it("aclara el alcance y diferencia el vacío general del vacío por filtro", async () => {
+    mockObtener.mockResolvedValue([]);
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+    expect(await screen.findByText(/no hay reseñas reportadas/i)).toBeDefined();
+    expect(screen.getByText(/precios y enlaces todavía no están integrados/i)).toBeDefined();
+    fireEvent.change(screen.getByRole("combobox", { name: /estado del reporte/i }), { target: { value: "PENDIENTE" } });
+    expect(await screen.findByText(/ninguna reseña coincide con los filtros/i)).toBeDefined();
+  });
+
   it("lista la reseña reportada y el detalle de sus reportes", async () => {
     render(
       <PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={ADMIN} />,

@@ -1,18 +1,22 @@
 # TEC-153 — Criterio propuesto para verificar ofertas de tiendas
 
-**Fecha:** 2026-11-09  
-**Rama:** `adrian`  
-**Estado:** propuesta abierta. El criterio frontend está redactado, pero **no
-está aprobado, no está implementado y no se considera una tarea cerrada**. No
-modifica backend, esquema ni contrato.
+- **Fecha de creación:** 2026-11-09
+- **Última revisión documental:** 2026-11-19
+- **Rama:** `adrian`
+**Estado:** propuesta abierta, pendiente de aprobación del equipo. La interfaz
+puede mostrar una marca condicional, pero **la verificación no debe considerarse
+operativa** hasta acordar su criterio y conectarla con el estado autoritativo
+del backend. Este documento no modifica backend, esquema ni contrato.
 
 ## 0. Estado de la propuesta
 
 - [x] Criterio funcional redactado y revisado contra el modelo actual.
+- [x] Alcance aclarado para tiendas virtuales; no se exige local físico.
 - [ ] Aprobación del equipo sobre la vigencia (7 días propuestos).
 - [ ] Definición del tratamiento de promociones, variantes y condiciones.
 - [ ] Acuerdo con backend sobre estado, fecha y evidencia expuesta.
-- [ ] Implementación de TEC-151/152 en frontend.
+- [x] El detalle contempla mostrar la marca si recibe `verificada: true`.
+- [ ] Integración con el estado autoritativo, fecha y vigencia acordados con backend.
 - [ ] Pruebas de integración con el contrato real.
 
 Mientras los puntos anteriores sigan sin marcar, TEC-153 debe presentarse como
@@ -27,19 +31,21 @@ TEC-153 pertenece al flujo de ofertas de tiendas de las tareas TEC-134 a TEC-154
 - TEC-153 define qué significa esa verificación.
 - TEC-154 comprueba que una persona no administradora reciba 403.
 
-La verificación se refiere a **una oferta concreta de una tienda para un producto**: tienda, producto, precio y enlace. No significa que una persona compró el producto ni que la tienda en general esté certificada.
+La plataforma trabaja con **tiendas virtuales**. La verificación se refiere a **una oferta digital concreta de una tienda para un producto**: canal de venta, producto, precio y enlace. No se exige que la tienda tenga local físico, vitrina ni atención presencial.
+
+El sello valida los datos de esa oferta en línea; no certifica a la tienda en general, no confirma que alguien haya comprado el producto y no sustituye una evaluación legal o comercial del negocio.
 
 ## 2. Criterio recomendado
 
 Una oferta puede mostrarse como **Verificada** solo después de que una persona administradora revise manualmente la página enlazada y confirme, en la misma revisión, que:
 
-1. El enlace abre una página de producto de la tienda identificada en la oferta.
+1. El enlace abre el canal de venta virtual atribuido a la tienda en la oferta. Si se trata de un marketplace, la página debe identificar claramente al vendedor.
 2. La página corresponde al mismo producto del catálogo, incluyendo modelo o variante cuando aplique.
 3. El precio visible es legible, positivo y está expresado en COP.
 4. El precio que muestra TecReview coincide con el precio visible en esa página al momento de la revisión.
 5. El enlace es un destino HTTP o HTTPS accesible y conduce a la oferta, no solo a la página principal de la tienda.
 
-La verificación significa únicamente que esos datos coincidían **en la fecha y hora de revisión**. No garantiza que el precio siga vigente, que haya inventario, que el envío sea gratis, que la tienda sea segura ni que TecReview haya realizado una compra.
+La verificación significa únicamente que esos datos coincidían **en la fecha y hora de revisión**. No garantiza que el precio siga vigente, que haya inventario, que el envío sea gratis, que la tienda sea segura, que el vendedor cumpla todas sus obligaciones ni que TecReview haya realizado una compra.
 
 ## 3. Vigencia y retiro de la marca
 
@@ -66,7 +72,7 @@ El backend debe ser la fuente de verdad del estado. La revisión debe dejar evid
 
 No es necesario exponer públicamente datos personales de quien verificó. La interfaz debe recibir del backend el estado y la fecha de última verificación; no debe inferirlos del rol local, de la existencia de una URL ni de datos en `localStorage`.
 
-El modelo actual `TiendaPrecio` (`nombre`, `precio`, `envioGratis`, `url`) no incluye estado ni fecha de verificación. Por eso TEC-152 no se debe conectar a una marca inventada antes de que backend acuerde y exponga esos datos. Este documento no propone cambios de esquema ni contratos obligatorios.
+El tipo de frontend `TiendaPrecio` incluye el indicador opcional `verificada`, pero no modela la fecha de revisión ni un identificador propio de la oferta. El detalle puede representar la marca cuando recibe `verificada: true`; eso por sí solo no confirma que el dato venga de una verificación vigente y autoritativa. Backend debe acordar y exponer la fuente de verdad, la fecha o vigencia y la oferta a la que aplica. Este documento no propone cambios de esquema ni contratos obligatorios.
 
 ## 5. Comportamiento esperado del frontend (cuando exista el contrato)
 
@@ -101,17 +107,20 @@ especificación definitiva hasta que el equipo y backend las resuelvan.
 
 ## 8. Límite de esta entrega
 
-Esta tarea documenta el criterio frontend recomendado. No altera entidades,
-endpoints, permisos, migraciones ni datos y no marca una oferta como
-verificada. La implementación de TEC-151/152 depende de la aprobación del
-criterio y del contrato del backend.
+Esta tarea documenta el criterio recomendado. No altera entidades, endpoints,
+permisos, migraciones ni datos y no marca una oferta como verificada. La
+verificación autoritativa y su vigencia dependen de la aprobación del criterio
+y del contrato del backend.
 
 Evidencia técnica actual:
 
-- `src/types/producto.ts` define `TiendaPrecio` solo con `nombre`, `precio`,
-  `envioGratis` y `url`; no existe estado, fecha ni identificador de oferta.
-- `src/services/api.ts` no expone un endpoint de verificación de ofertas.
-- `src/app/productos/[id]/DetalleProductoCliente.tsx` muestra las tiendas y sus
-  enlaces, pero no pinta ninguna marca de verificación.
-- Por tanto, no se añadió UI, estado local ni persistencia simulada para esta
-  tarea.
+- `src/types/producto.ts` define `TiendaPrecio` con `nombre`, `precio`,
+  `envioGratis`, `url` y el indicador opcional `verificada`; no modela fecha de
+  revisión ni identificador de oferta.
+- `src/app/productos/[id]/DetalleProductoCliente.tsx` muestra una marca cuando
+  recibe `verificada === true`.
+- En el código backend revisado no aparece un contrato explícito de
+  verificación de ofertas; TEC-151 sigue pendiente en Jira. La integración debe
+  esperar a que backend acuerde el estado y su vigencia.
+- No se debe inferir la verificación a partir de que exista un enlace o de que
+  una tienda tenga productos publicados.

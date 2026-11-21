@@ -110,6 +110,19 @@ describe("ReportarOfertaModal", () => {
     expect((screen.getByRole("textbox", { name: /Descripción/ }) as HTMLTextAreaElement).value).toBe("Precio diferente");
   });
 
+  it.each([
+    [409, "Ya tienes un reporte abierto sobre esta oferta. Espera a que moderación lo revise."],
+    [429, "Alcanzaste el límite de 10 reportes por hora. Intenta de nuevo más tarde."],
+  ])("muestra el mensaje del backend ante un %i (Fase 2) sin cerrar el formulario", async (status, mensaje) => {
+    enviar.mockRejectedValueOnce(new ApiError(mensaje, status));
+    const { onReportado } = mostrar();
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "precio_incorrecto" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar reporte" }));
+    expect((await screen.findByRole("alert")).textContent).toBe(mensaje);
+    expect(onReportado).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: /Iniciar sesión/ })).toBeNull();
+  });
+
   it("cierra con Cancelar, cierre y Escape; atrapa el foco y lo devuelve al origen", () => {
     const { onCerrar, boton, unmount } = mostrar();
     const dialogo = screen.getByRole("dialog");

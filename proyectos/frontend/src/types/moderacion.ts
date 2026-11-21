@@ -71,3 +71,35 @@ export interface FiltrosResenasReportadas {
   oculta?: boolean;
   idProducto?: number;
 }
+
+/** Evento del historial de un reporte de oferta (Fase 2, migración 021). */
+export interface ReporteOfertaHistorialResponse {
+  idHistorial: number;
+  estadoAnterior: EstadoReporte;
+  estadoNuevo: EstadoReporte;
+  idModerador: number;
+  nombreModerador: string | null;
+  justificacion: string | null;
+  fechaEvento: string;
+}
+
+/** Reporte de precio o enlace tal como lo ve un moderador. */
+export interface ReporteOfertaModeracionResponse {
+  idReporte: number;
+  idProducto: number;
+  nombreProducto: string | null;
+  idEstablecimiento: number;
+  nombreEstablecimiento: string | null;
+  precioActual: number | null;
+  disponibilidadActual: boolean | null;
+  idUsuario: number;
+  nombreUsuario: string | null;
+  motivo: "precio_incorrecto" | "enlace_incorrecto";
+  descripcion: string | null;
+  estado: EstadoReporte;
+  fechaCreacion: string;
+  fechaActualizacion: string;
+  historial: ReporteOfertaHistorialResponse[];
+}
+
+export type AccionReporteOferta = "en-revision" | "aceptar" | "rechazar";

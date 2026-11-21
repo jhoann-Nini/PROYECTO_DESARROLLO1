@@ -13,8 +13,11 @@ import type {
   ProductoOferta,
 } from "@/types/producto";
 import type {
+  AccionReporteOferta,
   EstadoModeracionResena,
+  EstadoReporte,
   FiltrosResenasReportadas,
+  ReporteOfertaModeracionResponse,
   ResenaEnRevisionResponse,
   ResenaReportadaResponse,
 } from "@/types/moderacion";
@@ -532,6 +535,38 @@ export async function decidirRevisionResena(
   const motivoLimpio = motivo?.trim();
   return apiFetchAutenticado<ResenaEnRevisionResponse>(
     `/api/moderacion/resenas/${idResena}/revision/${decision}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(motivoLimpio ? { motivo: motivoLimpio } : {}),
+    },
+  );
+}
+
+/**
+ * Fase 2: cola de reportes de ofertas. Requiere rol Moderador o Administrador.
+ */
+export async function obtenerReportesOfertaModeracion(
+  estado?: EstadoReporte,
+): Promise<ReporteOfertaModeracionResponse[]> {
+  const consulta = estado ? `?estado=${encodeURIComponent(estado)}` : "";
+  return apiFetchAutenticado<ReporteOfertaModeracionResponse[]>(
+    `/api/moderacion/ofertas/reportes${consulta}`,
+    { method: "GET" },
+  );
+}
+
+/**
+ * Toma, acepta o rechaza un reporte de oferta. La justificación es
+ * obligatoria para rechazar; aceptar no modifica el precio de la oferta.
+ */
+export async function decidirReporteOferta(
+  idReporte: number,
+  accion: AccionReporteOferta,
+  motivo?: string,
+): Promise<ReporteOfertaModeracionResponse> {
+  const motivoLimpio = motivo?.trim();
+  return apiFetchAutenticado<ReporteOfertaModeracionResponse>(
+    `/api/moderacion/ofertas/reportes/${idReporte}/${accion}`,
     {
       method: "PUT",
       body: JSON.stringify(motivoLimpio ? { motivo: motivoLimpio } : {}),

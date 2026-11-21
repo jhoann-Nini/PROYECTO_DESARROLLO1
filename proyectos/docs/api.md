@@ -103,6 +103,7 @@ backend/
 | Ofertas (admin)  | GET    | `/api/admin/ofertas`               | Administrador (§32.2) |
 | Oferta (admin)   | PUT    | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.3) |
 | Oferta (admin)   | DELETE | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.4) |
+| Resumen de ofertas | GET  | `/api/productos/resumen-ofertas`   | Público (§32.5) |
 
 # 3. Arquitectura de la API
 
@@ -1674,3 +1675,12 @@ Una oferta (`producto_establecimiento`) es el precio, la disponibilidad y el enl
 - **Ruta:** `DELETE /api/admin/productos/{idProducto}/establecimientos/{idEstablecimiento}`
 - **Respuesta `204`.**
 - **Errores:** `401`; `403`; `404` la oferta no existe; `409` `La oferta tiene reportes asociados y no se puede eliminar. Márcala como no disponible.`
+
+## 32.5 Resumen de ofertas de todos los productos (Fase 4)
+- **Ruta:** `GET /api/productos/resumen-ofertas` (público)
+- **Respuesta `200`:** una entrada por producto activo con ofertas disponibles, con precio mayor que cero, en tiendas activas:
+  ```json
+  [{ "idProducto": 3, "tiendasDisponibles": 2, "menorPrecio": 89000.00, "fechaActualizacionMasReciente": "2026-11-20T10:00:00" }]
+  ```
+  Un producto que no aparece no tiene ofertas disponibles. El frontend lo usa para mostrar la disponibilidad real en el catálogo y el comparador con una sola consulta.
+

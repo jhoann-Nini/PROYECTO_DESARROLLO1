@@ -90,3 +90,20 @@ superiores al rango del catálogo.
 Cierre posterior a revisión: **750 pruebas correctas en 62 archivos**,
 TypeScript, lint y build correctos. No quedan hallazgos de esta revisión
 pendientes de atender.
+
+## Búsqueda por palabras y productos no registrados (Fase 4, H-12)
+
+- `coincideConBusqueda` (`data/catalogo.ts`) encuentra las palabras en cualquier
+  orden («pro iphone» → «iPhone 16 Pro») y también la búsqueda escrita sin
+  espacios («iphone16» → «iPhone 16»). La usan el catálogo, la portada, los
+  rankings de la portada, las páginas de categoría y el selector del comparador.
+- Sin resultados, la portada dice que el término «no está registrado en el
+  catálogo de TecReview» y que eso no significa que no exista en el mercado.
+  El catálogo general añade la misma aclaración.
+- Debajo, «Productos registrados similares» (`buscarAlternativas`) lista hasta
+  cuatro productos reales de la marca mencionada o con una palabra del nombre
+  en común (palabras de al menos 3 letras que no sean solo números). Si no hay
+  ninguno, la sección no aparece.
+- Las tarjetas del catálogo solo afirman «Disponible» con ofertas confirmadas
+  por `GET /api/productos/resumen-ofertas`; si la consulta falla, no muestran
+  la etiqueta.

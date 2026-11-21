@@ -201,7 +201,7 @@ export default function AdminPanelModal({
   const [formMarcaDescripcion, setFormMarcaDescripcion] = useState("");
   const [erroresFormMarca, setErroresFormMarca] = useState<ErroresFormularioMarca>({});
 
-  // Estados para Cola de Reportes y Moderación (S2-72 / TEC-149)
+  // Estados para Cola de Reportes y Moderación (S2-72 / TEC-105)
   const [resenasReportadas, setResenasReportadas] = useState<ResenaReportadaResponse[]>([]);
   const [cargandoReportes, setCargandoReportes] = useState(false);
   const [errorReportes, setErrorReportes] = useState<string | null>(null);
@@ -2282,7 +2282,7 @@ export default function AdminPanelModal({
           )}
 
           {/* ========================================================= */}
-          {/* PESTAÑA 4: COLA DE REPORTES Y MODERACIÓN (S2-72 / TEC-149) */}
+          {/* PESTAÑA 4: COLA DE REPORTES Y MODERACIÓN (S2-72 / TEC-105) */}
           {/* ========================================================= */}
           {tabActiva === "reportes" && (
             <div className="space-y-4">
@@ -2792,7 +2792,7 @@ export default function AdminPanelModal({
           </div>
         )}
 
-        {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ACCIÓN DE MODERACIÓN (S2-72 / TEC-149) */}
+        {/* DIÁLOGO ACCESIBLE DE CONFIRMACIÓN DE ACCIÓN DE MODERACIÓN (S2-72 / TEC-105) */}
         {modalMotivoAccion && (
           <div
             ref={confirmacionRef}

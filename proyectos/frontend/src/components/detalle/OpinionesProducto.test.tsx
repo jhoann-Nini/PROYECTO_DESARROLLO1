@@ -398,6 +398,23 @@ describe("OpinionesProducto — Reportes y revisión (Fase 1)", () => {
     expect(botones[0].closest("li")?.textContent).toContain("La pantalla es buena");
   });
 
+  // Fase 5 (H-16): la autoría se decide solo por id, nunca por el nombre visible.
+  it("no trata como propia la reseña de otra persona con el mismo nombre", () => {
+    const homonimo: UsuarioSesion = { ...usuarioOtro, id: "", idUsuario: undefined, usuario: "anatorres", nombre: "anatorres" };
+    renderComponente({ usuario: homonimo, resenas: [resenaAna] });
+
+    expect(screen.queryByRole("button", { name: /Editar/i })).toBeNull();
+    expect(screen.getByRole("button", { name: /Reportar/i })).toBeDefined();
+  });
+
+  it("reconoce la reseña propia por id aunque el nombre visible sea distinto", () => {
+    const renombrado: UsuarioSesion = { ...usuarioAutor, usuario: "ana.nueva", nombre: "Ana Nueva" };
+    renderComponente({ usuario: renombrado, resenas: [resenaAna] });
+
+    expect(screen.getByRole("button", { name: /Editar/i })).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Reportar/i })).toBeNull();
+  });
+
   it("pide iniciar sesión al reportar sin cuenta", () => {
     const onPedirLogin = vi.fn();
     renderComponente({ usuario: null, resenas: [resenaCarlos], onPedirLogin });

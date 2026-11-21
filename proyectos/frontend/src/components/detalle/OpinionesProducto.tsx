@@ -45,32 +45,21 @@ function formatearFecha(valor: string): string {
   }).format(fecha);
 }
 
+/**
+ * Fase 5 (H-16): la autoría se decide solo por el id del usuario. Comparar por
+ * nombre visible mostraba «Editar» en reseñas de otra persona con el mismo
+ * nombre. Si la sesión no trae id, la reseña no se trata como propia (el
+ * backend sigue siendo la autoridad y rechaza ediciones ajenas).
+ */
 function verificarEsAutor(
   usuario: UsuarioSesion | null,
   resena: ResenaResponse,
 ): boolean {
-  if (!usuario) return false;
-  if (usuario.idUsuario != null && resena.idUsuario != null) {
+  if (!usuario || resena.idUsuario == null) return false;
+  if (usuario.idUsuario != null) {
     return Number(usuario.idUsuario) === Number(resena.idUsuario);
   }
-  if (usuario.id && String(resena.idUsuario) === String(usuario.id)) {
-    return true;
-  }
-  if (
-    usuario.usuario &&
-    resena.nombreUsuario &&
-    usuario.usuario.trim().toLowerCase() === resena.nombreUsuario.trim().toLowerCase()
-  ) {
-    return true;
-  }
-  if (
-    usuario.nombre &&
-    resena.nombreUsuario &&
-    usuario.nombre.trim().toLowerCase() === resena.nombreUsuario.trim().toLowerCase()
-  ) {
-    return true;
-  }
-  return false;
+  return Boolean(usuario.id) && String(resena.idUsuario) === String(usuario.id);
 }
 
 export default function OpinionesProducto({

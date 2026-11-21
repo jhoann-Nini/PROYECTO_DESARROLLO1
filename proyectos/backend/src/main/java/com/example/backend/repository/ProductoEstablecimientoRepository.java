@@ -1,6 +1,7 @@
 
 package com.example.backend.repository;
 
+import com.example.backend.dto.ResumenOfertasProductoResponse;
 import com.example.backend.entity.ProductoEstablecimiento;
 import com.example.backend.entity.ProductoEstablecimientoId;
 import java.util.List;
@@ -51,4 +52,20 @@ public interface ProductoEstablecimientoRepository
         ORDER BY p.nombre ASC, e.nombre ASC
         """)
   List<ProductoEstablecimiento> findParaAdministracion(@Param("idProducto") Long idProducto);
+
+  // Fase 4 (H-04): disponibilidad real de todos los productos en una sola consulta.
+  @Query("""
+        SELECT new com.example.backend.dto.ResumenOfertasProductoResponse(
+          p.idProducto, COUNT(pe), MIN(pe.precio), MAX(pe.fechaActualizacionPrecio))
+        FROM ProductoEstablecimiento pe
+        JOIN pe.producto p
+        JOIN pe.establecimiento e
+        WHERE p.estado = true
+          AND e.estado = true
+          AND pe.disponibilidad = true
+          AND pe.precio IS NOT NULL
+          AND pe.precio > 0
+        GROUP BY p.idProducto
+        """)
+  List<ResumenOfertasProductoResponse> resumirOfertasDisponibles();
 }

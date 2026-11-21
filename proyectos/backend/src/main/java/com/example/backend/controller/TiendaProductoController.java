@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ResumenOfertasProductoResponse;
 import com.example.backend.dto.TiendaProductoResponse;
 import com.example.backend.service.TiendaProductoService;
 
@@ -25,6 +26,15 @@ public class TiendaProductoController {
   public TiendaProductoController(
     TiendaProductoService tiendaProductoService) {
     this.tiendaProductoService = tiendaProductoService;
+  }
+
+  /**
+   * Fase 4 (H-04): resumen de ofertas disponibles de todos los productos,
+   * para mostrar la disponibilidad real en catálogo y comparador.
+   */
+  @GetMapping("/resumen-ofertas")
+  public List<ResumenOfertasProductoResponse> resumirOfertas() {
+    return tiendaProductoService.resumirOfertas();
   }
 
   @GetMapping("/{idProducto}/establecimientos")

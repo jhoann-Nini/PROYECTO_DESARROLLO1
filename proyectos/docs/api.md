@@ -99,6 +99,7 @@ backend/
 | Establecimiento  | POST   | `/api/establecimientos`            | Administrador      |
 | Establecimiento  | PUT    | `/api/establecimientos/{id}`       | Administrador      |
 | Establecimiento  | DELETE | `/api/establecimientos/{id}`       | Administrador      |
+| Verificación de establecimiento | PUT | `/api/admin/establecimientos/{id}/verificacion` | Administrador (§18.6) |
 | Ofertas de producto | GET | `/api/productos/{id}/establecimientos` | Público (§32.1) |
 | Ofertas (admin)  | GET    | `/api/admin/ofertas`               | Administrador (§32.2) |
 | Oferta (admin)   | PUT    | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.3) |
@@ -695,6 +696,19 @@ TecnoReview también contempla información sobre establecimientos relacionados 
 - La eliminación es lógica: marca `estado = false` y conserva el registro y las asignaciones históricas.
 - **`204 No Content`:** establecimiento desactivado.
 - **`409 Conflict`:** el establecimiento ya está inactivo.
+- **`404 Not Found`:** establecimiento inexistente.
+- **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
+
+### 18.6 Verificar o retirar la verificación de un establecimiento (TEC-151)
+
+`PUT /api/admin/establecimientos/{id}/verificacion`
+
+- **Acceso:** JWT válido con rol `Administrador` activo.
+- **Cuerpo:** `{ "verificado": true }` (obligatorio, booleano).
+- Actualiza `establecimiento.verificado`. Desde la Fase 3, el detalle del producto muestra el sello «Verificada» solo cuando vale `true`.
+- Para marketplaces, ver el criterio en `docs/carga-ofertas.md`: por ahora no se marca ningún sitio como verificado.
+- **`200 OK`:** `EstablecimientoResponse` actualizado.
+- **`400 Bad Request`:** falta `verificado`.
 - **`404 Not Found`:** establecimiento inexistente.
 - **`401 Unauthorized` / `403 Forbidden`:** token ausente o cuenta sin rol Administrador activo.
 

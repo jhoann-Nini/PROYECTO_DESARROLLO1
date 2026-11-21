@@ -1032,6 +1032,7 @@ describe("Página principal / (Home)", () => {
         },
       ];
 
+      mockObtenerProductos.mockResolvedValueOnce([]);
       mockObtenerOfertas.mockResolvedValueOnce(ofertas);
 
       render(<Home />);
@@ -1042,6 +1043,9 @@ describe("Página principal / (Home)", () => {
 
       expect(screen.getByText(/iShop Colombia/i)).toBeDefined();
       expect(screen.getByText("-15%")).toBeDefined();
+      fireEvent.click(screen.getByRole("button", { name: /Reportar precio o enlace de MacBook Air M3 en iShop Colombia/ }));
+      expect(screen.getByRole("dialog", { name: "Reportar precio o enlace" }).textContent)
+        .toMatch(/MacBook Air M3 en iShop Colombia/);
     });
 
     it("cuando 'Más deseados' devuelve lista vacía, muestra estado vacío informativo y NO genera productos ficticios", async () => {

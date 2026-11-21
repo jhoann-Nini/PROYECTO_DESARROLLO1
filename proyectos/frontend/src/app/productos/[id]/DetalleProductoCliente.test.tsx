@@ -24,6 +24,8 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerMarcas: vi.fn(),
     obtenerValoracionStats: vi.fn(),
     obtenerResenas: vi.fn(),
+    obtenerTiendasProducto: vi.fn(),
+    crearReporteOferta: vi.fn(),
     obtenerMiValoracion: vi.fn(),
     crearResena: vi.fn(),
   };
@@ -61,6 +63,8 @@ import {
   obtenerProductos,
   obtenerResenas,
   obtenerValoracionStats,
+  obtenerTiendasProducto,
+  crearReporteOferta,
 } from "@/services/api";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
 import DetalleProductoCliente from "./DetalleProductoCliente";
@@ -72,6 +76,8 @@ const mockStats = vi.mocked(obtenerValoracionStats);
 const mockResenas = vi.mocked(obtenerResenas);
 const mockCrearResena = vi.mocked(crearResena);
 const mockMiValoracion = vi.mocked(obtenerMiValoracion);
+const mockTiendas = vi.mocked(obtenerTiendasProducto);
+const mockReporteOferta = vi.mocked(crearReporteOferta);
 
 const CATEGORIAS: CategoriaResponse[] = [
   { idCategoria: 1, nombre: "Móviles", descripcion: null, estado: true },
@@ -159,6 +165,11 @@ beforeEach(() => {
   });
   mockResenas.mockResolvedValue([RESENA]);
   mockMiValoracion.mockResolvedValue(null);
+  mockTiendas.mockResolvedValue([]);
+  mockReporteOferta.mockResolvedValue({
+    idReporte: 80, idProducto: 204, idEstablecimiento: 17,
+    motivo: "precio_incorrecto", descripcion: null, estado: "PENDIENTE", fechaCreacion: "2026-11-20T10:00:00",
+  });
 });
 
 afterEach(() => {
@@ -168,6 +179,50 @@ afterEach(() => {
 });
 
 describe("DetalleProductoCliente", () => {
+  it("muestra un botón por oferta real, sin asignar IDs a las tiendas de datos heredados", async () => {
+    mockProducto.mockResolvedValue(PRODUCTO_CON_TIENDAS);
+    mockTiendas.mockResolvedValue([
+      { idEstablecimiento: 17, nombre: "Tienda Norte", precio: 5_200_000, disponibilidad: true, direccion: null, telefono: null, correo: null, latitud: null, longitud: null },
+      { idEstablecimiento: 32, nombre: "Tienda Sur", precio: 5_100_000, disponibilidad: true, direccion: null, telefono: null, correo: null, latitud: null, longitud: null },
+    ]);
+    mockSesion.usuario = USUARIO;
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const botones = await screen.findAllByRole("button", { name: /Reportar precio o enlace/ });
+    expect(botones).toHaveLength(2);
+    botones[1].focus();
+    fireEvent.click(botones[1]);
+    expect(screen.getByRole("dialog", { name: "Reportar precio o enlace" }).textContent).toMatch(/Samsung Galaxy S25 Ultra en Tienda Sur/);
+    fireEvent.change(screen.getByRole("combobox", { name: "Motivo" }), { target: { value: "precio_incorrecto" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar reporte" }));
+    await waitFor(() => expect(mockReporteOferta).toHaveBeenCalledWith({
+      idProducto: 204, idEstablecimiento: 32, motivo: "precio_incorrecto",
+    }));
+    expect(await screen.findByText("Gracias. Recibimos tu reporte y lo revisaremos.")).toBeDefined();
+    expect(screen.queryByRole("dialog", { name: "Reportar precio o enlace" })).toBeNull();
+    expect(document.activeElement).toBe(botones[1]);
+  });
+
+  it("no inventa IDs para tiendas heredadas ni las muestra como ofertas reales si falla la consulta", async () => {
+    mockProducto.mockResolvedValue(PRODUCTO_CON_TIENDAS);
+    mockTiendas.mockRejectedValueOnce(new ApiError("No pudimos consultar las tiendas.", 500));
+    render(<DetalleProductoCliente idProducto={204} />);
+    expect(await screen.findByText("No pudimos consultar las tiendas.")).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Reportar precio o enlace/ })).toBeNull();
+  });
+
+  it("ofrece el AuthModal si no hay sesión al enviar el reporte", async () => {
+    mockTiendas.mockResolvedValue([
+      { idEstablecimiento: 17, nombre: "Tienda Norte", precio: 5_200_000, disponibilidad: true, direccion: null, telefono: null, correo: null, latitud: null, longitud: null },
+    ]);
+    mockReporteOferta.mockRejectedValueOnce(new ApiError("Sin sesión", 401));
+    render(<DetalleProductoCliente idProducto={204} />);
+    fireEvent.click(await screen.findByRole("button", { name: /Reportar precio o enlace/ }));
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "enlace_incorrecto" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar reporte" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Iniciar sesión" }));
+    expect(screen.getByRole("dialog", { name: /Acceso a TecReview/i })).toBeDefined();
+  });
   it("muestra el estado de carga", () => {
     mockProducto.mockReturnValue(new Promise<Producto>(() => {}));
 

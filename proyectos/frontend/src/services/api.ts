@@ -23,6 +23,11 @@ import type {
   EstablecimientoRequest,
 } from "@/types/establecimiento";
 import type { RolAdmin, UsuarioAdmin } from "@/types/administracion";
+import type {
+  CrearReporteOfertaRequest,
+  ReporteOfertaResponse,
+  TiendaProductoResponse,
+} from "@/types/reporteOferta";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -393,6 +398,34 @@ export async function crearReporteResena(
   request: CrearReporteResenaRequest,
 ): Promise<void> {
   await apiFetchAutenticado<unknown>(`/api/resenas/${idResena}/reportes`, {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
+/** Consulta las ofertas de producto/establecimiento con IDs reales de TEC-134. */
+export async function obtenerTiendasProducto(
+  idProducto: number,
+): Promise<TiendaProductoResponse[]> {
+  if (!Number.isSafeInteger(idProducto) || idProducto <= 0) {
+    throw new ApiError("El identificador del producto no es válido.", 400);
+  }
+  const datos = await apiFetch<unknown>(`/api/productos/${idProducto}/establecimientos`);
+  if (!Array.isArray(datos) || !datos.every(
+    (tienda) => tienda && Number.isSafeInteger(tienda.idEstablecimiento) &&
+      tienda.idEstablecimiento > 0 && typeof tienda.nombre === "string" &&
+      typeof tienda.precio === "number",
+  )) {
+    throw new ApiError("La respuesta del servidor no contiene ofertas con identificadores válidos.");
+  }
+  return datos as TiendaProductoResponse[];
+}
+
+/** TEC-147: la identidad del reportante se toma del JWT, nunca del cuerpo. */
+export async function crearReporteOferta(
+  request: CrearReporteOfertaRequest,
+): Promise<ReporteOfertaResponse> {
+  return apiFetchAutenticado<ReporteOfertaResponse>("/api/reportes/ofertas", {
     method: "POST",
     body: JSON.stringify(request),
   });

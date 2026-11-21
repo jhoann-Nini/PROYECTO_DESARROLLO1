@@ -11,11 +11,15 @@ import {
 } from "react";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import {
-  EJEMPLO_BUSQUEDA_GENERICA,
+  AYUDA_NO_EN_CATALOGO,
   MENSAJE_BUSQUEDA_GENERICA,
+  TITULO_ALTERNATIVAS,
   analizarBusqueda,
+  ayudaBusquedaGenerica,
   buscarAlternativas,
   filtrarProductos,
+  mensajeNoEnCatalogo,
+  textoProductosEncontrados,
 } from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
@@ -308,13 +312,12 @@ export default function PanelBusquedaModal({
 
   if (!abierto) return null;
 
+  // Anuncio para lectores de pantalla («Se encontraron 1 producto» era incorrecto).
   const mensajeResultados = estaCargando
-    ? "Buscando dispositivos..."
+    ? "Buscando dispositivos…"
     : busquedaGenerica
       ? MENSAJE_BUSQUEDA_GENERICA
-      : `Se encontraron ${resultados.length} ${
-          resultados.length === 1 ? "producto" : "productos"
-        }`;
+      : textoProductosEncontrados(resultados.length);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
@@ -343,7 +346,7 @@ export default function PanelBusquedaModal({
               Buscar dispositivos
             </h2>
             <p className="mt-1 text-xs text-[var(--color-subtle)]">
-              Encuentra por marca o nombre del dispositivo.
+              Busca por marca o modelo.
             </p>
           </div>
 
@@ -394,9 +397,9 @@ export default function PanelBusquedaModal({
               type="search"
               value={busqueda}
               onChange={(evento) => setBusqueda(evento.target.value)}
-              placeholder="Buscar por marca o nombre (ej. Samsung Galaxy, iPhone 16)..."
-              aria-label="Buscar por marca o nombre del dispositivo"
-              className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-3 pl-10 pr-11 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+              placeholder="Busca por marca o modelo. Ej.: Galaxy S24, iPhone 16"
+              aria-label="Buscar dispositivos por marca o modelo"
+              className="sin-x-nativa w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-3 pl-10 pr-11 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
             />
 
             {busqueda ? (
@@ -496,24 +499,24 @@ export default function PanelBusquedaModal({
                     {MENSAJE_BUSQUEDA_GENERICA}
                   </p>
                   <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
-                    &ldquo;{busqueda.trim()}&rdquo; es muy general. {EJEMPLO_BUSQUEDA_GENERICA}
+                    {ayudaBusquedaGenerica(busqueda)}
                   </p>
                 </>
               ) : busqueda.trim() ? (
                 <>
                   <p className="text-sm font-semibold text-[var(--color-ink)]">
-                    &ldquo;{busqueda.trim()}&rdquo; no está registrado en el catálogo de TecReview.
+                    {mensajeNoEnCatalogo(busqueda)}
                   </p>
                   <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
-                    Esto no significa que no exista en el mercado. Revisa la escritura, busca por
-                    marca o nombre, o cambia la categoría seleccionada.
+                    {AYUDA_NO_EN_CATALOGO} Prueba con menos palabras, revisa la escritura o
+                    cambia la categoría.
                   </p>
                   {alternativas.length > 0 && (
                     <div className="mt-4 text-left">
                       <p className="px-1 text-xs font-semibold text-[var(--color-ink)]">
-                        Productos registrados similares
+                        {TITULO_ALTERNATIVAS}
                       </p>
-                      <ul className="mt-1 space-y-1" aria-label="Productos registrados similares">
+                      <ul className="mt-1 space-y-1" aria-label={TITULO_ALTERNATIVAS}>
                         {alternativas.map((producto) => (
                           <li key={producto.idProducto}>
                             <FilaResultado
@@ -545,7 +548,7 @@ export default function PanelBusquedaModal({
           <span>Selecciona un resultado para abrir su ficha.</span>
           <span>
             {estaCargando
-              ? "Cargando..."
+              ? "Cargando…"
               : `${resultados.length} ${
                   resultados.length === 1 ? "resultado" : "resultados"
                 }`}

@@ -1290,7 +1290,7 @@ describe("Página principal / (Home)", () => {
 
       // Escribir en el buscador
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/i,
+        name: /Buscar dispositivos por marca o modelo/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Samsung Galaxy Tab S10 Ultra" },
@@ -1312,7 +1312,7 @@ describe("Página principal / (Home)", () => {
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/i,
+        name: /Buscar dispositivos por marca o modelo/i,
       });
 
       // 4a. Coincidencia existente
@@ -1326,9 +1326,23 @@ describe("Página principal / (Home)", () => {
         target: { value: "Modelo Inexistente XYZ 999" },
       });
       expect(
-        screen.getByText(/“Modelo Inexistente XYZ 999” no está registrado en el catálogo de TecReview/i)
+        screen.getByText(/^«Modelo Inexistente XYZ 999» no está en nuestro catálogo\.$/)
       ).toBeDefined();
       expect(screen.getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
+
+      // El aviso también aparece junto a la barra, sin tener que bajar a «Destacados».
+      const estado = screen.getByRole("status", { name: "Resultado de la búsqueda" });
+      expect(estado.textContent).toContain("«Modelo Inexistente XYZ 999» no está en nuestro catálogo.");
+
+      fireEvent.change(inputBusqueda, { target: { value: "Samsung Galaxy Tab S10+" } });
+      expect(screen.getByRole("status", { name: "Resultado de la búsqueda" }).textContent).toMatch(/Encontramos 1 producto\./);
+      expect(within(screen.getByRole("status", { name: "Resultado de la búsqueda" })).getByRole("button", { name: "Ver resultados" })).toBeDefined();
+
+      fireEvent.change(inputBusqueda, { target: { value: "audífonos" } });
+      expect(screen.getByRole("status", { name: "Resultado de la búsqueda" }).textContent).toMatch(/Escribe la marca o el modelo del dispositivo/);
+
+      fireEvent.change(inputBusqueda, { target: { value: "" } });
+      expect(screen.queryByRole("status", { name: "Resultado de la búsqueda" })).toBeNull();
     });
 
     it("5. El contador de productos totales y el contador de resultados filtrados no se confunden", async () => {
@@ -1345,7 +1359,7 @@ describe("Página principal / (Home)", () => {
 
       // Filtrar por texto
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/i,
+        name: /Buscar dispositivos por marca o modelo/i,
       });
       fireEvent.change(inputBusqueda, {
         target: { value: "Buds" },
@@ -1368,7 +1382,7 @@ describe("Página principal / (Home)", () => {
       });
 
       const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/i,
+        name: /Buscar dispositivos por marca o modelo/i,
       });
 
       // Aplicar filtro de búsqueda
@@ -1463,12 +1477,12 @@ describe("Página principal / (Home)", () => {
       render(<Home />);
       await screen.findByText("Samsung Galaxy Buds FE");
       fireEvent.change(screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/,
+        name: /Buscar dispositivos por marca o modelo/,
       }), { target: { value: "Buds" } });
       fireEvent.click(screen.getByRole("button", { name: "Filtrar por presupuesto" }));
       expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=4000000");
       expect((screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/,
+        name: /Buscar dispositivos por marca o modelo/,
       }) as HTMLInputElement).value).toBe("Buds");
     });
 
@@ -1501,7 +1515,7 @@ describe("Página principal / (Home)", () => {
 
     function buscarCajaBusqueda() {
       return screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca, modelo o características/i,
+        name: /Buscar dispositivos por marca o modelo/i,
       });
     }
 

@@ -268,7 +268,7 @@ export default function CategoriaPageContent({
                   type="search"
                   value={busqueda}
                   onChange={(event) => setBusqueda(event.target.value)}
-                  placeholder="Buscar por marca o nombre del dispositivo..."
+                  placeholder="Busca por marca o modelo"
                   className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
                 />
               </div>

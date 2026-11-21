@@ -79,10 +79,10 @@ describe("PanelBusquedaModal", () => {
     ).toContain("Buscar dispositivos");
 
     const input = screen.getByRole("searchbox", {
-      name: /Buscar por marca o nombre del dispositivo/i,
+      name: /Buscar dispositivos por marca o modelo/i,
     });
     expect(document.activeElement).toBe(input);
-    expect(screen.getByText("Se encontraron 1 producto")).toBeDefined();
+    expect(screen.getByText("Encontramos 1 producto.")).toBeDefined();
   });
 
   it("muestra los cinco interruptores de categoría con aria-pressed", () => {
@@ -127,7 +127,7 @@ describe("PanelBusquedaModal", () => {
     expect(dialogo.querySelector(".h-12.w-12.rounded-md")).not.toBeNull();
     expect(dialogo.querySelector(".h-4.w-3\\/4.rounded")).not.toBeNull();
     expect(dialogo.querySelector(".h-3.w-1\\/2.rounded")).not.toBeNull();
-    expect(screen.getByText("Buscando dispositivos...")).toBeDefined();
+    expect(screen.getByText("Buscando dispositivos…")).toBeDefined();
   });
 
   it("se cierra al presionar Escape", () => {
@@ -240,7 +240,7 @@ describe("PanelBusquedaModal", () => {
     );
 
     const input = screen.getByRole("searchbox", {
-      name: /Buscar por marca o nombre del dispositivo/i,
+      name: /Buscar dispositivos por marca o modelo/i,
     });
 
     fireEvent.change(input, { target: { value: "galaxy" } });
@@ -248,13 +248,13 @@ describe("PanelBusquedaModal", () => {
     expect(screen.getByText("Galaxy Tab S10")).toBeDefined();
     expect(screen.getByText("Galaxy Buds FE")).toBeDefined();
     expect(screen.queryByText("iPhone 16")).toBeNull();
-    expect(screen.getByText("Se encontraron 2 productos")).toBeDefined();
+    expect(screen.getByText("Encontramos 2 productos.")).toBeDefined();
 
     fireEvent.click(screen.getByRole("button", { name: "Tablets" }));
 
     expect(screen.getByText("Galaxy Tab S10")).toBeDefined();
     expect(screen.queryByText("Galaxy Buds FE")).toBeNull();
-    expect(screen.getByText("Se encontraron 1 producto")).toBeDefined();
+    expect(screen.getByText("Encontramos 1 producto.")).toBeDefined();
   });
 
   describe("HA-04: Protección de enlaces en PanelBusquedaModal", () => {
@@ -319,7 +319,7 @@ describe("PanelBusquedaModal", () => {
       }),
     ];
     const buscar = (valor: string) =>
-      fireEvent.change(screen.getByRole("searchbox", { name: /Buscar por marca o nombre del dispositivo/i }), {
+      fireEvent.change(screen.getByRole("searchbox", { name: /Buscar dispositivos por marca o modelo/i }), {
         target: { value: valor },
       });
 
@@ -327,8 +327,8 @@ describe("PanelBusquedaModal", () => {
       render(<PanelBusquedaModal abierto onCerrar={vi.fn()} productos={catalogo()} />);
       buscar("iPhone 18");
 
-      expect(screen.getByText("“iPhone 18” no está registrado en el catálogo de TecReview.")).toBeDefined();
-      const similares = screen.getByRole("list", { name: "Productos registrados similares" });
+      expect(screen.getByText("«iPhone 18» no está en nuestro catálogo.")).toBeDefined();
+      const similares = screen.getByRole("list", { name: "Productos parecidos en nuestro catálogo" });
       expect(similares.textContent).toContain("Apple iPhone 16");
       expect(similares.textContent).toContain("Apple iPhone 15");
       expect(similares.textContent).not.toContain("Sony");
@@ -340,7 +340,7 @@ describe("PanelBusquedaModal", () => {
         render(<PanelBusquedaModal abierto onCerrar={vi.fn()} productos={catalogo()} />);
         buscar(termino);
 
-        expect(screen.getAllByText("Coloca la marca o el nombre del dispositivo.").length).toBeGreaterThan(0);
+        expect(screen.getAllByText("Escribe la marca o el modelo del dispositivo.").length).toBeGreaterThan(0);
         expect(screen.queryByText("Sony WH-1000XM5")).toBeNull();
         expect(screen.queryByText("Apple iPhone 16")).toBeNull();
       },

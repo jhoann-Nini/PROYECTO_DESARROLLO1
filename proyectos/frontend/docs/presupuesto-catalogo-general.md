@@ -104,18 +104,35 @@ pendientes de atender.
 - **Palabras genéricas** (teléfono, celular, móvil, smartphone, audífonos,
   auriculares, portátil, laptop, computador, PC, tablet, tableta, dispositivo…):
   si la búsqueda solo tiene esas palabras, no se muestran productos y aparece
-  «Coloca la marca o el nombre del dispositivo» con ejemplos. Si van con otras
+  «Escribe la marca o el modelo del dispositivo» con ejemplos. Si van con otras
   palabras («audífonos sony»), limitan la categoría.
 - Aplica en el buscador de la barra, la portada y sus rankings, el catálogo,
   las páginas de categoría y el selector del comparador. Los textos de ayuda
-  de los campos dicen «marca o nombre del dispositivo».
-- Sin resultados, la portada y el buscador de la barra dicen que el término
-  «no está registrado en el catálogo de TecReview» y que eso no significa que
-  no exista en el mercado. El catálogo general añade la misma aclaración.
-- Debajo, «Productos registrados similares» (`buscarAlternativas`) lista hasta
+  de los campos dicen «Busca por marca o modelo».
+- Sin resultados, la portada y el buscador de la barra dicen ««X» no está en
+  nuestro catálogo. Puede existir en el mercado, pero aún no lo tenemos». El
+  catálogo general añade la misma aclaración.
+- Debajo, «Productos parecidos en nuestro catálogo» (`buscarAlternativas`) lista hasta
   cuatro productos reales de la marca mencionada o con una palabra del nombre
   en común (palabras de al menos 3 letras que no sean solo números). Si no hay
   ninguno, la sección no aparece.
 - Las tarjetas del catálogo solo afirman «Disponible» con ofertas confirmadas
   por `GET /api/productos/resumen-ofertas`; si la consulta falla, no muestran
   la etiqueta.
+- **Aviso junto a la barra de la portada** (`EstadoBusquedaHome`): los
+  resultados están más abajo, en «Destacados», así que debajo de la barra se
+  indica «Encontramos N productos. Ver resultados», ««X» no está en nuestro
+  catálogo. Ver productos parecidos» o, para búsquedas genéricas, «Escribe la
+  marca o el modelo del dispositivo».
+- El «+» forma parte del modelo: «Galaxy Tab S10+» no coincide con «Galaxy Tab
+  S10 Ultra», mientras que «tab s10» encuentra los dos.
+- Los buscadores de la portada y de la barra superior tienen su propio botón
+  para borrar; la clase `sin-x-nativa` (`globals.css`) oculta la «X» que el
+  navegador añade a los campos `type="search"` para no mostrar dos. Los demás
+  campos de búsqueda conservan la «X» nativa porque no tienen botón propio.
+- **Textos de los buscadores:** están definidos una sola vez en
+  `data/catalogo.ts` (`MENSAJE_BUSQUEDA_GENERICA`, `ayudaBusquedaGenerica`,
+  `mensajeNoEnCatalogo`, `AYUDA_NO_EN_CATALOGO`, `TITULO_ALTERNATIVAS`,
+  `textoProductosEncontrados`) para que la portada, la barra superior y el
+  catálogo digan lo mismo. Criterio: tuteo e imperativo («Escribe», «Busca»,
+  «Revisa»), comillas «», sin doble negación y «…» en lugar de «...».

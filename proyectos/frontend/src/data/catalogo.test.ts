@@ -486,6 +486,17 @@ describe("búsqueda por identidad del dispositivo (corrección de buscadores)", 
     expect(buscar("portátil apple")).toEqual([22]);
   });
 
+  it("distingue los modelos con «+» de los que no lo tienen", () => {
+    const plus = crearVista({ idProducto: 30, nombre: "Samsung Galaxy Tab S10+", marca: "Samsung", categoria: "tablets", categoriaEtiqueta: "Tablets" });
+    const ultra = crearVista({ idProducto: 31, nombre: "Samsung Galaxy Tab S10 Ultra", marca: "Samsung", categoria: "tablets", categoriaEtiqueta: "Tablets" });
+    const buscarEn = (busqueda: string) =>
+      filtrarProductos([plus, ultra], { ...filtrosVacios(), busqueda }).map((producto) => producto.idProducto);
+
+    expect(buscarEn("Samsung Galaxy Tab S10+")).toEqual([30]);
+    expect(buscarEn("tab s10")).toEqual([30, 31]);
+    expect(buscarEn("s10 ultra")).toEqual([31]);
+  });
+
   it("detecta las búsquedas que solo tienen palabras genéricas", () => {
     expect(analizarBusqueda("Teléfono").generica).toBe(true);
     expect(analizarBusqueda("audifonos").generica).toBe(true);

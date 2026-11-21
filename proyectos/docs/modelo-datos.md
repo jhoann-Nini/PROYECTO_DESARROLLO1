@@ -632,11 +632,11 @@ Los scripts SQL históricos `006_reportes_resenas.sql` y `007_moderacion_reporte
 
 ---
 
-# 25. Estado de implementación del esquema — 18 de noviembre de 2026
+# 25. Estado de implementación del esquema — 20 de noviembre de 2026
 
-El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/.
+El modelo descrito en las secciones anteriores conserva elementos conceptuales y decisiones históricas. Para conocer la estructura SQL implementada debe consultarse la secuencia de scripts del backend en proyectos/backend/src/main/resources/db/migration/ y su réplica documental en proyectos/docs/sql/.
 
-A la fecha de esta actualización, el repositorio contiene las migraciones 001–016. Entre las capacidades incorporadas por esa secuencia se encuentran:
+A la fecha de esta actualización, el repositorio contiene las migraciones 001–019. Entre las capacidades incorporadas por esa secuencia se encuentran:
 
 - Soporte de identidad y autenticación de Supabase.
 - Alineación del catálogo de roles y reseñas/valoraciones.
@@ -645,6 +645,9 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
 - Auditoría de asignaciones, decisiones de moderación y ocultamiento manual.
 - Restricciones de integridad, validación de transiciones y correlación transaccional de eventos de auditoría.
 - Estado separado de moderación automática de reseñas mediante resena.estado_moderacion, con valores permitidos PUBLICADA y PENDIENTE (migración 012).
+- Verificación de establecimientos por administradores mediante establecimiento.verificado (migración 017).
+- Reportes de ofertas con precios o enlaces incorrectos mediante reporte_oferta (migración 018).
+- Seguridad y endurecimiento de search_path en 21 funciones públicas de base de datos (migración 019).
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 
@@ -652,7 +655,7 @@ Este documento no debe interpretarse como un DDL completo ni como una representa
 
 ## 25.2 Estado de los scripts y de cada entorno
 
-Los scripts 001–012 están incorporados al repositorio. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a siete productos existentes. Las migraciones 014 y 016 registran siete precios de referencia comerciales con fuente y fecha; no convierten esos valores en inventario garantizado. La migración 015 amplía la columna de imagen a TEXT para admitir URLs de origen largas sin truncarlas.
+Los scripts 001–019 están incorporados al repositorio tanto en `proyectos/backend/src/main/resources/db/migration/` como en `proyectos/docs/sql/`. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a siete productos existentes. Las migraciones 014 y 016 registran siete precios de referencia comerciales con fuente y fecha; no convierten esos valores en inventario garantizado. La migración 015 amplía la columna de imagen a TEXT para admitir URLs de origen largas sin truncarlas. La migración 017 añade la columna de verificación administrativa a establecimientos. La migración 018 crea la tabla `reporte_oferta` para gestionar reportes comunitarios de ofertas. La migración 019 asegura las funciones PL/pgSQL fijando `search_path = pg_catalog`.
 
 
 ## 25.3 Imágenes licenciadas del catálogo — 19 de noviembre de 2026

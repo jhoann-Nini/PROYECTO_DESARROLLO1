@@ -32,12 +32,14 @@ El estado de las historias se actualizó con la confirmación del equipo. El arc
 | TEC-100 / HU-S2-08 | Reportar una reseña | Control y moderación | LISTO |
 | TEC-105 / HU-S2-09 | Cola de moderación | Control y moderación | LISTO |
 | TEC-110 / HU-S2-10 | Comparador | Comparador | LISTO |
-| TEC-116 / HU-S2-11 | Administrar tiendas y precios | Tiendas y precios | LISTO |
+| TEC-116 / HU-S2-11 | Administrar tiendas y precios | Tiendas y precios | LISTO (precios completados en la Fase 3) |
 | TEC-125 / HU-S2-12 | Ver dónde comprar | Tiendas y precios | LISTO |
 | TEC-127 / HU-S2-13 | Reportar precio o enlace incorrecto | Tiendas y precios | LISTO |
-| TEC-128 / HU-S2-15 | Tienda verificada | Tiendas y precios | LISTO |
+| TEC-128 / HU-S2-15 | Tienda verificada | Tiendas y precios | LISTO (sello visible desde la Fase 3) |
 | TEC-129 / HU-S2-17 | Pruebas (Seguridad y Regresión) | Seguridad y QA | LISTO |
 
+> **Corrección de la auditoría (20 de noviembre de 2026):** TEC-116 solo cubría el CRUD de tiendas; no existía forma de registrar precios por tienda. TEC-128 guardaba `establecimiento.verificado`, pero el sello nunca se mostraba. Ambas se completaron en la Fase 3: administración de ofertas (`/api/admin/ofertas`, pestaña «Ofertas por tienda») y sello conectado a `establecimiento.verificado`.
+>
 > Se conservan las claves HU-S2 originales del archivo del equipo. La secuencia no es continua: el historial incluye HU-S2-15 y HU-S2-17, sin renumerarlas.
 
 ## 3. Alcance funcional por bloque

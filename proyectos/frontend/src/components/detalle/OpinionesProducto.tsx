@@ -8,9 +8,18 @@ import {
   eliminarResena,
   type ResenaResponse,
 } from "@/services/api";
-import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
+import {
+  agregarResenaCreada,
+  aplicarResenaEditada,
+  contieneLenguajeNoPermitido,
+  esResenaPublica,
+  MENSAJE_RESENA_EDITADA_EN_REVISION,
+  MENSAJE_RESENA_EN_REVISION,
+  obtenerPalabrasDetectadas,
+} from "@/data/resenas";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
+import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
 
 interface OpinionesProductoProps {
   idProducto: number;
@@ -92,6 +101,10 @@ export default function OpinionesProducto({
   const [enviando, setEnviando] = useState(false);
   const [errorEnvio, setErrorEnvio] = useState("");
   const [exito, setExito] = useState("");
+  const [resenaAReportar, setResenaAReportar] = useState<number | null>(null);
+  const [resenasReportadas, setResenasReportadas] = useState<Set<number>>(
+    () => new Set(),
+  );
 
   // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
   const terminosDetectados = useMemo(
@@ -171,12 +184,13 @@ export default function OpinionesProducto({
       setTexto("");
       setPuntuacion(null);
       setHoverPuntuacion(0);
-      setExito("Tu opinión fue publicada.");
-      setResenasLocales((previas) => [
-        nueva,
-        ...previas.filter((r) => r.idResena !== nueva.idResena),
-      ]);
-      onResenaCreada(nueva);
+      setResenasLocales((previas) => agregarResenaCreada(previas, nueva));
+      if (esResenaPublica(nueva)) {
+        setExito("Tu opinión fue publicada.");
+        onResenaCreada(nueva);
+      } else {
+        setExito(MENSAJE_RESENA_EN_REVISION);
+      }
       onActualizarStats?.();
     } catch (err) {
       setErrorEnvio(
@@ -239,15 +253,17 @@ export default function OpinionesProducto({
         comentarioLimpio,
         puntuacionEdicion,
       );
-      setResenasLocales((previas) =>
-        previas.map((r) =>
-          r.idResena === actualizada.idResena ? actualizada : r,
-        ),
-      );
-      onResenaEditada?.(actualizada);
+      setResenasLocales((previas) => aplicarResenaEditada(previas, actualizada));
+      if (esResenaPublica(actualizada)) {
+        onResenaEditada?.(actualizada);
+        setExito("Tu opinión fue actualizada correctamente.");
+      } else {
+        // Ya no es pública: el padre debe retirarla igual que una eliminada.
+        onResenaEliminada?.(actualizada.idResena);
+        setExito(MENSAJE_RESENA_EDITADA_EN_REVISION);
+      }
       onActualizarStats?.();
       setIdResenaEnEdicion(null);
-      setExito("Tu opinión fue actualizada correctamente.");
     } catch (err) {
       setErrorEdicion(
         err instanceof Error
@@ -621,6 +637,31 @@ export default function OpinionesProducto({
                         )}
                       </div>
                     )}
+
+                    {!esAutor && (
+                      <div className="mt-2 flex justify-end">
+                        {resenasReportadas.has(resena.idResena) ? (
+                          <span className="text-[11px] text-[var(--color-subtle)]">
+                            Reporte enviado
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!usuario) {
+                                onPedirLogin();
+                                return;
+                              }
+                              setResenaAReportar(resena.idResena);
+                            }}
+                            aria-label="Reportar reseña"
+                            className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-600 ${CLASE_FOCO}`}
+                          >
+                            Reportar
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </>
                 )}
               </li>
@@ -678,6 +719,17 @@ export default function OpinionesProducto({
             </div>
           </div>
         </div>
+      )}
+
+      {resenaAReportar !== null && (
+        <ReportarResenaModal
+          resenaId={resenaAReportar}
+          abierto
+          onCerrar={() => setResenaAReportar(null)}
+          onReportado={(idResena) =>
+            setResenasReportadas((previas) => new Set(previas).add(idResena))
+          }
+        />
       )}
     </section>
   );

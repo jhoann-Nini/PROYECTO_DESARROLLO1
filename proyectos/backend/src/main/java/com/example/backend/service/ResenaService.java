@@ -143,12 +143,12 @@ public class ResenaService {
         resena.setPuntuacion(request.puntuacion());
       }
 
-      // Conservar PENDIENTE si ya estaba en revisión.
-      if (resena.getEstadoModeracion() != EstadoModeracion.PENDIENTE) {
-        resena.setEstadoModeracion(
-          resenaModerationService.determinarEstado(comentarioLimpio)
-        );
-      }
+      // PENDIENTE se conserva, RECHAZADA vuelve a revisión
+      // y PUBLICADA se analiza de nuevo.
+      resena.setEstadoModeracion(
+        resenaModerationService.estadoTrasEdicion(
+          resena.getEstadoModeracion(), comentarioLimpio)
+      );
 
         Resena guardada = resenaRepository.save(resena);
         return toResponse(guardada);

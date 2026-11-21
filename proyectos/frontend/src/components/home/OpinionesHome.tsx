@@ -23,6 +23,8 @@ export interface OpinionesHomeProps {
   productos: Producto[];
   enviando: boolean;
   error: string | null;
+  /** Mensaje informativo tras publicar o editar (por ejemplo, reseña en revisión). */
+  aviso?: string | null;
   onPublicar: (evento: FormEvent<HTMLFormElement>) => void;
   onPedirLogin: () => void;
   onResenaEditada: (resena: ResenaResponse) => void;
@@ -44,6 +46,7 @@ export default function OpinionesHome({
   productos,
   enviando,
   error,
+  aviso = null,
   onPublicar,
   onPedirLogin,
   onResenaEditada,
@@ -110,7 +113,7 @@ export default function OpinionesHome({
               <span className="font-semibold">
                 ¿Tienes experiencia con algún dispositivo?
               </span>{" "}
-              Inicia sesión con tu cuenta para publicar una opinión verificada.
+              Inicia sesión con tu cuenta para publicar tu opinión.
             </p>
             <button
               type="button"
@@ -176,6 +179,11 @@ export default function OpinionesHome({
           {error && (
             <p className="mt-2 text-xs text-[var(--color-ink)]" role="alert">
               ⚠️ {error}
+            </p>
+          )}
+          {aviso && !error && (
+            <p className="mt-2 text-xs text-[var(--color-ink)]" role="status">
+              {aviso}
             </p>
           )}
         </form>

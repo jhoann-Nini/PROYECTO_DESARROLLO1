@@ -774,7 +774,7 @@ describe("Página principal / (Home)", () => {
       ) as HTMLInputElement;
 
       fireEvent.change(inputComentario, {
-        target: { value: "esto es una estafa" },
+        target: { value: "esto es una basura" },
       });
       fireEvent.click(
         screen.getByRole("button", { name: /Publicar opinión/i }),
@@ -786,7 +786,7 @@ describe("Página principal / (Home)", () => {
         ).toBeDefined();
       });
 
-      expect(inputComentario.value).toBe("esto es una estafa");
+      expect(inputComentario.value).toBe("esto es una basura");
       expect(mockCrearResena).not.toHaveBeenCalled();
     });
   });
@@ -1335,7 +1335,7 @@ describe("Página principal / (Home)", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/3 productos verificados en la plataforma • 3 mostrados/i)
+          screen.getByText(/3 productos registrados en el catálogo • 3 mostrados/i)
         ).toBeDefined();
       });
 
@@ -1347,9 +1347,9 @@ describe("Página principal / (Home)", () => {
         target: { value: "Buds" },
       });
 
-      // El total de productos verificados en la plataforma sigue siendo 3, pero mostrados es 1
+      // El total de productos registrados en el catálogo sigue siendo 3, pero mostrados es 1
       expect(
-        screen.getByText(/3 productos verificados en la plataforma • 1 mostrado/i)
+        screen.getByText(/3 productos registrados en el catálogo • 1 mostrado/i)
       ).toBeDefined();
     });
 

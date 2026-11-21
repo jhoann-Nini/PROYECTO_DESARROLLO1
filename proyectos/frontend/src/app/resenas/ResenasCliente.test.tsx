@@ -428,7 +428,7 @@ describe("ResenasCliente", () => {
       screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
     ).toBeNull();
 
-    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.change(area, { target: { value: "esto es una basura" } });
 
     expect(
       screen.getByText(
@@ -451,7 +451,7 @@ describe("ResenasCliente", () => {
     });
 
     const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
-    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.change(area, { target: { value: "esto es una basura" } });
     fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
 
     await waitFor(() => {
@@ -460,7 +460,7 @@ describe("ResenasCliente", () => {
       ).toBeDefined();
     });
 
-    expect(area.value).toBe("esto es una estafa");
+    expect(area.value).toBe("esto es una basura");
     expect(mockCrear).not.toHaveBeenCalled();
   });
 

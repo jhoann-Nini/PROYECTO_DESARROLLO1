@@ -10,7 +10,13 @@ import type { FichaNormalizada } from "@/data/specsHelper";
 import { normalizarFichaTecnicaV2 } from "@/data/normalizadorFicha";
 import type { FichaTecnicaV2 } from "@/types/fichaTecnica";
 import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
-import { contieneLenguajeNoPermitido, obtenerPalabrasDetectadas } from "@/data/resenas";
+import {
+  agregarResenaCreada,
+  contieneLenguajeNoPermitido,
+  esResenaPublica,
+  MENSAJE_RESENA_EN_REVISION,
+  obtenerPalabrasDetectadas,
+} from "@/data/resenas";
 import {
   obtenerMiValoracion,
   obtenerResenas,
@@ -226,8 +232,12 @@ export default function FichaTecnicaModal({
         setPuntuacionActual(puntuacionSeleccionada);
       }
       setPuntuacionSeleccionada(0);
-      setExitoResena("¡Tu opinión ha sido publicada con éxito!");
-      setResenasProducto((prev) => [res, ...prev.filter((r) => r.idResena !== res.idResena)]);
+      setExitoResena(
+        esResenaPublica(res)
+          ? "¡Tu opinión ha sido publicada con éxito!"
+          : MENSAJE_RESENA_EN_REVISION
+      );
+      setResenasProducto((prev) => agregarResenaCreada(prev, res));
       if (idProductoApi) {
         obtenerValoracionStats(idProductoApi)
           .then((st) => setValoracionStats(st))

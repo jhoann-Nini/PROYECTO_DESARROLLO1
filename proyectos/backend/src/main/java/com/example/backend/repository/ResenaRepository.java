@@ -90,6 +90,14 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
   @Query("SELECT r FROM Resena r JOIN FETCH r.usuario WHERE r.idResena = :idResena")
   Optional<Resena> findByIdForModeration(@Param("idResena") Long idResena);
 
+  // Cola de revisión: reseñas activas retenidas por el filtro automático,
+  // de la más antigua a la más reciente.
+  @EntityGraph(attributePaths = {"usuario", "producto"})
+  @Query("SELECT r FROM Resena r WHERE r.estado = true " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE " +
+    "ORDER BY r.fechaCreacion ASC, r.idResena ASC")
+  List<Resena> findPendientesDeRevision();
+
   // Consulta con detalles para operaciones internas.
   @EntityGraph(attributePaths = {"usuario", "producto"})
   @Query("SELECT r FROM Resena r WHERE r.idResena = :idResena")

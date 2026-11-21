@@ -169,7 +169,7 @@ function propsDestacados(
 ): DestacadosHomeProps {
   return {
     productos: [],
-    totalVerificados: 0,
+    totalRegistrados: 0,
     totalMostrados: 0,
     cargando: false,
     estadoBackend: "online",
@@ -392,7 +392,7 @@ describe("DestacadosHome", () => {
       <DestacadosHome
         {...propsDestacados({
           productos,
-          totalVerificados: 2,
+          totalRegistrados: 2,
           totalMostrados: 2,
           onVerDetalle,
         })}
@@ -402,7 +402,7 @@ describe("DestacadosHome", () => {
     expect(screen.queryByText("✓ En presupuesto")).toBeNull();
     expect(screen.queryByText("Supera presupuesto")).toBeNull();
     expect(
-      screen.getByText("2 productos verificados en la plataforma • 2 mostrados"),
+      screen.getByText("2 productos registrados en el catálogo • 2 mostrados"),
     ).toBeDefined();
     expect(screen.getByText("Servidor conectado")).toBeDefined();
 
@@ -415,7 +415,7 @@ describe("DestacadosHome", () => {
       <DestacadosHome
         {...propsDestacados({
           productos: [crearVista({ idProducto: 1, posicionRanking: 1 })],
-          totalVerificados: 1,
+          totalRegistrados: 1,
           totalMostrados: 1,
         })}
       />,
@@ -430,7 +430,7 @@ describe("DestacadosHome", () => {
       <DestacadosHome
         {...propsDestacados({
           productos,
-          totalVerificados: 80,
+          totalRegistrados: 80,
           totalMostrados: 1,
         })}
       />,

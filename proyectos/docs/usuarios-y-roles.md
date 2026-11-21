@@ -706,7 +706,7 @@ La secuencia de migraciones del backend está implementada y versionada hasta la
 - 011: integridad de las asignaciones multirrol y exigencia de auditoría transaccional para decisiones de moderación.
 - 012: estado de moderación automática de reseñas, independiente del ocultamiento por reportes y de la moderación manual.
 
-La migración 012 introduce el campo resena.estado_moderacion con los valores PUBLICADA y PENDIENTE. La autorización de moderación y administración debe interpretarse a partir de las asignaciones activas del modelo multirrol, no exclusivamente del campo histórico usuario.id_rol.
+La migración 012 introduce el campo resena.estado_moderacion con los valores PUBLICADA y PENDIENTE. La migración 020 agrega RECHAZADA y permite que un Moderador o Administrador activo apruebe o rechace las reseñas PENDIENTE desde la pestaña «Revisión automática» del panel de moderación; cada decisión queda auditada con su autor y fecha, y nadie puede revisar su propia reseña. La autorización de moderación y administración debe interpretarse a partir de las asignaciones activas del modelo multirrol, no exclusivamente del campo histórico usuario.id_rol.
 
 Los scripts fuente se encuentran en proyectos/backend/src/main/resources/db/migration/ y sus copias documentales en proyectos/docs/sql/. Para conocer el detalle de cada operación, consultar esos archivos y los documentos de Fase 2.
 

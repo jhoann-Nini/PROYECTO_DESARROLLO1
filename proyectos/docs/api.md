@@ -1496,3 +1496,54 @@ Marca los reportes en estado `EN_REVISION` de una reseña como `RECHAZADO`, regi
   - `403 Forbidden`: Sin permisos de moderación, cuenta suspendida o autor de la reseña.
   - `404 Not Found`: Reseña inexistente.
   - `409 Conflict`: Si existen reportes todavía en estado `PENDIENTE` que requieren revisión previa.
+
+# 30. Revisión de reseñas retenidas por el filtro automático (Fase 1, migración 020)
+
+El filtro automático (`ResenaModerationService`) retiene en `estadoModeracion = PENDIENTE` los comentarios con lenguaje no permitido, enlaces o texto repetido. Una reseña retenida no es pública ni cuenta en promedios o rankings hasta que un moderador la revise. Esta cola es distinta de la de reportes: ningún usuario reportó estas reseñas.
+
+**Estados de `estadoModeracion`:** `PUBLICADA`, `PENDIENTE` y `RECHAZADA`.
+
+**Reglas:**
+- Las rutas están bajo `/api/moderacion/**`: requieren cuenta activa y rol activo `Moderador` o `Administrador`.
+- Un moderador no puede revisar su propia reseña (`403`).
+- Cada decisión registra primero un evento `APROBAR` o `RECHAZAR` en `resena_moderacion_auditoria` (moderador, motivo y fecha) y después cambia el estado, en la misma transacción. La migración 020 lo exige en PostgreSQL.
+- Si el autor edita una reseña `RECHAZADA`, vuelve a `PENDIENTE`: un texto nuevo no se publica sin revisión. Si edita una `PENDIENTE`, sigue `PENDIENTE`.
+- `RECHAZADA` no puede pasar directamente a `PUBLICADA`, ni `PUBLICADA` a `RECHAZADA`.
+
+La respuesta de crear o editar una reseña (`POST /api/resenas`, `PUT /api/resenas/{id}`) incluye `estadoModeracion`; el frontend la usa para avisar al autor que su opinión quedó en revisión.
+
+## 30.1 Listar reseñas en revisión
+- **Ruta:** `GET /api/moderacion/resenas/en-revision`
+- **Respuesta `200`:** lista de `ResenaEnRevisionResponse`, de la más antigua a la más reciente:
+  ```json
+  [{
+    "idResena": 7,
+    "idProducto": 3,
+    "nombreProducto": "Samsung Galaxy Buds FE",
+    "idUsuario": 11,
+    "nombreUsuario": "laura",
+    "comentario": "Más barato en www.otra-tienda.com",
+    "puntuacion": 4,
+    "fechaCreacion": "2026-11-20T10:00:00",
+    "estadoModeracion": "PENDIENTE",
+    "ocultaPorModeracion": false,
+    "ocultaPorReportes": false,
+    "motivosDeteccion": ["Contiene un enlace o dominio web"]
+  }]
+  ```
+  `motivosDeteccion` se recalcula sobre el comentario actual; valores posibles: `Contiene lenguaje no permitido`, `Contiene un enlace o dominio web`, `Contiene texto repetido`.
+- **Errores:** `401` sin token, `403` sin rol de moderación.
+
+## 30.2 Aprobar una reseña en revisión
+- **Ruta:** `PUT /api/moderacion/resenas/{idResena}/revision/aprobar` (alias `POST`)
+- **Cuerpo (opcional):** `{ "motivo": "Enlace a la página oficial del fabricante" }`. Si se omite, se registra `Contenido revisado y aprobado por moderación`.
+- **Respuesta `200`:** `ResenaEnRevisionResponse` con `estadoModeracion: "PUBLICADA"`.
+- **Errores:** `400` motivo de más de 2000 caracteres; `401`; `403` sin rol o reseña propia; `404` reseña inexistente; `409` la reseña no está `PENDIENTE` o fue eliminada por su autor.
+
+## 30.3 Rechazar una reseña en revisión
+- **Ruta:** `PUT /api/moderacion/resenas/{idResena}/revision/rechazar` (alias `POST`)
+- **Cuerpo (obligatorio):** `{ "motivo": "Insulto directo a otro usuario" }`
+- **Respuesta `200`:** `ResenaEnRevisionResponse` con `estadoModeracion: "RECHAZADA"`.
+- **Errores:** `400` motivo vacío o de más de 2000 caracteres; `401`; `403`; `404`; `409` igual que en 30.2.
+
+El historial de estas decisiones se consulta con el endpoint existente `GET /api/moderacion/resenas/{idResena}/historial`, que ahora puede devolver las acciones `APROBAR` y `RECHAZAR` además de `OCULTAR` y `RESTAURAR`.

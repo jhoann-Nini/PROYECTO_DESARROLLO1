@@ -762,7 +762,7 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
       /Comparte tu experiencia con Samsung Galaxy Tab S10\+/i
     )) as HTMLTextAreaElement;
 
-    fireEvent.change(textarea, { target: { value: "esto es una estafa" } });
+    fireEvent.change(textarea, { target: { value: "esto es una basura" } });
 
     expect(
       screen.getByText(
@@ -780,7 +780,7 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
       ).toBeDefined();
     });
 
-    expect(textarea.value).toBe("esto es una estafa");
+    expect(textarea.value).toBe("esto es una basura");
     expect(mockCrearResena).not.toHaveBeenCalled();
 
     fireEvent.change(textarea, {

@@ -7,7 +7,8 @@ import type { ProductoViewModel } from "@/data/productoViewModel";
 
 export interface DestacadosHomeProps {
   productos: ProductoViewModel[];
-  totalVerificados: number;
+  /** Productos activos registrados en el catálogo. No implica verificación. */
+  totalRegistrados: number;
   totalMostrados: number;
   cargando: boolean;
   estadoBackend: "online" | "offline";
@@ -20,7 +21,7 @@ export interface DestacadosHomeProps {
 
 export default function DestacadosHome({
   productos,
-  totalVerificados,
+  totalRegistrados,
   totalMostrados,
   cargando,
   estadoBackend,
@@ -45,7 +46,7 @@ export default function DestacadosHome({
             Destacados para ti.
           </h2>
           <p className="mt-1 text-xs text-[var(--color-subtle)]">
-            {totalVerificados} productos verificados en la plataforma •{" "}
+            {totalRegistrados} productos registrados en el catálogo •{" "}
             {totalMostrados} mostrado{totalMostrados === 1 ? "" : "s"}
           </p>
         </div>
@@ -136,7 +137,7 @@ export default function DestacadosHome({
               href="/productos"
               className="group inline-flex items-center gap-2 rounded-lg bg-[var(--color-brand-solid)] px-5 py-3 text-sm font-semibold text-[var(--color-on-solid)] shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
             >
-              Explorar todos los productos ({totalVerificados})
+              Explorar todos los productos ({totalRegistrados})
               <svg
                 className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
                 viewBox="0 0 24 24"

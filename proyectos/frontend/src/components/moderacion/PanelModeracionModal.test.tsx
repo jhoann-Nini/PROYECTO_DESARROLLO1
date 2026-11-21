@@ -18,6 +18,8 @@ vi.mock("@/services/api", async (importOriginal) => {
     ocultarResenaReportada: vi.fn(),
     publicarResenaReportada: vi.fn(),
     rechazarReportesResenaReportada: vi.fn(),
+    obtenerResenasEnRevision: vi.fn(),
+    decidirRevisionResena: vi.fn(),
   };
 });
 
@@ -27,6 +29,7 @@ import {
   ocultarResenaReportada,
   publicarResenaReportada,
   rechazarReportesResenaReportada,
+  obtenerResenasEnRevision,
 } from "@/services/api";
 import PanelModeracionModal from "./PanelModeracionModal";
 
@@ -536,5 +539,20 @@ describe("PanelModeracionModal", () => {
       screen.getByRole("button", { name: "Cerrar panel de moderación" }),
     );
     expect(onClose).toHaveBeenCalledTimes(2);
+  });
+
+  it("separa la cola de reportes de la revisión automática en pestañas", async () => {
+    vi.mocked(obtenerResenasEnRevision).mockResolvedValueOnce([]);
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+
+    const pestanaReportes = screen.getByRole("tab", { name: "Reseñas reportadas" });
+    expect(pestanaReportes.getAttribute("aria-selected")).toBe("true");
+    expect(obtenerResenasEnRevision).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Revisión automática" }));
+
+    expect(await screen.findByText("No hay reseñas en revisión")).toBeDefined();
+    expect(obtenerResenasEnRevision).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("tab", { name: "Revisión automática" }).getAttribute("aria-selected")).toBe("true");
   });
 });

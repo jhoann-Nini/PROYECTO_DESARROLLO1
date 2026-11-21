@@ -15,7 +15,12 @@ import type {
 } from "@/types/producto";
 import { normalizarTexto } from "@/data/productoViewModel";
 import {
+  agregarResenaCreada,
+  aplicarResenaEditada,
   contieneLenguajeNoPermitido,
+  esResenaPublica,
+  MENSAJE_RESENA_EDITADA_EN_REVISION,
+  MENSAJE_RESENA_EN_REVISION,
   obtenerPalabrasDetectadas,
 } from "@/data/resenas";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
@@ -210,14 +215,15 @@ export default function ResenasCliente() {
         ...(puntuacion !== null ? { puntuacion } : {}),
       });
 
-      setResenas((previas) => [
-        nueva,
-        ...previas.filter((resena) => resena.idResena !== nueva.idResena),
-      ]);
+      setResenas((previas) => agregarResenaCreada(previas, nueva));
       setComentario("");
       setPuntuacion(null);
       setHoverPuntuacion(0);
-      setExito("Tu reseña fue publicada.");
+      setExito(
+        esResenaPublica(nueva)
+          ? "Tu reseña fue publicada."
+          : MENSAJE_RESENA_EN_REVISION,
+      );
       setFiltroProducto("todas");
       setOrden("recientes");
     } catch (err) {
@@ -595,15 +601,14 @@ export default function ResenasCliente() {
                     {usuario && resena.idUsuario === usuario.idUsuario && (
                       <EditarResena
                         resena={resena}
-                        onEditada={(actualizada) =>
+                        onEditada={(actualizada) => {
                           setResenas((previas) =>
-                            previas.map((previa) =>
-                              previa.idResena === actualizada.idResena
-                                ? actualizada
-                                : previa
-                            )
-                          )
-                        }
+                            aplicarResenaEditada(previas, actualizada)
+                          );
+                          if (!esResenaPublica(actualizada)) {
+                            setExito(MENSAJE_RESENA_EDITADA_EN_REVISION);
+                          }
+                        }}
                         onEliminada={(idResena) =>
                           setResenas((previas) =>
                             previas.filter(

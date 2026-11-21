@@ -43,12 +43,12 @@ public class ResenaUpdateHelper {
     existente.setComentario(comentarioLimpio);
     existente.setPuntuacion(request.puntuacion());
 
-    // Si ya estaba pendiente, conservar ese estado.
-    if (existente.getEstadoModeracion() != EstadoModeracion.PENDIENTE) {
-      existente.setEstadoModeracion(
-        resenaModerationService.determinarEstado(comentarioLimpio)
-      );
-    }
+    // PENDIENTE se conserva, RECHAZADA vuelve a revisión
+    // y PUBLICADA se analiza de nuevo.
+    existente.setEstadoModeracion(
+      resenaModerationService.estadoTrasEdicion(
+        existente.getEstadoModeracion(), comentarioLimpio)
+    );
 
     return resenaRepository.save(existente);
   }

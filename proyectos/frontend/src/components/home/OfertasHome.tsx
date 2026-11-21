@@ -4,6 +4,7 @@
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import type { ProductoOferta } from "@/types/producto";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 export interface OfertasHomeProps {
   ofertas: ProductoOferta[];
@@ -13,6 +14,7 @@ export interface OfertasHomeProps {
   mostrarTodas: boolean;
   onAlternar: () => void;
   onVerDetalle: (oferta: ProductoOferta) => void;
+  onReportar: (oferta: ProductoOferta) => void;
 }
 
 export default function OfertasHome({
@@ -23,6 +25,7 @@ export default function OfertasHome({
   mostrarTodas,
   onAlternar,
   onVerDetalle,
+  onReportar,
 }: OfertasHomeProps) {
   const visibles = mostrarTodas ? ofertas : ofertas.slice(0, 3);
 
@@ -77,12 +80,13 @@ export default function OfertasHome({
           </div>
         ) : visibles.length > 0 ? (
           visibles.map((oferta) => (
-            <button
+            <div
               key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
-              type="button"
-              onClick={() => onVerDetalle(oferta)}
-              className="group flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-left transition-colors hover:border-[var(--color-brand-blue)]/40 hover:bg-[var(--color-paper)]"
+              className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)]/40"
             >
+              <button type="button" onClick={() => onVerDetalle(oferta)}
+                className={`group flex w-full cursor-pointer items-center justify-between gap-3 text-left ${CLASE_FOCO}`}
+              >
               <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-1">
                 {oferta.imagen && oferta.imagen.trim().length > 0 ? (
                   <img
@@ -129,7 +133,12 @@ export default function OfertasHome({
                   </div>
                 )}
               </div>
-            </button>
+              </button>
+              <button type="button" onClick={() => onReportar(oferta)}
+                aria-label={`Reportar precio o enlace de ${oferta.nombre} en ${oferta.nombreEstablecimiento}`}
+                className={`mt-2 cursor-pointer text-xs font-medium text-[var(--color-brand-blue)] underline underline-offset-4 ${CLASE_FOCO}`}
+              >Reportar precio o enlace</button>
+            </div>
           ))
         ) : (
           <div className="py-8 text-center text-xs text-[var(--color-subtle)]">

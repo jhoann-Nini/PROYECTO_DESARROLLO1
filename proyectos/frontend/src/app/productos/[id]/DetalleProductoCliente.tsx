@@ -8,12 +8,14 @@ import {
   obtenerCategorias,
   obtenerMarcas,
   obtenerProductoPorId,
+  obtenerTiendasProducto,
   obtenerResenas,
   obtenerValoracionStats,
   type ResenaResponse,
   type ValoracionPublicaStats,
 } from "@/services/api";
-import type { CategoriaResponse, MarcaResponse, Producto } from "@/types/producto";
+import type { CategoriaResponse, MarcaResponse, Producto, TiendaPrecio } from "@/types/producto";
+import type { TiendaProductoResponse } from "@/types/reporteOferta";
 import { formatearCOP, normalizarFichaProducto } from "@/data/specsHelper";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
@@ -26,6 +28,8 @@ import OpinionesProducto from "@/components/detalle/OpinionesProducto";
 import BotonComparador from "@/components/detalle/BotonComparador";
 import BotonCompartir from "@/components/detalle/BotonCompartir";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
+import ReportarOfertaModal, { type OfertaReportable } from "@/components/ReportarOfertaModal";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface DetalleProductoClienteProps {
   idProducto: number;
@@ -75,6 +79,11 @@ export default function DetalleProductoCliente({
   const [pestana, setPestana] = useState<PestanaDetalle>("especificaciones");
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [errorImagen, setErrorImagen] = useState(false);
+  const [tiendasReales, setTiendasReales] = useState<TiendaProductoResponse[] | null>(null);
+  const [errorTiendas, setErrorTiendas] = useState<string | null>(null);
+  const [intentoTiendas, setIntentoTiendas] = useState(0);
+  const [ofertaReportando, setOfertaReportando] = useState<OfertaReportable | null>(null);
+  const [reporteConfirmado, setReporteConfirmado] = useState("");
 
   useEffect(() => {
     let activo = true;
@@ -155,6 +164,24 @@ export default function DetalleProductoCliente({
     };
   }, [idProducto, intentoResenas]);
 
+  useEffect(() => {
+    let activo = true;
+    obtenerTiendasProducto(idProducto)
+      .then((tiendas) => {
+        if (activo) {
+          setTiendasReales(tiendas);
+          setErrorTiendas(null);
+        }
+      })
+      .catch((err) => {
+        if (activo) {
+          setTiendasReales([]);
+          setErrorTiendas(err instanceof Error ? err.message : "No pudimos consultar las tiendas.");
+        }
+      });
+    return () => { activo = false; };
+  }, [idProducto, intentoTiendas]);
+
   const refrescarStats = useCallback(async () => {
     try {
       const actualizadas = await obtenerValoracionStats(idProducto);
@@ -183,6 +210,18 @@ export default function DetalleProductoCliente({
     () => (producto ? normalizarFichaProducto(producto) : null),
     [producto],
   );
+
+  // Los datos de ficha heredados no tienen idEstablecimiento: nunca se les asigna uno por nombre.
+  const tiendas: (TiendaPrecio & { idEstablecimiento?: number })[] = errorTiendas
+    ? []
+    : tiendasReales?.length
+      ? tiendasReales.map((tienda) => ({
+          idEstablecimiento: tienda.idEstablecimiento,
+          nombre: tienda.nombre,
+          precio: tienda.precio,
+          envioGratis: false,
+        }))
+      : ficha?.tiendas ?? [];
 
   const precio =
     producto?.precioReferencia && producto.precioReferencia > 0
@@ -255,7 +294,7 @@ export default function DetalleProductoCliente({
     );
   }
 
-  const hayEnlacesTienda = ficha.tiendas.some(
+  const hayEnlacesTienda = tiendas.some(
     (tienda) => tienda.url && /^https?:\/\//i.test(tienda.url),
   );
 
@@ -361,17 +400,33 @@ export default function DetalleProductoCliente({
                   </p>
                 )}
               </div>
-              {ficha.tiendas.length > 0 && (
+              {tiendas.length > 0 && (
                 <p className="text-xs text-[var(--color-subtle)]">
-                  {ficha.tiendas.length}{" "}
-                  {ficha.tiendas.length === 1 ? "tienda" : "tiendas"} disponibles
+                  {tiendas.length}{" "}
+                  {tiendas.length === 1 ? "tienda" : "tiendas"} disponibles
                 </p>
               )}
             </div>
 
-            {ficha.tiendas.length > 0 ? (
+            {reporteConfirmado && (
+              <p role="status" className="mt-3 text-sm text-[var(--color-positive)]">
+                {reporteConfirmado}
+              </p>
+            )}
+            {errorTiendas && (
+              <div role="alert" className="mt-3 text-sm text-red-700">
+                {errorTiendas}{" "}
+                <button type="button" onClick={() => {
+                  setErrorTiendas(null);
+                  setTiendasReales(null);
+                  setIntentoTiendas((valor) => valor + 1);
+                }} className={`cursor-pointer underline ${CLASE_FOCO}`}>Reintentar tiendas</button>
+              </div>
+            )}
+            {tiendas.length > 0 ? (
               <ul className="mt-4 divide-y divide-[var(--color-hairline)]">
-                {ficha.tiendas.map((tienda, indice) => {
+                {tiendas.map((tienda, indice) => {
+                  const idEstablecimiento = tienda.idEstablecimiento;
                   const urlValida =
                     tienda.url && /^https?:\/\//i.test(tienda.url)
                       ? tienda.url
@@ -379,7 +434,7 @@ export default function DetalleProductoCliente({
 
                   return (
                     <li
-                      key={`${tienda.nombre}-${indice}`}
+                      key={tienda.idEstablecimiento ?? `${tienda.nombre}-${indice}`}
                       className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
                     >
                       <div>
@@ -394,12 +449,12 @@ export default function DetalleProductoCliente({
                           )}
                         </p>
                         <p className="mt-1 text-sm text-[var(--color-subtle)]">
-                          {tienda.envioGratis
-                            ? "Envío gratis"
-                            : "Envío no especificado"}
+                          {idEstablecimiento
+                            ? "Envío no especificado"
+                            : tienda.envioGratis ? "Envío gratis" : "Envío no especificado"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-3">
                         <p className="font-semibold text-[var(--color-ink)]">
                           <span className="sr-only">
                             Precio en {tienda.nombre}:{" "}
@@ -416,6 +471,21 @@ export default function DetalleProductoCliente({
                           >
                             Ver tienda
                           </a>
+                        )}
+                        {idEstablecimiento && (
+                          <button type="button"
+                            onClick={() => {
+                              setReporteConfirmado("");
+                              setOfertaReportando({
+                                idProducto: producto.idProducto,
+                                idEstablecimiento,
+                                nombreProducto: producto.nombre,
+                                nombreEstablecimiento: tienda.nombre,
+                              });
+                            }}
+                            aria-label={`Reportar precio o enlace de ${producto.nombre} en ${tienda.nombre}`}
+                            className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-medium text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                          >Reportar precio o enlace</button>
                         )}
                       </div>
                     </li>
@@ -574,6 +644,20 @@ export default function DetalleProductoCliente({
           setModalAuthAbierto(false);
         }}
       />
+      {ofertaReportando && (
+        <ReportarOfertaModal
+          oferta={ofertaReportando}
+          onCerrar={() => setOfertaReportando(null)}
+          onReportado={() => {
+            setReporteConfirmado("Gracias. Recibimos tu reporte y lo revisaremos.");
+            setOfertaReportando(null);
+          }}
+          onPedirLogin={() => {
+            setOfertaReportando(null);
+            abrirAuth();
+          }}
+        />
+      )}
     </main>
   );
 }

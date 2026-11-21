@@ -85,6 +85,7 @@ Puede:
 - Marcar un reporte como en revisión.
 - Resolver un reporte como procedente o no procedente.
 - Ocultar o restaurar reseñas cuando la política de moderación lo permita.
+- Tomar, aceptar o rechazar reportes de precio y enlace de ofertas, con justificación obligatoria al rechazar (Fase 2, `/api/moderacion/ofertas/reportes`). No puede resolver reportes creados por él.
 - Registrar el motivo de la decisión.
 - Consultar el historial de reportes y decisiones de moderación.
 - Consultar el catálogo y las reseñas públicas.

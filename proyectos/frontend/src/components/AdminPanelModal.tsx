@@ -2321,7 +2321,7 @@ export default function AdminPanelModal({
                 <span className="text-base select-none shrink-0 text-[var(--color-brand-blue)]" aria-hidden="true">ℹ</span>
                 <div>
                    <strong className="font-bold">Alcance actual:</strong>
-                   {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados. Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.
+                   {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces se gestionan en el panel de moderación, pestaña «Reportes de ofertas». Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.
                 </div>
               </div>
 

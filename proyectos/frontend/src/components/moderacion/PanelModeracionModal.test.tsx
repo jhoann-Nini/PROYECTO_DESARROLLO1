@@ -20,11 +20,13 @@ vi.mock("@/services/api", async (importOriginal) => {
     rechazarReportesResenaReportada: vi.fn(),
     obtenerResenasEnRevision: vi.fn(),
     decidirRevisionResena: vi.fn(),
+    obtenerReportesOfertaModeracion: vi.fn(),
   };
 });
 
 import {
   ApiError,
+  obtenerReportesOfertaModeracion,
   obtenerResenasReportadas,
   ocultarResenaReportada,
   publicarResenaReportada,
@@ -223,7 +225,7 @@ describe("PanelModeracionModal", () => {
     mockObtener.mockResolvedValue([]);
     render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
     expect(await screen.findByText(/no hay reseñas reportadas/i)).toBeDefined();
-    expect(screen.getByText(/precios y enlaces todavía no están integrados/i)).toBeDefined();
+    expect(screen.getByText(/precios y enlaces están en la pestaña «Reportes de ofertas»/i)).toBeDefined();
     fireEvent.change(screen.getByRole("combobox", { name: /estado del reporte/i }), { target: { value: "PENDIENTE" } });
     expect(await screen.findByText(/ninguna reseña coincide con los filtros/i)).toBeDefined();
   });
@@ -554,5 +556,17 @@ describe("PanelModeracionModal", () => {
     expect(await screen.findByText("No hay reseñas en revisión")).toBeDefined();
     expect(obtenerResenasEnRevision).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("tab", { name: "Revisión automática" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("muestra la cola de reportes de ofertas en su propia pestaña", async () => {
+    vi.mocked(obtenerReportesOfertaModeracion).mockResolvedValueOnce([]);
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+
+    expect(obtenerReportesOfertaModeracion).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("tab", { name: "Reportes de ofertas" }));
+
+    expect(await screen.findByText("No hay reportes de ofertas")).toBeDefined();
+    expect(obtenerReportesOfertaModeracion).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("tab", { name: "Reportes de ofertas" }).getAttribute("aria-selected")).toBe("true");
   });
 });

@@ -55,6 +55,7 @@ public class ReporteResenaService {
     private final UsuarioService usuarioService;
     private final ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
+    private final LimiteReportesService limiteReportesService;
 
     @Autowired
     public ReporteResenaService(
@@ -62,8 +63,10 @@ public class ReporteResenaService {
             ResenaRepository resenaRepository,
             UsuarioService usuarioService,
             ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository,
-            ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
+            ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository,
+            LimiteReportesService limiteReportesService) {
         this.reporteResenaRepository = reporteResenaRepository;
+        this.limiteReportesService = limiteReportesService;
         this.resenaRepository = resenaRepository;
         this.usuarioService = usuarioService;
         this.decisionAuditoriaRepository = decisionAuditoriaRepository;
@@ -97,6 +100,9 @@ public class ReporteResenaService {
         if (reporteResenaRepository.existsByUsuarioIdUsuarioAndResenaIdResena(usuario.getIdUsuario(), resena.getIdResena())) {
             throw new ConflictException("Ya has reportado esta reseña previamente.");
         }
+
+        // Fase 2 (H-07): máximo 10 reportes por hora entre reseñas y ofertas.
+        limiteReportesService.verificarLimite(usuario);
 
         ReporteResena reporte = new ReporteResena();
         reporte.setResena(resena);

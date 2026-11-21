@@ -301,7 +301,7 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
     it("explica que solo cubre reseñas y no presenta la cola vacía como resuelta", async () => {
       render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
       fireEvent.click(screen.getByRole("tab", { name: /cola de reportes/i }));
-      expect(await screen.findByText(/los reportes de precios y enlaces todavía no están integrados/i)).toBeDefined();
+      expect(await screen.findByText(/los reportes de precios y enlaces se gestionan en el panel de moderación/i)).toBeDefined();
       expect(screen.getByText(/no hay reseñas reportadas en este momento/i)).toBeDefined();
     });
 

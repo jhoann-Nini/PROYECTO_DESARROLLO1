@@ -13,8 +13,11 @@ import type {
   ProductoOferta,
 } from "@/types/producto";
 import type {
+  AccionReporteOferta,
   EstadoModeracionResena,
+  EstadoReporte,
   FiltrosResenasReportadas,
+  ReporteOfertaModeracionResponse,
   ResenaEnRevisionResponse,
   ResenaReportadaResponse,
 } from "@/types/moderacion";
@@ -23,6 +26,11 @@ import type {
   EstablecimientoRequest,
 } from "@/types/establecimiento";
 import type { RolAdmin, UsuarioAdmin } from "@/types/administracion";
+import type {
+  CrearReporteOfertaRequest,
+  ReporteOfertaResponse,
+  TiendaProductoResponse,
+} from "@/types/reporteOferta";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -398,6 +406,34 @@ export async function crearReporteResena(
   });
 }
 
+/** Consulta las ofertas de producto/establecimiento con IDs reales de TEC-134. */
+export async function obtenerTiendasProducto(
+  idProducto: number,
+): Promise<TiendaProductoResponse[]> {
+  if (!Number.isSafeInteger(idProducto) || idProducto <= 0) {
+    throw new ApiError("El identificador del producto no es válido.", 400);
+  }
+  const datos = await apiFetch<unknown>(`/api/productos/${idProducto}/establecimientos`);
+  if (!Array.isArray(datos) || !datos.every(
+    (tienda) => tienda && Number.isSafeInteger(tienda.idEstablecimiento) &&
+      tienda.idEstablecimiento > 0 && typeof tienda.nombre === "string" &&
+      typeof tienda.precio === "number",
+  )) {
+    throw new ApiError("La respuesta del servidor no contiene ofertas con identificadores válidos.");
+  }
+  return datos as TiendaProductoResponse[];
+}
+
+/** TEC-147: la identidad del reportante se toma del JWT, nunca del cuerpo. */
+export async function crearReporteOferta(
+  request: CrearReporteOfertaRequest,
+): Promise<ReporteOfertaResponse> {
+  return apiFetchAutenticado<ReporteOfertaResponse>("/api/reportes/ofertas", {
+    method: "POST",
+    body: JSON.stringify(request),
+  });
+}
+
 /**
  * Consulta la lista de reseñas reportadas con sus métricas y reportes asociados.
  * Requiere autenticación con rol Moderador o Administrador activo.
@@ -499,6 +535,38 @@ export async function decidirRevisionResena(
   const motivoLimpio = motivo?.trim();
   return apiFetchAutenticado<ResenaEnRevisionResponse>(
     `/api/moderacion/resenas/${idResena}/revision/${decision}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(motivoLimpio ? { motivo: motivoLimpio } : {}),
+    },
+  );
+}
+
+/**
+ * Fase 2: cola de reportes de ofertas. Requiere rol Moderador o Administrador.
+ */
+export async function obtenerReportesOfertaModeracion(
+  estado?: EstadoReporte,
+): Promise<ReporteOfertaModeracionResponse[]> {
+  const consulta = estado ? `?estado=${encodeURIComponent(estado)}` : "";
+  return apiFetchAutenticado<ReporteOfertaModeracionResponse[]>(
+    `/api/moderacion/ofertas/reportes${consulta}`,
+    { method: "GET" },
+  );
+}
+
+/**
+ * Toma, acepta o rechaza un reporte de oferta. La justificación es
+ * obligatoria para rechazar; aceptar no modifica el precio de la oferta.
+ */
+export async function decidirReporteOferta(
+  idReporte: number,
+  accion: AccionReporteOferta,
+  motivo?: string,
+): Promise<ReporteOfertaModeracionResponse> {
+  const motivoLimpio = motivo?.trim();
+  return apiFetchAutenticado<ReporteOfertaModeracionResponse>(
+    `/api/moderacion/ofertas/reportes/${idReporte}/${accion}`,
     {
       method: "PUT",
       body: JSON.stringify(motivoLimpio ? { motivo: motivoLimpio } : {}),

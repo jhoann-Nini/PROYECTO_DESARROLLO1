@@ -73,6 +73,68 @@ describe("api.ts - Cliente API del frontend", () => {
     });
   });
 
+  describe("TEC-148: ofertas reportables", () => {
+    it("consulta las tiendas reales del producto con sus identificadores", async () => {
+      const { obtenerTiendasProducto } = await loadApi(DEFAULT_API_URL);
+      const tiendas = [
+        { idEstablecimiento: 17, nombre: "Tienda Norte", direccion: null, telefono: null, correo: null, latitud: null, longitud: null, precio: 250000, disponibilidad: true },
+      ];
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify(tiendas), { status: 200 }));
+
+      await expect(obtenerTiendasProducto(204)).resolves.toEqual(tiendas);
+      expect(fetchMock).toHaveBeenCalledWith("http://localhost:8080/api/productos/204/establecimientos");
+    });
+
+    it("no acepta una lista de tiendas sin identificadores válidos", async () => {
+      const { obtenerTiendasProducto, ApiError } = await loadApi(DEFAULT_API_URL);
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify([{ nombre: "Sin ID", precio: 20 }]), { status: 200 }));
+
+      await expect(obtenerTiendasProducto(204)).rejects.toBeInstanceOf(ApiError);
+    });
+
+    it("envía la pareja exacta de IDs y el motivo con el JWT de Supabase", async () => {
+      const { crearReporteOferta } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({ data: { session: { access_token: "token-persona" } }, error: null });
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({
+        idReporte: 91, idProducto: 204, idEstablecimiento: 17,
+        motivo: "precio_incorrecto", descripcion: "El precio cambió", estado: "PENDIENTE", fechaCreacion: "2026-11-20T12:00:00",
+      }), { status: 201 }));
+
+      await crearReporteOferta({ idProducto: 204, idEstablecimiento: 17, motivo: "precio_incorrecto", descripcion: "El precio cambió" });
+
+      const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("http://localhost:8080/api/reportes/ofertas");
+      expect(init.method).toBe("POST");
+      expect(new Headers(init.headers).get("Authorization")).toBe("Bearer token-persona");
+      expect(JSON.parse(init.body as string)).toEqual({
+        idProducto: 204, idEstablecimiento: 17, motivo: "precio_incorrecto", descripcion: "El precio cambió",
+      });
+    });
+
+    it("impide enviar sin sesión y no realiza la petición", async () => {
+      const { crearReporteOferta, ApiError } = await loadApi(DEFAULT_API_URL);
+
+      await expect(crearReporteOferta({
+        idProducto: 204, idEstablecimiento: 17, motivo: "enlace_incorrecto",
+      })).rejects.toMatchObject({ status: 401, name: ApiError.name });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("conserva el mensaje y estado 404 devueltos por el backend", async () => {
+      const { crearReporteOferta } = await loadApi(DEFAULT_API_URL);
+      mockGetSession.mockResolvedValue({ data: { session: { access_token: "token-persona" } }, error: null });
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({
+        message: "No existe una oferta para el producto y establecimiento indicados.",
+      }), { status: 404 }));
+
+      await expect(crearReporteOferta({
+        idProducto: 204, idEstablecimiento: 17, motivo: "enlace_incorrecto",
+      })).rejects.toMatchObject({
+        status: 404, message: "No existe una oferta para el producto y establecimiento indicados.",
+      });
+    });
+  });
+
   describe("Respuesta HTTP exitosa", () => {
     it("acepta respuestas 201 sin cuerpo", async () => {
       const { asignarRolUsuario } = await loadApi(DEFAULT_API_URL);

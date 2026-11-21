@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.entity.ReporteResena;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import com.example.backend.entity.EstadoReporte;
@@ -77,5 +78,8 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
     /**
      * Cuenta los reportes de una reseña cuyo estado sea diferente al indicado.
      */
+    /** Base del límite de reportes por hora (compartido con los reportes de ofertas). */
+    long countByUsuarioIdUsuarioAndFechaCreacionAfter(Long idUsuario, LocalDateTime desde);
+
     long countByResenaIdResenaAndEstadoNot(Long idResena, EstadoReporte estado);
 }

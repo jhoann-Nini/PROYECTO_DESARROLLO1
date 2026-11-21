@@ -17,6 +17,7 @@ import {
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomatica";
+import ColaReportesOfertas from "@/components/moderacion/ColaReportesOfertas";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 
 interface PanelModeracionModalProps {
@@ -26,7 +27,7 @@ interface PanelModeracionModalProps {
 }
 
 type AccionModeracion = "ocultar" | "publicar" | "rechazar-reportes";
-type PestanaModeracion = "reportes" | "revision";
+type PestanaModeracion = "reportes" | "revision" | "ofertas";
 
 function puedeRechazarReportes(resena: ResenaReportadaResponse): boolean {
   return (
@@ -296,6 +297,7 @@ export default function PanelModeracionModal({
           {([
             { id: "reportes", etiqueta: "Reseñas reportadas" },
             { id: "revision", etiqueta: "Revisión automática" },
+            { id: "ofertas", etiqueta: "Reportes de ofertas" },
           ] as const).map((opcion) => (
             <button
               key={opcion.id}
@@ -316,7 +318,16 @@ export default function PanelModeracionModal({
           ))}
         </div>
 
-        {pestana === "revision" ? (
+        {pestana === "ofertas" ? (
+          <div
+            role="tabpanel"
+            id={`${tituloId}-panel-ofertas`}
+            aria-labelledby={`${tituloId}-tab-ofertas`}
+            className="overflow-y-auto pr-1"
+          >
+            <ColaReportesOfertas />
+          </div>
+        ) : pestana === "revision" ? (
           <div
             role="tabpanel"
             id={`${tituloId}-panel-revision`}
@@ -333,7 +344,7 @@ export default function PanelModeracionModal({
           className="flex min-h-0 flex-col"
         >
         <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
-          Esta cola incluye solo reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados.
+          Esta cola incluye solo reseñas reportadas. Los reportes de precios y enlaces están en la pestaña «Reportes de ofertas».
         </p>
 
         <div

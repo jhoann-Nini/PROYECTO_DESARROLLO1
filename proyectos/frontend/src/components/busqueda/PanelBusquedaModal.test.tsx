@@ -79,7 +79,7 @@ describe("PanelBusquedaModal", () => {
     ).toContain("Buscar dispositivos");
 
     const input = screen.getByRole("searchbox", {
-      name: /Buscar por modelo, marca o especificación/i,
+      name: /Buscar por marca o nombre del dispositivo/i,
     });
     expect(document.activeElement).toBe(input);
     expect(screen.getByText("Se encontraron 1 producto")).toBeDefined();
@@ -240,7 +240,7 @@ describe("PanelBusquedaModal", () => {
     );
 
     const input = screen.getByRole("searchbox", {
-      name: /Buscar por modelo, marca o especificación/i,
+      name: /Buscar por marca o nombre del dispositivo/i,
     });
 
     fireEvent.change(input, { target: { value: "galaxy" } });
@@ -308,4 +308,51 @@ describe("PanelBusquedaModal", () => {
       expect(onCerrar).toHaveBeenCalled();
     });
   });
+
+  describe("avisos cuando la búsqueda no encuentra un dispositivo", () => {
+    const catalogo = () => [
+      crearProducto({ idProducto: 1, nombre: "Apple iPhone 16", textoBusqueda: "apple iphone 16 chip a18 18 w" }),
+      crearProducto({ idProducto: 2, nombre: "Apple iPhone 15", textoBusqueda: "apple iphone 15 moviles" }),
+      crearProducto({
+        idProducto: 3, nombre: "Sony WH-1000XM5", marca: "Sony", categoria: "auriculares",
+        categoriaEtiqueta: "Auriculares", textoBusqueda: "sony wh-1000xm5 auriculares",
+      }),
+    ];
+    const buscar = (valor: string) =>
+      fireEvent.change(screen.getByRole("searchbox", { name: /Buscar por marca o nombre del dispositivo/i }), {
+        target: { value: valor },
+      });
+
+    it("avisa que un dispositivo no está registrado y sugiere similares reales", () => {
+      render(<PanelBusquedaModal abierto onCerrar={vi.fn()} productos={catalogo()} />);
+      buscar("iPhone 18");
+
+      expect(screen.getByText("“iPhone 18” no está registrado en el catálogo de TecReview.")).toBeDefined();
+      const similares = screen.getByRole("list", { name: "Productos registrados similares" });
+      expect(similares.textContent).toContain("Apple iPhone 16");
+      expect(similares.textContent).toContain("Apple iPhone 15");
+      expect(similares.textContent).not.toContain("Sony");
+    });
+
+    it.each(["teléfono", "audífonos", "celular", "portátil"])(
+      "pide marca o nombre cuando solo se busca «%s»",
+      (termino) => {
+        render(<PanelBusquedaModal abierto onCerrar={vi.fn()} productos={catalogo()} />);
+        buscar(termino);
+
+        expect(screen.getAllByText("Coloca la marca o el nombre del dispositivo.").length).toBeGreaterThan(0);
+        expect(screen.queryByText("Sony WH-1000XM5")).toBeNull();
+        expect(screen.queryByText("Apple iPhone 16")).toBeNull();
+      },
+    );
+
+    it("usa la palabra genérica como categoría cuando va con una marca", () => {
+      render(<PanelBusquedaModal abierto onCerrar={vi.fn()} productos={catalogo()} />);
+      buscar("audífonos sony");
+
+      expect(screen.getByText("Sony WH-1000XM5")).toBeDefined();
+      expect(screen.queryByText("Apple iPhone 16")).toBeNull();
+    });
+  });
 });
+

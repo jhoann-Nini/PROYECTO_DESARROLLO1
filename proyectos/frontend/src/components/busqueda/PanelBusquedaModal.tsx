@@ -10,7 +10,13 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
-import { filtrarProductos } from "@/data/catalogo";
+import {
+  EJEMPLO_BUSQUEDA_GENERICA,
+  MENSAJE_BUSQUEDA_GENERICA,
+  analizarBusqueda,
+  buscarAlternativas,
+  filtrarProductos,
+} from "@/data/catalogo";
 import { construirCatalogo } from "@/data/catalogoApi";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import { obtenerProductos } from "@/services/api";
@@ -252,6 +258,16 @@ export default function PanelBusquedaModal({
     [catalogo, busqueda, categoria],
   );
 
+  // Aviso según el tipo de búsqueda sin resultados.
+  const busquedaGenerica = useMemo(() => analizarBusqueda(busqueda).generica, [busqueda]);
+  const alternativas = useMemo(
+    () =>
+      busqueda.trim() && !busquedaGenerica && resultados.length === 0
+        ? buscarAlternativas(catalogo, busqueda)
+        : [],
+    [catalogo, busqueda, busquedaGenerica, resultados.length],
+  );
+
   function manejarTeclaPanel(evento: ReactKeyboardEvent<HTMLDivElement>) {
     if (evento.key !== "Tab") return;
 
@@ -294,9 +310,11 @@ export default function PanelBusquedaModal({
 
   const mensajeResultados = estaCargando
     ? "Buscando dispositivos..."
-    : `Se encontraron ${resultados.length} ${
-        resultados.length === 1 ? "producto" : "productos"
-      }`;
+    : busquedaGenerica
+      ? MENSAJE_BUSQUEDA_GENERICA
+      : `Se encontraron ${resultados.length} ${
+          resultados.length === 1 ? "producto" : "productos"
+        }`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:items-center">
@@ -325,7 +343,7 @@ export default function PanelBusquedaModal({
               Buscar dispositivos
             </h2>
             <p className="mt-1 text-xs text-[var(--color-subtle)]">
-              Encuentra por modelo, marca o especificación.
+              Encuentra por marca o nombre del dispositivo.
             </p>
           </div>
 
@@ -376,8 +394,8 @@ export default function PanelBusquedaModal({
               type="search"
               value={busqueda}
               onChange={(evento) => setBusqueda(evento.target.value)}
-              placeholder="Buscar por modelo, marca o especificación..."
-              aria-label="Buscar por modelo, marca o especificación"
+              placeholder="Buscar por marca o nombre (ej. Samsung Galaxy, iPhone 16)..."
+              aria-label="Buscar por marca o nombre del dispositivo"
               className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-3 pl-10 pr-11 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
             />
 
@@ -472,12 +490,53 @@ export default function PanelBusquedaModal({
             </ul>
           ) : (
             <div className="px-4 py-10 text-center">
-              <p className="text-sm font-semibold text-[var(--color-ink)]">
-                No se encontraron productos.
-              </p>
-              <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
-                Prueba con otro término o cambia la categoría seleccionada.
-              </p>
+              {busquedaGenerica ? (
+                <>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    {MENSAJE_BUSQUEDA_GENERICA}
+                  </p>
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                    &ldquo;{busqueda.trim()}&rdquo; es muy general. {EJEMPLO_BUSQUEDA_GENERICA}
+                  </p>
+                </>
+              ) : busqueda.trim() ? (
+                <>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    &ldquo;{busqueda.trim()}&rdquo; no está registrado en el catálogo de TecReview.
+                  </p>
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                    Esto no significa que no exista en el mercado. Revisa la escritura, busca por
+                    marca o nombre, o cambia la categoría seleccionada.
+                  </p>
+                  {alternativas.length > 0 && (
+                    <div className="mt-4 text-left">
+                      <p className="px-1 text-xs font-semibold text-[var(--color-ink)]">
+                        Productos registrados similares
+                      </p>
+                      <ul className="mt-1 space-y-1" aria-label="Productos registrados similares">
+                        {alternativas.map((producto) => (
+                          <li key={producto.idProducto}>
+                            <FilaResultado
+                              producto={producto}
+                              onSeleccionar={onSeleccionarProducto}
+                              onCerrar={onCerrar}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    No se encontraron productos.
+                  </p>
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                    Prueba con otro término o cambia la categoría seleccionada.
+                  </p>
+                </>
+              )}
             </div>
           )}
         </div>

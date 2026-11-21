@@ -18,7 +18,7 @@ import {
   type ProductoViewModel,
 } from "@/data/productoViewModel";
 import { aplicarResumenOfertasAVistas } from "@/data/catalogoApi";
-import { coincideConBusqueda } from "@/data/catalogo";
+import { coincideProductoConBusqueda } from "@/data/catalogo";
 import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 
@@ -135,7 +135,7 @@ export default function CategoriaPageContent({
   const productosFiltrados = useMemo(() => {
     const conOfertas = aplicarResumenOfertasAVistas(productos, resumenOfertas);
     const filtrados = busqueda.trim()
-      ? conOfertas.filter((producto) => coincideConBusqueda(producto.textoBusqueda, busqueda))
+      ? conOfertas.filter((producto) => coincideProductoConBusqueda(producto, busqueda))
       : conOfertas;
 
     return [...filtrados].sort((a, b) => {
@@ -268,7 +268,7 @@ export default function CategoriaPageContent({
                   type="search"
                   value={busqueda}
                   onChange={(event) => setBusqueda(event.target.value)}
-                  placeholder="Buscar por nombre, marca o descripción..."
+                  placeholder="Buscar por marca o nombre del dispositivo..."
                   className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
                 />
               </div>

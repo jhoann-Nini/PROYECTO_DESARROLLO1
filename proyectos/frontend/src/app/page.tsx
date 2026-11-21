@@ -66,14 +66,13 @@ interface ItemRankingFiltrable {
   precioReferencia: number | null;
 }
 
-function coincideBusqueda(
-  nombre: string,
-  descripcion: string | null,
-  termino: string,
-): boolean {
+/**
+ * Busca por el nombre del dispositivo, como el catálogo: la descripción
+ * menciona otros productos y accesorios y daba falsos positivos.
+ */
+function coincideBusqueda(nombre: string, termino: string): boolean {
   if (!termino) return true;
-  // Fase 4 (H-12): palabras en cualquier orden, como en el catálogo.
-  return coincideConBusqueda(normalizarTexto(`${nombre} ${descripcion ?? ""}`), termino);
+  return coincideConBusqueda(nombre, termino);
 }
 
 function filtrarRanking<T extends ItemRankingFiltrable>(
@@ -82,7 +81,7 @@ function filtrarRanking<T extends ItemRankingFiltrable>(
 ): T[] {
   const termino = normalizarTexto(busqueda);
 
-  return items.filter((item) => coincideBusqueda(item.nombre, item.descripcion, termino));
+  return items.filter((item) => coincideBusqueda(item.nombre, termino));
 }
 
 function filtrarOfertas(
@@ -94,7 +93,7 @@ function filtrarOfertas(
   return ofertas.filter((oferta) => {
     if (termino) {
       return (
-        coincideBusqueda(oferta.nombre, oferta.descripcion, termino) ||
+        coincideBusqueda(oferta.nombre, termino) ||
         normalizarTexto(oferta.nombreEstablecimiento).includes(termino)
       );
     }

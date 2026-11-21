@@ -3,8 +3,10 @@ import { normalizarDatosFichaTecnica } from "@/data/fichaTecnica";
 import type { ProductoViewModel } from "./productoViewModel";
 import {
   ORDENES_CATALOGO,
+  analizarBusqueda,
   buscarAlternativas,
   coincideConBusqueda,
+  coincideProductoConBusqueda,
   construirChips,
   filtrarProductos,
   hayFiltrosActivos,
@@ -164,13 +166,15 @@ describe("prepararCatalogo", () => {
 });
 
 describe("filtrarProductos", () => {
-  it("filtra por búsqueda sin acentos ni mayúsculas", () => {
+  it("filtra por búsqueda sin acentos ni mayúsculas, por nombre o marca", () => {
     const resultado = filtrarProductos(productos, {
       ...filtrosVacios(),
-      busqueda: "CÁMARA",
+      busqueda: "GÁLAXY",
     });
 
-    expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 2]);
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 6]);
+    // Las especificaciones ya no cuentan: «cámara» no identifica un dispositivo.
+    expect(filtrarProductos(productos, { ...filtrosVacios(), busqueda: "cámara" })).toEqual([]);
   });
 
   it("filtra por categoría y marca", () => {
@@ -441,3 +445,60 @@ describe("buscarAlternativas (Fase 4, H-12)", () => {
     expect(buscarAlternativas(productos, "samsung apple sony", 2)).toHaveLength(2);
   });
 });
+
+describe("búsqueda por identidad del dispositivo (corrección de buscadores)", () => {
+  // Datos como los reales: el chip A18 y «pixel» aparecen en las especificaciones.
+  const iphone = crearVista({
+    idProducto: 20, nombre: "Apple iPhone 16 Pro", marca: "Apple", categoria: "moviles", categoriaEtiqueta: "Móviles",
+    textoBusqueda: "apple iphone 16 pro chip a18 pro 18 w carga pixel density 460 ppi",
+  });
+  const tablet = crearVista({
+    idProducto: 21, nombre: "Lenovo Tab M11", marca: "Lenovo", categoria: "tablets", categoriaEtiqueta: "Tablets",
+    textoBusqueda: "lenovo tab m11 1920 x 1200 pixel 90 hz 9 horas",
+  });
+  const macbook = crearVista({
+    idProducto: 22, nombre: "Apple MacBook Air 13 M3", marca: "Apple", categoria: "laptops", categoriaEtiqueta: "Laptops / PCs",
+    textoBusqueda: "apple macbook air 13 m3 jack para audifonos",
+  });
+  const sony = crearVista({
+    idProducto: 23, nombre: "Sony WH-1000XM5", marca: "Sony", categoria: "auriculares", categoriaEtiqueta: "Auriculares",
+    textoBusqueda: "sony wh-1000xm5 auriculares",
+  });
+  const catalogo = [iphone, tablet, macbook, sony];
+  const buscar = (busqueda: string) =>
+    filtrarProductos(catalogo, { ...filtrosVacios(), busqueda }).map((producto) => producto.idProducto);
+
+  it("no confunde números ni palabras de las especificaciones con el nombre", () => {
+    expect(buscar("iphone 18")).toEqual([]);
+    expect(buscar("pixel 9")).toEqual([]);
+    expect(buscar("iphone 16")).toEqual([20]);
+    expect(buscar("iphone16pro")).toEqual([20]);
+  });
+
+  it("no usa la descripción ni las especificaciones para palabras genéricas", () => {
+    expect(buscar("audífonos")).toEqual([]);
+    expect(buscar("teléfono")).toEqual([]);
+  });
+
+  it("usa la palabra genérica para limitar la categoría cuando hay otras palabras", () => {
+    expect(buscar("audífonos sony")).toEqual([23]);
+    expect(buscar("celular apple")).toEqual([20]);
+    expect(buscar("portátil apple")).toEqual([22]);
+  });
+
+  it("detecta las búsquedas que solo tienen palabras genéricas", () => {
+    expect(analizarBusqueda("Teléfono").generica).toBe(true);
+    expect(analizarBusqueda("audifonos").generica).toBe(true);
+    expect(analizarBusqueda("un celular").generica).toBe(true);
+    expect(analizarBusqueda("celular apple").generica).toBe(false);
+    expect(analizarBusqueda("celular apple").categoria).toBe("moviles");
+    expect(analizarBusqueda("iphone 16").generica).toBe(false);
+    expect(analizarBusqueda("   ").vacia).toBe(true);
+  });
+
+  it("coincideProductoConBusqueda respeta la categoría de la palabra genérica", () => {
+    expect(coincideProductoConBusqueda(macbook, "apple")).toBe(true);
+    expect(coincideProductoConBusqueda(macbook, "celular apple")).toBe(false);
+  });
+});
+

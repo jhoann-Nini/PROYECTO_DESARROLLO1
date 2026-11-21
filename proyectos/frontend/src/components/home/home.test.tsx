@@ -495,6 +495,14 @@ describe("DestacadosHome", () => {
     expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);
   });
 
+  it("pide marca o nombre del dispositivo si la búsqueda es solo genérica", () => {
+    render(<DestacadosHome {...propsDestacados({ busqueda: "Teléfono" })} />);
+
+    expect(screen.getByText("Coloca la marca o el nombre del dispositivo.")).toBeDefined();
+    expect(screen.getByText(/“Teléfono” es muy general/)).toBeDefined();
+    expect(screen.queryByText(/no está registrado en el catálogo/)).toBeNull();
+  });
+
   it("ofrece productos registrados similares y abre su detalle", () => {
     const onVerDetalle = vi.fn();
     const alternativa = crearVista({ idProducto: 7, nombre: "Pixel 8", marca: "Google" });

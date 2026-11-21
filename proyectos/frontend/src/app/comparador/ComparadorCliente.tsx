@@ -13,7 +13,7 @@ import type {
   Producto,
 } from "@/types/producto";
 import { aplicarResumenOfertasAVistas, construirCatalogo } from "@/data/catalogoApi";
-import { coincideConBusqueda } from "@/data/catalogo";
+import { coincideProductoConBusqueda } from "@/data/catalogo";
 import type { ProductoViewModel } from "@/data/productoViewModel";
 import {
   MAX_COMPARADOR,
@@ -137,7 +137,7 @@ export default function ComparadorCliente() {
     );
     const filtrados = productosConOfertas.filter((producto) =>
       compatibles.has(producto.idProducto) &&
-      coincideConBusqueda(producto.textoBusqueda, busqueda),
+      coincideProductoConBusqueda(producto, busqueda),
     );
 
     return filtrados.slice(0, 8);

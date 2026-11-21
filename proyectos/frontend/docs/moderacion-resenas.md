@@ -106,9 +106,36 @@ Las pruebas del frontend usan mocks del cliente HTTP; la verificación de la
 persistencia y de las reglas de autorización corresponde a las pruebas de
 integración del backend.
 
+## 3.1 Revisión automática (Fase 1, migración 020)
+
+El panel tiene dos pestañas:
+
+- **Reseñas reportadas:** la cola descrita arriba, sin cambios.
+- **Revisión automática:** `ColaRevisionAutomatica.tsx` lista las reseñas que el
+  filtro automático retuvo (`GET /api/moderacion/resenas/en-revision`), muestra
+  el motivo de la retención y permite **Aprobar y publicar** (justificación
+  opcional) o **Rechazar** (justificación obligatoria) mediante
+  `PUT /api/moderacion/resenas/{id}/revision/{aprobar|rechazar}`.
+
+Del lado del autor, `crearResena` y `editarResena` devuelven `estadoModeracion`.
+Si es `PENDIENTE`, la interfaz no muestra la reseña como publicada y avisa:
+«Recibimos tu opinión. Quedó en revisión y se publicará cuando un moderador la
+apruebe». Los helpers `esResenaPublica`, `agregarResenaCreada` y
+`aplicarResenaEditada` de `src/data/resenas.ts` centralizan esa regla.
+
+La lista de palabras bloqueadas de `src/data/resenas.ts` debe coincidir con la
+de `ResenaModerationService` en el backend. En la Fase 1 se retiraron `spam`,
+`estafa` y `fraude` (críticas legítimas de compra) y ambos lados revisan el
+texto tal cual y con sustituciones leet.
+
+Pruebas: `ColaRevisionAutomatica.test.tsx`, la prueba de pestañas en
+`PanelModeracionModal.test.tsx` y el bloque «Reportes y revisión» de
+`OpinionesProducto.test.tsx`.
+
 ## 4. Pendientes y límites conocidos
 
-1. El backend no expone un historial de auditoría legible por el panel.
+1. El backend expone `GET /api/moderacion/resenas/{id}/historial`, pero el
+   panel todavía no lo muestra.
 2. No existe un listado paginado de reseñas reportadas; la UI trabaja con la
    respuesta completa del endpoint.
 3. La regla de conflicto de interés (por ejemplo, moderar una reseña propia)

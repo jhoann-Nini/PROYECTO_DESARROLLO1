@@ -648,6 +648,7 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
 - Verificación de establecimientos por administradores mediante establecimiento.verificado (migración 017).
 - Reportes de ofertas con precios o enlaces incorrectos mediante reporte_oferta (migración 018).
 - Seguridad y endurecimiento de search_path en 21 funciones públicas de base de datos (migración 019).
+- Revisión humana de reseñas retenidas (migración 020): resena.estado_moderacion admite RECHAZADA y resena_moderacion_auditoria admite las acciones APROBAR y RECHAZAR. Salir de PENDIENTE exige un evento de auditoría en la misma transacción (trigger diferido trg_exigir_auditoria_estado_moderacion_resena).
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 

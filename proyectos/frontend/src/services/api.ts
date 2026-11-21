@@ -13,7 +13,9 @@ import type {
   ProductoOferta,
 } from "@/types/producto";
 import type {
+  EstadoModeracionResena,
   FiltrosResenasReportadas,
+  ResenaEnRevisionResponse,
   ResenaReportadaResponse,
 } from "@/types/moderacion";
 import type {
@@ -296,6 +298,8 @@ export interface ResenaResponse {
   puntuacion?: number | null;
   fechaCreacion: string;
   estado: boolean;
+  /** PENDIENTE si el filtro automático la retuvo; ausente en registros antiguos. */
+  estadoModeracion?: EstadoModeracionResena | null;
 }
 
 /**
@@ -470,6 +474,36 @@ export async function rechazarReportesResenaReportada(
   motivo?: string,
 ): Promise<ResenaReportadaResponse> {
   return accionModeracionResena(idResena, "rechazar-reportes", motivo);
+}
+
+/**
+ * Reseñas retenidas por el filtro automático, pendientes de revisión humana.
+ * Requiere rol Moderador o Administrador activo.
+ */
+export async function obtenerResenasEnRevision(): Promise<ResenaEnRevisionResponse[]> {
+  return apiFetchAutenticado<ResenaEnRevisionResponse[]>(
+    "/api/moderacion/resenas/en-revision",
+    { method: "GET" },
+  );
+}
+
+/**
+ * Aprueba (publica) o rechaza una reseña retenida. La justificación es
+ * obligatoria para rechazar y opcional para aprobar.
+ */
+export async function decidirRevisionResena(
+  idResena: number,
+  decision: "aprobar" | "rechazar",
+  motivo?: string,
+): Promise<ResenaEnRevisionResponse> {
+  const motivoLimpio = motivo?.trim();
+  return apiFetchAutenticado<ResenaEnRevisionResponse>(
+    `/api/moderacion/resenas/${idResena}/revision/${decision}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(motivoLimpio ? { motivo: motivoLimpio } : {}),
+    },
+  );
 }
 
 /**

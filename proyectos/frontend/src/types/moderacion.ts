@@ -3,6 +3,30 @@
  * `ModeracionResenasController` y `ResenaReportadaResponse`.
  */
 
+/**
+ * Estado de moderación del contenido de una reseña (`EstadoModeracion` en el backend).
+ * PENDIENTE: retenida por el filtro automático hasta que un moderador la revise.
+ * RECHAZADA: un moderador decidió no publicarla.
+ */
+export type EstadoModeracionResena = "PUBLICADA" | "PENDIENTE" | "RECHAZADA";
+
+/** Reseña retenida por el filtro automático (`ResenaEnRevisionResponse`). */
+export interface ResenaEnRevisionResponse {
+  idResena: number;
+  idProducto: number | null;
+  nombreProducto: string | null;
+  idUsuario: number | null;
+  nombreUsuario: string | null;
+  comentario: string;
+  puntuacion?: number | null;
+  fechaCreacion: string;
+  estadoModeracion: EstadoModeracionResena;
+  ocultaPorModeracion?: boolean;
+  ocultaPorReportes?: boolean;
+  /** Por qué el filtro la retuvo (enlace, lenguaje no permitido, texto repetido). */
+  motivosDeteccion: string[];
+}
+
 export type EstadoReporte =
   | "PENDIENTE"
   | "EN_REVISION"

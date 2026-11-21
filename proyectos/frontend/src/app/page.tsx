@@ -29,7 +29,13 @@ import { construirCatalogo } from "@/data/catalogoApi";
 import { filtrarProductos, type FiltrosCatalogo } from "@/data/catalogo";
 import { rutaCatalogoPresupuesto } from "@/data/presupuesto";
 import { seleccionarDestacados } from "@/data/destacados";
-import { contieneLenguajeNoPermitido } from "@/data/resenas";
+import {
+  aplicarResenaEditada,
+  contieneLenguajeNoPermitido,
+  esResenaPublica,
+  MENSAJE_RESENA_EDITADA_EN_REVISION,
+  MENSAJE_RESENA_EN_REVISION,
+} from "@/data/resenas";
 import {
   normalizarTexto,
   type ProductoViewModel,
@@ -176,6 +182,7 @@ export default function Home() {
   const [cargandoResenas, setCargandoResenas] = useState(true);
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState("");
+  const [avisoComentario, setAvisoComentario] = useState("");
   const [filtroComentarios, setFiltroComentarios] = useState("");
 
   const recargarProductosCatalogo = useCallback(async () => {
@@ -485,7 +492,8 @@ export default function Home() {
     [vistas],
   );
 
-  const totalProductosVerificados = useMemo(
+  // Productos activos del catálogo. TecReview no tiene un proceso de verificación de productos.
+  const totalProductosRegistrados = useMemo(
     () => productosBackend.filter((producto) => producto.estado !== false).length,
     [productosBackend],
   );
@@ -632,13 +640,19 @@ export default function Home() {
 
     setEnviandoComentario(true);
     setErrorComentario("");
+    setAvisoComentario("");
 
     try {
-      await crearResena({
+      const nueva = await crearResena({
         idProducto: Number(idProductoEfectivo),
         comentario: comentario.trim(),
       });
       setComentario("");
+      setAvisoComentario(
+        esResenaPublica(nueva)
+          ? "Tu opinión fue publicada."
+          : MENSAJE_RESENA_EN_REVISION,
+      );
       await cargarResenas();
     } catch (err) {
       setErrorComentario(
@@ -781,7 +795,7 @@ export default function Home() {
 
         <DestacadosHome
           productos={productosDestacados}
-          totalVerificados={totalProductosVerificados}
+          totalRegistrados={totalProductosRegistrados}
           totalMostrados={productosDestacados.length}
           cargando={cargandoApi}
           estadoBackend={estadoBackend}
@@ -834,15 +848,15 @@ export default function Home() {
           productos={productosBackend}
           enviando={enviandoComentario}
           error={errorComentario || null}
+          aviso={avisoComentario || null}
           onPublicar={manejarEnvioComentario}
           onPedirLogin={() => setModalAuthAbierto(true)}
-          onResenaEditada={(actualizada) =>
-            setResenas((previas) =>
-              previas.map((previa) =>
-                previa.idResena === actualizada.idResena ? actualizada : previa,
-              ),
-            )
-          }
+          onResenaEditada={(actualizada) => {
+            setResenas((previas) => aplicarResenaEditada(previas, actualizada));
+            if (!esResenaPublica(actualizada)) {
+              setAvisoComentario(MENSAJE_RESENA_EDITADA_EN_REVISION);
+            }
+          }}
           onResenaEliminada={(idResena) =>
             setResenas((previas) =>
               previas.filter((previa) => previa.idResena !== idResena),

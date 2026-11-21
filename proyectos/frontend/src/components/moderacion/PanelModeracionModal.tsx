@@ -16,6 +16,7 @@ import {
   rechazarReportesResenaReportada,
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomatica";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 
 interface PanelModeracionModalProps {
@@ -25,6 +26,7 @@ interface PanelModeracionModalProps {
 }
 
 type AccionModeracion = "ocultar" | "publicar" | "rechazar-reportes";
+type PestanaModeracion = "reportes" | "revision";
 
 function puedeRechazarReportes(resena: ResenaReportadaResponse): boolean {
   return (
@@ -80,6 +82,7 @@ export default function PanelModeracionModal({
   const autorizado = puedeModerar(usuarioSesion);
   const abierto = isOpen && autorizado;
 
+  const [pestana, setPestana] = useState<PestanaModeracion>("reportes");
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
@@ -125,6 +128,7 @@ export default function PanelModeracionModal({
     setMensajeExito(null);
     setJustificaciones({});
     setErrorJustificacion(null);
+    setPestana("reportes");
     onClose();
   }, [onClose]);
 
@@ -284,6 +288,50 @@ export default function PanelModeracionModal({
             ✕ Cerrar
           </button>
         </div>
+        <div
+          role="tablist"
+          aria-label="Colas de moderación"
+          className="mt-3 flex shrink-0 gap-1 border-b border-[var(--color-hairline)]"
+        >
+          {([
+            { id: "reportes", etiqueta: "Reseñas reportadas" },
+            { id: "revision", etiqueta: "Revisión automática" },
+          ] as const).map((opcion) => (
+            <button
+              key={opcion.id}
+              type="button"
+              role="tab"
+              id={`${tituloId}-tab-${opcion.id}`}
+              aria-selected={pestana === opcion.id}
+              aria-controls={`${tituloId}-panel-${opcion.id}`}
+              onClick={() => setPestana(opcion.id)}
+              className={`-mb-px cursor-pointer border-b-2 px-3 py-2 text-xs font-semibold transition-colors ${
+                pestana === opcion.id
+                  ? "border-[var(--color-brand-blue)] text-[var(--color-ink)]"
+                  : "border-transparent text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+              } ${CLASE_FOCO}`}
+            >
+              {opcion.etiqueta}
+            </button>
+          ))}
+        </div>
+
+        {pestana === "revision" ? (
+          <div
+            role="tabpanel"
+            id={`${tituloId}-panel-revision`}
+            aria-labelledby={`${tituloId}-tab-revision`}
+            className="overflow-y-auto pr-1"
+          >
+            <ColaRevisionAutomatica />
+          </div>
+        ) : (
+        <div
+          role="tabpanel"
+          id={`${tituloId}-panel-reportes`}
+          aria-labelledby={`${tituloId}-tab-reportes`}
+          className="flex min-h-0 flex-col"
+        >
         <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
           Esta cola incluye solo reseñas reportadas. Los reportes de precios y enlaces todavía no están integrados.
         </p>
@@ -547,6 +595,8 @@ export default function PanelModeracionModal({
             </ul>
           )}
         </div>
+        </div>
+        )}
       </div>
     </div>
   );

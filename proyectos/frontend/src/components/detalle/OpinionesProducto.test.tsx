@@ -351,7 +351,7 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
       /Escribe tu opinión sobre/i,
     ) as HTMLTextAreaElement;
 
-    fireEvent.change(area, { target: { value: "esto es una estafa" } });
+    fireEvent.change(area, { target: { value: "esto es una basura" } });
 
     expect(
       screen.getByText(
@@ -388,3 +388,78 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
     expect(mockCrear).not.toHaveBeenCalled();
   });
 });
+
+describe("OpinionesProducto — Reportes y revisión (Fase 1)", () => {
+  it("muestra «Reportar» en reseñas ajenas y no en la propia", () => {
+    renderComponente({ usuario: usuarioAutor, resenas: [resenaAna, resenaCarlos] });
+
+    const botones = screen.getAllByRole("button", { name: "Reportar reseña" });
+    expect(botones).toHaveLength(1);
+    expect(botones[0].closest("li")?.textContent).toContain("La pantalla es buena");
+  });
+
+  it("pide iniciar sesión al reportar sin cuenta", () => {
+    const onPedirLogin = vi.fn();
+    renderComponente({ usuario: null, resenas: [resenaCarlos], onPedirLogin });
+
+    fireEvent.click(screen.getByRole("button", { name: "Reportar reseña" }));
+
+    expect(onPedirLogin).toHaveBeenCalled();
+    expect(screen.queryByRole("dialog", { name: "Reportar reseña" })).toBeNull();
+  });
+
+  it("abre el formulario de reporte para un usuario autenticado", () => {
+    renderComponente({ usuario: usuarioOtro, resenas: [resenaAna] });
+
+    fireEvent.click(screen.getByRole("button", { name: "Reportar reseña" }));
+
+    expect(screen.getByRole("dialog", { name: "Reportar reseña" })).toBeDefined();
+  });
+
+  it("si la reseña nueva queda en revisión, avisa y no la muestra como publicada", async () => {
+    mockCrear.mockResolvedValueOnce({
+      ...resenaAna,
+      idResena: 50,
+      comentario: "Más barato en www.otra-tienda.com",
+      estadoModeracion: "PENDIENTE",
+    });
+    renderComponente({ usuario: usuarioAutor, resenas: [resenaCarlos] });
+
+    fireEvent.change(screen.getByLabelText(/Escribe tu opinión sobre/i), {
+      target: { value: "Más barato en www.otra-tienda.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Publicar opinión" }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Quedó en revisión y se publicará cuando un moderador la apruebe/)).toBeDefined();
+    });
+    expect(screen.queryByText("Más barato en www.otra-tienda.com")).toBeNull();
+    expect(screen.queryByText("Tu opinión fue publicada.")).toBeNull();
+  });
+
+  it("si una edición vuelve a revisión, la retira de la lista y avisa al autor", async () => {
+    const onResenaEliminada = vi.fn();
+    const onResenaEditada = vi.fn();
+    mockEditar.mockResolvedValueOnce({
+      ...resenaAna,
+      comentario: "Ver www.ejemplo.com",
+      estadoModeracion: "PENDIENTE",
+    });
+    renderComponente({ usuario: usuarioAutor, resenas: [resenaAna], onResenaEliminada, onResenaEditada });
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar reseña" }));
+    const form = screen.getByText("Editando tu opinión").closest("form")!;
+    fireEvent.change(within(form).getByLabelText("Editar comentario"), {
+      target: { value: "Ver www.ejemplo.com" },
+    });
+    fireEvent.click(within(form).getByRole("button", { name: "Guardar" }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Tu opinión quedó en revisión/)).toBeDefined();
+    });
+    expect(screen.queryByText("Excelente celular, muy rápido.")).toBeNull();
+    expect(onResenaEliminada).toHaveBeenCalledWith(1);
+    expect(onResenaEditada).not.toHaveBeenCalled();
+  });
+});
+

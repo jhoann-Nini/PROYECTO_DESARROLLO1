@@ -243,6 +243,7 @@ public class ResenaService {
         // El trigger BEFORE INSERT de PostgreSQL valida ese estado; el constraint trigger
         // diferido comprobará al COMMIT que la reseña cambió y coincide con la auditoría.
         ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setComentarioRevisado(resena.getComentario());
         evento.setResena(resena);
         evento.setModerador(actor);
         evento.setAccion(accion);

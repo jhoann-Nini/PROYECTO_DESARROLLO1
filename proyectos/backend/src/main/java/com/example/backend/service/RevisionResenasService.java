@@ -52,8 +52,11 @@ public class RevisionResenasService {
     public List<ResenaEnRevisionResponse> listarPendientes(Jwt jwt) {
         Usuario actor = usuarioService.obtenerUsuarioDesdeJwt(jwt);
         validarPermisoModeracion(actor);
+        // Caso 6: primero las de riesgo alto; dentro de cada nivel, el orden del repositorio.
         return resenaRepository.findPendientesDeRevision().stream()
                 .map(this::toResponse)
+                .sorted(java.util.Comparator.comparing(
+                        (ResenaEnRevisionResponse r) -> !"ALTO".equals(r.riesgo())))
                 .toList();
     }
 
@@ -105,6 +108,7 @@ public class RevisionResenasService {
 
         // Auditoría primero, mientras la reseña conserva el estado PENDIENTE.
         ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setComentarioRevisado(resena.getComentario());
         evento.setResena(resena);
         evento.setModerador(actor);
         evento.setAccion(accion);
@@ -118,6 +122,8 @@ public class RevisionResenasService {
     }
 
     private ResenaEnRevisionResponse toResponse(Resena resena) {
+        ResenaModerationService.ResultadoModeracion analisis =
+                resenaModerationService.analizar(resena.getComentario());
         return new ResenaEnRevisionResponse(
                 resena.getIdResena(),
                 resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,
@@ -130,7 +136,8 @@ public class RevisionResenasService {
                 resena.getEstadoModeracion(),
                 resena.getOcultaPorModeracion(),
                 resena.getOcultaPorReportes(),
-                resenaModerationService.detectarMotivos(resena.getComentario()));
+                analisis.motivos(),
+                analisis.riesgo().name());
     }
 
     private static String motivoOpcional(AccionModeracionRequest request, String porDefecto) {

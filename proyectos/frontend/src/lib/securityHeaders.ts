@@ -24,6 +24,12 @@ function normalizarOrigen(valor?: string | null): string | null {
   }
 }
 
+/**
+ * Cloudflare Turnstile (CAPTCHA de registro, inicio de sesión y recuperación)
+ * carga su script y su iframe desde este origen.
+ */
+export const ORIGEN_TURNSTILE = "https://challenges.cloudflare.com";
+
 function origenWebSocket(origen: string): string {
   return origen.replace(/^http:/, "ws:").replace(/^https:/, "wss:");
 }
@@ -64,7 +70,8 @@ export function construirCsp({
 
   const directivas = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline'${produccion ? "" : " 'unsafe-eval'"}`,
+    `script-src 'self' 'unsafe-inline'${produccion ? "" : " 'unsafe-eval'"} ${ORIGEN_TURNSTILE}`,
+    `frame-src ${ORIGEN_TURNSTILE}`,
     "style-src 'self' 'unsafe-inline'",
     `img-src ${imgSrc.join(" ")}`,
     "font-src 'self' data:",

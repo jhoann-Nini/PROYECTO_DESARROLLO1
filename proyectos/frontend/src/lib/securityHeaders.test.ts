@@ -66,7 +66,10 @@ describe("construirCsp", () => {
 
     expect(directiva(csp, "default-src")).toBe("default-src 'self'");
     expect(directiva(csp, "script-src")).toBe(
-      "script-src 'self' 'unsafe-inline'"
+      "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com"
+    );
+    expect(directiva(csp, "frame-src")).toBe(
+      "frame-src https://challenges.cloudflare.com"
     );
     expect(directiva(csp, "style-src")).toBe(
       "style-src 'self' 'unsafe-inline'"

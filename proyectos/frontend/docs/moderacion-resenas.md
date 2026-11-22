@@ -128,6 +128,37 @@ de `ResenaModerationService` en el backend. En la Fase 1 se retiraron `spam`,
 `estafa` y `fraude` (críticas legítimas de compra) y ambos lados revisan el
 texto tal cual y con sustituciones leet.
 
+### 3.2 Niveles de riesgo (Caso 6)
+
+El filtro es por reglas, sin IA. Clasifica cada comentario en cuatro niveles
+(`analizarComentario` en el frontend, `ResenaModerationService.analizar` en el
+backend):
+
+| Nivel | Qué detecta | Formulario | Backend |
+|---|---|---|---|
+| ninguno | — | publica | `PUBLICADA` |
+| bajo | palabras ambiguas sobre el producto («odio que la batería…», «este cargador es una basura») | aviso suave: «Puedes publicar, pero revisa el tono» | `PUBLICADA` |
+| medio | insultos y vulgaridades, palabras ambiguas dirigidas a una persona («eres una basura»), enlaces y texto repetido | pide corregir | `PENDIENTE` |
+| alto | amenazas o acoso («te voy a matar», «sé dónde vives») | pide corregir | `PENDIENTE`, primero en la cola con «Prioridad alta» |
+
+Normalización compartida: mayúsculas, tildes, NFKC (caracteres de ancho
+completo), homoglifos cirílicos y griegos, leet (`@ 4 $ 5 ! ¡ | 1 0 3 € 7 8 9`),
+separadores entre letras y letras repetidas («idiooooota»). Las letras
+repetidas se colapsan en el texto antes de comparar: un patrón con repeticiones
+anidadas desbordaba la pila del motor de expresiones regulares con textos
+largos.
+
+**Fuente de verdad:** `proyectos/fixtures/moderacion/corpus-moderacion.json`.
+Lo comprueban `resenas.corpus.test.ts` (frontend) y
+`ResenaModerationServiceCorpusTest` (backend): si una regla cambia en un lado y
+no en el otro, falla una de las dos suites. El archivo también lista las
+limitaciones conocidas (palabras pegadas, insultos fuera de la lista, otros
+idiomas, discriminación).
+
+Cada decisión de moderación guarda el texto revisado
+(`resena_moderacion_auditoria.comentario_revisado`, migración 024): lo copia el
+trigger de inserción, aunque el autor edite la reseña después.
+
 Pruebas: `ColaRevisionAutomatica.test.tsx`, la prueba de pestañas en
 `PanelModeracionModal.test.tsx` y el bloque «Reportes y revisión» de
 `OpinionesProducto.test.tsx`.

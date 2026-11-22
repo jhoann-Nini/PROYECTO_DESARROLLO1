@@ -12,8 +12,11 @@ La auditoría del 20 de noviembre de 2026 revisó las observaciones del profesor
 | 021 | Moderación de reportes de ofertas con historial append-only; registra 017 y 018 | Aplicada |
 | 022 | Enlace y fecha de actualización de las ofertas | Aplicada |
 | 023 | Revocar privilegios de la API pública (`anon`, `authenticated`, `PUBLIC`) | **Pendiente de aplicar** |
+| 024 | Texto revisado en la auditoría y suspensión de cuentas (Caso 6) | **Pendiente de aplicar** |
 
-Con `ddl-auto=validate`, el backend no arranca si falta una migración que usan sus entidades. La 023 no cambia la estructura: el backend funciona con o sin ella.
+Con `ddl-auto=validate`, el backend no arranca si falta una migración que usan sus entidades. La 023 no cambia la estructura: el backend funciona con o sin ella. **La 024 sí:** hay que aplicarla antes de desplegar el backend del Caso 6.
+
+El Caso 6 (moderación inteligente y antibots) se documenta aparte en `caso6-moderacion-antibots.md`.
 
 ## Hallazgos
 

@@ -139,6 +139,20 @@ class RevisionResenasIntegrationTest {
     }
 
     @Test
+    @DisplayName("Caso 6: las posibles amenazas van primero en la cola, con riesgo ALTO")
+    void amenazasPrimeroEnLaCola() throws Exception {
+        Resena insulto = resena("eres un idiota", EstadoModeracion.PENDIENTE);
+        Resena amenaza = resena("te voy a matar si no me devuelves el dinero", EstadoModeracion.PENDIENTE);
+
+        mockMvc.perform(get(BASE + "/en-revision").with(como(moderador)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].idResena").value(amenaza.getIdResena().intValue()))
+                .andExpect(jsonPath("$[0].riesgo").value("ALTO"))
+                .andExpect(jsonPath("$[0].motivosDeteccion[0]").value("Posible amenaza o acoso"))
+                .andExpect(jsonPath("$[?(@.idResena == " + insulto.getIdResena() + ")].riesgo").value("MEDIO"));
+    }
+
+    @Test
     @DisplayName("Aprobar publica la reseña y registra quién y cuándo")
     void aprobarPublicaYAudita() throws Exception {
         Resena pendiente = resena("Visita www.ejemplo.com", EstadoModeracion.PENDIENTE);
@@ -154,6 +168,8 @@ class RevisionResenasIntegrationTest {
         assertEquals(1, eventos.size());
         assertEquals("APROBAR", eventos.get(0).getAccion());
         assertEquals(moderador.getIdUsuario(), eventos.get(0).getModerador().getIdUsuario());
+        // Caso 6: queda registrado el texto que se revisó.
+        assertEquals("Visita www.ejemplo.com", eventos.get(0).getComentarioRevisado());
 
         mockMvc.perform(get("/api/productos/" + producto.getIdProducto() + "/resenas"))
                 .andExpect(jsonPath("$[*].idResena").value(hasItem(pendiente.getIdResena().intValue())));

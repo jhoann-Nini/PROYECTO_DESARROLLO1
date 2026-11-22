@@ -1209,6 +1209,21 @@ function cuerpoMotivoOpcional(motivo?: string): string | undefined {
 /**
  * Asigna o reactiva un rol a una cuenta. Requiere rol Administrador.
  */
+/**
+ * Caso 6: suspende (activo = false) o reactiva una cuenta. El motivo es
+ * obligatorio y queda auditado. Requiere rol Administrador.
+ */
+export async function cambiarEstadoCuenta(
+  usuarioId: number,
+  activo: boolean,
+  motivo: string,
+): Promise<UsuarioAdmin> {
+  return apiFetchAutenticado<UsuarioAdmin>(`/api/admin/usuarios/${usuarioId}/estado`, {
+    method: "PUT",
+    body: JSON.stringify({ activo, motivo: motivo.trim() }),
+  });
+}
+
 export async function asignarRolUsuario(
   usuarioId: number,
   rolId: number,

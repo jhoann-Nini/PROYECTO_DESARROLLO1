@@ -12,10 +12,11 @@ import {
   agregarResenaCreada,
   aplicarResenaEditada,
   contieneLenguajeNoPermitido,
+  MENSAJE_LENGUAJE_NO_PERMITIDO,
   esResenaPublica,
   MENSAJE_RESENA_EDITADA_EN_REVISION,
   MENSAJE_RESENA_EN_REVISION,
-  obtenerPalabrasDetectadas,
+  analizarComentario,
 } from "@/data/resenas";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
@@ -96,8 +97,8 @@ export default function OpinionesProducto({
   );
 
   // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
-  const terminosDetectados = useMemo(
-    () => obtenerPalabrasDetectadas(texto),
+  const riesgoComentario = useMemo(
+    () => analizarComentario(texto).riesgo,
     [texto],
   );
 
@@ -155,7 +156,7 @@ export default function OpinionesProducto({
 
     if (contieneLenguajeNoPermitido(texto)) {
       setErrorEnvio(
-        "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso.",
+        MENSAJE_LENGUAJE_NO_PERMITIDO,
       );
       return;
     }
@@ -223,7 +224,7 @@ export default function OpinionesProducto({
 
     if (contieneLenguajeNoPermitido(comentarioLimpio)) {
       setErrorEdicion(
-        "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso.",
+        MENSAJE_LENGUAJE_NO_PERMITIDO,
       );
       return;
     }
@@ -334,9 +335,7 @@ export default function OpinionesProducto({
           placeholder="Cuenta tu experiencia con el producto…"
           className="mt-2 w-full resize-y rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
         />
-        {terminosDetectados.length > 0 && (
-          <AvisoTerminosResena className="mt-2" />
-        )}
+        <AvisoTerminosResena riesgo={riesgoComentario} className="mt-2" />
 
         <div className="mt-2 flex items-center gap-2">
           <span className="text-xs font-medium text-[var(--color-subtle)]">

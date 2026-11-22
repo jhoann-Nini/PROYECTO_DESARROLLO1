@@ -49,7 +49,8 @@ public class AdministracionConsultasService {
                 .toList();
     }
 
-    private UsuarioAdminResponse toResponse(Usuario usuario) {
+    // Visibilidad de paquete: también la usa AdministracionCuentasService (Caso 6).
+    UsuarioAdminResponse toResponse(Usuario usuario) {
         List<String> rolesActivos = usuario.getRoles() == null ? List.of() :
                 usuario.getRoles().stream()
                         .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))

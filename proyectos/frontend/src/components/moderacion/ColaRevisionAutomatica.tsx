@@ -165,8 +165,15 @@ export default function ColaRevisionAutomatica() {
                       {typeof resena.puntuacion === "number" && ` · ${resena.puntuacion}/5`}
                     </p>
                   </div>
-                  <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
-                    En revisión
+                  <span className="flex flex-wrap gap-1">
+                    {resena.riesgo === "ALTO" && (
+                      <span className="rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-800">
+                        Prioridad alta
+                      </span>
+                    )}
+                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+                      En revisión
+                    </span>
                   </span>
                 </div>
 

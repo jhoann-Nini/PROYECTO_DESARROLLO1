@@ -24,7 +24,9 @@ class ResenaModerationServiceTest {
   @Test
   void debeDetectarPalabrasBloqueadas() {
     assertEstado("IDIOTA", EstadoModeracion.PENDIENTE);
-    assertEstado("inútil", EstadoModeracion.PENDIENTE);
+    // Caso 6: «inútil» es ambigua; solo se retiene si va dirigida a una persona.
+    assertEstado("inútil", EstadoModeracion.PUBLICADA);
+    assertEstado("eres un inútil", EstadoModeracion.PENDIENTE);
     assertEstado("ESTU-PIDO", EstadoModeracion.PENDIENTE);
     assertEstado("m i e r d a", EstadoModeracion.PENDIENTE);
     assertEstado("p.u.t.a experiencia", EstadoModeracion.PENDIENTE);
@@ -36,9 +38,35 @@ class ResenaModerationServiceTest {
   void debeDetectarEvasionesLeetComoElFrontend() {
     assertEstado("1diota", EstadoModeracion.PENDIENTE);
     assertEstado("m13rda de servicio", EstadoModeracion.PENDIENTE);
-    assertEstado("qué t1mo de tienda", EstadoModeracion.PENDIENTE);
-    assertEstado("b@sura", EstadoModeracion.PENDIENTE);
     assertEstado("cabr0n", EstadoModeracion.PENDIENTE);
+    // Caso 6: palabras ambiguas con leet se detectan, pero solo se retienen dirigidas.
+    assertRiesgo("qué t1mo de tienda", RiesgoModeracion.BAJO);
+    assertRiesgo("b@sura", RiesgoModeracion.BAJO);
+    assertEstado("eres una b@sura", EstadoModeracion.PENDIENTE);
+  }
+
+  @Test
+  void lasAmenazasTienenRiesgoAltoYMotivoPropio() {
+    ResenaModerationService.ResultadoModeracion resultado =
+      moderationService.analizar("te voy a matar si no me devuelves el dinero");
+    assertEquals(RiesgoModeracion.ALTO, resultado.riesgo());
+    assertEquals(java.util.List.of(ResenaModerationService.MOTIVO_AMENAZA), resultado.motivos());
+  }
+
+  @Test
+  void elRiesgoBajoNoInformaMotivosParaLaCola() {
+    assertEquals(java.util.List.of(), moderationService.detectarMotivos("odio que la batería dure tan poco"));
+    assertEquals(java.util.List.of(ResenaModerationService.MOTIVO_INSULTO_DIRIGIDO),
+      moderationService.detectarMotivos("eres un inútil"));
+  }
+
+  @Test
+  void noSeCuelgaConTextosAdversariosLargos() {
+    String adversario = "i" + "!".repeat(5000) + "x " + "i ".repeat(2000) + "d".repeat(3000);
+    long inicio = System.nanoTime();
+    moderationService.analizar(adversario);
+    long milisegundos = (System.nanoTime() - inicio) / 1_000_000;
+    org.junit.jupiter.api.Assertions.assertTrue(milisegundos < 2000, "tardó " + milisegundos + " ms");
   }
 
   @Test
@@ -132,6 +160,10 @@ class ResenaModerationServiceTest {
     assertEstado(null, EstadoModeracion.PUBLICADA);
     assertEstado("", EstadoModeracion.PUBLICADA);
     assertEstado("   ", EstadoModeracion.PUBLICADA);
+  }
+
+  private void assertRiesgo(String comentario, RiesgoModeracion esperado) {
+    assertEquals(esperado, moderationService.analizar(comentario).riesgo(), "Riesgo inesperado para: " + comentario);
   }
 
   private void assertEstado(

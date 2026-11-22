@@ -4,11 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { UsuarioSesion } from "@/types/producto";
 import { createClient } from "@/lib/supabase/client";
 import { obtenerMiPerfil, mapearPerfilABusinessSession } from "@/services/api";
+import TurnstileWidget, { TURNSTILE_SITE_KEY } from "@/components/ui/TurnstileWidget";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: (user: UsuarioSesion) => void;
+  /** Site key de Turnstile; por defecto, NEXT_PUBLIC_TURNSTILE_SITE_KEY. */
+  captchaSiteKey?: string;
 }
 
 const AUTH_REQUEST_TIMEOUT_MS = 20_000;
@@ -38,7 +41,12 @@ async function esperarRespuestaAuth<T>(
   }
 }
 
-export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  onLoginSuccess,
+  captchaSiteKey = TURNSTILE_SITE_KEY,
+}: AuthModalProps) {
   const [modo, setModo] = useState<"login" | "registro" | "recuperar">("login");
 
   // Formulario Login
@@ -58,8 +66,24 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
   const [exito, setExito] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  // CAPTCHA (Cloudflare Turnstile). Sin site key no se muestra ni se exige.
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaIntento, setCaptchaIntento] = useState(0);
+  const [captchaErrorCarga, setCaptchaErrorCarga] = useState(false);
+
+  /** Cada token sirve para un intento: se descarta y se monta un widget nuevo. */
+  const reiniciarCaptcha = useCallback(() => {
+    setCaptchaToken(null);
+    setCaptchaIntento((n) => n + 1);
+  }, []);
+
+  const cambiarModo = useCallback((nuevoModo: "login" | "registro" | "recuperar") => {
+    setModo(nuevoModo);
+    setCaptchaToken(null);
+  }, []);
+
   const manejarCierre = useCallback(() => {
-    setModo("login");
+    cambiarModo("login");
     setLoginEmail("");
     setLoginPassword("");
     setRegNombre("");
@@ -72,7 +96,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     setExito("");
     setCargando(false);
     onClose();
-  }, [onClose]);
+  }, [onClose, cambiarModo]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -86,6 +110,39 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
   if (!isOpen) return null;
 
+  const captchaActivo = Boolean(captchaSiteKey);
+
+  /** Devuelve false y muestra el motivo si falta completar el CAPTCHA. */
+  const captchaListo = (): boolean => {
+    if (!captchaActivo || captchaToken) return true;
+    setError(
+      captchaErrorCarga
+        ? "No se pudo cargar la verificación antibots. Recarga la página o desactiva el bloqueador de contenido para este sitio."
+        : "Completa la verificación «No soy un robot» antes de continuar.",
+    );
+    return false;
+  };
+
+  /** Opciones de Supabase con el token, solo cuando el CAPTCHA está activo. */
+  const opcionesCaptcha = () =>
+    captchaActivo && captchaToken ? { captchaToken } : {};
+
+  const esErrorCaptcha = (mensaje: string) => /captcha/i.test(mensaje);
+  const MENSAJE_ERROR_CAPTCHA =
+    "La verificación antibots falló o expiró. Complétala de nuevo e inténtalo otra vez.";
+
+  const widgetCaptcha = captchaActivo ? (
+    <TurnstileWidget
+      key={`${modo}-${captchaIntento}`}
+      siteKey={captchaSiteKey}
+      onToken={(token) => {
+        setCaptchaToken(token);
+        if (token) setCaptchaErrorCarga(false);
+      }}
+      onErrorCarga={() => setCaptchaErrorCarga(true)}
+    />
+  ) : null;
+
   const manejarLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -96,20 +153,25 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       return;
     }
 
+    if (!captchaListo()) return;
+
     let loginExitoso = false;
     setCargando(true);
     try {
       const supabase = createClient();
       const { data, error: authError } = await esperarRespuestaAuth(
         supabase.auth.signInWithPassword({
-        email: loginEmail.trim(),
-        password: loginPassword,
-      }),
-      "El inicio de sesión está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
+          email: loginEmail.trim(),
+          password: loginPassword,
+          options: opcionesCaptcha(),
+        }),
+        "El inicio de sesión está tardando demasiado. Verifica tu conexión e inténtalo nuevamente.",
       );
 
       if (authError) {
-        if (authError.message.includes("Invalid login credentials")) {
+        if (esErrorCaptcha(authError.message)) {
+          setError(MENSAJE_ERROR_CAPTCHA);
+        } else if (authError.message.includes("Invalid login credentials")) {
           setError("Credenciales incorrectas. Verifica tu correo y contraseña.");
         } else if (authError.message.includes("Email not confirmed")) {
           setError("Debes confirmar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.");
@@ -152,6 +214,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
     } finally {
       if (!loginExitoso) {
         setCargando(false);
+        if (captchaActivo) reiniciarCaptcha();
       }
     }
   };
@@ -181,6 +244,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       return;
     }
 
+    if (!captchaListo()) return;
+
     let registroExitoso = false;
     setCargando(true);
     try {
@@ -196,6 +261,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           password: regPassword,
           options: {
             emailRedirectTo: redirectUrl,
+            ...opcionesCaptcha(),
             data: {
               name: regNombre.trim(),
               full_name: regNombre.trim(),
@@ -208,7 +274,9 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       );
 
       if (authError) {
-        if (authError.message.includes("User already registered")) {
+        if (esErrorCaptcha(authError.message)) {
+          setError(MENSAJE_ERROR_CAPTCHA);
+        } else if (authError.message.includes("User already registered")) {
           setError("Ya existe una cuenta registrada con este correo electrónico.");
         } else if (authError.message.includes("Password should be at least 6 characters")) {
           setError("La contraseña debe tener al menos 6 caracteres.");
@@ -230,7 +298,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
         // El registro terminó: salir del formulario de creación para que nunca
         // permanezca visible el estado «Creando cuenta...».
         setCargando(false);
-        setModo("login");
+        cambiarModo("login");
         return;
       }
 
@@ -261,6 +329,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       const mensaje = err instanceof Error ? err.message : "Error al conectar con el servicio de autenticación.";
       setError(mensaje);
     } finally {
+      // El token ya se gastó, incluso si el registro terminó bien.
+      if (captchaActivo) reiniciarCaptcha();
       if (!registroExitoso) {
         setCargando(false);
       }
@@ -278,18 +348,25 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       return;
     }
 
+    if (!captchaListo()) return;
+
     setCargando(true);
     try {
       const supabase = createClient();
       const { error: recoveryError } = await esperarRespuestaAuth(
         supabase.auth.resetPasswordForEmail(correo, {
           redirectTo: `${window.location.origin}/auth/reset-password`,
+          ...opcionesCaptcha(),
         }),
         "La solicitud está tardando demasiado. Inténtalo nuevamente.",
       );
 
       if (recoveryError) {
-        setError("No fue posible solicitar la recuperación. Verifica el correo e inténtalo nuevamente.");
+        setError(
+          esErrorCaptcha(recoveryError.message ?? "")
+            ? MENSAJE_ERROR_CAPTCHA
+            : "No fue posible solicitar la recuperación. Verifica el correo e inténtalo nuevamente.",
+        );
         return;
       }
 
@@ -298,6 +375,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
       setError(err instanceof Error ? err.message : "No fue posible solicitar la recuperación.");
     } finally {
       setCargando(false);
+      if (captchaActivo) reiniciarCaptcha();
     }
   };
 
@@ -338,7 +416,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           <button
             type="button"
             onClick={() => {
-              setModo("login");
+              cambiarModo("login");
               setLoginEmail("");
               setLoginPassword("");
               setRegNombre("");
@@ -361,7 +439,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
           <button
             type="button"
             onClick={() => {
-              setModo("registro");
+              cambiarModo("registro");
               setLoginEmail("");
               setLoginPassword("");
               setRegNombre("");
@@ -442,7 +520,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               <button
                 type="button"
                 onClick={() => {
-                  setModo("recuperar");
+                  cambiarModo("recuperar");
                   setError("");
                   setExito("");
                 }}
@@ -451,6 +529,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
                 ¿Olvidaste tu contraseña?
               </button>
             </div>
+
+            {widgetCaptcha}
 
             <button
               type="submit"
@@ -486,6 +566,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
                 required
               />
             </div>
+            {widgetCaptcha}
             <button
               type="submit"
               disabled={cargando}
@@ -496,7 +577,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
             <button
               type="button"
               onClick={() => {
-                setModo("login");
+                cambiarModo("login");
                 setLoginEmail("");
                 setError("");
                 setExito("");
@@ -603,6 +684,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
               />
               <span>Acepto los términos de servicio y normas de la comunidad.</span>
             </label>
+
+            {widgetCaptcha}
 
             <button
               type="submit"

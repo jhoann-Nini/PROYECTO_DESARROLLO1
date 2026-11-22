@@ -743,12 +743,12 @@ describe("OpinionesHome", () => {
 
   it("muestra el aviso de revisión con términos bloqueados y no con falsos positivos", () => {
     const { rerender } = render(
-      <OpinionesHome {...propsBase} comentario="esto es un timo" />,
+      <OpinionesHome {...propsBase} comentario="esto es una mierda" />,
     );
 
     expect(
       screen.getByText(
-        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+        "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla.",
       ),
     ).toBeDefined();
 
@@ -760,7 +760,7 @@ describe("OpinionesHome", () => {
     );
 
     expect(
-      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+      screen.queryByText(/Tu opinión tiene lenguaje que no se permite/),
     ).toBeNull();
   });
 });

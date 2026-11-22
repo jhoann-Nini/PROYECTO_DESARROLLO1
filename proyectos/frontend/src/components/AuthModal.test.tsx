@@ -6,6 +6,7 @@ import AuthModal from "./AuthModal";
 const mockSignUp = vi.fn();
 const mockSignInWithPassword = vi.fn();
 const mockSignOut = vi.fn();
+const mockResetPasswordForEmail = vi.fn();
 const mockObtenerMiPerfil = vi.fn();
 
 vi.mock("@/lib/supabase/client", () => ({
@@ -14,6 +15,7 @@ vi.mock("@/lib/supabase/client", () => ({
       signUp: mockSignUp,
       signInWithPassword: mockSignInWithPassword,
       signOut: mockSignOut,
+      resetPasswordForEmail: mockResetPasswordForEmail,
     },
   }),
 }));
@@ -25,6 +27,16 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerMiPerfil: (...args: unknown[]) => mockObtenerMiPerfil(...args),
   };
 });
+
+// Sustituye el widget real de Cloudflare: un botón entrega un token de prueba.
+vi.mock("@/components/ui/TurnstileWidget", () => ({
+  TURNSTILE_SITE_KEY: "",
+  default: ({ onToken }: { onToken: (token: string | null) => void }) => (
+    <button type="button" onClick={() => onToken("token-captcha-prueba")}>
+      Completar CAPTCHA de prueba
+    </button>
+  ),
+}));
 
 describe("Componente AuthModal", () => {
   beforeEach(() => {
@@ -239,5 +251,134 @@ describe("Componente AuthModal", () => {
     fireEvent.click(successBtn);
     expect(mockSignInWithPassword).toHaveBeenCalledTimes(1);
     expect(mockObtenerMiPerfil).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("AuthModal con CAPTCHA (Cloudflare Turnstile)", () => {
+  const SITE_KEY = "site-key-de-prueba";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  function completarLogin() {
+    fireEvent.change(screen.getByPlaceholderText(/ejemplo@tecreview.com/i), {
+      target: { value: "captcha@tecreview.com" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/••••••••/i), {
+      target: { value: "Password123!" },
+    });
+  }
+
+  it("sin site key no muestra el CAPTCHA ni envía captchaToken", async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: "Invalid login credentials" },
+    });
+    render(<AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} />);
+
+    expect(screen.queryByRole("button", { name: /Completar CAPTCHA/i })).toBeNull();
+    completarLogin();
+    fireEvent.click(screen.getByRole("button", { name: /Entrar a TecReview/i }));
+
+    await waitFor(() => expect(mockSignInWithPassword).toHaveBeenCalledTimes(1));
+    expect(mockSignInWithPassword.mock.calls[0][0].options).toEqual({});
+  });
+
+  it("no inicia sesión hasta completar el CAPTCHA", async () => {
+    render(
+      <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} captchaSiteKey={SITE_KEY} />,
+    );
+    completarLogin();
+    fireEvent.click(screen.getByRole("button", { name: /Entrar a TecReview/i }));
+
+    expect(await screen.findByText(/Completa la verificación «No soy un robot»/i)).toBeDefined();
+    expect(mockSignInWithPassword).not.toHaveBeenCalled();
+  });
+
+  it("envía el token a signInWithPassword", async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: "Invalid login credentials" },
+    });
+    render(
+      <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} captchaSiteKey={SITE_KEY} />,
+    );
+    completarLogin();
+    fireEvent.click(screen.getByRole("button", { name: /Completar CAPTCHA/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Entrar a TecReview/i }));
+
+    await waitFor(() => expect(mockSignInWithPassword).toHaveBeenCalledTimes(1));
+    expect(mockSignInWithPassword.mock.calls[0][0].options).toEqual({
+      captchaToken: "token-captcha-prueba",
+    });
+  });
+
+  it("si Supabase rechaza el CAPTCHA, lo explica y exige uno nuevo", async () => {
+    mockSignInWithPassword.mockResolvedValueOnce({
+      data: { user: null, session: null },
+      error: { message: "captcha protection: request disallowed (timeout-or-duplicate)" },
+    });
+    render(
+      <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} captchaSiteKey={SITE_KEY} />,
+    );
+    completarLogin();
+    fireEvent.click(screen.getByRole("button", { name: /Completar CAPTCHA/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Entrar a TecReview/i }));
+
+    expect(await screen.findByText(/La verificación antibots falló o expiró/i)).toBeDefined();
+
+    // El token ya se gastó: un segundo intento sin completar el CAPTCHA se detiene.
+    fireEvent.click(screen.getByRole("button", { name: /Entrar a TecReview/i }));
+    expect(await screen.findByText(/Completa la verificación «No soy un robot»/i)).toBeDefined();
+    expect(mockSignInWithPassword).toHaveBeenCalledTimes(1);
+  });
+
+  it("envía el token a signUp", async () => {
+    mockSignUp.mockResolvedValueOnce({
+      data: { user: { id: "usr_captcha" }, session: null },
+      error: null,
+    });
+    render(
+      <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} captchaSiteKey={SITE_KEY} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Crear cuenta/i }));
+    fireEvent.change(screen.getByPlaceholderText(/Ej. Adrian Gómez/i), { target: { value: "Ana" } });
+    fireEvent.change(screen.getByPlaceholderText(/adriang/i), { target: { value: "ana" } });
+    fireEvent.change(screen.getByPlaceholderText(/adrian@mail.com/i), {
+      target: { value: "ana@example.com" },
+    });
+    const claves = screen.getAllByPlaceholderText(/••••••••/i);
+    fireEvent.change(claves[0], { target: { value: "Password123!" } });
+    fireEvent.change(claves[1], { target: { value: "Password123!" } });
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: /Completar CAPTCHA/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Crear mi cuenta/i }));
+
+    await waitFor(() => expect(mockSignUp).toHaveBeenCalledTimes(1));
+    expect(mockSignUp.mock.calls[0][0].options.captchaToken).toBe("token-captcha-prueba");
+    expect(mockSignUp.mock.calls[0][0].options.emailRedirectTo).toContain("/auth/callback");
+  });
+
+  it("envía el token a resetPasswordForEmail", async () => {
+    mockResetPasswordForEmail.mockResolvedValueOnce({ data: {}, error: null });
+    render(
+      <AuthModal isOpen={true} onClose={() => {}} onLoginSuccess={() => {}} captchaSiteKey={SITE_KEY} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /¿Olvidaste tu contraseña?/i }));
+    fireEvent.change(screen.getByLabelText(/Correo electrónico/i), {
+      target: { value: "olvido@example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Completar CAPTCHA/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Enviar enlace de recuperación/i }));
+
+    await waitFor(() => expect(mockResetPasswordForEmail).toHaveBeenCalledTimes(1));
+    expect(mockResetPasswordForEmail.mock.calls[0][0]).toBe("olvido@example.com");
+    expect(mockResetPasswordForEmail.mock.calls[0][1].captchaToken).toBe("token-captcha-prueba");
   });
 });

@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import type { ResenaResponse } from "@/services/api";
-import { obtenerPalabrasDetectadas } from "@/data/resenas";
+import { analizarComentario } from "@/data/resenas";
 import EditarResena from "@/app/resenas/EditarResena";
 import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
@@ -57,8 +57,8 @@ export default function OpinionesHome({
     () => new Set(),
   );
   // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
-  const terminosDetectados = useMemo(
-    () => obtenerPalabrasDetectadas(comentario),
+  const riesgoComentario = useMemo(
+    () => analizarComentario(comentario).riesgo,
     [comentario],
   );
 
@@ -173,9 +173,7 @@ export default function OpinionesHome({
               </button>
             </div>
           </div>
-          {terminosDetectados.length > 0 && (
-            <AvisoTerminosResena className="mt-2" />
-          )}
+          <AvisoTerminosResena riesgo={riesgoComentario} className="mt-2" />
           {error && (
             <p className="mt-2 text-xs text-[var(--color-ink)]" role="alert">
               ⚠️ {error}

@@ -440,6 +440,7 @@ public class ReporteResenaService {
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
         ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setComentarioRevisado(resena.getComentario());
         evento.setResena(resena);
         evento.setModerador(actor);
         evento.setAccion("OCULTAR");
@@ -498,6 +499,7 @@ public class ReporteResenaService {
 
         // Registrar auditoría con saveAndFlush antes de modificar la reseña
         ResenaModeracionAuditoria evento = new ResenaModeracionAuditoria();
+        evento.setComentarioRevisado(resena.getComentario());
         evento.setResena(resena);
         evento.setModerador(actor);
         evento.setAccion("RESTAURAR");

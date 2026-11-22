@@ -29,6 +29,14 @@ public class ResenaModeracionAuditoria {
     @Column(name = "fecha_evento", nullable = false, updatable = false)
     private LocalDateTime fechaEvento = LocalDateTime.now();
 
+    /**
+     * Caso 6 (migración 024): comentario en el momento de la decisión. En
+     * PostgreSQL lo fija el trigger de inserción; la aplicación lo envía igual
+     * para donde no hay trigger (H2 en pruebas).
+     */
+    @Column(name = "comentario_revisado", columnDefinition = "TEXT", updatable = false)
+    private String comentarioRevisado;
+
     public Long getIdAuditoria() { return idAuditoria; }
     public void setIdAuditoria(Long idAuditoria) { this.idAuditoria = idAuditoria; }
     public Resena getResena() { return resena; }
@@ -41,4 +49,6 @@ public class ResenaModeracionAuditoria {
     public void setMotivo(String motivo) { this.motivo = motivo; }
     public LocalDateTime getFechaEvento() { return fechaEvento; }
     public void setFechaEvento(LocalDateTime fechaEvento) { this.fechaEvento = fechaEvento; }
+    public String getComentarioRevisado() { return comentarioRevisado; }
+    public void setComentarioRevisado(String comentarioRevisado) { this.comentarioRevisado = comentarioRevisado; }
 }

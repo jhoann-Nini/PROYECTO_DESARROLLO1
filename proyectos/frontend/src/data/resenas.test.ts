@@ -105,7 +105,11 @@ describe("obtenerPalabrasDetectadas", () => {
   it("mantiene contieneLenguajeNoPermitido alineado con el detector", () => {
     expect(contieneLenguajeNoPermitido("computadora")).toBe(false);
     expect(contieneLenguajeNoPermitido("último")).toBe(false);
-    expect(contieneLenguajeNoPermitido("esto es una basura")).toBe(true);
+    // Caso 6: una palabra ambigua sobre el producto no impide publicar;
+    // un insulto o la misma palabra dirigida a una persona, sí.
+    expect(contieneLenguajeNoPermitido("esto es una basura")).toBe(false);
+    expect(contieneLenguajeNoPermitido("eres una basura")).toBe(true);
+    expect(contieneLenguajeNoPermitido("esto es una mierda")).toBe(true);
   });
 });
 

@@ -24,7 +24,11 @@ La aplicación se sirve de forma estática y no usa nonces. Aplicar nonces
 obligaría a renderizar dinámicamente todas las páginas y a perder el caché de
 CDN, por lo que se siguió la guía incluida en Next.js para CSP sin nonces:
 
-- `script-src 'self' 'unsafe-inline'` y `style-src 'self' 'unsafe-inline'`.
+- `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com` y
+  `style-src 'self' 'unsafe-inline'`.
+- `frame-src https://challenges.cloudflare.com`: el CAPTCHA de Cloudflare
+  Turnstile (`AuthModal`) carga su script y su iframe desde ese origen. Es el
+  único origen externo permitido para scripts e iframes.
   Next.js inyecta scripts y estilos inline durante la hidratación.
 - `script-src` añade `'unsafe-eval'` únicamente en desarrollo porque React lo
   necesita para la depuración.
@@ -53,7 +57,8 @@ Los orígenes configurables se toman de `NEXT_PUBLIC_API_URL` y
 - `font-src` se limita a `'self'` y `data:`: `next/font/google` descarga y
   sirve las fuentes desde el propio dominio en tiempo de build.
 - `frame-ancestors 'none'` y `X-Frame-Options: DENY` bloquean el embebido en
-  iframes. No hay iframes propios ni integraciones que los necesiten.
+  iframes. Esto impide que otros sitios embeban TecReview; no afecta al iframe
+  de Turnstile, que TecReview embebe y se autoriza con `frame-src`.
 
 ## HSTS y dominio de despliegue
 

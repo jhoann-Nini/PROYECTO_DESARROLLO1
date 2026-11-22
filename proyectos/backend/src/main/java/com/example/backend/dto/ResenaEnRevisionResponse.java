@@ -21,5 +21,7 @@ public record ResenaEnRevisionResponse(
         EstadoModeracion estadoModeracion,
         Boolean ocultaPorModeracion,
         Boolean ocultaPorReportes,
-        List<String> motivosDeteccion
+        List<String> motivosDeteccion,
+        // Caso 6: MEDIO o ALTO. ALTO (posible amenaza o acoso) va primero en la cola.
+        String riesgo
 ) {}

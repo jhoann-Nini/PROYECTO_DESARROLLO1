@@ -25,6 +25,8 @@ export interface ResenaEnRevisionResponse {
   ocultaPorReportes?: boolean;
   /** Por qué el filtro la retuvo (enlace, lenguaje no permitido, texto repetido). */
   motivosDeteccion: string[];
+  /** Caso 6: nivel de riesgo del filtro. ALTO (posible amenaza o acoso) va primero. */
+  riesgo?: "NINGUNO" | "BAJO" | "MEDIO" | "ALTO";
 }
 
 export type EstadoReporte =

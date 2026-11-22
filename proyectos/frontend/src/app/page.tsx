@@ -33,6 +33,7 @@ import { seleccionarDestacados } from "@/data/destacados";
 import {
   aplicarResenaEditada,
   contieneLenguajeNoPermitido,
+  MENSAJE_LENGUAJE_NO_PERMITIDO,
   esResenaPublica,
   MENSAJE_RESENA_EDITADA_EN_REVISION,
   MENSAJE_RESENA_EN_REVISION,
@@ -646,7 +647,7 @@ export default function Home() {
 
     if (contieneLenguajeNoPermitido(comentario)) {
       setErrorComentario(
-        "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso.",
+        MENSAJE_LENGUAJE_NO_PERMITIDO,
       );
       return;
     }

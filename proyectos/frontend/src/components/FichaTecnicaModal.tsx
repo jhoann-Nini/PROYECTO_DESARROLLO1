@@ -13,9 +13,10 @@ import FichaTecnicaV2Panel from "@/components/FichaTecnicaV2Panel";
 import {
   agregarResenaCreada,
   contieneLenguajeNoPermitido,
+  MENSAJE_LENGUAJE_NO_PERMITIDO,
   esResenaPublica,
   MENSAJE_RESENA_EN_REVISION,
-  obtenerPalabrasDetectadas,
+  analizarComentario,
 } from "@/data/resenas";
 import {
   obtenerMiValoracion,
@@ -82,8 +83,8 @@ export default function FichaTecnicaModal({
   const [pestanaSeleccionada, setPestanaSeleccionada] = useState<string | null>(null);
 
   // Aviso preventivo (TEC-98): informa mientras se escribe, sin borrar texto.
-  const terminosDetectados = useMemo(
-    () => obtenerPalabrasDetectadas(nuevaResenaTexto),
+  const riesgoComentario = useMemo(
+    () => analizarComentario(nuevaResenaTexto).riesgo,
     [nuevaResenaTexto],
   );
 
@@ -212,7 +213,7 @@ export default function FichaTecnicaModal({
 
     if (contieneLenguajeNoPermitido(nuevaResenaTexto)) {
       setErrorResena(
-        "El comentario contiene palabras no permitidas. Por favor mantén un lenguaje respetuoso."
+        MENSAJE_LENGUAJE_NO_PERMITIDO
       );
       return;
     }
@@ -939,9 +940,7 @@ export default function FichaTecnicaModal({
                           placeholder={`Comparte tu experiencia con ${ficha.nombre}...`}
                           className="w-full resize-none rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30 sm:text-sm"
                         />
-                        {terminosDetectados.length > 0 && (
-                          <AvisoTerminosResena />
-                        )}
+                        <AvisoTerminosResena riesgo={riesgoComentario} />
                         {errorResena && (
                           <p className="text-xs text-red-700 font-medium" role="alert">
                             ⚠️ {errorResena}

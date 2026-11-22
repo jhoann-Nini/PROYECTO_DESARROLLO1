@@ -105,6 +105,7 @@ backend/
 | Oferta (admin)   | PUT    | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.3) |
 | Oferta (admin)   | DELETE | `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | Administrador (§32.4) |
 | Resumen de ofertas | GET  | `/api/productos/resumen-ofertas`   | Público (§32.5) |
+| Estado de una cuenta | PUT | `/api/admin/usuarios/{id}/estado` | Administrador (§33.2) |
 
 # 3. Arquitectura de la API
 
@@ -1697,4 +1698,31 @@ Una oferta (`producto_establecimiento`) es el precio, la disponibilidad y el enl
   [{ "idProducto": 3, "tiendasDisponibles": 2, "menorPrecio": 89000.00, "fechaActualizacionMasReciente": "2026-11-20T10:00:00" }]
   ```
   Un producto que no aparece no tiene ofertas disponibles. El frontend lo usa para mostrar la disponibilidad real en el catálogo y el comparador con una sola consulta.
+
+---
+
+# 33. Moderación inteligente y suspensión de cuentas (Caso 6, migración 024)
+
+## 33.1 Niveles de riesgo del filtro automático
+Al crear o editar una reseña (`POST /api/resenas`, `PUT /api/resenas/{id}`), el filtro por reglas asigna un nivel:
+- `NINGUNO` y `BAJO` → `estadoModeracion: "PUBLICADA"`. `BAJO` son palabras ambiguas sobre el producto («odio que la batería…»).
+- `MEDIO` → `PENDIENTE`: insultos, vulgaridades, palabras ambiguas dirigidas a una persona, enlaces, texto repetido.
+- `ALTO` → `PENDIENTE`: posibles amenazas o acoso.
+
+`GET /api/moderacion/resenas/en-revision` (§30.1) añade el campo `riesgo` (`MEDIO` o `ALTO`) y ordena primero las de riesgo `ALTO`. El motivo nuevo `Posible amenaza o acoso` aparece en `motivosDeteccion`, y también `Contiene un insulto dirigido a una persona`.
+
+El historial de moderación de una reseña (`resena_moderacion_auditoria`) guarda `comentario_revisado`: el texto en el momento de cada decisión, copiado por PostgreSQL.
+
+## 33.2 Suspender o reactivar una cuenta
+- **Ruta:** `PUT /api/admin/usuarios/{idUsuario}/estado` (requiere rol `Administrador` activo)
+- **Cuerpo:** `{ "activo": false, "motivo": "Insultos reiterados" }`. `activo` es obligatorio; `motivo` es obligatorio, máximo 2000 caracteres.
+- Una cuenta suspendida no puede publicar reseñas, reportar ni moderar (esas validaciones ya existían).
+- Cada cambio queda en `auditoria_usuario_estado`, de solo inserción: administrador, estado anterior y nuevo, motivo y fecha. PostgreSQL exige el evento en la misma transacción.
+- **Respuesta `200`:** `UsuarioAdminResponse` con `activo` actualizado.
+- **Errores:**
+  - `400` falta `activo` o el motivo está vacío;
+  - `401`;
+  - `403` sin rol de administrador, o intento de cambiar la propia cuenta;
+  - `404` cuenta inexistente;
+  - `409` `La cuenta ya está activa.` / `La cuenta ya está suspendida.` / `No se puede suspender a un administrador activo; primero retira su rol.`
 

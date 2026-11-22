@@ -60,6 +60,7 @@ Los identificadores son nombres conceptuales recomendados; no implican que ya ex
 **Responsabilidad:** administración global y supervisión de TecReview.
 
 Puede:
+- Suspender o reactivar cuentas con motivo obligatorio y auditado (Caso 6, `PUT /api/admin/usuarios/{id}/estado`). No puede cambiar su propia cuenta ni suspender a otro administrador activo sin retirarle antes el rol.
 - Consultar el catálogo y sus datos de referencia.
 - Crear, consultar, actualizar y desactivar productos globales.
 - Crear, consultar, actualizar y desactivar categorías y marcas.

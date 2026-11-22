@@ -19,6 +19,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     revocarRolUsuario: vi.fn(),
     asignarRepresentante: vi.fn(),
     revocarRepresentante: vi.fn(),
+    cambiarEstadoCuenta: vi.fn(),
   };
 });
 
@@ -26,6 +27,7 @@ import {
   ApiError,
   asignarRepresentante,
   asignarRolUsuario,
+  cambiarEstadoCuenta,
   obtenerEstablecimientos,
   obtenerRolesAdmin,
   obtenerUsuariosAdmin,
@@ -41,6 +43,7 @@ const mockAsignarRol = vi.mocked(asignarRolUsuario);
 const mockRevocarRol = vi.mocked(revocarRolUsuario);
 const mockAsignarRepresentante = vi.mocked(asignarRepresentante);
 const mockRevocarRepresentante = vi.mocked(revocarRepresentante);
+const mockCambiarEstado = vi.mocked(cambiarEstadoCuenta);
 
 const USUARIO = {
   idUsuario: 12,
@@ -176,6 +179,43 @@ describe("AdminUsuariosRoles", () => {
     await waitFor(() => {
       expect(mockUsuarios).toHaveBeenLastCalledWith("maria@ejemplo.com");
     });
+  });
+
+  // Caso 6: suspensión auditada de cuentas.
+  it("exige motivo para suspender y no llama a la API sin él", async () => {
+    await renderizarYSeleccionar();
+
+    fireEvent.click(screen.getByRole("button", { name: "Suspender cuenta" }));
+
+    expect(await screen.findByText("Escribe el motivo de la suspensión.")).toBeDefined();
+    expect(mockCambiarEstado).not.toHaveBeenCalled();
+  });
+
+  it("suspende la cuenta con motivo y recarga las cuentas", async () => {
+    mockCambiarEstado.mockResolvedValueOnce({ ...USUARIO, activo: false });
+    await renderizarYSeleccionar();
+
+    fireEvent.change(screen.getByLabelText("Motivo (obligatorio)"), {
+      target: { value: "Insultos reiterados" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Suspender cuenta" }));
+
+    await waitFor(() => {
+      expect(mockCambiarEstado).toHaveBeenCalledWith(12, false, "Insultos reiterados");
+    });
+    expect(await screen.findByText("Cuenta suspendida.")).toBeDefined();
+  });
+
+  it("muestra el error del backend al intentar suspender a un administrador", async () => {
+    mockCambiarEstado.mockRejectedValueOnce(
+      new ApiError("No se puede suspender a un administrador activo; primero retira su rol.", 409),
+    );
+    await renderizarYSeleccionar();
+
+    fireEvent.change(screen.getByLabelText("Motivo (obligatorio)"), { target: { value: "x" } });
+    fireEvent.click(screen.getByRole("button", { name: "Suspender cuenta" }));
+
+    expect(await screen.findByText(/primero retira su rol/)).toBeDefined();
   });
 
   it("asigna un rol con motivo y recarga las cuentas", async () => {

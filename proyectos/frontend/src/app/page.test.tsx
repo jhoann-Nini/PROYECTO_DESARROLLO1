@@ -706,13 +706,13 @@ describe("Página principal / (Home)", () => {
       ) as HTMLInputElement;
 
       fireEvent.change(inputComentario, {
-        target: { value: "esto es un timo" },
+        target: { value: "esto es una mierda" },
       });
 
-      expect(inputComentario.value).toBe("esto es un timo");
+      expect(inputComentario.value).toBe("esto es una mierda");
       expect(
         screen.getByText(
-          "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+          "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla.",
         ),
       ).toBeDefined();
 
@@ -722,7 +722,7 @@ describe("Página principal / (Home)", () => {
 
       expect(inputComentario.value).toBe("la computadora y el último pedido");
       expect(
-        screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+        screen.queryByText(/Tu opinión tiene lenguaje que no se permite/),
       ).toBeNull();
     });
 
@@ -774,7 +774,7 @@ describe("Página principal / (Home)", () => {
       ) as HTMLInputElement;
 
       fireEvent.change(inputComentario, {
-        target: { value: "esto es una basura" },
+        target: { value: "esto es una mierda" },
       });
       fireEvent.click(
         screen.getByRole("button", { name: /Publicar opinión/i }),
@@ -782,11 +782,11 @@ describe("Página principal / (Home)", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(/El comentario contiene palabras no permitidas/i),
+          screen.getByText(/No pudimos publicar tu opinión: corrige el lenguaje/i),
         ).toBeDefined();
       });
 
-      expect(inputComentario.value).toBe("esto es una basura");
+      expect(inputComentario.value).toBe("esto es una mierda");
       expect(mockCrearResena).not.toHaveBeenCalled();
     });
   });

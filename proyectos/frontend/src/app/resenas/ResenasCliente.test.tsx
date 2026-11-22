@@ -372,15 +372,15 @@ describe("ResenasCliente", () => {
     });
 
     fireEvent.change(screen.getByLabelText("Tu reseña"), {
-      target: { value: "no simplemente hace esto es un timo" },
+      target: { value: "no simplemente hace esto es una mierda" },
     });
 
     const aviso = screen
       .getAllByRole("status")
-      .find((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+      .find((elemento) => (elemento.textContent ?? "").startsWith("Tu opinión tiene lenguaje"))
       ;
     expect(aviso?.textContent).toBe(
-      "Tu reseña contiene términos que requieren revisión antes de publicarse."
+      "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla."
     );
   });
 
@@ -393,18 +393,18 @@ describe("ResenasCliente", () => {
     });
 
     const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
-    fireEvent.change(area, { target: { value: "esto es un timo" } });
+    fireEvent.change(area, { target: { value: "esto es una mierda" } });
     expect(
       screen
         .getAllByRole("status")
-        .some((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña")),
+        .some((elemento) => (elemento.textContent ?? "").startsWith("Tu opinión tiene lenguaje")),
     ).toBe(true);
 
     fireEvent.change(area, { target: { value: "excelente producto" } });
     expect(
       screen
         .queryAllByRole("status")
-        .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu reseña"))
+        .filter((elemento) => (elemento.textContent ?? "").startsWith("Tu opinión tiene lenguaje"))
         .length,
     ).toBe(0);
   });
@@ -425,14 +425,14 @@ describe("ResenasCliente", () => {
     });
 
     expect(
-      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+      screen.queryByText(/Tu opinión tiene lenguaje que no se permite/),
     ).toBeNull();
 
-    fireEvent.change(area, { target: { value: "esto es una basura" } });
+    fireEvent.change(area, { target: { value: "esto es una mierda" } });
 
     expect(
       screen.getByText(
-        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+        "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla.",
       ),
     ).toBeDefined();
   });
@@ -451,16 +451,16 @@ describe("ResenasCliente", () => {
     });
 
     const area = screen.getByLabelText("Tu reseña") as HTMLTextAreaElement;
-    fireEvent.change(area, { target: { value: "esto es una basura" } });
+    fireEvent.change(area, { target: { value: "esto es una mierda" } });
     fireEvent.click(screen.getByRole("button", { name: "Publicar reseña" }));
 
     await waitFor(() => {
       expect(
-        screen.getByText(/El comentario contiene palabras no permitidas/i),
+        screen.getByText(/No pudimos publicar tu opinión: corrige el lenguaje/i),
       ).toBeDefined();
     });
 
-    expect(area.value).toBe("esto es una basura");
+    expect(area.value).toBe("esto es una mierda");
     expect(mockCrear).not.toHaveBeenCalled();
   });
 

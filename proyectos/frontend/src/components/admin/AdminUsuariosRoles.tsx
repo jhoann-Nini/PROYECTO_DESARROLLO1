@@ -7,6 +7,7 @@ import {
   ApiError,
   asignarRepresentante,
   asignarRolUsuario,
+  cambiarEstadoCuenta,
   obtenerEstablecimientos,
   obtenerRolesAdmin,
   obtenerUsuariosAdmin,
@@ -55,6 +56,7 @@ export default function AdminUsuariosRoles() {
   const [establecimientoSeleccionado, setEstablecimientoSeleccionado] =
     useState("");
   const [motivo, setMotivo] = useState("");
+  const [motivoEstado, setMotivoEstado] = useState("");
 
   const [operacionEnCurso, setOperacionEnCurso] = useState(false);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
@@ -186,6 +188,25 @@ export default function AdminUsuariosRoles() {
     } finally {
       setOperacionEnCurso(false);
     }
+  }
+
+  // Caso 6: suspender o reactivar la cuenta, con motivo obligatorio.
+  function cambiarEstado() {
+    if (!seleccionado) return;
+    if (!motivoEstado.trim()) {
+      setMensajeExito(null);
+      setErrorAccion(
+        seleccionado.activo
+          ? "Escribe el motivo de la suspensión."
+          : "Escribe el motivo de la reactivación.",
+      );
+      return;
+    }
+    const activar = !seleccionado.activo;
+    void ejecutarAccion(async () => {
+      await cambiarEstadoCuenta(seleccionado.idUsuario, activar, motivoEstado);
+      setMotivoEstado("");
+    }, activar ? "Cuenta reactivada." : "Cuenta suspendida.");
   }
 
   function asignarRol() {
@@ -377,7 +398,7 @@ export default function AdminUsuariosRoles() {
                       {usuario.rol || "Sin rol principal"}
                     </p>
                     <p className="text-xs text-[var(--color-subtle)]">
-                      {usuario.activo ? "Cuenta activa" : "Cuenta inactiva"}
+                      {usuario.activo ? "Cuenta activa" : "Cuenta suspendida"}
                     </p>
                     <button
                       type="button"
@@ -503,6 +524,43 @@ export default function AdminUsuariosRoles() {
                     className={`mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                   >
                     Asignar rol
+                  </button>
+                </div>
+
+                <div className="rounded-lg border border-[var(--color-hairline)] p-3">
+                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                    Estado de la cuenta: {seleccionado.activo ? "activa" : "suspendida"}
+                  </p>
+                  <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                    Una cuenta suspendida no puede publicar reseñas, reportar ni moderar.
+                    Para suspender a un administrador, primero retira su rol.
+                  </p>
+                  <label
+                    htmlFor="admin-motivo-estado"
+                    className="mt-3 block text-xs font-medium text-[var(--color-subtle)]"
+                  >
+                    Motivo (obligatorio)
+                    <input
+                      id="admin-motivo-estado"
+                      type="text"
+                      value={motivoEstado}
+                      onChange={(evento) => setMotivoEstado(evento.target.value)}
+                      maxLength={2000}
+                      placeholder={seleccionado.activo ? "Por qué se suspende la cuenta" : "Por qué se reactiva la cuenta"}
+                      className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={cambiarEstado}
+                    disabled={operacionEnCurso}
+                    className={`mt-3 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                      seleccionado.activo
+                        ? "border-red-200 text-red-700 hover:border-red-400 hover:bg-red-50"
+                        : "border-[var(--color-hairline)] text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)]"
+                    } ${CLASE_FOCO}`}
+                  >
+                    {seleccionado.activo ? "Suspender cuenta" : "Reactivar cuenta"}
                   </button>
                 </div>
 

@@ -1,15 +1,26 @@
+import type { RiesgoModeracion } from "@/data/resenas";
+
 interface AvisoTerminosResenaProps {
+  /** Nivel del filtro. «ninguno» no muestra nada. */
+  riesgo?: RiesgoModeracion;
   className?: string;
 }
 
+export const AVISO_RIESGO_BAJO =
+  "Algunas palabras pueden sonar ofensivas. Puedes publicar, pero revisa el tono.";
+export const AVISO_RIESGO_BLOQUEO =
+  "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla.";
+
 /**
- * Aviso preventivo de lenguaje no permitido (TEC-98).
- * Se anuncia de forma cortés mientras la persona escribe y no bloquea la
- * edición ni borra el texto. La decisión final sigue siendo del backend.
+ * Aviso preventivo mientras se escribe (TEC-98, niveles del Caso 6). No borra
+ * el texto. Riesgo bajo: solo sugiere revisar el tono y se puede publicar.
+ * Riesgo medio o alto: pide corregir antes de publicar. El backend decide.
  */
 export default function AvisoTerminosResena({
+  riesgo = "medio",
   className = "",
 }: AvisoTerminosResenaProps) {
+  if (riesgo === "ninguno") return null;
   return (
     <p
       role="status"
@@ -30,7 +41,7 @@ export default function AvisoTerminosResena({
         <path d="M12 9v4m0 3h.01M10.3 3.9 2.2 18a2 2 0 0 0 1.7 3h16.2a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
       </svg>
       <span>
-        Tu reseña contiene términos que requieren revisión antes de publicarse.
+        {riesgo === "bajo" ? AVISO_RIESGO_BAJO : AVISO_RIESGO_BLOQUEO}
       </span>
     </p>
   );

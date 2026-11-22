@@ -762,11 +762,11 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
       /Comparte tu experiencia con Samsung Galaxy Tab S10\+/i
     )) as HTMLTextAreaElement;
 
-    fireEvent.change(textarea, { target: { value: "esto es una basura" } });
+    fireEvent.change(textarea, { target: { value: "esto es una mierda" } });
 
     expect(
       screen.getByText(
-        "Tu reseña contiene términos que requieren revisión antes de publicarse."
+        "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla."
       )
     ).toBeDefined();
 
@@ -776,11 +776,11 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
 
     await waitFor(() => {
       expect(
-        screen.getByText(/El comentario contiene palabras no permitidas/i)
+        screen.getByText(/No pudimos publicar tu opinión: corrige el lenguaje/i)
       ).toBeDefined();
     });
 
-    expect(textarea.value).toBe("esto es una basura");
+    expect(textarea.value).toBe("esto es una mierda");
     expect(mockCrearResena).not.toHaveBeenCalled();
 
     fireEvent.change(textarea, {
@@ -788,7 +788,7 @@ describe("Componente FichaTecnicaModal — Opiniones y reseñas de la comunidad 
     });
 
     expect(
-      screen.queryByText(/Tu reseña contiene términos que requieren revisión/)
+      screen.queryByText(/Tu opinión tiene lenguaje que no se permite/)
     ).toBeNull();
   });
 });

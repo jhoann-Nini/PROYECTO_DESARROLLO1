@@ -18,10 +18,11 @@ import {
   agregarResenaCreada,
   aplicarResenaEditada,
   contieneLenguajeNoPermitido,
+  MENSAJE_LENGUAJE_NO_PERMITIDO,
   esResenaPublica,
   MENSAJE_RESENA_EDITADA_EN_REVISION,
   MENSAJE_RESENA_EN_REVISION,
-  obtenerPalabrasDetectadas,
+  analizarComentario,
 } from "@/data/resenas";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import AuthModal from "@/components/AuthModal";
@@ -167,8 +168,8 @@ export default function ResenasCliente() {
   );
   // Aviso preventivo (TEC-98): solo informa; el bloqueo clásico al enviar y
   // la decisión final siguen en manos del backend (TEC-97).
-  const terminosDetectados = useMemo(
-    () => obtenerPalabrasDetectadas(comentario),
+  const riesgoComentario = useMemo(
+    () => analizarComentario(comentario).riesgo,
     [comentario],
   );
 
@@ -200,9 +201,7 @@ export default function ResenasCliente() {
     }
 
     if (contieneLenguajeNoPermitido(comentario)) {
-      setErrorEnvio(
-        "El comentario contiene palabras no permitidas. Mantén un lenguaje respetuoso.",
-      );
+      setErrorEnvio(MENSAJE_LENGUAJE_NO_PERMITIDO);
       return;
     }
 
@@ -397,7 +396,7 @@ export default function ResenasCliente() {
                 </p>
               </div>
 
-              {terminosDetectados.length > 0 && <AvisoTerminosResena />}
+              <AvisoTerminosResena riesgo={riesgoComentario} />
 
               <div className="flex flex-wrap items-center gap-3">
                 <button

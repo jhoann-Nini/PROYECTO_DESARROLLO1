@@ -351,11 +351,11 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
       /Escribe tu opinión sobre/i,
     ) as HTMLTextAreaElement;
 
-    fireEvent.change(area, { target: { value: "esto es una basura" } });
+    fireEvent.change(area, { target: { value: "esto es una mierda" } });
 
     expect(
       screen.getByText(
-        "Tu reseña contiene términos que requieren revisión antes de publicarse.",
+        "Tu opinión tiene lenguaje que no se permite. Corrígelo para poder publicarla.",
       ),
     ).toBeDefined();
 
@@ -364,7 +364,7 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
     });
 
     expect(
-      screen.queryByText(/Tu reseña contiene términos que requieren revisión/),
+      screen.queryByText(/Tu opinión tiene lenguaje que no se permite/),
     ).toBeNull();
   });
 
@@ -375,17 +375,37 @@ describe("OpinionesProducto — Permisos y Operaciones de Edición y Eliminació
       /Escribe tu opinión sobre/i,
     ) as HTMLTextAreaElement;
 
-    fireEvent.change(area, { target: { value: "esto es un timo" } });
+    fireEvent.change(area, { target: { value: "esto es una mierda" } });
     fireEvent.click(screen.getByRole("button", { name: "Publicar opinión" }));
 
     await waitFor(() => {
       expect(
-        screen.getByText(/El comentario contiene palabras no permitidas/i),
+        screen.getByText(/No pudimos publicar tu opinión: corrige el lenguaje/i),
       ).toBeDefined();
     });
 
-    expect(area.value).toBe("esto es un timo");
+    expect(area.value).toBe("esto es una mierda");
     expect(mockCrear).not.toHaveBeenCalled();
+  });
+
+  // Caso 6: una palabra ambigua sobre el producto solo genera un aviso suave.
+  it("con riesgo bajo avisa revisar el tono pero permite publicar", async () => {
+    mockCrear.mockResolvedValueOnce({
+      ...resenaAna,
+      idResena: 51,
+      comentario: "odio que la batería dure tan poco",
+      estadoModeracion: "PUBLICADA",
+    });
+    renderComponente({ usuario: usuarioAutor, resenas: [resenaCarlos] });
+
+    fireEvent.change(screen.getByLabelText(/Escribe tu opinión sobre/i), {
+      target: { value: "odio que la batería dure tan poco" },
+    });
+    expect(screen.getByText(/Puedes publicar, pero revisa el tono/)).toBeDefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Publicar opinión" }));
+    await waitFor(() => expect(mockCrear).toHaveBeenCalled());
+    expect(screen.queryByText(/No pudimos publicar tu opinión/)).toBeNull();
   });
 });
 

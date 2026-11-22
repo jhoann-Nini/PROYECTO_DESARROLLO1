@@ -49,6 +49,18 @@ describe("ColaRevisionAutomatica", () => {
     expect(screen.getByText("Galaxy Buds FE")).toBeDefined();
   });
 
+  it("marca con prioridad alta las posibles amenazas (Caso 6)", async () => {
+    mockObtener.mockResolvedValueOnce([
+      { ...retenida, idResena: 8, comentario: "te voy a matar", riesgo: "ALTO", motivosDeteccion: ["Posible amenaza o acoso"] },
+      { ...retenida, riesgo: "MEDIO" },
+    ]);
+    render(<ColaRevisionAutomatica />);
+
+    expect(await screen.findByText("te voy a matar")).toBeDefined();
+    expect(screen.getAllByText("Prioridad alta")).toHaveLength(1);
+    expect(screen.getByText(/Motivo de la retención: Posible amenaza o acoso/)).toBeDefined();
+  });
+
   it("muestra un estado vacío cuando no hay reseñas retenidas", async () => {
     mockObtener.mockResolvedValueOnce([]);
     render(<ColaRevisionAutomatica />);

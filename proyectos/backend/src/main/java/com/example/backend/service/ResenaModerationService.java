@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.entity.EstadoModeracion;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,15 @@ public class ResenaModerationService {
   public static final String MOTIVO_AMENAZA = "Posible amenaza o acoso";
   public static final String MOTIVO_ENLACE = "Contiene un enlace o dominio web";
   public static final String MOTIVO_TEXTO_REPETIDO = "Contiene texto repetido";
+  public static final String MOTIVO_TELEFONO = "Contiene un número de teléfono";
+  public static final String MOTIVO_TEXTO_DUPLICADO = "Texto idéntico a otra reseña del mismo autor";
+
+  /**
+   * Una reseña con este número de palabras o más, idéntica a otra del mismo
+   * autor, se trata como spam. Las cortas («Excelente producto») se repiten
+   * con normalidad en varios productos.
+   */
+  static final int MIN_PALABRAS_DUPLICADO = 8;
 
   /**
    * Palabras ambiguas: en una crítica al producto se publican («este cargador
@@ -164,6 +174,18 @@ public class ResenaModerationService {
     "(?i)\\b(?:https?://|www\\.)?(?:[a-z0-9-]+\\.)+[a-z]{2,}(?:/[^\\s]*)?"
   );
 
+  /**
+   * Teléfonos: de 10 a 13 dígitos con espacios, guiones, puntos o paréntesis
+   * entre ellos y un «+» opcional («+57 300 123 4567», «(601) 555-1234»).
+   * No empieza después de un dígito, un «$» o un separador decimal, y no
+   * termina antes de otro dígito: así «$1.299.000» y dos precios seguidos no
+   * cuentan como teléfono. Celulares (10 dígitos) y fijos con indicativo
+   * (601…) tienen 10 dígitos desde 2021.
+   */
+  private static final Pattern PATRON_TELEFONO = Pattern.compile(
+    "(?<![\\d$.,])\\+?\\d(?:[\\s.\\-()]{0,2}\\d){9,12}(?![.,]?\\d)"
+  );
+
   /** Resultado del análisis: nivel de riesgo y motivos para el moderador. */
   public record ResultadoModeracion(RiesgoModeracion riesgo, List<String> motivos) {
   }
@@ -173,6 +195,15 @@ public class ResenaModerationService {
    * lo que llega a la cola de revisión.
    */
   public ResultadoModeracion analizar(String comentario) {
+    return analizar(comentario, List.of());
+  }
+
+  /**
+   * Analiza el comentario teniendo en cuenta los comentarios de las otras
+   * reseñas activas del mismo autor, para detectar el mismo texto publicado
+   * en varios productos. El frontend no puede evaluar esta señal.
+   */
+  public ResultadoModeracion analizar(String comentario, Collection<String> otrosComentariosDelAutor) {
     if (comentario == null || comentario.isBlank()) {
       return new ResultadoModeracion(RiesgoModeracion.NINGUNO, List.of());
     }
@@ -211,6 +242,14 @@ public class ResenaModerationService {
       riesgo = max(riesgo, RiesgoModeracion.MEDIO);
       motivos.add(MOTIVO_TEXTO_REPETIDO);
     }
+    if (PATRON_TELEFONO.matcher(normalizar(comentario)).find()) {
+      riesgo = max(riesgo, RiesgoModeracion.MEDIO);
+      motivos.add(MOTIVO_TELEFONO);
+    }
+    if (duplicaOtraResena(comentario, otrosComentariosDelAutor)) {
+      riesgo = max(riesgo, RiesgoModeracion.MEDIO);
+      motivos.add(MOTIVO_TEXTO_DUPLICADO);
+    }
     return new ResultadoModeracion(riesgo, riesgo.requiereRevision() ? List.copyOf(motivos) : List.of());
   }
 
@@ -218,7 +257,12 @@ public class ResenaModerationService {
    * Analiza el comentario y determina su estado de moderación inicial.
    */
   public EstadoModeracion determinarEstado(String comentario) {
-    return analizar(comentario).riesgo().requiereRevision()
+    return determinarEstado(comentario, List.of());
+  }
+
+  /** Igual que {@link #determinarEstado(String)}, con las otras reseñas del autor. */
+  public EstadoModeracion determinarEstado(String comentario, Collection<String> otrosComentariosDelAutor) {
+    return analizar(comentario, otrosComentariosDelAutor).riesgo().requiereRevision()
       ? EstadoModeracion.PENDIENTE
       : EstadoModeracion.PUBLICADA;
   }
@@ -233,10 +277,16 @@ public class ResenaModerationService {
    * </ul>
    */
   public EstadoModeracion estadoTrasEdicion(EstadoModeracion actual, String comentario) {
+    return estadoTrasEdicion(actual, comentario, List.of());
+  }
+
+  /** Igual que {@link #estadoTrasEdicion(EstadoModeracion, String)}, con las otras reseñas del autor. */
+  public EstadoModeracion estadoTrasEdicion(
+      EstadoModeracion actual, String comentario, Collection<String> otrosComentariosDelAutor) {
     if (actual == EstadoModeracion.PENDIENTE || actual == EstadoModeracion.RECHAZADA) {
       return EstadoModeracion.PENDIENTE;
     }
-    return determinarEstado(comentario);
+    return determinarEstado(comentario, otrosComentariosDelAutor);
   }
 
   /**
@@ -308,6 +358,28 @@ public class ResenaModerationService {
       resultado.append(SUSTITUCIONES_LEET.getOrDefault(c, c));
     }
     return resultado.toString();
+  }
+
+  /**
+   * Compara el texto con las otras reseñas del autor ignorando mayúsculas,
+   * tildes y puntuación. Solo cuenta desde {@link #MIN_PALABRAS_DUPLICADO}
+   * palabras; textos casi iguales con cambios mínimos no se detectan.
+   */
+  private static boolean duplicaOtraResena(String comentario, Collection<String> otros) {
+    if (otros == null || otros.isEmpty()) {
+      return false;
+    }
+    String clave = claveComparacion(comentario);
+    if (clave.isEmpty() || clave.split(" ").length < MIN_PALABRAS_DUPLICADO) {
+      return false;
+    }
+    return otros.stream()
+      .filter(otro -> otro != null && !otro.isBlank())
+      .anyMatch(otro -> clave.equals(claveComparacion(otro)));
+  }
+
+  private static String claveComparacion(String texto) {
+    return normalizar(texto).replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
   }
 
   /**

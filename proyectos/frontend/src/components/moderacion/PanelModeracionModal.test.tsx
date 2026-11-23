@@ -21,6 +21,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     obtenerResenasEnRevision: vi.fn(),
     decidirRevisionResena: vi.fn(),
     obtenerReportesOfertaModeracion: vi.fn(),
+    obtenerResumenPendientesModeracion: vi.fn(),
   };
 });
 
@@ -32,6 +33,7 @@ import {
   publicarResenaReportada,
   rechazarReportesResenaReportada,
   obtenerResenasEnRevision,
+  obtenerResumenPendientesModeracion,
 } from "@/services/api";
 import PanelModeracionModal from "./PanelModeracionModal";
 
@@ -119,6 +121,12 @@ const RESENA_OCULTA_MODERACION: ResenaReportadaResponse = {
 describe("PanelModeracionModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(obtenerResumenPendientesModeracion).mockResolvedValue({
+      revisionAutomatica: 0,
+      reportesResenas: 0,
+      reportesOfertas: 0,
+      total: 0,
+    });
     mockObtener.mockResolvedValue([RESENA_REPORTADA]);
     mockOcultar.mockResolvedValue({
       ...RESENA_REPORTADA,
@@ -568,5 +576,41 @@ describe("PanelModeracionModal", () => {
     expect(await screen.findByText("No hay reportes de ofertas")).toBeDefined();
     expect(obtenerReportesOfertaModeracion).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("tab", { name: "Reportes de ofertas" }).getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("muestra en cada pestaña cuántos pendientes tiene", async () => {
+    vi.mocked(obtenerResumenPendientesModeracion).mockResolvedValue({
+      revisionAutomatica: 3,
+      reportesResenas: 1,
+      reportesOfertas: 0,
+      total: 4,
+    });
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+
+    expect(
+      await screen.findByRole("tab", { name: "Revisión automática (3 pendientes)" }),
+    ).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Reseñas reportadas (1 pendiente)" })).toBeDefined();
+    // Sin pendientes no se muestra número.
+    expect(screen.getByRole("tab", { name: "Reportes de ofertas" })).toBeDefined();
+  });
+
+  it("actualiza el contador después de una decisión", async () => {
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+    await screen.findByText("Smartphone Pro");
+    await waitFor(() => expect(obtenerResumenPendientesModeracion).toHaveBeenCalledTimes(1));
+
+    fireEvent.change(screen.getByLabelText("Justificación"), {
+      target: { value: "Incumple las normas de la comunidad." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Ocultar reseña de Usuario Autor" }));
+
+    await screen.findByText("Reseña de Usuario Autor ocultada.");
+    await waitFor(() => expect(obtenerResumenPendientesModeracion).toHaveBeenCalledTimes(2));
+  });
+
+  it("no consulta el contador con el panel cerrado", () => {
+    render(<PanelModeracionModal isOpen={false} onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+    expect(obtenerResumenPendientesModeracion).not.toHaveBeenCalled();
   });
 });

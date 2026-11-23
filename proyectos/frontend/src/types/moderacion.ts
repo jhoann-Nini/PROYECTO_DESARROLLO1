@@ -105,3 +105,14 @@ export interface ReporteOfertaModeracionResponse {
 }
 
 export type AccionReporteOferta = "en-revision" | "aceptar" | "rechazar";
+
+/** Contador de pendientes del panel (`GET /api/moderacion/pendientes/resumen`, Caso 6). */
+export interface ResumenPendientesModeracion {
+  /** Reseñas retenidas por el filtro automático. */
+  revisionAutomatica: number;
+  /** Reportes de reseñas pendientes o en revisión. */
+  reportesResenas: number;
+  /** Reportes de ofertas pendientes o en revisión. */
+  reportesOfertas: number;
+  total: number;
+}

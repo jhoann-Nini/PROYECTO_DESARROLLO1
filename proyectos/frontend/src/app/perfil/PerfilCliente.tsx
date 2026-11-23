@@ -10,6 +10,8 @@ import { useComparador } from "@/hooks/useComparador";
 import AuthModal from "@/components/AuthModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
 import PanelModeracionModal from "@/components/moderacion/PanelModeracionModal";
+import ContadorPendientes from "@/components/moderacion/ContadorPendientes";
+import { useResumenPendientesModeracion } from "@/hooks/useResumenPendientesModeracion";
 import PanelRepresentanteModal from "@/components/representante/PanelRepresentanteModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
@@ -49,6 +51,11 @@ export default function PerfilCliente() {
 
   const esAdmin = useMemo(() => esAdministrador(usuario), [usuario]);
   const esModerador = useMemo(() => puedeModerar(usuario), [usuario]);
+  // Contador del botón: se pausa con el panel abierto (el panel lleva el suyo)
+  // y se vuelve a consultar al cerrarlo, para reflejar las decisiones tomadas.
+  const { resumen: resumenPendientes } = useResumenPendientesModeracion(
+    esModerador && !modalModeracionAbierto,
+  );
   const esRep = useMemo(() => esRepresentante(usuario), [usuario]);
 
   function reintentarResenas() {
@@ -284,6 +291,7 @@ export default function PerfilCliente() {
                 className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Panel de moderación
+                <ContadorPendientes cantidad={resumenPendientes?.total} />
               </button>
             )}
             {(esAdmin || esRep) && (

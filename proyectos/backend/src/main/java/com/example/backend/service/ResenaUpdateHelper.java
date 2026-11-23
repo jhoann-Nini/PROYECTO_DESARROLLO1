@@ -47,7 +47,9 @@ public class ResenaUpdateHelper {
     // y PUBLICADA se analiza de nuevo.
     existente.setEstadoModeracion(
       resenaModerationService.estadoTrasEdicion(
-        existente.getEstadoModeracion(), comentarioLimpio)
+        existente.getEstadoModeracion(), comentarioLimpio,
+        resenaRepository.comentariosDeOtrasResenasDelAutor(
+          usuario.getIdUsuario(), existente.getIdResena()))
     );
 
     return resenaRepository.save(existente);

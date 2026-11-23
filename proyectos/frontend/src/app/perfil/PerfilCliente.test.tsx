@@ -35,6 +35,23 @@ vi.mock("@/hooks/useFavoritos", () => ({
   }),
 }));
 
+const resumenPendientesMock = vi.hoisted(() => ({
+  valor: null as null | {
+    revisionAutomatica: number;
+    reportesResenas: number;
+    reportesOfertas: number;
+    total: number;
+  },
+  habilitado: [] as boolean[],
+}));
+
+vi.mock("@/hooks/useResumenPendientesModeracion", () => ({
+  useResumenPendientesModeracion: (habilitado: boolean) => {
+    resumenPendientesMock.habilitado.push(habilitado);
+    return { resumen: habilitado ? resumenPendientesMock.valor : null, recargar: () => {} };
+  },
+}));
+
 vi.mock("@/hooks/useComparador", () => ({
   useComparador: () => ({
     ids: [1, 2],
@@ -335,5 +352,26 @@ describe("PerfilCliente", () => {
       "Aún no has publicado reseñas.",
     );
     expect(mensaje.closest('[data-estado="vacio"]')).not.toBeNull();
+  });
+
+  it("muestra en el botón del panel cuántos pendientes hay para moderar", () => {
+    sesionMock.usuario = { ...USUARIO, rol: "Moderador" };
+    resumenPendientesMock.valor = { revisionAutomatica: 2, reportesResenas: 1, reportesOfertas: 1, total: 4 };
+
+    render(<PerfilCliente />);
+
+    expect(
+      screen.getByRole("button", { name: "Panel de moderación (4 pendientes)" }),
+    ).toBeDefined();
+    resumenPendientesMock.valor = null;
+  });
+
+  it("no consulta pendientes para usuarios sin rol de moderación", () => {
+    sesionMock.usuario = USUARIO;
+    resumenPendientesMock.habilitado = [];
+
+    render(<PerfilCliente />);
+
+    expect(resumenPendientesMock.habilitado.every((h) => h === false)).toBe(true);
   });
 });

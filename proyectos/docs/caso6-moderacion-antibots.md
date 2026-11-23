@@ -41,8 +41,8 @@ Es un **filtro por reglas, sin IA ni aprendizaje automático**, presente en el b
 | Nivel | Estado | Qué demuestra |
 |---|---|---|
 | Usuario registrado | Sí (Supabase Auth) | Que existe una cuenta |
-| Correo verificado | Probable (configuración de Supabase, no verificada desde el código) | Que alguien controla esa dirección, **no** que sea una persona |
-| Interacción con CAPTCHA | Código listo (Cloudflare Turnstile); falta activarlo en Supabase | Eleva el costo de automatizar; no prueba de forma absoluta que sea un humano |
+| Correo verificado | Sí: «Confirm email» activo en Supabase desde el 22 de noviembre de 2026 | Que alguien controla esa dirección, **no** que sea una persona |
+| Interacción con CAPTCHA | Sí: Cloudflare Turnstile en registro, inicio de sesión y recuperación, exigido por Supabase desde el 22 de noviembre de 2026 | Eleva el costo de automatizar; no prueba de forma absoluta que sea un humano |
 | Identidad comprobada | No | — |
 | Comprador verificado | No | La interfaz no lo afirma |
 
@@ -51,13 +51,13 @@ Es un **filtro por reglas, sin IA ni aprendizaje automático**, presente en el b
 ## 4. Pendiente (por prioridad)
 
 1. **Configuración externa, sin costo:**
-   - activar Cloudflare Turnstile en Supabase Auth (Authentication → Attack Protection, con la clave secreta). El frontend ya muestra el widget y envía `captchaToken` en registro, inicio de sesión y recuperación cuando existe `NEXT_PUBLIC_TURNSTILE_SITE_KEY`. **Orden:** primero desplegar el frontend con esa variable en Vercel y después activarlo en Supabase; al revés, nadie podría iniciar sesión;
-   - confirmar que Supabase exige verificar el correo y corregir la comprobación del backend, que solo actúa si el token trae `email_verified` en falso;
+   - ✅ Cloudflare Turnstile activo en Supabase Auth. La variable `NEXT_PUBLIC_TURNSTILE_SITE_KEY` debe existir en Vercel: sin ella el formulario no muestra el CAPTCHA y, como Supabase lo exige, nadie puede iniciar sesión;
+   - ✅ Supabase exige verificar el correo. Falta corregir la comprobación del backend, que solo actúa si el token trae `email_verified` en falso;
    - verificar que el servidor de Render solo sea accesible a través de Cloudflare, porque el límite por IP confía en `CF-Connecting-IP`.
 2. **Prioridad media:**
-   - lista de palabras administrable desde el panel, con categorías (amenazas, acoso, discriminación);
-   - señales de spam (teléfonos, la misma reseña en varios productos);
+   - ✅ señales de spam: teléfonos y el mismo texto en varias reseñas del mismo autor (`api.md` §33.3);
+   - ✅ contador de pendientes en las pestañas del panel y en el botón del perfil (`api.md` §33.4);
+   - lista de palabras administrable desde el panel, con categorías (amenazas, acoso, discriminación). Ojo: si el formulario descarga la lista para avisar antes de publicar, la lista queda pública; la alternativa es que esas palabras solo las revise el backend;
    - reincidencia con restricciones graduales;
-   - apelaciones;
-   - contador de pendientes para los moderadores.
+   - apelaciones.
 3. **Prioridad baja:** clasificador externo para casos ambiguos, solo como señal. Tiene costo por uso y obliga a enviar el texto de los usuarios a un tercero.

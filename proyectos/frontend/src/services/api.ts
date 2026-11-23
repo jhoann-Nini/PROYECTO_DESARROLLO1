@@ -21,6 +21,7 @@ import type {
   ReporteOfertaModeracionResponse,
   ResenaEnRevisionResponse,
   ResenaReportadaResponse,
+  ResumenPendientesModeracion,
 } from "@/types/moderacion";
 import type {
   Establecimiento,
@@ -534,6 +535,17 @@ export async function rechazarReportesResenaReportada(
 export async function obtenerResenasEnRevision(): Promise<ResenaEnRevisionResponse[]> {
   return apiFetchAutenticado<ResenaEnRevisionResponse[]>(
     "/api/moderacion/resenas/en-revision",
+    { method: "GET" },
+  );
+}
+
+/**
+ * Contador de pendientes para moderadores (Caso 6): revisión automática y
+ * reportes abiertos de reseñas y de ofertas.
+ */
+export async function obtenerResumenPendientesModeracion(): Promise<ResumenPendientesModeracion> {
+  return apiFetchAutenticado<ResumenPendientesModeracion>(
+    "/api/moderacion/pendientes/resumen",
     { method: "GET" },
   );
 }

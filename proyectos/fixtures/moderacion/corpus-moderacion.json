@@ -1,5 +1,5 @@
 {
-  "descripcion": "Corpus compartido del filtro de moderación automática. Lo usan ResenaModerationServiceCorpusTest (backend) y resenas.corpus.test.ts (frontend) para garantizar que ambos clasifican igual. riesgo: ninguno | bajo | medio | alto. bajo y ninguno se publican; medio y alto quedan en revisión. soloBackend: el frontend no evalúa enlaces ni repeticiones.",
+  "descripcion": "Corpus compartido del filtro de moderación automática. Lo usan ResenaModerationServiceCorpusTest (backend) y resenas.corpus.test.ts (frontend) para garantizar que ambos clasifican igual. riesgo: ninguno | bajo | medio | alto. bajo y ninguno se publican; medio y alto quedan en revisión. soloBackend: el frontend no evalúa enlaces, repeticiones ni teléfonos.",
   "casos": [
     { "texto": "Este producto es excelente", "riesgo": "ninguno" },
     { "texto": "la computadora es rápida", "riesgo": "ninguno" },
@@ -59,7 +59,16 @@
 
     { "texto": "mejor precio en www.otra-tienda.com", "riesgo": "medio", "soloBackend": true },
     { "texto": "compra ya compra ya", "riesgo": "medio", "soloBackend": true },
-    { "texto": "bueno bueno bueno", "riesgo": "medio", "soloBackend": true }
+    { "texto": "bueno bueno bueno", "riesgo": "medio", "soloBackend": true },
+
+    { "texto": "escríbeme al 300 123 4567 y te lo vendo más barato", "riesgo": "medio", "soloBackend": true, "nota": "celular colombiano" },
+    { "texto": "whatsapp +57 3001234567", "riesgo": "medio", "soloBackend": true },
+    { "texto": "llama al (601) 555-1234 para garantía", "riesgo": "medio", "soloBackend": true, "nota": "fijo con indicativo" },
+    { "texto": "contacto 300.123.45.67", "riesgo": "medio", "soloBackend": true },
+    { "texto": "lo compré en $1.299.000 y vale cada peso", "riesgo": "ninguno", "nota": "precio, no teléfono" },
+    { "texto": "batería de 5000 mAh, 256 GB y pantalla de 6,7 pulgadas", "riesgo": "ninguno", "nota": "especificaciones" },
+    { "texto": "pasó de 1.299.000 a 1.099.000 en una semana", "riesgo": "ninguno", "nota": "dos precios seguidos" },
+    { "texto": "el modelo SM-S9280 llegó en 2024", "riesgo": "ninguno", "nota": "referencias y años" }
   ],
   "limitacionesConocidas": [
     { "texto": "eresidiota", "nota": "palabras pegadas: se evita para no marcar «computadora» por «puta»" },
@@ -67,6 +76,8 @@
     { "texto": "eres un imbécil", "nota": "insultos fuera de la lista: la lista administrable está en la prioridad media" },
     { "texto": "you are an idiot", "nota": "otros idiomas" },
     { "texto": "estvpido", "nota": "letras sustituidas por otras letras (v por u): convertirlas daría falsos positivos" },
-    { "texto": "producto para indios ignorantes", "nota": "discriminación: requiere categorías y contexto (prioridad media)" }
+    { "texto": "producto para indios ignorantes", "nota": "discriminación: requiere categorías y contexto (prioridad media)" },
+    { "texto": "escríbeme al tres cero cero uno dos tres", "nota": "teléfonos escritos con palabras" },
+    { "texto": "Excelente equipo, la batería dura todo el día y la cámara es muy buena!! (versión 2)", "nota": "el mismo texto con cambios mínimos no cuenta como duplicado: solo se detecta la copia exacta después de normalizar" }
   ]
 }

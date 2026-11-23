@@ -30,7 +30,11 @@ function formatearFecha(valor: string): string {
  * Ningún usuario las reportó: el filtro las detuvo antes de publicarlas y
  * esperan una decisión humana. Cada decisión queda auditada en el backend.
  */
-export default function ColaRevisionAutomatica() {
+/**
+ * `onCambio` avisa al panel tras cada decisión para actualizar el contador de
+ * pendientes.
+ */
+export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => void } = {}) {
   const [resenas, setResenas] = useState<ResenaEnRevisionResponse[] | null>(null);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
@@ -79,6 +83,7 @@ export default function ColaRevisionAutomatica() {
       setResenas((previas) => previas?.filter((item) => item.idResena !== resena.idResena) ?? previas);
       setJustificaciones((previas) => ({ ...previas, [resena.idResena]: "" }));
       const autor = resena.nombreUsuario ?? "el usuario";
+      onCambio?.();
       setMensajeExito(
         decision === "aprobar"
           ? `Reseña de ${autor} aprobada y publicada.`

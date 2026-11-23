@@ -94,7 +94,9 @@ public class ResenaCreateTransaction {
       // y PUBLICADA se analiza de nuevo.
       resena.setEstadoModeracion(
         resenaModerationService.estadoTrasEdicion(
-          resena.getEstadoModeracion(), comentario)
+          resena.getEstadoModeracion(), comentario,
+          resenaRepository.comentariosDeOtrasResenasDelAutor(
+            usuario.getIdUsuario(), resena.getIdResena()))
       );
 
     } else {
@@ -130,7 +132,8 @@ public class ResenaCreateTransaction {
 
       // Analizar el comentario para determinar su estado inicial.
       resena.setEstadoModeracion(
-        resenaModerationService.determinarEstado(comentario)
+        resenaModerationService.determinarEstado(comentario,
+          resenaRepository.comentariosDeOtrasResenasDelAutor(usuario.getIdUsuario(), null))
       );
     }
 

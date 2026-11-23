@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   cleanup,
   fireEvent,
+  within,
   render,
   screen,
   waitFor,
@@ -20,6 +21,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     asignarRepresentante: vi.fn(),
     revocarRepresentante: vi.fn(),
     cambiarEstadoCuenta: vi.fn(),
+    obtenerCuentasReincidentes: vi.fn(),
   };
 });
 
@@ -28,6 +30,7 @@ import {
   asignarRepresentante,
   asignarRolUsuario,
   cambiarEstadoCuenta,
+  obtenerCuentasReincidentes,
   obtenerEstablecimientos,
   obtenerRolesAdmin,
   obtenerUsuariosAdmin,
@@ -85,6 +88,7 @@ const ESTABLECIMIENTO = {
 describe("AdminUsuariosRoles", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(obtenerCuentasReincidentes).mockResolvedValue([]);
     mockUsuarios.mockResolvedValue([USUARIO]);
     mockRoles.mockResolvedValue(ROLES);
     mockEstablecimientos.mockResolvedValue([ESTABLECIMIENTO]);
@@ -357,5 +361,19 @@ describe("AdminUsuariosRoles", () => {
     expect(
       screen.getByText(/historial de auditoría/i),
     ).toBeDefined();
+  });
+
+  it("«Revisar» en una cuenta reincidente la busca por correo y la selecciona", async () => {
+    vi.mocked(obtenerCuentasReincidentes).mockResolvedValue([
+      { idUsuario: 12, nombre: "María López", correo: "maria@ejemplo.com", faltas: 4, ultimaFalta: "2026-11-20T10:00:00" },
+    ]);
+    render(<AdminUsuariosRoles />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Revisar la cuenta de María López" }));
+
+    await waitFor(() => expect(mockUsuarios).toHaveBeenLastCalledWith("maria@ejemplo.com"));
+    expect((screen.getByLabelText("Buscar por correo") as HTMLInputElement).value).toBe("maria@ejemplo.com");
+    const gestion = await screen.findByRole("region", { name: "Gestión de la cuenta" });
+    expect(within(gestion).getByRole("heading", { name: "Gestionar María López" })).toBeDefined();
   });
 });

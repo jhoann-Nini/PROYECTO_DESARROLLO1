@@ -28,6 +28,9 @@ public interface ReporteOfertaRepository
   /** Base del límite de reportes por hora. */
   long countByUsuarioIdUsuarioAndFechaCreacionAfter(Long idUsuario, LocalDateTime desde);
 
+  /** Reportes abiertos (pendientes o en revisión) para el contador del panel. */
+  long countByEstadoIn(java.util.Collection<EstadoReporte> estados);
+
   @Query("""
     SELECT r FROM ReporteOferta r
     JOIN FETCH r.producto

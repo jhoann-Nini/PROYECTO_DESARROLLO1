@@ -90,6 +90,30 @@ public interface ResenaRepository extends JpaRepository<Resena, Long> {
   @Query("SELECT r FROM Resena r JOIN FETCH r.usuario WHERE r.idResena = :idResena")
   Optional<Resena> findByIdForModeration(@Param("idResena") Long idResena);
 
+  // Caso 6, señal de spam: comentarios de las otras reseñas activas del autor.
+  @Query("SELECT r.comentario FROM Resena r WHERE r.usuario.idUsuario = :idUsuario " +
+    "AND r.estado = true AND r.idResena <> :idResenaExcluida")
+  List<String> findComentariosActivosDelAutorExcepto(
+    @Param("idUsuario") Long idUsuario,
+    @Param("idResenaExcluida") Long idResenaExcluida);
+
+  /**
+   * Comentarios de las otras reseñas activas del autor, para detectar el mismo
+   * texto en varios productos. {@code idResenaExcluida} es nulo al crear.
+   */
+  default List<String> comentariosDeOtrasResenasDelAutor(Long idUsuario, Long idResenaExcluida) {
+    if (idUsuario == null) {
+      return List.of();
+    }
+    // Los identificadores empiezan en 1: 0 no excluye ninguna reseña.
+    return findComentariosActivosDelAutorExcepto(idUsuario, idResenaExcluida != null ? idResenaExcluida : 0L);
+  }
+
+  /** Cantidad de reseñas en la cola de revisión automática. */
+  @Query("SELECT COUNT(r) FROM Resena r WHERE r.estado = true " +
+    "AND r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE")
+  long countPendientesDeRevision();
+
   // Cola de revisión: reseñas activas retenidas por el filtro automático,
   // de la más antigua a la más reciente.
   @EntityGraph(attributePaths = {"usuario", "producto"})

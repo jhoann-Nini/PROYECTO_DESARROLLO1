@@ -147,7 +147,9 @@ public class ResenaService {
       // y PUBLICADA se analiza de nuevo.
       resena.setEstadoModeracion(
         resenaModerationService.estadoTrasEdicion(
-          resena.getEstadoModeracion(), comentarioLimpio)
+          resena.getEstadoModeracion(), comentarioLimpio,
+          resenaRepository.comentariosDeOtrasResenasDelAutor(
+            usuario.getIdUsuario(), resena.getIdResena()))
       );
 
         Resena guardada = resenaRepository.save(resena);

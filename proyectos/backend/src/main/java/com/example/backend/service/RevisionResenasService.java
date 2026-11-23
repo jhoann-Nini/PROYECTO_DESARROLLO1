@@ -123,7 +123,11 @@ public class RevisionResenasService {
 
     private ResenaEnRevisionResponse toResponse(Resena resena) {
         ResenaModerationService.ResultadoModeracion analisis =
-                resenaModerationService.analizar(resena.getComentario());
+                resenaModerationService.analizar(resena.getComentario(),
+                        resena.getUsuario() != null
+                                ? resenaRepository.comentariosDeOtrasResenasDelAutor(
+                                        resena.getUsuario().getIdUsuario(), resena.getIdResena())
+                                : java.util.List.of());
         return new ResenaEnRevisionResponse(
                 resena.getIdResena(),
                 resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,

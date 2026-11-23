@@ -31,6 +31,9 @@ public interface ReporteResenaRepository extends JpaRepository<ReporteResena, Lo
     @EntityGraph(attributePaths = {"resena", "usuario"})
     List<ReporteResena> findByEstadoOrderByFechaCreacionAsc(EstadoReporte estado);
 
+    /** Reportes abiertos (pendientes o en revisión) para el contador del panel. */
+    long countByEstadoIn(java.util.Collection<EstadoReporte> estados);
+
     /**
      * Consulta un reporte y carga sus relaciones para aplicar las reglas de moderación.
      */

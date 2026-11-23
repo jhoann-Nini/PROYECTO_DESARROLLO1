@@ -32,6 +32,10 @@ class ResenaModerationServiceTest {
     assertEstado("p.u.t.a experiencia", EstadoModeracion.PENDIENTE);
     assertEstado("idiotas", EstadoModeracion.PENDIENTE);
     assertEstado("i d i o t a", EstadoModeracion.PENDIENTE);
+    assertEstado("este producto es una mierdita", EstadoModeracion.PENDIENTE);
+    assertEstado("eres un idiotita", EstadoModeracion.PENDIENTE);
+    assertEstado("fue una estupidez", EstadoModeracion.PENDIENTE);
+    assertEstado("el mierdómetro mide residuos", EstadoModeracion.PUBLICADA);
   }
 
   @Test

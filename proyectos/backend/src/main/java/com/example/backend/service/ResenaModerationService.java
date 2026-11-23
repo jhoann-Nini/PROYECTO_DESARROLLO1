@@ -123,22 +123,41 @@ public class ResenaModerationService {
       + "(?:(?:un|una|unos|unas|el|la|los|las|muy|tan|re|todo|toda)[^a-z]+){0,2}"
       + "|(?:pedazo|maldit[oa]s?)[^a-z]+(?:de[^a-z]+)?)";
 
-  /*
-   * Cada palabra tiene dos patrones: su forma escrita («perra») y su forma
-   * con letras repetidas colapsadas («pera»), que se compara con el texto
-   * también colapsado. Así se detecta «idiooooota» sin usar repeticiones
-   * anidadas en la expresión regular, que con textos largos desbordaban la
-   * pila del motor de expresiones regulares.
-   */
+  /** Formas derivadas explícitas de insultos; evita un stemming general que produzca falsos positivos. */
+  private static final Map<String, List<String>> DERIVACIONES_OFENSIVAS = Map.of(
+    "mierda", List.of("mierdita", "mierditas", "mierdero", "mierdera", "mierderos", "mierderas",
+      "mierdoso", "mierdosa", "mierdosos", "mierdosas"),
+    "puta", List.of("putita", "putitas", "putazo", "putazos"),
+    "idiota", List.of("idiotita", "idiotitas", "idiotazo", "idiotazos", "idiotez", "idioteces"),
+    "estupido", List.of("estupidito", "estupidita", "estupiditos", "estupiditas", "estupidez", "estupideces"),
+    "estupida", List.of("estupidita", "estupiditas"),
+    "cabron", List.of("cabrona", "cabroncito", "cabroncita", "cabroncitos", "cabroncitas",
+      "cabronazo", "cabronaza", "cabronazos", "cabronazas")
+  );
+
+  private static List<String> formasOfensivas(String palabra) {
+    List<String> derivaciones = DERIVACIONES_OFENSIVAS.get(palabra);
+    if (derivaciones == null) {
+      return List.of(palabra);
+    }
+    return java.util.stream.Stream.concat(java.util.stream.Stream.of(palabra), derivaciones.stream())
+      .distinct().toList();
+  }
+
   private static final Map<String, List<Pattern>> PATRONES_PALABRAS = new LinkedHashMap<>();
   private static final Map<String, List<Pattern>> PATRONES_DIRIGIDOS = new LinkedHashMap<>();
   private static final List<Pattern> PATRONES_AMENAZA;
 
   static {
     for (String palabra : PALABRAS_BLOQUEADAS) {
+      List<String> formas = PALABRAS_OFENSIVAS.contains(palabra) ? formasOfensivas(palabra) : List.of(palabra);
+      List<Pattern> patrones = formas.stream()
+        .flatMap(forma -> java.util.stream.Stream.of(forma, colapsarRepeticiones(forma)))
+        .distinct()
+        .map(forma -> Pattern.compile("(?:^|[^a-z])" + nucleo(forma)))
+        .toList();
+      PATRONES_PALABRAS.put(palabra, patrones);
       List<String> nucleos = List.of(nucleo(palabra), nucleo(colapsarRepeticiones(palabra)));
-      PATRONES_PALABRAS.put(palabra, nucleos.stream()
-        .map(n -> Pattern.compile("(?:^|[^a-z])" + n)).toList());
       PATRONES_DIRIGIDOS.put(palabra, nucleos.stream()
         .map(n -> Pattern.compile(DIRIGIDO + n)).toList());
     }
@@ -150,8 +169,10 @@ public class ResenaModerationService {
 
   /**
    * Entre letras se admite cualquier separador («m i e r d a», «p.u.t.a»).
-   * Se aceptan plurales con «s» o «es», y los extremos deben ser límite de
-   * palabra: «computadora» no activa «puta».
+   * Se aceptan plurales con «s» o «es». Las familias ofensivas usan
+   * derivaciones explícitas (diminutivos, aumentativos y nominalizaciones),
+   * no un sufijo abierto, para evitar falsos positivos. Los extremos deben ser
+   * límite de palabra: «computadora» no activa «puta».
    */
   private static String nucleo(String palabra) {
     StringBuilder cuerpo = new StringBuilder();

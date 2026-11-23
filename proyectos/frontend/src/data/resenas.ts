@@ -149,8 +149,30 @@ function patronesDe(palabra: string, prefijo: string): RegExp[] {
   );
 }
 
+/** Derivaciones ofensivas explícitas: no se aplica stemming general para evitar falsos positivos. */
+const DERIVACIONES_OFENSIVAS: Record<string, readonly string[]> = {
+  mierda: ["mierdita", "mierditas", "mierdero", "mierdera", "mierderos", "mierderas",
+    "mierdoso", "mierdosa", "mierdosos", "mierdosas"],
+  puta: ["putita", "putitas", "putazo", "putazos"],
+  idiota: ["idiotita", "idiotitas", "idiotazo", "idiotazos", "idiotez", "idioteces"],
+  estupido: ["estupidito", "estupidita", "estupiditos", "estupiditas", "estupidez", "estupideces"],
+  estupida: ["estupidita", "estupiditas"],
+  cabron: ["cabrona", "cabroncito", "cabroncita", "cabroncitos", "cabroncitas",
+    "cabronazo", "cabronaza", "cabronazos", "cabronazas"],
+};
+
+function formasOfensivas(palabra: string): string[] {
+  return [palabra, ...(DERIVACIONES_OFENSIVAS[palabra] ?? [])];
+}
+
 const PATRONES_PALABRAS = new Map<string, RegExp[]>(
-  PALABRAS_NO_PERMITIDAS.map((palabra) => [palabra, patronesDe(palabra, "(?:^|[^a-z])")]),
+  PALABRAS_NO_PERMITIDAS.map((palabra) => [
+    palabra,
+    (PALABRAS_OFENSIVAS as readonly string[]).includes(palabra)
+      ? [...new Set(formasOfensivas(palabra).flatMap((forma) => [forma, colapsarRepeticiones(forma)]))]
+        .map((forma) => new RegExp("(?:^|[^a-z])" + nucleo(forma)))
+      : patronesDe(palabra, "(?:^|[^a-z])"),
+  ]),
 );
 const PATRONES_DIRIGIDOS = new Map<string, RegExp[]>(
   PALABRAS_AMBIGUAS.map((palabra) => [palabra, patronesDe(palabra, DIRIGIDO)]),

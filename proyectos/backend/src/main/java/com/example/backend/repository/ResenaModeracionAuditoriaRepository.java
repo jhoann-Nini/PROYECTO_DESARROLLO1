@@ -17,7 +17,7 @@ public interface ResenaModeracionAuditoriaRepository
     /**
      * Caso 6, reincidencia: fechas de las faltas del autor desde {@code desde}.
      * Falta = RECHAZAR, u OCULTAR sin un RESTAURAR posterior en la misma
-     * reseña. Incluye reseñas eliminadas por su autor.
+     * reseña, sin una apelación ACEPTADA (migración 026). Incluye reseñas eliminadas por su autor.
      */
     @Query("""
         SELECT a.fechaEvento FROM ResenaModeracionAuditoria a
@@ -29,6 +29,9 @@ public interface ResenaModeracionAuditoriaRepository
                    WHERE b.resena = a.resena AND b.accion = 'RESTAURAR'
                      AND (b.fechaEvento > a.fechaEvento
                           OR (b.fechaEvento = a.fechaEvento AND b.idAuditoria > a.idAuditoria)))))
+          AND NOT EXISTS (
+              SELECT ap.idApelacion FROM Apelacion ap
+              WHERE ap.decision = a AND ap.estado = com.example.backend.entity.EstadoApelacion.ACEPTADA)
         ORDER BY a.fechaEvento DESC
         """)
     List<LocalDateTime> findFechasFaltasDelAutorDesde(
@@ -50,6 +53,9 @@ public interface ResenaModeracionAuditoriaRepository
                    WHERE b.resena = a.resena AND b.accion = 'RESTAURAR'
                      AND (b.fechaEvento > a.fechaEvento
                           OR (b.fechaEvento = a.fechaEvento AND b.idAuditoria > a.idAuditoria)))))
+          AND NOT EXISTS (
+              SELECT ap.idApelacion FROM Apelacion ap
+              WHERE ap.decision = a AND ap.estado = com.example.backend.entity.EstadoApelacion.ACEPTADA)
         GROUP BY u.idUsuario, u.nombre, u.correo
         HAVING COUNT(a) >= :minimo
         ORDER BY COUNT(a) DESC, MAX(a.fechaEvento) DESC

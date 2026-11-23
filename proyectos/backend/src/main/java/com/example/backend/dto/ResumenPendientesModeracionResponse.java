@@ -8,5 +8,6 @@ public record ResumenPendientesModeracionResponse(
         long revisionAutomatica,
         long reportesResenas,
         long reportesOfertas,
+        long apelaciones,
         long total
 ) {}

@@ -114,6 +114,8 @@ export interface ResumenPendientesModeracion {
   reportesResenas: number;
   /** Reportes de ofertas pendientes o en revisión. */
   reportesOfertas: number;
+  /** Apelaciones pendientes. */
+  apelaciones: number;
   total: number;
 }
 
@@ -137,4 +139,52 @@ export interface CuentaReincidente {
   correo: string;
   faltas: number;
   ultimaFalta: string;
+}
+
+/** Estado de una apelación (migración 026). */
+export type EstadoApelacion = "PENDIENTE" | "ACEPTADA" | "RECHAZADA";
+
+/** Apelación tal como la ve su autor. */
+export interface Apelacion {
+  idApelacion: number;
+  estado: EstadoApelacion;
+  motivo: string;
+  respuesta: string | null;
+  fechaSolicitud: string;
+  fechaResolucion: string | null;
+}
+
+/** `GET /api/apelaciones/mias`: decisión reciente sobre una reseña del autor. */
+export interface DecisionApelable {
+  idAuditoria: number;
+  idResena: number;
+  nombreProducto: string | null;
+  comentarioRevisado: string | null;
+  accion: "RECHAZAR" | "OCULTAR";
+  motivoDecision: string;
+  fechaDecision: string;
+  plazoHasta: string;
+  apelable: boolean;
+  apelacion: Apelacion | null;
+}
+
+/** `GET /api/moderacion/apelaciones`: apelación tal como la ve un moderador. */
+export interface ApelacionModeracion {
+  idApelacion: number;
+  estado: EstadoApelacion;
+  motivoApelacion: string;
+  respuesta: string | null;
+  fechaSolicitud: string;
+  fechaResolucion: string | null;
+  idResena: number;
+  nombreProducto: string | null;
+  comentarioRevisado: string | null;
+  accion: "RECHAZAR" | "OCULTAR";
+  motivoDecision: string;
+  fechaDecision: string;
+  idAutor: number;
+  nombreAutor: string;
+  nombreModeradorOriginal: string;
+  nombreModeradorResolucion: string | null;
+  puedeResolver: boolean;
 }

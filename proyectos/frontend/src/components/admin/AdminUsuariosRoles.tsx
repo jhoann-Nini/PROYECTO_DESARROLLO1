@@ -15,6 +15,8 @@ import {
   revocarRolUsuario,
 } from "@/services/api";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import CuentasReincidentes from "@/components/admin/CuentasReincidentes";
+import type { CuentaReincidente } from "@/types/moderacion";
 import { CLASE_FOCO } from "@/components/ui/foco";
 
 function formatearFecha(valor: string): string {
@@ -152,6 +154,31 @@ export default function AdminUsuariosRoles() {
         err instanceof ApiError
           ? err.message
           : "No fue posible buscar las cuentas.",
+      );
+    } finally {
+      setCargandoUsuarios(false);
+    }
+  }
+
+  /** Caso 6: busca la cuenta reincidente por su correo y la selecciona. */
+  async function revisarCuenta(cuenta: CuentaReincidente) {
+    if (cargandoUsuarios) return;
+    setCorreoBusqueda(cuenta.correo);
+    setCargandoUsuarios(true);
+    setErrorUsuarios(null);
+    setErrorAccion(null);
+    setMensajeExito(null);
+    try {
+      const cuentas = await obtenerUsuariosAdmin(cuenta.correo);
+      setUsuarios(cuentas);
+      setCorreoAplicado(cuenta.correo);
+      setSeleccionadoId(
+        cuentas.some((c) => c.idUsuario === cuenta.idUsuario) ? cuenta.idUsuario : null,
+      );
+      setRolSeleccionado("");
+    } catch (err) {
+      setErrorUsuarios(
+        err instanceof ApiError ? err.message : "No fue posible buscar las cuentas.",
       );
     } finally {
       setCargandoUsuarios(false);
@@ -305,6 +332,8 @@ export default function AdminUsuariosRoles() {
         cuenta. Tampoco está disponible la lectura del historial de auditoría;
         esta vista solo muestra los roles activos confirmados.
       </p>
+
+      <CuentasReincidentes onRevisar={revisarCuenta} />
 
       <form onSubmit={buscar} className="flex flex-wrap items-end gap-3">
         <label

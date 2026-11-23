@@ -40,6 +40,7 @@ public class ResenaService {
     private final ResenaCreateTransaction resenaCreateTransaction;
     private final ResenaModerationService resenaModerationService;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
+    private final ReincidenciaService reincidenciaService;
 
     public ResenaService(ResenaRepository resenaRepository,
                          ProductoRepository productoRepository,
@@ -47,7 +48,9 @@ public class ResenaService {
                          ResenaUpdateHelper resenaUpdateHelper,
                          ResenaCreateTransaction resenaCreateTransaction,
                          ResenaModerationService resenaModerationService,
-                         ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
+                         ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository,
+                         ReincidenciaService reincidenciaService) {
+                         this.reincidenciaService = reincidenciaService;
       this.resenaRepository = resenaRepository;
       this.productoRepository = productoRepository;
       this.usuarioService = usuarioService;
@@ -121,6 +124,8 @@ public class ResenaService {
 
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
         validarUsuarioActivo(usuario);
+        // Caso 6: con bloqueo por reincidencia no se edita.
+        reincidenciaService.verificarPuedePublicar(usuario.getIdUsuario());
 
         Resena resena = resenaRepository.findById(idResena)
                 .filter(r -> Boolean.TRUE.equals(r.getEstado()))
@@ -146,6 +151,7 @@ public class ResenaService {
       // PENDIENTE se conserva, RECHAZADA vuelve a revisión
       // y PUBLICADA se analiza de nuevo.
       resena.setEstadoModeracion(
+        reincidenciaService.requiereRevisionPrevia(usuario.getIdUsuario()) ? EstadoModeracion.PENDIENTE :
         resenaModerationService.estadoTrasEdicion(
           resena.getEstadoModeracion(), comentarioLimpio,
           resenaRepository.comentariosDeOtrasResenasDelAutor(

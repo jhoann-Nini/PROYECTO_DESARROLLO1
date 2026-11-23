@@ -185,6 +185,15 @@ Pruebas: `ContadorPendientes.test.tsx`,
 `useResumenPendientesModeracion.test.tsx`, las del contador en
 `PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
 
+### 3.4 Reincidencia (Caso 6, prioridad media)
+
+- **Perfil:** `EstadoCuentaReincidencia` consulta `GET /api/usuarios/me/reincidencia` y, si hay faltas, muestra la tarjeta «Estado de tu cuenta» con el nivel, la fecha de fin y cuándo caduca la falta más antigua. Sin faltas, o si la consulta falla, no muestra nada.
+- **Bloqueo:** el formulario de reseña muestra el mensaje del `403` con el manejo de errores existente.
+- **Panel de administración, «Usuarios y roles»:** `CuentasReincidentes` lista las cuentas con 4 faltas o más. «Revisar» busca la cuenta por su correo y la selecciona para usar el bloque «Estado de la cuenta».
+- Reglas completas en `proyectos/docs/api.md` §33.5.
+
+Pruebas: `EstadoCuentaReincidencia.test.tsx`, `CuentasReincidentes.test.tsx` y las de integración en `AdminUsuariosRoles.test.tsx` y `PerfilCliente.test.tsx`.
+
 ## 4. Pendientes y límites conocidos
 
 1. El backend expone `GET /api/moderacion/resenas/{id}/historial`, pero el

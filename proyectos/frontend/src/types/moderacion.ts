@@ -116,3 +116,25 @@ export interface ResumenPendientesModeracion {
   reportesOfertas: number;
   total: number;
 }
+
+/** Restricción vigente por reincidencia (Caso 6). */
+export type NivelReincidencia = "NINGUNO" | "AVISO" | "REVISION_PREVIA" | "BLOQUEO";
+
+/** `GET /api/usuarios/me/reincidencia`. Fechas ISO; nulas cuando no aplican. */
+export interface EstadoReincidencia {
+  faltas: number;
+  nivel: NivelReincidencia;
+  ultimaFalta: string | null;
+  revisionPreviaHasta: string | null;
+  bloqueoHasta: string | null;
+  proximaCaducidad: string | null;
+}
+
+/** `GET /api/admin/usuarios/reincidentes`: cuenta activa con 4 faltas o más. */
+export interface CuentaReincidente {
+  idUsuario: number;
+  nombre: string;
+  correo: string;
+  faltas: number;
+  ultimaFalta: string;
+}

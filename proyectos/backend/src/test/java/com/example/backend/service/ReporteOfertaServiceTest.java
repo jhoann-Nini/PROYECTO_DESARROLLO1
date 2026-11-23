@@ -43,6 +43,9 @@ class ReporteOfertaServiceTest {
   @Mock
   private Jwt jwt;
 
+  @Mock
+  private ReincidenciaService reincidenciaService;
+
   @InjectMocks
   private ReporteOfertaService reporteOfertaService;
 

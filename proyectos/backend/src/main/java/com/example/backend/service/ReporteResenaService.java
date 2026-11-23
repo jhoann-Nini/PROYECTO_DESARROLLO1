@@ -56,6 +56,7 @@ public class ReporteResenaService {
     private final ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository;
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
     private final LimiteReportesService limiteReportesService;
+    private final ReincidenciaService reincidenciaService;
 
     @Autowired
     public ReporteResenaService(
@@ -64,7 +65,9 @@ public class ReporteResenaService {
             UsuarioService usuarioService,
             ReporteResenaDecisionAuditoriaRepository decisionAuditoriaRepository,
             ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository,
-            LimiteReportesService limiteReportesService) {
+            LimiteReportesService limiteReportesService,
+            ReincidenciaService reincidenciaService) {
+            this.reincidenciaService = reincidenciaService;
         this.reporteResenaRepository = reporteResenaRepository;
         this.limiteReportesService = limiteReportesService;
         this.resenaRepository = resenaRepository;
@@ -84,6 +87,8 @@ public class ReporteResenaService {
 
         Usuario usuario = usuarioService.obtenerUsuarioDesdeJwt(jwt);
         validarUsuarioActivo(usuario);
+        // Caso 6: con bloqueo por reincidencia no se reporta.
+        reincidenciaService.verificarPuedePublicar(usuario.getIdUsuario());
         validarMotivoYDescripcion(request);
 
         Resena resena = resenaRepository.findByIdForModeration(idResena)

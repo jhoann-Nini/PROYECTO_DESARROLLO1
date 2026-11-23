@@ -1744,3 +1744,34 @@ La cola (`GET /api/moderacion/resenas/en-revision`, §30.1) recalcula los dos mo
 - Solo devuelve cantidades: no expone contenido, autores ni reportantes.
 - **Errores:** `401`; `403` sin rol de moderación o con la cuenta suspendida.
 
+## 33.5 Reincidencia con restricciones graduales
+Las restricciones se calculan a partir del historial de moderación; no se guardan. Diseño: `docs/superpowers/specs/2026-11-22-reincidencia-design.md`.
+
+- **Falta:** un `RECHAZAR`, o un `OCULTAR` sin un `RESTAURAR` posterior en la misma reseña, en los últimos 90 días. Cuenta también si el autor eliminó la reseña. El ocultamiento automático por 3 reportes no cuenta.
+- **Escalones.** Los plazos se cuentan desde la falta más reciente:
+
+  | Faltas | Restricción |
+  |---|---|
+  | 1 | Aviso en el perfil |
+  | 2 | Revisión previa durante 30 días: las reseñas nuevas o editadas quedan en `PENDIENTE` |
+  | 3 | Bloqueo durante 7 días: crear o editar reseñas y reportar reseñas u ofertas devuelve `403` con `Tu cuenta no puede publicar ni reportar hasta el dd/MM/yyyy HH:mm por reincidencia.` Eliminar una reseña propia sigue permitido |
+  | 4 o más | Aparece en la lista del administrador, que decide si suspende la cuenta (§33.2) |
+
+- **Cola de revisión (§30.1):** con 2 faltas o más, una reseña cuyo texto no tiene otros motivos muestra `riesgo: "MEDIO"` y el motivo `Revisión previa por reincidencia`.
+
+### `GET /api/usuarios/me/reincidencia`
+Cualquier usuario autenticado.
+```json
+{ "faltas": 2, "nivel": "REVISION_PREVIA", "ultimaFalta": "2026-11-20T10:00:00",
+  "revisionPreviaHasta": "2026-12-20T10:00:00", "bloqueoHasta": null,
+  "proximaCaducidad": "2027-02-18T10:00:00" }
+```
+- `nivel`: `NINGUNO`, `AVISO`, `REVISION_PREVIA` o `BLOQUEO`, el más alto vigente.
+- `proximaCaducidad`: fecha en que deja de contar la falta más antigua.
+- **Errores:** `401`.
+
+### `GET /api/admin/usuarios/reincidentes`
+Solo `Administrador`. Lista las cuentas **activas** con 4 faltas o más, ordenadas por número de faltas:
+`[{ "idUsuario": 9, "nombre": "…", "correo": "…", "faltas": 5, "ultimaFalta": "…" }]`.
+**Errores:** `401`; `403` sin rol de administrador.
+

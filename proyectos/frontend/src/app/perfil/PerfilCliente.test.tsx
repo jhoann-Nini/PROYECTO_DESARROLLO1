@@ -88,10 +88,13 @@ vi.mock("@/services/api", async (importOriginal) => {
   return {
     ...actual,
     obtenerResenas: vi.fn(),
+    obtenerMiReincidencia: vi.fn().mockResolvedValue({
+      faltas: 0, nivel: "NINGUNO", ultimaFalta: null, revisionPreviaHasta: null, bloqueoHasta: null, proximaCaducidad: null,
+    }),
   };
 });
 
-import { obtenerResenas } from "@/services/api";
+import { obtenerMiReincidencia, obtenerResenas } from "@/services/api";
 import PerfilCliente from "./PerfilCliente";
 
 const mockResenas = vi.mocked(obtenerResenas);
@@ -373,5 +376,21 @@ describe("PerfilCliente", () => {
     render(<PerfilCliente />);
 
     expect(resumenPendientesMock.habilitado.every((h) => h === false)).toBe(true);
+  });
+
+  it("muestra el estado de la cuenta cuando hay faltas", async () => {
+    sesionMock.usuario = USUARIO;
+    vi.mocked(obtenerMiReincidencia).mockResolvedValueOnce({
+      faltas: 1,
+      nivel: "AVISO",
+      ultimaFalta: "2026-11-20T10:00:00",
+      revisionPreviaHasta: null,
+      bloqueoHasta: null,
+      proximaCaducidad: "2027-02-18T10:00:00",
+    });
+
+    render(<PerfilCliente />);
+
+    expect(await screen.findByRole("status", { name: "Estado de tu cuenta" })).toBeDefined();
   });
 });

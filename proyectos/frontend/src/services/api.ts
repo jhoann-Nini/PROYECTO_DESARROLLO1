@@ -22,6 +22,8 @@ import type {
   ResenaEnRevisionResponse,
   ResenaReportadaResponse,
   ResumenPendientesModeracion,
+  EstadoReincidencia,
+  CuentaReincidente,
 } from "@/types/moderacion";
 import type {
   Establecimiento,
@@ -537,6 +539,16 @@ export async function obtenerResenasEnRevision(): Promise<ResenaEnRevisionRespon
     "/api/moderacion/resenas/en-revision",
     { method: "GET" },
   );
+}
+
+/** Caso 6: faltas de moderación del usuario autenticado y restricción vigente. */
+export async function obtenerMiReincidencia(): Promise<EstadoReincidencia> {
+  return apiFetchAutenticado<EstadoReincidencia>("/api/usuarios/me/reincidencia", { method: "GET" });
+}
+
+/** Caso 6: cuentas activas con 4 faltas o más (solo administradores). */
+export async function obtenerCuentasReincidentes(): Promise<CuentaReincidente[]> {
+  return apiFetchAutenticado<CuentaReincidente[]>("/api/admin/usuarios/reincidentes", { method: "GET" });
 }
 
 /**

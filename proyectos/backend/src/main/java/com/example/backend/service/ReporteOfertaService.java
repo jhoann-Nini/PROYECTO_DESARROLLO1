@@ -27,6 +27,7 @@ public class ReporteOfertaService {
   private final ProductoEstablecimientoRepository productoEstablecimientoRepository;
   private final UsuarioService usuarioService;
   private final LimiteReportesService limiteReportesService;
+  private final ReincidenciaService reincidenciaService;
 
   static final String MENSAJE_REPORTE_ABIERTO =
     "Ya tienes un reporte abierto sobre esta oferta. Espera a que moderación lo revise.";
@@ -38,7 +39,9 @@ public class ReporteOfertaService {
     ReporteOfertaRepository reporteOfertaRepository,
     ProductoEstablecimientoRepository productoEstablecimientoRepository,
     UsuarioService usuarioService,
-    LimiteReportesService limiteReportesService) {
+    LimiteReportesService limiteReportesService,
+    ReincidenciaService reincidenciaService) {
+    this.reincidenciaService = reincidenciaService;
 
     this.reporteOfertaRepository = reporteOfertaRepository;
     this.productoEstablecimientoRepository = productoEstablecimientoRepository;
@@ -61,6 +64,8 @@ public class ReporteOfertaService {
       throw new ResponseStatusException(
         HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
     }
+    // Caso 6: con bloqueo por reincidencia no se reporta.
+    reincidenciaService.verificarPuedePublicar(usuario.getIdUsuario());
 
     // 2. Comprobar que la oferta realmente existe.
     ProductoEstablecimientoId ofertaId =

@@ -36,12 +36,15 @@ public class RevisionResenasService {
     private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
     private final ResenaModerationService resenaModerationService;
     private final UsuarioService usuarioService;
+    private final ReincidenciaService reincidenciaService;
 
     public RevisionResenasService(
             ResenaRepository resenaRepository,
             ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository,
             ResenaModerationService resenaModerationService,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            ReincidenciaService reincidenciaService) {
+        this.reincidenciaService = reincidenciaService;
         this.resenaRepository = resenaRepository;
         this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
         this.resenaModerationService = resenaModerationService;
@@ -128,6 +131,15 @@ public class RevisionResenasService {
                                 ? resenaRepository.comentariosDeOtrasResenasDelAutor(
                                         resena.getUsuario().getIdUsuario(), resena.getIdResena())
                                 : java.util.List.of());
+        // Caso 6: con 2 faltas o más en la ventana, la reseña pudo quedar retenida
+        // por revisión previa aunque el texto sea limpio. Se usa el conteo y no la
+        // vigencia para que el motivo no desaparezca si la revisión previa vence.
+        if (!analisis.riesgo().requiereRevision() && resena.getUsuario() != null
+                && reincidenciaService.contarFaltas(resena.getUsuario().getIdUsuario())
+                        >= ReincidenciaService.MIN_FALTAS_REVISION_PREVIA) {
+            analisis = new ResenaModerationService.ResultadoModeracion(
+                    RiesgoModeracion.MEDIO, java.util.List.of(ReincidenciaService.MOTIVO_REVISION_PREVIA));
+        }
         return new ResenaEnRevisionResponse(
                 resena.getIdResena(),
                 resena.getProducto() != null ? resena.getProducto().getIdProducto() : null,

@@ -7,6 +7,8 @@ import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.AuditoriaUsuarioEstadoRepository;
+import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
+import com.example.backend.dto.CuentaReincidenteResponse;
 import com.example.backend.repository.UsuarioRepository;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
@@ -31,16 +33,34 @@ public class AdministracionCuentasService {
   private final AuditoriaUsuarioEstadoRepository auditoriaRepository;
   private final UsuarioService usuarioService;
   private final AdministracionConsultasService consultasService;
+  private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
 
   public AdministracionCuentasService(
     UsuarioRepository usuarioRepository,
     AuditoriaUsuarioEstadoRepository auditoriaRepository,
     UsuarioService usuarioService,
-    AdministracionConsultasService consultasService) {
+    AdministracionConsultasService consultasService,
+    ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
+    this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
     this.usuarioRepository = usuarioRepository;
     this.auditoriaRepository = auditoriaRepository;
     this.usuarioService = usuarioService;
     this.consultasService = consultasService;
+  }
+
+  /**
+   * Caso 6: cuentas activas con {@link ReincidenciaService#MIN_FALTAS_ADMIN}
+   * faltas o más en la ventana, para que un administrador decida si suspenderlas.
+   */
+  @Transactional(readOnly = true)
+  public java.util.List<CuentaReincidenteResponse> listarReincidentes(Jwt jwt) {
+    Usuario administrador = usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    if (!Boolean.TRUE.equals(administrador.getEstado()) || !tieneRolActivo(administrador, "Administrador")) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Se requiere un rol activo de Administrador.");
+    }
+    return moderacionAuditoriaRepository.findCuentasReincidentes(
+      java.time.LocalDateTime.now().minusDays(ReincidenciaService.VENTANA_DIAS),
+      ReincidenciaService.MIN_FALTAS_ADMIN);
   }
 
   @Transactional

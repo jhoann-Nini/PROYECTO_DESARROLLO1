@@ -1,11 +1,14 @@
 package com.example.backend.controller;
 
 import com.example.backend.dto.CambioEstadoCuentaRequest;
+import com.example.backend.dto.CuentaReincidenteResponse;
 import com.example.backend.dto.UsuarioAdminResponse;
 import com.example.backend.service.AdministracionCuentasService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +27,12 @@ public class AdministracionCuentasController {
 
   public AdministracionCuentasController(AdministracionCuentasService cuentasService) {
     this.cuentasService = cuentasService;
+  }
+
+  /** Caso 6: cuentas activas con 4 faltas o más en los últimos 90 días. */
+  @GetMapping("/reincidentes")
+  public List<CuentaReincidenteResponse> listarReincidentes(@AuthenticationPrincipal Jwt jwt) {
+    return cuentasService.listarReincidentes(jwt);
   }
 
   @PutMapping("/{idUsuario}/estado")

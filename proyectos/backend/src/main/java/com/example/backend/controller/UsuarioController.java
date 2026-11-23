@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.EstadoReincidenciaResponse;
 import com.example.backend.dto.UsuarioMeResponse;
+import com.example.backend.service.ReincidenciaService;
 import com.example.backend.service.UsuarioService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,9 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final ReincidenciaService reincidenciaService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, ReincidenciaService reincidenciaService) {
         this.usuarioService = usuarioService;
+        this.reincidenciaService = reincidenciaService;
+    }
+
+    /**
+     * Caso 6: faltas de moderación del usuario autenticado y restricción
+     * vigente (aviso, revisión previa o bloqueo).
+     */
+    @GetMapping("/me/reincidencia")
+    public EstadoReincidenciaResponse obtenerMiReincidencia(@AuthenticationPrincipal Jwt jwt) {
+        return reincidenciaService.evaluar(usuarioService.obtenerUsuarioDesdeJwt(jwt).getIdUsuario());
     }
 
     /**

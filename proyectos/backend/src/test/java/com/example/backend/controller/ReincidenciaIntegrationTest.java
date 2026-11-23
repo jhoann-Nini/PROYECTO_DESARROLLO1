@@ -1,9 +1,12 @@
 package com.example.backend.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -210,6 +213,92 @@ class ReincidenciaIntegrationTest {
         publicar(producto, "Muy buen producto")
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.estadoModeracion").value("PUBLICADA"));
+    }
+
+    // ---------- Cola de revisión y endpoints de consulta ----------
+
+    @Test
+    @DisplayName("La cola muestra el motivo de revisión previa en un texto limpio")
+    void colaMuestraMotivoRevisionPrevia() throws Exception {
+        faltas(autor, 2, 5);
+        Resena retenida = resena(autor, producto, "Muy buen producto", EstadoModeracion.PENDIENTE, true);
+
+        mockMvc.perform(get("/api/moderacion/resenas/en-revision").with(como(moderador)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.idResena == " + retenida.getIdResena() + ")].riesgo").value(hasItem("MEDIO")))
+                .andExpect(jsonPath("$[?(@.idResena == " + retenida.getIdResena() + ")].motivosDeteccion[0]")
+                        .value(hasItem("Revisión previa por reincidencia")));
+    }
+
+    @Test
+    @DisplayName("La cola conserva el motivo aunque la revisión previa ya haya vencido")
+    void colaConservaElMotivoAunqueLaRevisionPreviaHayaVencido() throws Exception {
+        faltas(autor, 2, 40);
+        Resena retenida = resena(autor, producto, "Muy buen producto", EstadoModeracion.PENDIENTE, true);
+
+        mockMvc.perform(get("/api/moderacion/resenas/en-revision").with(como(moderador)))
+                .andExpect(jsonPath("$[?(@.idResena == " + retenida.getIdResena() + ")].motivosDeteccion[0]")
+                        .value(hasItem("Revisión previa por reincidencia")));
+    }
+
+    @Test
+    @DisplayName("El usuario consulta su nivel y sus fechas")
+    void meReincidenciaDevuelveNivelYFechas() throws Exception {
+        faltas(autor, 3, 1);
+
+        mockMvc.perform(get("/api/usuarios/me/reincidencia").with(como(autor)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.faltas").value(3))
+                .andExpect(jsonPath("$.nivel").value("BLOQUEO"))
+                .andExpect(jsonPath("$.bloqueoHasta").exists())
+                .andExpect(jsonPath("$.revisionPreviaHasta").exists())
+                .andExpect(jsonPath("$.proximaCaducidad").exists())
+                // Los métodos de ayuda del record no se exponen.
+                .andExpect(jsonPath("$.bloqueoActivo").doesNotExist())
+                .andExpect(jsonPath("$.revisionPreviaActiva").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Sin faltas, el nivel es NINGUNO")
+    void meReincidenciaSinFaltas() throws Exception {
+        mockMvc.perform(get("/api/usuarios/me/reincidencia").with(como(autor)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.faltas").value(0))
+                .andExpect(jsonPath("$.nivel").value("NINGUNO"));
+    }
+
+    @Test
+    @DisplayName("Consultar la reincidencia exige autenticación")
+    void meReincidenciaSinToken401() throws Exception {
+        mockMvc.perform(get("/api/usuarios/me/reincidencia")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("La lista de reincidentes es solo para administradores")
+    void reincidentesSoloAdministrador403() throws Exception {
+        mockMvc.perform(get("/api/admin/usuarios/reincidentes").with(como(moderador)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("La lista incluye cuentas activas con 4 faltas o más")
+    void reincidentesListaCuatroFaltasYExcluyeSuspendidasYTresFaltas() throws Exception {
+        Rol rolUsuario = rol("Usuario registrado");
+        Usuario conTres = usuario("Con tres faltas", rolUsuario);
+        Usuario suspendido = usuario("Suspendido", rolUsuario);
+        faltas(autor, 4, 1);
+        faltas(conTres, 3, 1);
+        faltas(suspendido, 5, 1);
+        suspendido.setEstado(false);
+        usuarioRepository.saveAndFlush(suspendido);
+
+        mockMvc.perform(get("/api/admin/usuarios/reincidentes").with(como(administrador)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].idUsuario").value(hasItem(autor.getIdUsuario().intValue())))
+                .andExpect(jsonPath("$[?(@.idUsuario == " + autor.getIdUsuario() + ")].faltas").value(hasItem(4)))
+                .andExpect(jsonPath("$[?(@.idUsuario == " + autor.getIdUsuario() + ")].correo").value(hasItem(autor.getCorreo())))
+                .andExpect(jsonPath("$[*].idUsuario").value(not(hasItem(conTres.getIdUsuario().intValue()))))
+                .andExpect(jsonPath("$[*].idUsuario").value(not(hasItem(suspendido.getIdUsuario().intValue()))));
     }
 
     // ---------- Utilidades ----------

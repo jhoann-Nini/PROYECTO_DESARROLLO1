@@ -33,4 +33,27 @@ public interface ResenaModeracionAuditoriaRepository
         """)
     List<LocalDateTime> findFechasFaltasDelAutorDesde(
         @Param("idUsuario") Long idUsuario, @Param("desde") LocalDateTime desde);
+
+    /**
+     * Cuentas activas con al menos {@code minimo} faltas desde {@code desde},
+     * con el mismo criterio de falta que {@link #findFechasFaltasDelAutorDesde}.
+     */
+    @Query("""
+        SELECT new com.example.backend.dto.CuentaReincidenteResponse(
+            u.idUsuario, u.nombre, u.correo, COUNT(a), MAX(a.fechaEvento))
+        FROM ResenaModeracionAuditoria a JOIN a.resena r JOIN r.usuario u
+        WHERE u.estado = true
+          AND a.fechaEvento >= :desde
+          AND (a.accion = 'RECHAZAR'
+               OR (a.accion = 'OCULTAR' AND NOT EXISTS (
+                   SELECT b.idAuditoria FROM ResenaModeracionAuditoria b
+                   WHERE b.resena = a.resena AND b.accion = 'RESTAURAR'
+                     AND (b.fechaEvento > a.fechaEvento
+                          OR (b.fechaEvento = a.fechaEvento AND b.idAuditoria > a.idAuditoria)))))
+        GROUP BY u.idUsuario, u.nombre, u.correo
+        HAVING COUNT(a) >= :minimo
+        ORDER BY COUNT(a) DESC, MAX(a.fechaEvento) DESC
+        """)
+    List<com.example.backend.dto.CuentaReincidenteResponse> findCuentasReincidentes(
+        @Param("desde") LocalDateTime desde, @Param("minimo") long minimo);
 }

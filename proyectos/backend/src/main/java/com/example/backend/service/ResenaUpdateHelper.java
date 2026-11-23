@@ -16,10 +16,13 @@ public class ResenaUpdateHelper {
 
   private final ResenaRepository resenaRepository;
   private final ResenaModerationService resenaModerationService;
+  private final ReincidenciaService reincidenciaService;
 
   public ResenaUpdateHelper(
     ResenaRepository resenaRepository,
-    ResenaModerationService resenaModerationService) {
+    ResenaModerationService resenaModerationService,
+    ReincidenciaService reincidenciaService) {
+    this.reincidenciaService = reincidenciaService;
 
     this.resenaRepository = resenaRepository;
     this.resenaModerationService = resenaModerationService;
@@ -46,6 +49,7 @@ public class ResenaUpdateHelper {
     // PENDIENTE se conserva, RECHAZADA vuelve a revisión
     // y PUBLICADA se analiza de nuevo.
     existente.setEstadoModeracion(
+      reincidenciaService.requiereRevisionPrevia(usuario.getIdUsuario()) ? EstadoModeracion.PENDIENTE :
       resenaModerationService.estadoTrasEdicion(
         existente.getEstadoModeracion(), comentarioLimpio,
         resenaRepository.comentariosDeOtrasResenasDelAutor(

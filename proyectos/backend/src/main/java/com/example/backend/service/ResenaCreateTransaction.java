@@ -30,13 +30,16 @@ public class ResenaCreateTransaction {
   private final UsuarioService usuarioService;
   private final UsuarioRepository usuarioRepository;
   private final ResenaModerationService resenaModerationService;
+  private final ReincidenciaService reincidenciaService;
 
   public ResenaCreateTransaction(
     ResenaRepository resenaRepository,
     ProductoRepository productoRepository,
     UsuarioService usuarioService,
     UsuarioRepository usuarioRepository,
-    ResenaModerationService resenaModerationService) {
+    ResenaModerationService resenaModerationService,
+    ReincidenciaService reincidenciaService) {
+    this.reincidenciaService = reincidenciaService;
 
     this.resenaRepository = resenaRepository;
     this.productoRepository = productoRepository;
@@ -63,6 +66,10 @@ public class ResenaCreateTransaction {
         "Usuario inactivo o suspendido."
       );
     }
+
+    // Caso 6: con bloqueo por reincidencia no se crea ni se edita.
+    reincidenciaService.verificarPuedePublicar(usuario.getIdUsuario());
+    boolean revisionPrevia = reincidenciaService.requiereRevisionPrevia(usuario.getIdUsuario());
 
     // Obtener y validar producto.
     Producto producto = productoRepository.findById(request.idProducto())
@@ -92,7 +99,7 @@ public class ResenaCreateTransaction {
 
       // PENDIENTE se conserva, RECHAZADA vuelve a revisión
       // y PUBLICADA se analiza de nuevo.
-      resena.setEstadoModeracion(
+      resena.setEstadoModeracion(revisionPrevia ? EstadoModeracion.PENDIENTE :
         resenaModerationService.estadoTrasEdicion(
           resena.getEstadoModeracion(), comentario,
           resenaRepository.comentariosDeOtrasResenasDelAutor(
@@ -131,7 +138,7 @@ public class ResenaCreateTransaction {
       resena.setPuntuacion(request.puntuacion());
 
       // Analizar el comentario para determinar su estado inicial.
-      resena.setEstadoModeracion(
+      resena.setEstadoModeracion(revisionPrevia ? EstadoModeracion.PENDIENTE :
         resenaModerationService.determinarEstado(comentario,
           resenaRepository.comentariosDeOtrasResenasDelAutor(usuario.getIdUsuario(), null))
       );

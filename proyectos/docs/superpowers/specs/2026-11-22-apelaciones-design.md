@@ -1,6 +1,6 @@
 # Apelaciones de decisiones de moderación (Caso 6, prioridad media)
 
-**Fecha:** 22 de noviembre de 2026. **Estado:** pendiente de aprobación.
+**Fecha:** 22 de noviembre de 2026. **Estado:** aprobado e implementado (commits ed900f1 a 48bfa24).
 
 ## Para qué
 

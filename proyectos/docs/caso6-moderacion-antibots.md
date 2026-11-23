@@ -59,5 +59,5 @@ Es un **filtro por reglas, sin IA ni aprendizaje automático**, presente en el b
    - ✅ contador de pendientes en las pestañas del panel y en el botón del perfil (`api.md` §33.4);
    - lista de palabras administrable desde el panel, con categorías (amenazas, acoso, discriminación). Ojo: si el formulario descarga la lista para avisar antes de publicar, la lista queda pública; la alternativa es que esas palabras solo las revise el backend;
    - ✅ reincidencia con restricciones graduales: aviso, revisión previa de 30 días, bloqueo de 7 días y lista para el administrador desde 4 faltas (`api.md` §33.5);
-   - apelaciones.
+   - ✅ apelaciones: el autor apela un rechazo o un ocultamiento en 15 días, lo resuelve otra persona y, si se acepta, la reseña se publica o se restaura y la falta deja de contar (`api.md` §33.6, migración 026).
 3. **Prioridad baja:** clasificador externo para casos ambiguos, solo como señal. Tiene costo por uso y obliga a enviar el texto de los usuarios a un tercero.

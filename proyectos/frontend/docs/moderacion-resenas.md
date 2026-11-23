@@ -194,6 +194,19 @@ Pruebas: `ContadorPendientes.test.tsx`,
 
 Pruebas: `EstadoCuentaReincidencia.test.tsx`, `CuentasReincidentes.test.tsx` y las de integración en `AdminUsuariosRoles.test.tsx` y `PerfilCliente.test.tsx`.
 
+### 3.5 Apelaciones (Caso 6, prioridad media)
+
+- **Perfil:** `DecisionesModeracion` consulta `GET /api/apelaciones/mias` y muestra las decisiones de los últimos 90 días con el texto revisado y el motivo.
+  - Si `apelable` es verdadero, aparece «Apelar». Abre un formulario con el motivo obligatorio y avisa hasta cuándo se puede apelar.
+  - Con apelación, muestra «En revisión», «Aceptada» o «Rechazada» y la respuesta de moderación.
+- **Panel de moderación:** pestaña «Apelaciones» con su contador. `ColaApelaciones` muestra la decisión original y el motivo del autor.
+  - «Aceptar» acepta con respuesta opcional.
+  - «Rechazar» exige respuesta.
+  - Si `puedeResolver` es falso, los botones aparecen deshabilitados con el aviso «Tú tomaste la decisión original; debe resolverla otra persona.»
+- Reglas completas en `proyectos/docs/api.md` §33.6.
+
+Pruebas: `DecisionesModeracion.test.tsx`, `ColaApelaciones.test.tsx` y la de la pestaña en `PanelModeracionModal.test.tsx`.
+
 ## 4. Pendientes y límites conocidos
 
 1. El backend expone `GET /api/moderacion/resenas/{id}/historial`, pero el

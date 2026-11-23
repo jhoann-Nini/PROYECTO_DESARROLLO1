@@ -56,10 +56,7 @@ public class UsuarioService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El claim 'sub' debe ser un UUID válido.");
         }
 
-        Boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
-        if (emailVerified != null && !emailVerified) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "El correo electrónico asociado al token no ha sido verificado.");
-        }
+        validarCorreoVerificado(jwt);
 
         Optional<Usuario> usuarioExistente = usuarioRepository.findBySupabaseUid(sub);
         if (usuarioExistente.isPresent()) {
@@ -175,11 +172,32 @@ public class UsuarioService {
         if (sub == null || sub.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El claim 'sub' es obligatorio en el token.");
         }
+        validarCorreoVerificado(jwt);
         return usuarioRepository.findBySupabaseUid(sub)
                 .orElseGet(() -> {
                     obtenerOProveerUsuario(jwt);
                     return usuarioRepository.findBySupabaseUid(sub)
                             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No fue posible autenticar al usuario."));
                 });
+    }
+
+    /**
+     * Rechaza el token si el correo no está verificado. Los access tokens de
+     * Supabase no llevan {@code email_verified} en el nivel superior (solo los
+     * ID tokens de OIDC): Supabase Auth lo envía dentro de {@code user_metadata}.
+     * Se revisan ambos lugares. Si el dato no viene, se permite: con «Confirm
+     * email» activo, Supabase no emite sesiones para correos sin confirmar.
+     */
+    private static void validarCorreoVerificado(Jwt jwt) {
+        Boolean nivelSuperior = jwt.getClaimAsBoolean("email_verified");
+        Object metadatos = jwt.getClaims().get("user_metadata");
+        Object enMetadatos = metadatos instanceof java.util.Map<?, ?> mapa ? mapa.get("email_verified") : null;
+        boolean noVerificado = Boolean.FALSE.equals(nivelSuperior)
+                || Boolean.FALSE.equals(enMetadatos)
+                || "false".equalsIgnoreCase(String.valueOf(enMetadatos));
+        if (noVerificado) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "El correo electrónico asociado al token no ha sido verificado.");
+        }
     }
 }

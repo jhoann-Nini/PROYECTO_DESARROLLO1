@@ -327,6 +327,37 @@ class UsuarioServiceTest {
     }
 
     @Test
+    @DisplayName("Supabase envía email_verified en user_metadata: si es false, responde 403 al aprovisionar")
+    void obtenerOProveerUsuario_cuandoUserMetadataEmailVerifiedEsFalse_lanza403() {
+        Jwt jwt = buildJwt(validUuidStr, testEmail, null, Map.of("email_verified", false));
+
+        assertThatThrownBy(() -> usuarioService.obtenerOProveerUsuario(jwt))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    @DisplayName("Un usuario ya aprovisionado con el correo sin verificar también recibe 403")
+    void obtenerUsuarioDesdeJwt_usuarioExistenteConCorreoSinVerificar_lanza403() {
+        // Se rechaza antes de consultar la base de datos.
+        Jwt jwt = buildJwt(validUuidStr, testEmail, null, Map.of("email_verified", false));
+
+        assertThatThrownBy(() -> usuarioService.obtenerUsuarioDesdeJwt(jwt))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> assertThat(((ResponseStatusException) ex).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    @DisplayName("Un usuario ya aprovisionado con el correo verificado se autentica")
+    void obtenerUsuarioDesdeJwt_usuarioExistenteConCorreoVerificado_devuelveUsuario() {
+        Usuario existente = crearUsuarioMock(7L, validUuidStr, testEmail);
+        given(usuarioRepository.findBySupabaseUid(validUuidStr)).willReturn(Optional.of(existente));
+        Jwt jwt = buildJwt(validUuidStr, testEmail, null, Map.of("email_verified", true));
+
+        assertThat(usuarioService.obtenerUsuarioDesdeJwt(jwt)).isSameAs(existente);
+    }
+
+    @Test
     @DisplayName("Token JWT nulo: Lanza 401 Unauthorized")
     void obtenerOProveerUsuario_cuandoJwtNulo_lanza401() {
         assertThatThrownBy(() -> usuarioService.obtenerOProveerUsuario(null))

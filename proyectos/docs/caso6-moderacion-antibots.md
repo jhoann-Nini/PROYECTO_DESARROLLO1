@@ -52,8 +52,13 @@ Es un **filtro por reglas, sin IA ni aprendizaje automático**, presente en el b
 
 1. **Configuración externa, sin costo:**
    - ✅ Cloudflare Turnstile activo en Supabase Auth. La variable `NEXT_PUBLIC_TURNSTILE_SITE_KEY` debe existir en Vercel: sin ella el formulario no muestra el CAPTCHA y, como Supabase lo exige, nadie puede iniciar sesión;
-   - ✅ Supabase exige verificar el correo. Falta corregir la comprobación del backend, que solo actúa si el token trae `email_verified` en falso;
-   - verificar que el servidor de Render solo sea accesible a través de Cloudflare, porque el límite por IP confía en `CF-Connecting-IP`.
+   - ✅ Supabase exige verificar el correo, y el backend lo comprueba en cada petición (corregido el 23 de noviembre de 2026). Los access tokens de Supabase no traen `email_verified` en el nivel superior, sino dentro de `user_metadata`, y la comprobación anterior solo miraba el nivel superior y solo al crear el perfil. Ahora revisa los dos lugares en `obtenerUsuarioDesdeJwt`, que usan todos los servicios. Verificado en Supabase: `user_metadata.email_verified` coincide con `email_confirmed_at` en todas las cuentas;
+   - ✅ Render solo es accesible a través de Cloudflare (verificado el 23 de noviembre de 2026):
+     - el frontend llama a `https://tecreview-backend.onrender.com`, que responde con `server: cloudflare`, `cf-ray` y `x-render-origin-server: Render`;
+     - Render no expone una IP pública del servidor de origen;
+     - una petición que intenta falsear la cabecera `CF-Connecting-IP` la rechaza el propio Cloudflare (`403`, error 1000) antes de llegar a Render.
+
+     Por eso el límite por IP del backend puede confiar en `CF-Connecting-IP`.
 2. **Prioridad media:**
    - ✅ señales de spam: teléfonos y el mismo texto en varias reseñas del mismo autor (`api.md` §33.3);
    - ✅ contador de pendientes en las pestañas del panel y en el botón del perfil (`api.md` §33.4);

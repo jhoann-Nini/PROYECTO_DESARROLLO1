@@ -123,13 +123,6 @@ public class ResenaModerationService {
       + "(?:(?:un|una|unos|unas|el|la|los|las|muy|tan|re|todo|toda)[^a-z]+){0,2}"
       + "|(?:pedazo|maldit[oa]s?)[^a-z]+(?:de[^a-z]+)?)";
 
-  /*
-   * Cada palabra tiene dos patrones: su forma escrita («perra») y su forma
-   * con letras repetidas colapsadas («pera»), que se compara con el texto
-   * también colapsado. Así se detecta «idiooooota» sin usar repeticiones
-   * anidadas en la expresión regular, que con textos largos desbordaban la
-   * pila del motor de expresiones regulares.
-   */
   /** Formas derivadas explícitas de insultos; evita un stemming general que produzca falsos positivos. */
   private static final Map<String, List<String>> DERIVACIONES_OFENSIVAS = Map.of(
     "mierda", List.of("mierdita", "mierditas", "mierdero", "mierdera", "mierderos", "mierderas",

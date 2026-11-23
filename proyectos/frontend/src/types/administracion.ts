@@ -18,3 +18,19 @@ export interface RolAdmin {
   nombre: string;
   descripcion: string | null;
 }
+
+/** Categoría de un término de moderación agregado (Caso 6, migración 027). */
+export type CategoriaTerminoModeracion = "AMENAZA" | "ACOSO" | "DISCRIMINACION" | "INSULTO" | "SPAM";
+
+/** `GET /api/admin/terminos-moderacion`. */
+export interface TerminoModeracion {
+  idTermino: number;
+  termino: string;
+  categoria: CategoriaTerminoModeracion;
+  etiquetaCategoria: string;
+  activo: boolean;
+  creadoPor: string | null;
+  fechaCreacion: string;
+  desactivadoPor: string | null;
+  fechaDesactivacion: string | null;
+}

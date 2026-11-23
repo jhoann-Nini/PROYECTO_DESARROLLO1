@@ -662,6 +662,14 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
   - al resolverse: `id_moderador`, `respuesta` y `fecha_resolucion`.
 
   Los triggers exigen que la decisión sea `RECHAZAR` u `OCULTAR`, que la apele su autor, que la reseña no esté eliminada y que no hayan pasado más de 15 días. Al resolverla, quien decide debe tener rol activo de moderación y no ser el autor ni el moderador original; después, la fila no se puede modificar ni borrar. No tiene permisos para `anon` ni `authenticated`. Verificación de comportamiento: `docs/sql/tests/026_verificacion_apelaciones.sql`.
+- Términos de moderación (migración 027): tabla `termino_moderacion`, con una fila por término. Columnas:
+  - `termino`, tal como lo escribió el administrador, y `termino_normalizado`, que calcula el backend;
+  - `categoria`: `AMENAZA`, `ACOSO`, `DISCRIMINACION`, `INSULTO` o `SPAM`;
+  - `activo`;
+  - `id_creado_por` y `fecha_creacion`;
+  - `id_desactivado_por` y `fecha_desactivacion`.
+
+  Un índice único parcial impide dos términos activos con la misma forma normalizada. Los triggers exigen que agregue o desactive un administrador activo, solo permiten desactivar una vez y prohíben borrar. No tiene permisos para `anon` ni `authenticated`. Verificación de comportamiento: `docs/sql/tests/027_verificacion_terminos.sql`.
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 
@@ -669,7 +677,7 @@ Este documento no debe interpretarse como un DDL completo ni como una representa
 
 ## 25.2 Estado de los scripts y de cada entorno
 
-Los scripts 001–026 están incorporados al repositorio tanto en `proyectos/backend/src/main/resources/db/migration/` como en `proyectos/docs/sql/`. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a siete productos existentes. Las migraciones 014 y 016 registran siete precios de referencia comerciales con fuente y fecha; no convierten esos valores en inventario garantizado. La migración 015 amplía la columna de imagen a TEXT para admitir URLs de origen largas sin truncarlas. La migración 017 añade la columna de verificación administrativa a establecimientos. La migración 018 crea la tabla `reporte_oferta` para gestionar reportes comunitarios de ofertas. La migración 019 asegura las funciones PL/pgSQL fijando `search_path = pg_catalog`. La migración 020 habilita la revisión humana de reseñas retenidas y la 021 la moderación de reportes de ofertas con historial append-only. Verificación del 20 de noviembre de 2026 en Supabase: la 020 estaba aplicada; las estructuras de la 017 y la 018 existían, pero sin fila en `schema_version`, y la 021 las registra.
+Los scripts 001–027 están incorporados al repositorio tanto en `proyectos/backend/src/main/resources/db/migration/` como en `proyectos/docs/sql/`. La existencia de un script no permite afirmar automáticamente que se haya aplicado en una instancia remota. Para verificar una base específica, comprobar los registros de public.schema_version, los objetos SQL y las restricciones correspondientes. La migración 004 marcada como obsoleta es una referencia histórica y no reemplaza la 004 vigente. La migración 013 asocia imágenes con licencia y atribución documentadas a siete productos existentes. Las migraciones 014 y 016 registran siete precios de referencia comerciales con fuente y fecha; no convierten esos valores en inventario garantizado. La migración 015 amplía la columna de imagen a TEXT para admitir URLs de origen largas sin truncarlas. La migración 017 añade la columna de verificación administrativa a establecimientos. La migración 018 crea la tabla `reporte_oferta` para gestionar reportes comunitarios de ofertas. La migración 019 asegura las funciones PL/pgSQL fijando `search_path = pg_catalog`. La migración 020 habilita la revisión humana de reseñas retenidas y la 021 la moderación de reportes de ofertas con historial append-only. Verificación del 20 de noviembre de 2026 en Supabase: la 020 estaba aplicada; las estructuras de la 017 y la 018 existían, pero sin fila en `schema_version`, y la 021 las registra.
 
 
 ## 25.3 Imágenes licenciadas del catálogo — 19 de noviembre de 2026

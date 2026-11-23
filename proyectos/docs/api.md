@@ -1826,3 +1826,32 @@ Cuerpo: `{ "respuesta": "…" }`, máximo 1000 caracteres.
 
 El contador (§33.4) incluye `apelaciones`, las pendientes, y las suma al `total`.
 
+## 33.7 Lista de palabras administrable (Caso 6, migración 027)
+Los administradores agregan términos al filtro automático sin desplegar código. Diseño: `docs/superpowers/specs/2026-11-22-lista-palabras-design.md`.
+
+- **Solo los evalúa el backend:** el formulario del navegador no los conoce, así que el autor no recibe aviso previo. La lista base sigue en el código y no se modifica desde la API.
+- **Categorías:**
+  - `AMENAZA` → riesgo `ALTO`, primero en la cola;
+  - `ACOSO`, `DISCRIMINACION`, `INSULTO` y `SPAM` → riesgo `MEDIO`;
+  - en todos los casos la reseña queda en `PENDIENTE`.
+- **Detección:** sin importar mayúsculas ni tildes, y detectando números en lugar de letras, separadores, letras repetidas y plural simple. Siempre palabra completa: «imbécil» no marca «imbecilidad», y «carro» no marca «caro». Las frases admiten cualquier separador entre palabras.
+- **Motivo en la cola (§30.1):** `Contiene «imbécil», de la lista de moderación (Insulto)`. Solo lo ven los moderadores.
+- **Efecto:** aplica a reseñas nuevas o editadas. El backend guarda los términos en memoria y los recarga tras cada cambio o cada 5 minutos; si la base de datos falla, conserva la última carga.
+
+### `GET /api/admin/terminos-moderacion?estado=ACTIVOS|INACTIVOS|TODOS`
+Solo `Administrador`. Por defecto devuelve los `ACTIVOS`. Cada elemento trae `idTermino`, `termino`, `categoria`, `etiquetaCategoria`, `activo`, `creadoPor`, `fechaCreacion`, `desactivadoPor` y `fechaDesactivacion`.
+
+### `POST /api/admin/terminos-moderacion`
+Cuerpo: `{ "termino": "imbécil", "categoria": "INSULTO" }`. El término tiene de 2 a 60 caracteres y debe incluir letras.
+- **Respuesta `201`.**
+- **Errores:**
+  - `400` término inválido o categoría desconocida;
+  - `401`;
+  - `403` sin rol de administrador;
+  - `409` `Ese término ya está activo en la lista.` o `Ese término ya está en la lista base del filtro.`
+
+### `PUT /api/admin/terminos-moderacion/{id}/desactivar`
+Los términos no se borran: se desactivan, registrando quién y cuándo. Para reactivarlo, se vuelve a agregar.
+- **Respuesta `200`.**
+- **Errores:** `404`; `409` `Ese término ya está desactivado.`
+

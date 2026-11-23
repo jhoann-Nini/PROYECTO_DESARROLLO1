@@ -207,6 +207,17 @@ Pruebas: `EstadoCuentaReincidencia.test.tsx`, `CuentasReincidentes.test.tsx` y l
 
 Pruebas: `DecisionesModeracion.test.tsx`, `ColaApelaciones.test.tsx` y la de la pestaña en `PanelModeracionModal.test.tsx`.
 
+### 3.6 Lista de palabras administrable (Caso 6, prioridad media)
+
+- **Panel de administración, pestaña «Palabras de moderación»:** `AdminTerminosModeracion` lista los términos con su categoría y su autor.
+  - Formulario con el término y la categoría.
+  - «Desactivar» pide confirmación en línea.
+  - Filtro «Mostrar» para ver los activos, los desactivados o todos.
+- **El formulario de reseñas no conoce estos términos** (`frontend/src/data/resenas.ts` y el corpus no cambian): una reseña con un término agregado queda en revisión sin aviso previo.
+- Reglas completas en `proyectos/docs/api.md` §33.7.
+
+Pruebas: `AdminTerminosModeracion.test.tsx` y la de la pestaña en `AdminPanelModal.test.tsx`.
+
 ## 4. Pendientes y límites conocidos
 
 1. El backend expone `GET /api/moderacion/resenas/{id}/historial`, pero el

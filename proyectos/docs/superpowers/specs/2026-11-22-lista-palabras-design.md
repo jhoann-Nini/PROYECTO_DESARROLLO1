@@ -1,6 +1,6 @@
 # Lista de palabras de moderación administrable (Caso 6, prioridad media)
 
-**Fecha:** 22 de noviembre de 2026. **Estado:** pendiente de aprobación.
+**Fecha:** 22 de noviembre de 2026. **Estado:** aprobado e implementado (commits 6fabd2f a 76c7bcd).
 
 ## Para qué
 

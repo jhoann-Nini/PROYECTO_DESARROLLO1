@@ -58,6 +58,6 @@ Es un **filtro por reglas, sin IA ni aprendizaje automático**, presente en el b
    - ✅ señales de spam: teléfonos y el mismo texto en varias reseñas del mismo autor (`api.md` §33.3);
    - ✅ contador de pendientes en las pestañas del panel y en el botón del perfil (`api.md` §33.4);
    - lista de palabras administrable desde el panel, con categorías (amenazas, acoso, discriminación). Ojo: si el formulario descarga la lista para avisar antes de publicar, la lista queda pública; la alternativa es que esas palabras solo las revise el backend;
-   - reincidencia con restricciones graduales;
+   - ✅ reincidencia con restricciones graduales: aviso, revisión previa de 30 días, bloqueo de 7 días y lista para el administrador desde 4 faltas (`api.md` §33.5);
    - apelaciones.
 3. **Prioridad baja:** clasificador externo para casos ambiguos, solo como señal. Tiene costo por uso y obliga a enviar el texto de los usuarios a un tercero.

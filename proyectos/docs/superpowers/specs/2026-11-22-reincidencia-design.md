@@ -1,6 +1,6 @@
 # Reincidencia con restricciones graduales (Caso 6, prioridad media)
 
-**Fecha:** 22 de noviembre de 2026. **Estado:** pendiente de aprobación.
+**Fecha:** 22 de noviembre de 2026. **Estado:** aprobado e implementado (commits 7fac15a a b21c07e).
 
 ## Para qué
 

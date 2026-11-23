@@ -24,6 +24,10 @@ import type {
   ResumenPendientesModeracion,
   EstadoReincidencia,
   CuentaReincidente,
+  Apelacion,
+  ApelacionModeracion,
+  DecisionApelable,
+  EstadoApelacion,
 } from "@/types/moderacion";
 import type {
   Establecimiento,
@@ -538,6 +542,38 @@ export async function obtenerResenasEnRevision(): Promise<ResenaEnRevisionRespon
   return apiFetchAutenticado<ResenaEnRevisionResponse[]>(
     "/api/moderacion/resenas/en-revision",
     { method: "GET" },
+  );
+}
+
+/** Caso 6: apela la decisión más reciente (rechazo u ocultamiento) de una reseña propia. */
+export async function crearApelacion(idResena: number, motivo: string): Promise<Apelacion> {
+  return apiFetchAutenticado<Apelacion>("/api/apelaciones", {
+    method: "POST",
+    body: JSON.stringify({ idResena, motivo: motivo.trim() }),
+  });
+}
+
+/** Caso 6: decisiones de moderación recientes sobre mis reseñas, con su apelación. */
+export async function obtenerMisDecisiones(): Promise<DecisionApelable[]> {
+  return apiFetchAutenticado<DecisionApelable[]>("/api/apelaciones/mias", { method: "GET" });
+}
+
+/** Caso 6: cola de apelaciones para moderadores (por defecto, las pendientes). */
+export async function obtenerApelacionesModeracion(estado?: EstadoApelacion): Promise<ApelacionModeracion[]> {
+  const query = estado ? `?estado=${estado}` : "";
+  return apiFetchAutenticado<ApelacionModeracion[]>(`/api/moderacion/apelaciones${query}`, { method: "GET" });
+}
+
+/** Caso 6: acepta (respuesta opcional) o rechaza (respuesta obligatoria) una apelación. */
+export async function resolverApelacion(
+  idApelacion: number,
+  decision: "aceptar" | "rechazar",
+  respuesta?: string,
+): Promise<ApelacionModeracion> {
+  const limpia = respuesta?.trim();
+  return apiFetchAutenticado<ApelacionModeracion>(
+    `/api/moderacion/apelaciones/${idApelacion}/${decision}`,
+    { method: "PUT", body: JSON.stringify(limpia ? { respuesta: limpia } : {}) },
   );
 }
 

@@ -13,7 +13,7 @@ import {
 } from "./useResumenPendientesModeracion";
 
 const mockResumen = vi.mocked(obtenerResumenPendientesModeracion);
-const RESUMEN = { revisionAutomatica: 2, reportesResenas: 1, reportesOfertas: 0, total: 3 };
+const RESUMEN = { revisionAutomatica: 2, reportesResenas: 1, reportesOfertas: 0, apelaciones: 0, total: 3 };
 
 describe("useResumenPendientesModeracion", () => {
   beforeEach(() => {

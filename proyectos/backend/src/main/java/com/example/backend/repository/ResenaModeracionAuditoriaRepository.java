@@ -17,7 +17,7 @@ public interface ResenaModeracionAuditoriaRepository
     /**
      * Caso 6, reincidencia: fechas de las faltas del autor desde {@code desde}.
      * Falta = RECHAZAR, u OCULTAR sin un RESTAURAR posterior en la misma
-     * reseña. Incluye reseñas eliminadas por su autor.
+     * reseña, sin una apelación ACEPTADA (migración 026). Incluye reseñas eliminadas por su autor.
      */
     @Query("""
         SELECT a.fechaEvento FROM ResenaModeracionAuditoria a
@@ -29,6 +29,9 @@ public interface ResenaModeracionAuditoriaRepository
                    WHERE b.resena = a.resena AND b.accion = 'RESTAURAR'
                      AND (b.fechaEvento > a.fechaEvento
                           OR (b.fechaEvento = a.fechaEvento AND b.idAuditoria > a.idAuditoria)))))
+          AND NOT EXISTS (
+              SELECT ap.idApelacion FROM Apelacion ap
+              WHERE ap.decision = a AND ap.estado = com.example.backend.entity.EstadoApelacion.ACEPTADA)
         ORDER BY a.fechaEvento DESC
         """)
     List<LocalDateTime> findFechasFaltasDelAutorDesde(
@@ -50,10 +53,32 @@ public interface ResenaModeracionAuditoriaRepository
                    WHERE b.resena = a.resena AND b.accion = 'RESTAURAR'
                      AND (b.fechaEvento > a.fechaEvento
                           OR (b.fechaEvento = a.fechaEvento AND b.idAuditoria > a.idAuditoria)))))
+          AND NOT EXISTS (
+              SELECT ap.idApelacion FROM Apelacion ap
+              WHERE ap.decision = a AND ap.estado = com.example.backend.entity.EstadoApelacion.ACEPTADA)
         GROUP BY u.idUsuario, u.nombre, u.correo
         HAVING COUNT(a) >= :minimo
         ORDER BY COUNT(a) DESC, MAX(a.fechaEvento) DESC
         """)
     List<com.example.backend.dto.CuentaReincidenteResponse> findCuentasReincidentes(
         @Param("desde") LocalDateTime desde, @Param("minimo") long minimo);
+
+    /** Caso 6, apelaciones: decisiones RECHAZAR u OCULTAR de una reseña, de la más reciente a la más antigua. */
+    @Query("""
+        SELECT a FROM ResenaModeracionAuditoria a
+        WHERE a.resena.idResena = :idResena AND a.accion IN ('RECHAZAR', 'OCULTAR')
+        ORDER BY a.fechaEvento DESC, a.idAuditoria DESC
+        """)
+    List<ResenaModeracionAuditoria> findDecisionesApelablesDeResena(@Param("idResena") Long idResena);
+
+    /** Caso 6, apelaciones: decisiones RECHAZAR u OCULTAR sobre reseñas activas del autor desde {@code desde}. */
+    @Query("""
+        SELECT a FROM ResenaModeracionAuditoria a
+        JOIN FETCH a.resena r JOIN FETCH r.producto
+        WHERE r.usuario.idUsuario = :idUsuario AND r.estado = true
+          AND a.accion IN ('RECHAZAR', 'OCULTAR') AND a.fechaEvento >= :desde
+        ORDER BY a.fechaEvento DESC, a.idAuditoria DESC
+        """)
+    List<ResenaModeracionAuditoria> findDecisionesDelAutorDesde(
+        @Param("idUsuario") Long idUsuario, @Param("desde") LocalDateTime desde);
 }

@@ -13,6 +13,7 @@ import PanelModeracionModal from "@/components/moderacion/PanelModeracionModal";
 import ContadorPendientes from "@/components/moderacion/ContadorPendientes";
 import { useResumenPendientesModeracion } from "@/hooks/useResumenPendientesModeracion";
 import EstadoCuentaReincidencia from "@/components/perfil/EstadoCuentaReincidencia";
+import DecisionesModeracion from "@/components/perfil/DecisionesModeracion";
 import PanelRepresentanteModal from "@/components/representante/PanelRepresentanteModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
@@ -341,6 +342,7 @@ export default function PerfilCliente() {
       </section>
 
       <EstadoCuentaReincidencia idUsuario={usuario.idUsuario} />
+      <DecisionesModeracion idUsuario={usuario.idUsuario} />
 
       <section aria-label="Resumen de actividad" className="mt-4 grid gap-3 sm:grid-cols-3">
         <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4">

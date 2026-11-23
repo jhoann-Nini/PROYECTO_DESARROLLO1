@@ -22,6 +22,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     decidirRevisionResena: vi.fn(),
     obtenerReportesOfertaModeracion: vi.fn(),
     obtenerResumenPendientesModeracion: vi.fn(),
+    obtenerApelacionesModeracion: vi.fn(),
   };
 });
 
@@ -34,6 +35,7 @@ import {
   rechazarReportesResenaReportada,
   obtenerResenasEnRevision,
   obtenerResumenPendientesModeracion,
+  obtenerApelacionesModeracion,
 } from "@/services/api";
 import PanelModeracionModal from "./PanelModeracionModal";
 
@@ -124,7 +126,7 @@ describe("PanelModeracionModal", () => {
     vi.mocked(obtenerResumenPendientesModeracion).mockResolvedValue({
       revisionAutomatica: 0,
       reportesResenas: 0,
-      reportesOfertas: 0,
+      reportesOfertas: 0, apelaciones: 0,
       total: 0,
     });
     mockObtener.mockResolvedValue([RESENA_REPORTADA]);
@@ -582,7 +584,7 @@ describe("PanelModeracionModal", () => {
     vi.mocked(obtenerResumenPendientesModeracion).mockResolvedValue({
       revisionAutomatica: 3,
       reportesResenas: 1,
-      reportesOfertas: 0,
+      reportesOfertas: 0, apelaciones: 0,
       total: 4,
     });
     render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
@@ -612,5 +614,18 @@ describe("PanelModeracionModal", () => {
   it("no consulta el contador con el panel cerrado", () => {
     render(<PanelModeracionModal isOpen={false} onClose={vi.fn()} usuarioSesion={MODERADOR} />);
     expect(obtenerResumenPendientesModeracion).not.toHaveBeenCalled();
+  });
+
+  it("muestra las apelaciones en su propia pestaña con su contador", async () => {
+    vi.mocked(obtenerResumenPendientesModeracion).mockResolvedValue({
+      revisionAutomatica: 0, reportesResenas: 0, reportesOfertas: 0, apelaciones: 2, total: 2,
+    });
+    vi.mocked(obtenerApelacionesModeracion).mockResolvedValueOnce([]);
+    render(<PanelModeracionModal isOpen onClose={vi.fn()} usuarioSesion={MODERADOR} />);
+
+    fireEvent.click(await screen.findByRole("tab", { name: "Apelaciones (2 pendientes)" }));
+
+    expect(await screen.findByText("No hay apelaciones pendientes")).toBeDefined();
+    expect(obtenerApelacionesModeracion).toHaveBeenCalledTimes(1);
   });
 });

@@ -40,6 +40,7 @@ const resumenPendientesMock = vi.hoisted(() => ({
     revisionAutomatica: number;
     reportesResenas: number;
     reportesOfertas: number;
+    apelaciones: number;
     total: number;
   },
   habilitado: [] as boolean[],
@@ -88,6 +89,7 @@ vi.mock("@/services/api", async (importOriginal) => {
   return {
     ...actual,
     obtenerResenas: vi.fn(),
+    obtenerMisDecisiones: vi.fn().mockResolvedValue([]),
     obtenerMiReincidencia: vi.fn().mockResolvedValue({
       faltas: 0, nivel: "NINGUNO", ultimaFalta: null, revisionPreviaHasta: null, bloqueoHasta: null, proximaCaducidad: null,
     }),
@@ -359,7 +361,7 @@ describe("PerfilCliente", () => {
 
   it("muestra en el botón del panel cuántos pendientes hay para moderar", () => {
     sesionMock.usuario = { ...USUARIO, rol: "Moderador" };
-    resumenPendientesMock.valor = { revisionAutomatica: 2, reportesResenas: 1, reportesOfertas: 1, total: 4 };
+    resumenPendientesMock.valor = { revisionAutomatica: 2, reportesResenas: 1, reportesOfertas: 1, apelaciones: 0, total: 4 };
 
     render(<PerfilCliente />);
 

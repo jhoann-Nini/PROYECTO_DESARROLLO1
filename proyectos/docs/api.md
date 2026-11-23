@@ -1775,3 +1775,54 @@ Solo `Administrador`. Lista las cuentas **activas** con 4 faltas o más, ordenad
 `[{ "idUsuario": 9, "nombre": "…", "correo": "…", "faltas": 5, "ultimaFalta": "…" }]`.
 **Errores:** `401`; `403` sin rol de administrador.
 
+## 33.6 Apelaciones (Caso 6, migración 026)
+El autor puede apelar un rechazo (`RECHAZAR`) o un ocultamiento (`OCULTAR`) de una reseña propia que no haya eliminado. Diseño: `docs/superpowers/specs/2026-11-22-apelaciones-design.md`.
+
+- **Plazo:** 15 días desde la decisión.
+- **Una sola apelación por decisión.** Se apela la decisión más reciente de la reseña.
+- **Quién resuelve:** un moderador o administrador activo, que no sea el moderador de la decisión original ni el autor. PostgreSQL lo hace cumplir con los triggers de la 026.
+- **Si se acepta:**
+  - un rechazo se publica, registrando `APROBAR`;
+  - un ocultamiento se restaura, registrando `RESTAURAR`;
+  - en los dos casos, la falta deja de contar para la reincidencia (§33.5);
+  - si la reseña cambió desde la decisión (editada, ya restaurada o eliminada), solo se anula la falta y no se publica nada.
+- **Si se rechaza:** la decisión queda firme.
+- **Bloqueo y suspensión:** un usuario bloqueado por reincidencia sí puede apelar. Una cuenta suspendida no puede.
+
+### `POST /api/apelaciones`
+Autor autenticado. Cuerpo: `{ "idResena": 8, "motivo": "No era ofensivo" }`; el motivo es obligatorio, máximo 1000 caracteres.
+- **Respuesta `201`:** `{ idApelacion, estado: "PENDIENTE", motivo, respuesta: null, fechaSolicitud, fechaResolucion: null }`.
+- **Errores:**
+  - `400` motivo vacío o largo;
+  - `401`;
+  - `403` reseña ajena o cuenta suspendida;
+  - `404` reseña inexistente o eliminada;
+  - `409` sin decisión apelable, ya apelada, fuera de plazo u ocultamiento ya restaurado.
+
+### `GET /api/apelaciones/mias`
+Decisiones `RECHAZAR` u `OCULTAR` de los últimos 90 días sobre reseñas activas del autor. Cada elemento trae:
+- `idAuditoria`, `idResena`, `nombreProducto`, `comentarioRevisado`, `accion`, `motivoDecision`, `fechaDecision`;
+- `plazoHasta`;
+- `apelable`, que indica si todavía puede apelarla;
+- `apelacion`, con el mismo formato que la respuesta de `POST`, o `null` si no la apeló.
+
+### `GET /api/moderacion/apelaciones?estado=PENDIENTE|ACEPTADA|RECHAZADA`
+Moderador o administrador. Por defecto devuelve las `PENDIENTE`, de la más antigua a la más reciente. Cada elemento trae:
+- `idApelacion`, `estado`, `motivoApelacion`, `respuesta`, `fechaSolicitud`, `fechaResolucion`;
+- `idResena`, `nombreProducto`, `comentarioRevisado`, `accion`, `motivoDecision`, `fechaDecision`;
+- `idAutor`, `nombreAutor`, `nombreModeradorOriginal`, `nombreModeradorResolucion`;
+- `puedeResolver`, que es `false` si quien consulta tomó la decisión original o es el autor.
+
+### `PUT /api/moderacion/apelaciones/{id}/aceptar` y `/rechazar`
+Cuerpo: `{ "respuesta": "…" }`, máximo 1000 caracteres.
+- Al aceptar, la respuesta es opcional; si no se envía se guarda `Apelación aceptada: la decisión se revirtió.`
+- Al rechazar, la respuesta es obligatoria.
+- **Errores:**
+  - `400` rechazo sin respuesta;
+  - `401`;
+  - `403` sin rol de moderación, o `Tú tomaste la decisión original; debe resolverla otra persona.`, o `No puedes resolver una apelación sobre tu propia reseña.`;
+  - `404`;
+  - `409` `Esta apelación ya fue resuelta.`
+
+El contador (§33.4) incluye `apelaciones`, las pendientes, y las suma al `total`.
+

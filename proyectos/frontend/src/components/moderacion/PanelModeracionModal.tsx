@@ -18,6 +18,7 @@ import {
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomatica";
 import ColaReportesOfertas from "@/components/moderacion/ColaReportesOfertas";
+import ColaApelaciones from "@/components/moderacion/ColaApelaciones";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 import ContadorPendientes from "@/components/moderacion/ContadorPendientes";
 import { useResumenPendientesModeracion } from "@/hooks/useResumenPendientesModeracion";
@@ -29,7 +30,7 @@ interface PanelModeracionModalProps {
 }
 
 type AccionModeracion = "ocultar" | "publicar" | "rechazar-reportes";
-type PestanaModeracion = "reportes" | "revision" | "ofertas";
+type PestanaModeracion = "reportes" | "revision" | "ofertas" | "apelaciones";
 
 function puedeRechazarReportes(resena: ResenaReportadaResponse): boolean {
   return (
@@ -302,6 +303,7 @@ export default function PanelModeracionModal({
             { id: "reportes", etiqueta: "Reseñas reportadas", pendientes: resumen?.reportesResenas },
             { id: "revision", etiqueta: "Revisión automática", pendientes: resumen?.revisionAutomatica },
             { id: "ofertas", etiqueta: "Reportes de ofertas", pendientes: resumen?.reportesOfertas },
+            { id: "apelaciones", etiqueta: "Apelaciones", pendientes: resumen?.apelaciones },
           ] as const).map((opcion) => (
             <button
               key={opcion.id}
@@ -323,7 +325,16 @@ export default function PanelModeracionModal({
           ))}
         </div>
 
-        {pestana === "ofertas" ? (
+        {pestana === "apelaciones" ? (
+          <div
+            role="tabpanel"
+            id={`${tituloId}-panel-apelaciones`}
+            aria-labelledby={`${tituloId}-tab-apelaciones`}
+            className="overflow-y-auto pr-1"
+          >
+            <ColaApelaciones onCambio={recargarResumen} />
+          </div>
+        ) : pestana === "ofertas" ? (
           <div
             role="tabpanel"
             id={`${tituloId}-panel-ofertas`}

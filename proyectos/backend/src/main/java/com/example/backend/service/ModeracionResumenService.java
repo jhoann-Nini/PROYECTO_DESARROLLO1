@@ -3,6 +3,8 @@ package com.example.backend.service;
 import com.example.backend.dto.ResumenPendientesModeracionResponse;
 import com.example.backend.entity.EstadoReporte;
 import com.example.backend.entity.Usuario;
+import com.example.backend.entity.EstadoApelacion;
+import com.example.backend.repository.ApelacionRepository;
 import com.example.backend.repository.ReporteOfertaRepository;
 import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.ResenaRepository;
@@ -27,12 +29,15 @@ public class ModeracionResumenService {
     private final ReporteResenaRepository reporteResenaRepository;
     private final ReporteOfertaRepository reporteOfertaRepository;
     private final UsuarioService usuarioService;
+    private final ApelacionRepository apelacionRepository;
 
     public ModeracionResumenService(
             ResenaRepository resenaRepository,
             ReporteResenaRepository reporteResenaRepository,
             ReporteOfertaRepository reporteOfertaRepository,
-            UsuarioService usuarioService) {
+            UsuarioService usuarioService,
+            ApelacionRepository apelacionRepository) {
+        this.apelacionRepository = apelacionRepository;
         this.resenaRepository = resenaRepository;
         this.reporteResenaRepository = reporteResenaRepository;
         this.reporteOfertaRepository = reporteOfertaRepository;
@@ -46,8 +51,9 @@ public class ModeracionResumenService {
         long revision = resenaRepository.countPendientesDeRevision();
         long reportesResenas = reporteResenaRepository.countByEstadoIn(ESTADOS_ABIERTOS);
         long reportesOfertas = reporteOfertaRepository.countByEstadoIn(ESTADOS_ABIERTOS);
-        return new ResumenPendientesModeracionResponse(
-                revision, reportesResenas, reportesOfertas, revision + reportesResenas + reportesOfertas);
+        long apelaciones = apelacionRepository.countByEstado(EstadoApelacion.PENDIENTE);
+        return new ResumenPendientesModeracionResponse(revision, reportesResenas, reportesOfertas, apelaciones,
+                revision + reportesResenas + reportesOfertas + apelaciones);
     }
 
     private static void validarPermisoModeracion(Usuario usuario) {

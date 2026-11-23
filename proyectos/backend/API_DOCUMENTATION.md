@@ -103,6 +103,7 @@ Este archivo describe en detalle solo `CategoriaController`. La referencia compl
 | 2 | `ModeracionReportesOfertaController` | `/api/moderacion/ofertas/reportes/**` | `docs/api.md` §31 |
 | 3 | `AdministracionOfertasController` | `/api/admin/ofertas`, `/api/admin/productos/{id}/establecimientos/{idEstablecimiento}` | `docs/api.md` §32 |
 | Caso 6 | `AdministracionCuentasController` | `/api/admin/usuarios/{id}/estado` | `docs/api.md` §33 |
+| Caso 6 | `ModeracionResumenController` | `/api/moderacion/pendientes/resumen` | `docs/api.md` §33.4 |
 
 Con `spring.jpa.hibernate.ddl-auto=validate`, el backend no arranca si la base no tiene aplicadas las migraciones que usan sus entidades: como mínimo, hasta `024_texto_revisado_y_suspension_cuentas.sql`. La `023_revocar_privilegios_api_publica.sql` no cambia la estructura y se puede aplicar en cualquier momento. Estado completo de la auditoría: `proyectos/docs/auditoria-cierre.md`.
 

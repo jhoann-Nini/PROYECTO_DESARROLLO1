@@ -163,6 +163,28 @@ Pruebas: `ColaRevisionAutomatica.test.tsx`, la prueba de pestañas en
 `PanelModeracionModal.test.tsx` y el bloque «Reportes y revisión» de
 `OpinionesProducto.test.tsx`.
 
+### 3.3 Señales de spam y contador de pendientes (Caso 6, prioridad media)
+
+**Señales de spam:** el backend retiene los comentarios con un número de
+teléfono y los que repiten, palabra por palabra, otra reseña del mismo autor
+(desde 8 palabras). El formulario no las evalúa, igual que los enlaces: no
+conoce las otras reseñas del autor. En la cola aparecen como «Contiene un
+número de teléfono» y «Texto idéntico a otra reseña del mismo autor». Detalle
+en `proyectos/docs/api.md` §33.3.
+
+**Contador:** `useResumenPendientesModeracion` consulta
+`GET /api/moderacion/pendientes/resumen` al abrir el panel, cada minuto y
+después de cada decisión (las colas avisan con `onCambio`). El número aparece
+en cada pestaña y, con el total, en el botón «Panel de moderación» del perfil.
+Ese botón deja de consultar mientras el panel está abierto y vuelve a hacerlo
+al cerrarlo. Sin pendientes, o si la consulta falla, no se muestra número.
+`ContadorPendientes` anuncia la cifra a lectores de pantalla («Revisión
+automática (3 pendientes)»).
+
+Pruebas: `ContadorPendientes.test.tsx`,
+`useResumenPendientesModeracion.test.tsx`, las del contador en
+`PanelModeracionModal.test.tsx` y `PerfilCliente.test.tsx`.
+
 ## 4. Pendientes y límites conocidos
 
 1. El backend expone `GET /api/moderacion/resenas/{id}/historial`, pero el

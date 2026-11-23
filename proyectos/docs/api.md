@@ -1706,7 +1706,7 @@ Una oferta (`producto_establecimiento`) es el precio, la disponibilidad y el enl
 ## 33.1 Niveles de riesgo del filtro automático
 Al crear o editar una reseña (`POST /api/resenas`, `PUT /api/resenas/{id}`), el filtro por reglas asigna un nivel:
 - `NINGUNO` y `BAJO` → `estadoModeracion: "PUBLICADA"`. `BAJO` son palabras ambiguas sobre el producto («odio que la batería…»).
-- `MEDIO` → `PENDIENTE`: insultos, vulgaridades, palabras ambiguas dirigidas a una persona, enlaces, texto repetido.
+- `MEDIO` → `PENDIENTE`: insultos, vulgaridades, palabras ambiguas dirigidas a una persona, enlaces, texto repetido y señales de spam (§33.3).
 - `ALTO` → `PENDIENTE`: posibles amenazas o acoso.
 
 `GET /api/moderacion/resenas/en-revision` (§30.1) añade el campo `riesgo` (`MEDIO` o `ALTO`) y ordena primero las de riesgo `ALTO`. El motivo nuevo `Posible amenaza o acoso` aparece en `motivosDeteccion`, y también `Contiene un insulto dirigido a una persona`.
@@ -1725,4 +1725,22 @@ El historial de moderación de una reseña (`resena_moderacion_auditoria`) guard
   - `403` sin rol de administrador, o intento de cambiar la propia cuenta;
   - `404` cuenta inexistente;
   - `409` `La cuenta ya está activa.` / `La cuenta ya está suspendida.` / `No se puede suspender a un administrador activo; primero retira su rol.`
+
+## 33.3 Señales de spam (Caso 6, prioridad media)
+Al crear o editar una reseña, dos señales más la dejan en `PENDIENTE` con riesgo `MEDIO`. Solo las evalúa el backend:
+- **Teléfono** → motivo `Contiene un número de teléfono`. De 10 a 13 dígitos, con espacios, guiones, puntos o paréntesis entre ellos y un `+` opcional («+57 300 123 4567», «(601) 555-1234»). Los precios («$1.299.000»), los precios seguidos y las especificaciones («5000 mAh») no cuentan.
+- **Mismo texto en otro producto** → motivo `Texto idéntico a otra reseña del mismo autor`. Se compara con las otras reseñas activas del autor, sin distinguir mayúsculas, tildes ni puntuación. Solo aplica desde 8 palabras: «Excelente producto» en varios productos se publica.
+
+La cola (`GET /api/moderacion/resenas/en-revision`, §30.1) recalcula los dos motivos con el contexto del autor. Limitaciones: no detecta teléfonos escritos con palabras («tres cero cero…») ni textos casi iguales con cambios mínimos.
+
+## 33.4 Contador de pendientes
+- **Ruta:** `GET /api/moderacion/pendientes/resumen` (requiere rol `Moderador` o `Administrador` activo)
+- **Respuesta `200`:**
+  ```json
+  { "revisionAutomatica": 3, "reportesResenas": 1, "reportesOfertas": 0, "total": 4 }
+  ```
+  - `revisionAutomatica`: reseñas activas en `PENDIENTE` (§30.1).
+  - `reportesResenas` y `reportesOfertas`: reportes en `PENDIENTE` o `EN_REVISION`.
+- Solo devuelve cantidades: no expone contenido, autores ni reportantes.
+- **Errores:** `401`; `403` sin rol de moderación o con la cuenta suspendida.
 

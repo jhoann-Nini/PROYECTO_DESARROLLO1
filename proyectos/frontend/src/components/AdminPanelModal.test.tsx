@@ -48,6 +48,10 @@ vi.mock("@/components/admin/AdminOfertas", () => ({
   default: () => <div data-testid="admin-ofertas" />,
 }));
 
+vi.mock("@/components/admin/AdminTerminosModeracion", () => ({
+  default: () => <div data-testid="admin-terminos-moderacion" />,
+}));
+
 describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   const adminUser: UsuarioSesion = {
     id: "admin-1",
@@ -138,12 +142,12 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
   });
 
   describe("Administración de usuarios y roles", () => {
-    it("ofrece una navegación compacta con las siete secciones y mantiene la selección sincronizada", async () => {
+    it("ofrece una navegación compacta con las ocho secciones y mantiene la selección sincronizada", async () => {
       render(<AdminPanelModal isOpen onClose={vi.fn()} usuarioSesion={adminUser} />);
       await screen.findByText("Gestión de Catálogo de Productos");
 
       const selector = screen.getByRole("combobox", { name: /sección de administración/i });
-      expect(selector.querySelectorAll("option")).toHaveLength(7);
+      expect(selector.querySelectorAll("option")).toHaveLength(8);
       fireEvent.change(selector, { target: { value: "usuarios" } });
       expect(screen.getByTestId("admin-usuarios-roles")).toBeDefined();
       expect(screen.getByRole("tab", { name: /usuarios y roles/i }).getAttribute("aria-selected")).toBe("true");
@@ -204,6 +208,21 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       fireEvent.click(screen.getByRole("tab", { name: /Ofertas por tienda/i }));
 
       expect(screen.getByTestId("admin-ofertas")).toBeDefined();
+    });
+
+    it("abre la pestaña de palabras de moderación", async () => {
+      render(
+        <AdminPanelModal
+          isOpen={true}
+          onClose={vi.fn()}
+          usuarioSesion={adminUser}
+        />,
+      );
+
+      await screen.findByText("Gestión de Catálogo de Productos");
+      fireEvent.click(screen.getByRole("tab", { name: /Palabras de moderación/i }));
+
+      expect(screen.getByTestId("admin-terminos-moderacion")).toBeDefined();
     });
   });
 

@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.entity.CategoriaTerminoModeracion;
 import com.example.backend.entity.EstadoModeracion;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -28,6 +32,21 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ResenaModerationService {
+
+  private static final Logger log = LoggerFactory.getLogger(ResenaModerationService.class);
+
+  /** Términos agregados por administradores (migración 027); solo los evalúa el backend. */
+  private final FuenteTerminosModeracion terminosAgregados;
+
+  /** Sin términos agregados: pruebas unitarias y corpus compartido. */
+  public ResenaModerationService() {
+    this(List::of);
+  }
+
+  @Autowired
+  public ResenaModerationService(FuenteTerminosModeracion terminosAgregados) {
+    this.terminosAgregados = terminosAgregados;
+  }
 
   public static final String MOTIVO_PALABRA_NO_PERMITIDA = "Contiene lenguaje no permitido";
   public static final String MOTIVO_INSULTO_DIRIGIDO = "Contiene un insulto dirigido a una persona";
@@ -234,6 +253,13 @@ public class ResenaModerationService {
     } else if (ambigua) {
       riesgo = max(riesgo, RiesgoModeracion.BAJO);
     }
+    for (TerminoCompilado termino : terminosActivos()) {
+      if (coincide(termino.patrones(), variantes.subList(0, 2))) {
+        riesgo = max(riesgo, riesgoDe(termino.categoria()));
+        motivos.add("Contiene «" + termino.termino() + "», de la lista de moderación ("
+          + termino.categoria().etiqueta() + ")");
+      }
+    }
     if (PATRON_ENLACES.matcher(comentario).find()) {
       riesgo = max(riesgo, RiesgoModeracion.MEDIO);
       motivos.add(MOTIVO_ENLACE);
@@ -358,6 +384,96 @@ public class ResenaModerationService {
       resultado.append(SUSTITUCIONES_LEET.getOrDefault(c, c));
     }
     return resultado.toString();
+  }
+
+  /** Si la fuente falla, el filtro base sigue funcionando sin los términos agregados. */
+  private List<TerminoCompilado> terminosActivos() {
+    try {
+      List<TerminoCompilado> activos = terminosAgregados.activos();
+      return activos != null ? activos : List.of();
+    } catch (RuntimeException e) {
+      log.warn("No se pudieron leer los términos de moderación agregados; se usa solo la lista base.", e);
+      return List.of();
+    }
+  }
+
+  /** AMENAZA es riesgo alto; el resto de categorías, medio. */
+  public static RiesgoModeracion riesgoDe(CategoriaTerminoModeracion categoria) {
+    return categoria == CategoriaTerminoModeracion.AMENAZA ? RiesgoModeracion.ALTO : RiesgoModeracion.MEDIO;
+  }
+
+  /**
+   * Forma normalizada de un término agregado: misma normalización del filtro,
+   * separadores convertidos en espacios. No colapsa letras repetidas («carro»
+   * no debe guardarse como «caro»). Devuelve null si queda con menos de 2 o
+   * más de 60 caracteres, o sin letras.
+   */
+  public static String normalizarTermino(String termino) {
+    if (termino == null) {
+      return null;
+    }
+    String normalizado = normalizar(termino).replaceAll("[^\\p{L}\\p{N}]+", " ").trim();
+    if (normalizado.length() < 2 || normalizado.length() > 60 || !normalizado.matches(".*\\p{L}.*")) {
+      return null;
+    }
+    return normalizado;
+  }
+
+  /**
+   * Patrón de un término agregado, comparado con el texto normalizado y con
+   * leet. Cada letra puede repetirse («imbeeecil») y una letra doble del
+   * término exige al menos dos («carro» no marca «caro»); se admiten
+   * separadores entre letras, plural con «s» o «es» y límite de palabra. Una
+   * frase une sus palabras con cualquier separador.
+   * <p>
+   * Los cuantificadores son secuenciales, sin repeticiones anidadas: con
+   * textos largos no desbordan la pila del motor de expresiones regulares.
+   */
+  public static TerminoCompilado compilarTermino(
+      String termino, String normalizado, CategoriaTerminoModeracion categoria) {
+    String[] palabras = normalizado.trim().split("\\s+");
+    StringBuilder patron = new StringBuilder("(?:^|[^a-z])");
+    for (int i = 0; i < palabras.length; i++) {
+      if (i > 0) {
+        patron.append("[^a-z]+");
+      }
+      patron.append(elastica(palabras[i]));
+    }
+    patron.append(palabras.length == 1 ? "(?:es|s)?(?![a-z])" : "(?![a-z])");
+    return new TerminoCompilado(termino, categoria, List.of(Pattern.compile(patron.toString())));
+  }
+
+  private static String elastica(String palabra) {
+    StringBuilder patron = new StringBuilder();
+    int i = 0;
+    while (i < palabra.length()) {
+      char c = palabra.charAt(i);
+      int fin = i;
+      while (fin < palabra.length() && palabra.charAt(fin) == c) {
+        fin++;
+      }
+      int veces = fin - i;
+      if (i > 0) {
+        patron.append("[^a-z]*");
+      }
+      patron.append(Character.isLetterOrDigit(c) ? String.valueOf(c) : Pattern.quote(String.valueOf(c)));
+      patron.append(veces == 1 ? "+" : "{" + veces + ",}");
+      i = fin;
+    }
+    return patron.toString();
+  }
+
+  /** True si el término normalizado ya está en la lista base del código. */
+  public static boolean estaEnListaBase(String normalizado) {
+    if (normalizado == null) {
+      return false;
+    }
+    if (FRASES_AMENAZA.contains(normalizado)) {
+      return true;
+    }
+    String colapsado = colapsarRepeticiones(normalizado);
+    return PALABRAS_BLOQUEADAS.stream()
+      .anyMatch(p -> p.equals(normalizado) || colapsarRepeticiones(p).equals(colapsado));
   }
 
   /**

@@ -106,8 +106,9 @@ Este archivo describe en detalle solo `CategoriaController`. La referencia compl
 | Caso 6 | `ModeracionResumenController` | `/api/moderacion/pendientes/resumen` | `docs/api.md` §33.4 |
 | Caso 6 | `UsuarioController`, `AdministracionCuentasController` | `/api/usuarios/me/reincidencia`, `/api/admin/usuarios/reincidentes` | `docs/api.md` §33.5 |
 | Caso 6 | `ApelacionController`, `ModeracionApelacionesController` | `/api/apelaciones`, `/api/apelaciones/mias`, `/api/moderacion/apelaciones/**` | `docs/api.md` §33.6 |
+| Caso 6 | `AdministracionTerminosController` | `/api/admin/terminos-moderacion/**` | `docs/api.md` §33.7 |
 
-Con `spring.jpa.hibernate.ddl-auto=validate`, el backend no arranca si la base no tiene aplicadas las migraciones que usan sus entidades: como mínimo, hasta `026_apelaciones.sql` (la 025 solo crea un índice y es opcional). La `023_revocar_privilegios_api_publica.sql` no cambia la estructura y se puede aplicar en cualquier momento. Estado completo de la auditoría: `proyectos/docs/auditoria-cierre.md`.
+Con `spring.jpa.hibernate.ddl-auto=validate`, el backend no arranca si la base no tiene aplicadas las migraciones que usan sus entidades: como mínimo, hasta `027_terminos_moderacion.sql` (la 025 solo crea un índice y es opcional). La `023_revocar_privilegios_api_publica.sql` no cambia la estructura y se puede aplicar en cualquier momento. Estado completo de la auditoría: `proyectos/docs/auditoria-cierre.md`.
 
 ---
 

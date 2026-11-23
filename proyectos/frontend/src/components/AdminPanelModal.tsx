@@ -15,6 +15,7 @@ import type {
 import { esAdministrador } from "@/types/producto";
 import { detectarCategoria, formatearCOP, INFO_CATEGORIAS } from "@/data/specsHelper";
 import AdminUsuariosRoles from "@/components/admin/AdminUsuariosRoles";
+import AdminTerminosModeracion from "@/components/admin/AdminTerminosModeracion";
 import AdminEstablecimientos from "@/components/admin/AdminEstablecimientos";
 import AdminOfertas from "@/components/admin/AdminOfertas";
 import AdminFichaTecnicaModal from "@/components/admin/AdminFichaTecnicaModal";
@@ -51,7 +52,7 @@ export interface AdminPanelModalProps {
   onProductoCambiado?: () => void;
 }
 
-type TabAdministracion = "productos" | "categorias" | "marcas" | "reportes" | "usuarios" | "establecimientos" | "ofertas";
+type TabAdministracion = "productos" | "categorias" | "marcas" | "reportes" | "usuarios" | "establecimientos" | "ofertas" | "terminos";
 type ModoFormulario = "ninguno" | "crear" | "editar";
 
 interface ErroresFormularioProducto {
@@ -1199,6 +1200,7 @@ export default function AdminPanelModal({
             <option value="usuarios">Usuarios y roles</option>
             <option value="establecimientos">Establecimientos</option>
             <option value="ofertas">Ofertas por tienda</option>
+            <option value="terminos">Palabras de moderación</option>
           </select>
         </label>
         {/* Navegación lateral en escritorio, selector compacto en móvil */}
@@ -1333,6 +1335,24 @@ export default function AdminPanelModal({
             }`}
           >
             🏷️ Ofertas por tienda
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tabActiva === "terminos"}
+            onClick={() => {
+              setTabActiva("terminos");
+              setModoFormulario("ninguno");
+              setModoFormularioCat("ninguno");
+              setModoFormularioMarca("ninguno");
+            }}
+            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+              tabActiva === "terminos"
+                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
+                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+            }`}
+          >
+            🚫 Palabras de moderación
           </button>
         </div>
 
@@ -2630,6 +2650,9 @@ export default function AdminPanelModal({
 
           {/* PESTAÑA 6: OFERTAS POR TIENDA (Fase 3) */}
           {tabActiva === "ofertas" && <AdminOfertas />}
+
+          {/* PESTAÑA: PALABRAS DE MODERACIÓN (Caso 6) */}
+          {tabActiva === "terminos" && <AdminTerminosModeracion />}
         </div>
         </div>
 

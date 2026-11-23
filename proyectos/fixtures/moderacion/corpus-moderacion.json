@@ -73,10 +73,10 @@
   "limitacionesConocidas": [
     { "texto": "eresidiota", "nota": "palabras pegadas: se evita para no marcar «computadora» por «puta»" },
     { "texto": "hijodeputa", "nota": "palabras compuestas pegadas" },
-    { "texto": "eres un imbécil", "nota": "insultos fuera de la lista: la lista administrable está en la prioridad media" },
+    { "texto": "eres un imbécil", "nota": "insultos fuera de la lista base: un administrador puede agregarlos a la lista administrable (solo backend)" },
     { "texto": "you are an idiot", "nota": "otros idiomas" },
     { "texto": "estvpido", "nota": "letras sustituidas por otras letras (v por u): convertirlas daría falsos positivos" },
-    { "texto": "producto para indios ignorantes", "nota": "discriminación: requiere categorías y contexto (prioridad media)" },
+    { "texto": "producto para indios ignorantes", "nota": "discriminación: un administrador puede agregar el término con la categoría DISCRIMINACION (solo backend); el contexto sigue sin evaluarse" },
     { "texto": "escríbeme al tres cero cero uno dos tres", "nota": "teléfonos escritos con palabras" },
     { "texto": "Excelente equipo, la batería dura todo el día y la cámara es muy buena!! (versión 2)", "nota": "el mismo texto con cambios mínimos no cuenta como duplicado: solo se detecta la copia exacta después de normalizar" }
   ]

@@ -35,7 +35,10 @@ import type {
   OfertaAdmin,
   OfertaAdminRequest,
 } from "@/types/establecimiento";
-import type { RolAdmin, UsuarioAdmin } from "@/types/administracion";
+import type { RolAdmin, UsuarioAdmin,
+  CategoriaTerminoModeracion,
+  TerminoModeracion,
+} from "@/types/administracion";
 import type {
   CrearReporteOfertaRequest,
   ReporteOfertaResponse,
@@ -543,6 +546,31 @@ export async function obtenerResenasEnRevision(): Promise<ResenaEnRevisionRespon
     "/api/moderacion/resenas/en-revision",
     { method: "GET" },
   );
+}
+
+/** Caso 6: términos de moderación agregados (solo administradores). */
+export async function obtenerTerminosModeracion(
+  estado: "ACTIVOS" | "INACTIVOS" | "TODOS" = "ACTIVOS",
+): Promise<TerminoModeracion[]> {
+  return apiFetchAutenticado<TerminoModeracion[]>(`/api/admin/terminos-moderacion?estado=${estado}`, { method: "GET" });
+}
+
+/** Caso 6: agrega un término al filtro del servidor. */
+export async function crearTerminoModeracion(
+  termino: string,
+  categoria: CategoriaTerminoModeracion,
+): Promise<TerminoModeracion> {
+  return apiFetchAutenticado<TerminoModeracion>("/api/admin/terminos-moderacion", {
+    method: "POST",
+    body: JSON.stringify({ termino: termino.trim(), categoria }),
+  });
+}
+
+/** Caso 6: desactiva un término (no se borra). */
+export async function desactivarTerminoModeracion(idTermino: number): Promise<TerminoModeracion> {
+  return apiFetchAutenticado<TerminoModeracion>(`/api/admin/terminos-moderacion/${idTermino}/desactivar`, {
+    method: "PUT",
+  });
 }
 
 /** Caso 6: apela la decisión más reciente (rechazo u ocultamiento) de una reseña propia. */

@@ -56,4 +56,23 @@ public interface ResenaModeracionAuditoriaRepository
         """)
     List<com.example.backend.dto.CuentaReincidenteResponse> findCuentasReincidentes(
         @Param("desde") LocalDateTime desde, @Param("minimo") long minimo);
+
+    /** Caso 6, apelaciones: decisiones RECHAZAR u OCULTAR de una reseña, de la más reciente a la más antigua. */
+    @Query("""
+        SELECT a FROM ResenaModeracionAuditoria a
+        WHERE a.resena.idResena = :idResena AND a.accion IN ('RECHAZAR', 'OCULTAR')
+        ORDER BY a.fechaEvento DESC, a.idAuditoria DESC
+        """)
+    List<ResenaModeracionAuditoria> findDecisionesApelablesDeResena(@Param("idResena") Long idResena);
+
+    /** Caso 6, apelaciones: decisiones RECHAZAR u OCULTAR sobre reseñas activas del autor desde {@code desde}. */
+    @Query("""
+        SELECT a FROM ResenaModeracionAuditoria a
+        JOIN FETCH a.resena r JOIN FETCH r.producto
+        WHERE r.usuario.idUsuario = :idUsuario AND r.estado = true
+          AND a.accion IN ('RECHAZAR', 'OCULTAR') AND a.fechaEvento >= :desde
+        ORDER BY a.fechaEvento DESC, a.idAuditoria DESC
+        """)
+    List<ResenaModeracionAuditoria> findDecisionesDelAutorDesde(
+        @Param("idUsuario") Long idUsuario, @Param("desde") LocalDateTime desde);
 }

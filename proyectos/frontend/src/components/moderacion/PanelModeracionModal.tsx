@@ -19,6 +19,8 @@ import EstadoVacio from "@/components/ui/EstadoVacio";
 import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomatica";
 import ColaReportesOfertas from "@/components/moderacion/ColaReportesOfertas";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
+import ContadorPendientes from "@/components/moderacion/ContadorPendientes";
+import { useResumenPendientesModeracion } from "@/hooks/useResumenPendientesModeracion";
 
 interface PanelModeracionModalProps {
   isOpen: boolean;
@@ -84,6 +86,7 @@ export default function PanelModeracionModal({
   const abierto = isOpen && autorizado;
 
   const [pestana, setPestana] = useState<PestanaModeracion>("reportes");
+  const { resumen, recargar: recargarResumen } = useResumenPendientesModeracion(abierto);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
@@ -233,6 +236,7 @@ export default function PanelModeracionModal({
         ...previas,
         [resena.idResena]: "",
       }));
+      recargarResumen();
       setMensajeExito(
         tipo === "ocultar"
           ? `Reseña de ${resena.nombreAutor} ocultada.`
@@ -295,9 +299,9 @@ export default function PanelModeracionModal({
           className="mt-3 flex shrink-0 gap-1 border-b border-[var(--color-hairline)]"
         >
           {([
-            { id: "reportes", etiqueta: "Reseñas reportadas" },
-            { id: "revision", etiqueta: "Revisión automática" },
-            { id: "ofertas", etiqueta: "Reportes de ofertas" },
+            { id: "reportes", etiqueta: "Reseñas reportadas", pendientes: resumen?.reportesResenas },
+            { id: "revision", etiqueta: "Revisión automática", pendientes: resumen?.revisionAutomatica },
+            { id: "ofertas", etiqueta: "Reportes de ofertas", pendientes: resumen?.reportesOfertas },
           ] as const).map((opcion) => (
             <button
               key={opcion.id}
@@ -314,6 +318,7 @@ export default function PanelModeracionModal({
               } ${CLASE_FOCO}`}
             >
               {opcion.etiqueta}
+              <ContadorPendientes cantidad={opcion.pendientes} />
             </button>
           ))}
         </div>
@@ -325,7 +330,7 @@ export default function PanelModeracionModal({
             aria-labelledby={`${tituloId}-tab-ofertas`}
             className="overflow-y-auto pr-1"
           >
-            <ColaReportesOfertas />
+            <ColaReportesOfertas onCambio={recargarResumen} />
           </div>
         ) : pestana === "revision" ? (
           <div
@@ -334,7 +339,7 @@ export default function PanelModeracionModal({
             aria-labelledby={`${tituloId}-tab-revision`}
             className="overflow-y-auto pr-1"
           >
-            <ColaRevisionAutomatica />
+            <ColaRevisionAutomatica onCambio={recargarResumen} />
           </div>
         ) : (
         <div

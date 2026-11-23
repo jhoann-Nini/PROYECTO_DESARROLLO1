@@ -70,7 +70,11 @@ function esAbierto(estado: EstadoReporte): boolean {
  * justificación. Aceptar no cambia el precio: se corrige desde la
  * administración de establecimientos.
  */
-export default function ColaReportesOfertas() {
+/**
+ * `onCambio` avisa al panel tras cada decisión para actualizar el contador de
+ * pendientes.
+ */
+export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => void } = {}) {
   const [filtro, setFiltro] = useState<EstadoReporte | "">("");
   const [reportes, setReportes] = useState<ReporteOfertaModeracionResponse[] | null>(null);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
@@ -133,6 +137,7 @@ export default function ColaReportesOfertas() {
       });
       setJustificaciones((previas) => ({ ...previas, [reporte.idReporte]: "" }));
       const oferta = `${reporte.nombreProducto ?? "el producto"} en ${reporte.nombreEstablecimiento ?? "la tienda"}`;
+      onCambio?.();
       setMensajeExito(
         accion === "en-revision"
           ? `Tomaste el reporte sobre ${oferta}.`

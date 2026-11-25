@@ -89,6 +89,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/resenas/reportadas", "/api/resenas/pendientes").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/resenas/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/comunidad/**").permitAll()
                 .requestMatchers("/api/admin/**").access(adminAuthorizationManager)
                 .requestMatchers("/api/moderacion/**").access(moderatorAuthorizationManager)
                 .requestMatchers("/api/representante/**").access(representativeAuthorizationManager)

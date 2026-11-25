@@ -1,8 +1,8 @@
 package com.example.backend.config;
 
 import com.example.backend.entity.Usuario;
-import com.example.backend.entity.UsuarioRol;
 import com.example.backend.repository.UsuarioRepository;
+import com.example.backend.service.RolesModeracion;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
@@ -65,11 +65,6 @@ public class ModeratorAuthorizationManager implements AuthorizationManager<Reque
     }
 
     private boolean tienePermisoModeracion(Usuario usuario) {
-        return usuario.getRoles() != null && usuario.getRoles().stream()
-                .filter(asignacion -> Boolean.TRUE.equals(asignacion.getEstado()))
-                .map(UsuarioRol::getRol)
-                .anyMatch(rol -> rol != null && rol.getNombre() != null
-                        && ("Moderador".equalsIgnoreCase(rol.getNombre())
-                        || "Administrador".equalsIgnoreCase(rol.getNombre())));
+        return RolesModeracion.tienePermisoModeracion(usuario);
     }
 }

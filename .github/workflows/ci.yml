@@ -74,3 +74,49 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  # ─────────────────────────────────────────────
+  # JOB 3: E2E — Playwright, capa simulada
+  # Navegador real contra la app compilada con
+  # hosts ficticios; el backend y la sesión se
+  # simulan (skill pruebas-e2e-tecreview). No
+  # usa secretos ni servicios externos.
+  # ─────────────────────────────────────────────
+  e2e:
+    name: E2E (Playwright, API simulada)
+    runs-on: ubuntu-latest
+    needs: frontend
+
+    defaults:
+      run:
+        working-directory: proyectos/frontend
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: proyectos/frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar Chromium de Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Pruebas E2E
+        run: npm run test:e2e
+
+      - name: Subir el informe de Playwright si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            proyectos/frontend/playwright-report/
+            proyectos/frontend/test-results/
+          retention-days: 7

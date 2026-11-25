@@ -35,7 +35,13 @@ export default function HiloRespuestas({
   );
   const [abiertas, setAbiertas] = useState<Set<number>>(new Set());
   const [recargas, setRecargas] = useState<Record<number, number>>({});
-  const items = [...paginacion.items, ...nuevas.filter((n) => !paginacion.items.some((i) => i.idRespuesta === n.idRespuesta))];
+  // Sin duplicados: una respuesta creada aquí puede volver a llegar con «Cargar más».
+  const vistos = new Set<number>();
+  const items = [...paginacion.items, ...nuevas].filter((r) => {
+    if (vistos.has(r.idRespuesta)) return false;
+    vistos.add(r.idRespuesta);
+    return true;
+  });
 
   function reemplazar(cambiada: RespuestaComunidad) {
     paginacion.setItems((previos) => previos.map((r) => (r.idRespuesta === cambiada.idRespuesta ? cambiada : r)));

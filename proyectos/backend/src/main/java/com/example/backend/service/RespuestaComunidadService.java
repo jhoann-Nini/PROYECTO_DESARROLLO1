@@ -11,6 +11,7 @@ import com.example.backend.entity.TipoPublicacion;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
+import com.example.backend.repository.PublicacionComunidadRepository;
 import com.example.backend.repository.ReaccionRespuestaRepository;
 import com.example.backend.repository.RespuestaComunidadRepository;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ public class RespuestaComunidadService {
 
   private final RespuestaComunidadRepository respuestaRepository;
   private final ReaccionRespuestaRepository reaccionRepository;
+  private final PublicacionComunidadRepository publicacionRepository;
   private final PublicacionComunidadService publicacionService;
   private final UsuarioService usuarioService;
   private final PermisosComunidad permisos;
@@ -43,11 +45,13 @@ public class RespuestaComunidadService {
   private final ModeracionComunidad moderacion;
 
   public RespuestaComunidadService(RespuestaComunidadRepository respuestaRepository,
-      ReaccionRespuestaRepository reaccionRepository, PublicacionComunidadService publicacionService,
+      ReaccionRespuestaRepository reaccionRepository, PublicacionComunidadRepository publicacionRepository,
+      PublicacionComunidadService publicacionService,
       UsuarioService usuarioService, PermisosComunidad permisos, LimiteContenidoComunidadService limites,
       ModeracionComunidad moderacion) {
     this.respuestaRepository = respuestaRepository;
     this.reaccionRepository = reaccionRepository;
+    this.publicacionRepository = publicacionRepository;
     this.publicacionService = publicacionService;
     this.usuarioService = usuarioService;
     this.permisos = permisos;
@@ -98,7 +102,7 @@ public class RespuestaComunidadService {
     respuesta.setEstadoModeracion(moderacion.estadoInicial(contenido, permisos.requiereRevisionPrevia(autor)));
     respuesta = respuestaRepository.save(respuesta);
     if (respuesta.getEstadoModeracion() == EstadoModeracion.PUBLICADA) {
-      publicacion.setFechaUltimaActividad(respuesta.getFechaCreacion());
+      publicacionRepository.registrarActividad(publicacion.getIdPublicacion(), respuesta.getFechaCreacion());
     }
     return respuesta(respuesta, autor, 0L, 0L, false);
   }
@@ -147,7 +151,7 @@ public class RespuestaComunidadService {
     int tamano = PublicacionComunidadService.limite(limite);
     CursorComunidad.Posicion desde = cursor == null || cursor.isBlank()
       ? CursorComunidad.INICIO_ASCENDENTE
-      : CursorComunidad.decodificar(cursor, ORDEN_RESPUESTAS);
+      : CursorComunidad.decodificar(cursor, ambito(publicacion.getIdPublicacion(), padre));
     PageRequest pagina = PageRequest.of(0, tamano + 1);
     List<RespuestaComunidad> encontradas = padre == null
       ? respuestaRepository.directas(publicacion.getIdPublicacion(), desde.instante(), desde.id(), pagina)
@@ -158,7 +162,8 @@ public class RespuestaComunidadService {
     String siguiente = null;
     if (hayMas) {
       RespuestaComunidad ultima = items.get(items.size() - 1);
-      siguiente = CursorComunidad.codificar(ORDEN_RESPUESTAS, ultima.getFechaCreacion(), ultima.getIdRespuesta());
+      siguiente = CursorComunidad.codificar(ambito(publicacion.getIdPublicacion(), padre),
+        ultima.getFechaCreacion(), ultima.getIdRespuesta());
     }
     List<Long> ids = items.stream().map(RespuestaComunidad::getIdRespuesta).toList();
     Map<Long, Long> hijas = ids.isEmpty() ? Map.of()
@@ -170,6 +175,11 @@ public class RespuestaComunidadService {
     return new PaginaRespuestas(items.stream().map(r -> respuesta(r, usuario,
       hijas.getOrDefault(r.getIdRespuesta(), 0L), meGusta.getOrDefault(r.getIdRespuesta(), 0L),
       propias.contains(r.getIdRespuesta()))).toList(), siguiente);
+  }
+
+  /** El cursor solo sirve para el mismo nivel de la misma publicación. */
+  private static String ambito(Long idPublicacion, Long padre) {
+    return ORDEN_RESPUESTAS + ":" + idPublicacion + ":" + (padre == null ? "raiz" : padre);
   }
 
   /** Respuesta existente, no eliminada y legible por el usuario dentro de una publicación visible; si no, 404. */
@@ -211,7 +221,7 @@ public class RespuestaComunidadService {
       r.getProfundidad(),
       legible ? r.getContenido() : null,
       legible ? r.getAutor().getNombre() : null,
-      r.getCitada() == null ? null : r.getCitada().getAutor().getNombre(),
+      legible && r.getCitada() != null && puedeLeer(r.getCitada(), usuario) ? r.getCitada().getAutor().getNombre() : null,
       estadoVisible,
       verEstado ? r.getEstadoModeracion().name() : null,
       hijas, meGusta, propio, esAutor(r, usuario),

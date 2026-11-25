@@ -151,6 +151,55 @@ class ComunidadPublicacionesIntegrationTest extends ComunidadIntegrationTestBase
     crear(autor, "OTRO", null, "Título válido", "Contenido").andExpect(status().isBadRequest());
   }
 
+  // ---------- Revisión independiente: textos que Java y PostgreSQL miden distinto ----------
+
+  @Test
+  void tituloDe3EmojisEs400YNo500() throws Exception {
+    crear(autor, "GENERAL", null, "😀😀😀", "Contenido").andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void tituloDe5EmojisSeAcepta() throws Exception {
+    crear(autor, "GENERAL", null, "😀😀😀😀😀", "Contenido").andExpect(status().isCreated());
+  }
+
+  @Test
+  void contenidoSoloConEspaciosInvisibles400() throws Exception {
+    crear(autor, "GENERAL", null, "Título válido", "\u00a0\u200b\u2003\ufeff").andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void caracterNulEs400() throws Exception {
+    crear(autor, "GENERAL", null, "Título\u0000válido", "Contenido").andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void extractoNoPartePuntosDeCodigo() throws Exception {
+    idCreada(autor, "Título válido", "😀".repeat(250));
+
+    String json = mockMvc.perform(get(RUTA)).andReturn().getResponse().getContentAsString();
+    String extracto = JsonPath.read(json, "$.items[0].extracto");
+    for (int i = 0; i < extracto.length(); i++) {
+      char c = extracto.charAt(i);
+      if (Character.isHighSurrogate(c) && (i + 1 >= extracto.length() || !Character.isLowSurrogate(extracto.charAt(i + 1)))) {
+        throw new AssertionError("Sustituto suelto en el extracto, posición " + i);
+      }
+    }
+  }
+
+  @Test
+  void cursorDeOtraListaEs400() throws Exception {
+    Producto otroProducto = producto(true);
+    for (int i = 0; i < 2; i++) {
+      crear(autor, "PRODUCTO", otroProducto.getIdProducto(), "Del producto " + i, "Contenido").andExpect(status().isCreated());
+    }
+    String pagina = mockMvc.perform(get("/api/productos/" + otroProducto.getIdProducto() + "/comunidad/publicaciones")
+        .param("limite", "1")).andReturn().getResponse().getContentAsString();
+    String cursor = JsonPath.read(pagina, "$.nextCursor");
+
+    mockMvc.perform(get(RUTA).param("cursor", cursor)).andExpect(status().isBadRequest());
+  }
+
   // ---------- Visibilidad (CA-08) ----------
 
   @Test

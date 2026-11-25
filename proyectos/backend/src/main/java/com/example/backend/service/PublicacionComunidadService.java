@@ -178,7 +178,7 @@ public class PublicacionComunidadService {
     int tamano = limite(limite);
     CursorComunidad.Posicion desde = cursor == null || cursor.isBlank()
       ? CursorComunidad.INICIO_DESCENDENTE
-      : CursorComunidad.decodificar(cursor, ordenValido);
+      : CursorComunidad.decodificar(cursor, ambito(ordenValido, idProducto));
     PageRequest pagina = PageRequest.of(0, tamano + 1);
     boolean actividad = ORDEN_ACTIVIDAD.equals(ordenValido);
 
@@ -201,7 +201,7 @@ public class PublicacionComunidadService {
     String siguiente = null;
     if (hayMas) {
       PublicacionComunidad ultima = items.get(items.size() - 1);
-      siguiente = CursorComunidad.codificar(ordenValido,
+      siguiente = CursorComunidad.codificar(ambito(ordenValido, idProducto),
         actividad ? ultima.getFechaUltimaActividad() : ultima.getFechaCreacion(), ultima.getIdPublicacion());
     }
 
@@ -217,6 +217,11 @@ public class PublicacionComunidadService {
       respuestas.getOrDefault(p.getIdPublicacion(), 0L), meGusta.getOrDefault(p.getIdPublicacion(), 0L),
       verEstado(p, usuario) ? p.getEstadoModeracion().name() : null, p.isCerrada())).toList();
     return new PaginaPublicaciones(resumen, siguiente, total);
+  }
+
+  /** El cursor lleva el orden y la lista: uno de otra lista u otro orden da 400. */
+  private static String ambito(String orden, Long idProducto) {
+    return orden + ":" + (idProducto == null ? "general" : "producto" + idProducto);
   }
 
   private PublicacionDetalleResponse detalle(PublicacionComunidad p, Usuario usuario) {
@@ -278,8 +283,12 @@ public class PublicacionComunidadService {
     }
   }
 
+  /** Hasta 200 caracteres reales (puntos de código), sin partir un emoji. */
   private static String extracto(String contenido) {
-    return contenido.length() <= LARGO_EXTRACTO ? contenido : contenido.substring(0, LARGO_EXTRACTO - 1) + "…";
+    if (contenido.codePointCount(0, contenido.length()) <= LARGO_EXTRACTO) {
+      return contenido;
+    }
+    return contenido.substring(0, contenido.offsetByCodePoints(0, LARGO_EXTRACTO - 1)) + "…";
   }
 
   static ResourceNotFoundException noEncontrada(Long id) {

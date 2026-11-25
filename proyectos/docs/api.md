@@ -1865,7 +1865,7 @@ Foro general y comunidades por producto, separados de reseñas y valoraciones: *
 - **Escrituras:** requieren sesión (`401` sin ella).
   - **Cuenta suspendida:** `403` en cualquier escritura.
   - **Bloqueo por reincidencia (§33.5):** `403` al publicar, responder y editar. No impide dar ni retirar «Me gusta».
-- **Contenido:** solo texto plano.
+- **Contenido:** solo texto plano. Los largos cuentan caracteres reales (un emoji es uno). Un texto hecho solo de espacios invisibles o con el carácter NUL devuelve `400`.
   - Título de 5 a 150 caracteres, sin contar espacios de los extremos.
   - Publicación de 1 a 5000 caracteres; respuesta de 1 a 3000.
   - Fuera de límites: `400`.
@@ -1874,13 +1874,13 @@ Foro general y comunidades por producto, separados de reseñas y valoraciones: *
 - **Paginación por cursor:**
   - `limite` de 1 a 50 (por defecto 20).
   - `nextCursor` es opaco y es nulo en la última página.
-  - Un cursor inválido o de otro orden devuelve `400`.
+  - Un cursor inválido, de otro orden o de otra lista (otro producto, otra publicación u otra respuesta madre) devuelve `400`.
 - **Eliminación:** lógica y solo del autor. En la fase 1 el moderador no elimina contenido ajeno; esa acción llega en la fase 2 con su auditoría.
 
 ## 34.1 Publicaciones
 
 ### `GET /api/comunidad/publicaciones?orden=actividad|recientes&cursor=&limite=`
-Publicaciones generales visibles. `actividad` (por defecto) ordena por la última respuesta visible; `recientes`, por fecha de creación.
+Publicaciones generales visibles. `actividad` (por defecto) ordena por la fecha de la respuesta visible más reciente que se haya publicado, que no retrocede si esa respuesta se elimina después; `recientes`, por fecha de creación.
 - **Respuesta `200`:** `{ items, nextCursor, total }`.
   - `total` cuenta las visibles.
   - Cada elemento lleva `idPublicacion`, `tipo`, `idProducto`, `nombreProducto`, `titulo` y `extracto` (200 caracteres).

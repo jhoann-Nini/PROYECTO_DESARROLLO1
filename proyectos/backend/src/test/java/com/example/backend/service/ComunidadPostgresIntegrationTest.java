@@ -3,6 +3,10 @@ package com.example.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.backend.dto.comunidad.CrearPublicacionRequest;
+import com.example.backend.dto.comunidad.CrearRespuestaRequest;
+import com.example.backend.dto.comunidad.EditarPublicacionRequest;
+import com.example.backend.repository.RespuestaComunidadRepository;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.example.backend.dto.comunidad.MeGustaResponse;
 import com.example.backend.repository.ReaccionPublicacionRepository;
 import com.example.backend.entity.PublicacionComunidad;
@@ -73,6 +77,9 @@ class ComunidadPostgresIntegrationTest {
   @Autowired UsuarioRepository usuarioRepository;
   @Autowired RolRepository rolRepository;
   @Autowired ReaccionComunidadService reaccionService;
+  @Autowired RespuestaComunidadService respuestaService;
+  @Autowired TransactionTemplate transacciones;
+  @Autowired RespuestaComunidadRepository respuestaRepository;
   @Autowired ReaccionPublicacionRepository reaccionPublicacionRepository;
 
   private final List<Long> publicacionesCreadas = new ArrayList<>();
@@ -80,6 +87,7 @@ class ComunidadPostgresIntegrationTest {
   @AfterEach
   void limpiar() {
     reaccionPublicacionRepository.deleteAll();
+    respuestaRepository.deleteAll();
     publicacionRepository.deleteAllById(publicacionesCreadas);
   }
 
@@ -131,6 +139,79 @@ class ComunidadPostgresIntegrationTest {
     });
     assertEquals(1, reaccionPublicacionRepository.countByIdPublicacion(id));
     resultados.forEach(r -> assertEquals(1, ((MeGustaResponse) r).meGusta()));
+  }
+
+  @Test
+  @DisplayName("Una respuesta no sobrescribe una edición confirmada mientras tanto (I-1, escenario A)")
+  void respuestaNoPisaUnaEdicionSimultanea() throws Exception {
+    Usuario autor = usuario();
+    Usuario lector = usuario();
+    Long id = publicacion(autor, "Título original");
+
+    transacciones.executeWithoutResult(estado -> {
+      publicacionRepository.findById(id).orElseThrow();
+      enOtroHilo(() -> publicacionService.editar(jwt(autor), id,
+        new EditarPublicacionRequest("Título editado", "Contenido editado")));
+      respuestaService.crear(jwt(lector), id, new CrearRespuestaRequest("Una respuesta", null));
+    });
+
+    assertEquals("Título editado", publicacionRepository.findById(id).orElseThrow().getTitulo());
+  }
+
+  @Test
+  @DisplayName("Una edición no devuelve atrás la actividad de una respuesta confirmada (I-1, escenario B)")
+  void edicionNoRetrocedeLaActividad() throws Exception {
+    Usuario autor = usuario();
+    Usuario lector = usuario();
+    Long id = publicacion(autor, "Título original");
+    LocalDateTime[] actividadTrasResponder = new LocalDateTime[1];
+
+    transacciones.executeWithoutResult(estado -> {
+      publicacionRepository.findById(id).orElseThrow();
+      enOtroHilo(() -> respuestaService.crear(jwt(lector), id, new CrearRespuestaRequest("Una respuesta", null)));
+      actividadTrasResponder[0] = transaccionNueva(() ->
+        publicacionRepository.findById(id).orElseThrow().getFechaUltimaActividad());
+      publicacionService.editar(jwt(autor), id, new EditarPublicacionRequest("Título editado", "Contenido editado"));
+    });
+
+    assertEquals(actividadTrasResponder[0], publicacionRepository.findById(id).orElseThrow().getFechaUltimaActividad());
+  }
+
+  private Long publicacion(Usuario autor, String titulo) {
+    PublicacionComunidad p = new PublicacionComunidad();
+    p.setTipo(TipoPublicacion.GENERAL);
+    p.setAutor(autor);
+    p.setTitulo(titulo);
+    p.setContenido("Contenido");
+    p.setFechaCreacion(LocalDateTime.now().minusDays(1));
+    p.setFechaUltimaActividad(LocalDateTime.now().minusDays(1));
+    Long id = publicacionRepository.save(p).getIdPublicacion();
+    publicacionesCreadas.add(id);
+    return id;
+  }
+
+  /** Ejecuta y confirma en otro hilo (otra transacción), esperando a que termine. */
+  private static void enOtroHilo(Callable<?> tarea) {
+    try {
+      Object resultado = simultaneos(1, tarea).get(0);
+      if (resultado instanceof Throwable t) {
+        throw new AssertionError("Falló la operación del otro hilo", t);
+      }
+    } catch (AssertionError e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private <T> T transaccionNueva(Callable<T> lectura) {
+    try {
+      @SuppressWarnings("unchecked")
+      T valor = (T) simultaneos(1, lectura).get(0);
+      return valor;
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   /** Ejecuta la tarea en {@code hilos} hilos a la vez; devuelve cada resultado o la excepción. */

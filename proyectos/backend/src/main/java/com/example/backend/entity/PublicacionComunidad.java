@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.DynamicUpdate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -18,8 +19,12 @@ import java.time.temporal.ChronoUnit;
  * Publicación del foro, general o de un producto (comunidad, migración 029).
  * La base de datos hace cumplir el tipo y el producto, los largos y que el
  * autor, el tipo y el producto no cambien. La eliminación es lógica.
+ * <p>
+ * {@code @DynamicUpdate}: cada UPDATE escribe solo las columnas cambiadas, para
+ * que una edición y una respuesta simultáneas no se pisen con copias viejas.
  */
 @Entity
+@DynamicUpdate
 @Table(name = "publicacion_comunidad")
 public class PublicacionComunidad {
 

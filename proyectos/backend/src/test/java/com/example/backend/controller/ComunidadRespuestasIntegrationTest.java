@@ -18,6 +18,8 @@ import com.example.backend.entity.Usuario;
 import com.example.backend.repository.PublicacionComunidadRepository;
 import com.example.backend.repository.RespuestaComunidadRepository;
 import com.jayway.jsonpath.JsonPath;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +34,7 @@ class ComunidadRespuestasIntegrationTest extends ComunidadIntegrationTestBase {
 
   @Autowired private PublicacionComunidadRepository publicacionRepository;
   @Autowired private RespuestaComunidadRepository respuestaRepository;
+  @PersistenceContext private EntityManager entityManager;
 
   private PublicacionComunidad publicacion;
 
@@ -173,6 +176,7 @@ class ComunidadRespuestasIntegrationTest extends ComunidadIntegrationTestBase {
     publicacionRepository.saveAndFlush(publicacion);
 
     responder(otro, publicacion, null, "respuesta normal").andExpect(status().isCreated());
+    entityManager.clear();
 
     LocalDateTime despues = publicacionRepository.findById(publicacion.getIdPublicacion()).orElseThrow()
       .getFechaUltimaActividad();
@@ -271,6 +275,38 @@ class ComunidadRespuestasIntegrationTest extends ComunidadIntegrationTestBase {
     publicacionRepository.saveAndFlush(publicacion);
 
     mockMvc.perform(get(ruta(publicacion))).andExpect(status().isNotFound());
+  }
+
+  @Test
+  void enRespuestaANoRevelaAlAutorDeUnaCitadaEliminada() throws Exception {
+    long r0 = idRespuesta(otro, publicacion, null, "nivel 0");
+    long r1 = idRespuesta(autor, publicacion, r0, "nivel 1");
+    long r2 = idRespuesta(otro, publicacion, r1, "nivel 2 que se eliminará");
+    idRespuesta(autor, publicacion, r2, "hermana que cita");
+    mockMvc.perform(delete("/api/comunidad/respuestas/" + r2).with(como(otro))).andExpect(status().isNoContent());
+
+    mockMvc.perform(get(ruta(publicacion)).param("padre", String.valueOf(r1)))
+      .andExpect(jsonPath("$.items[1].contenido").value("hermana que cita"))
+      .andExpect(jsonPath("$.items[1].enRespuestaA").value(nullValue()));
+  }
+
+  @Test
+  void cursorDeOtraMadreEs400() throws Exception {
+    long a = idRespuesta(otro, publicacion, null, "madre A");
+    long b = idRespuesta(otro, publicacion, null, "madre B");
+    idRespuesta(autor, publicacion, a, "hija A1");
+    idRespuesta(autor, publicacion, a, "hija A2");
+    String pagina = mockMvc.perform(get(ruta(publicacion)).param("padre", String.valueOf(a)).param("limite", "1"))
+      .andReturn().getResponse().getContentAsString();
+    String cursor = JsonPath.read(pagina, "$.nextCursor");
+
+    mockMvc.perform(get(ruta(publicacion)).param("padre", String.valueOf(b)).param("cursor", cursor))
+      .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void respuestaDe3000EmojisSeAcepta() throws Exception {
+    responder(otro, publicacion, null, "😀".repeat(3000)).andExpect(status().isCreated());
   }
 
   // ---------- Editar y eliminar (CA-06) ----------

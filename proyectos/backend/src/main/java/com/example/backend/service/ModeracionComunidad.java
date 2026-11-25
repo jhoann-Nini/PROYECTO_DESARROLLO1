@@ -42,22 +42,48 @@ public class ModeracionComunidad {
     return estadoInicial(texto, revisionPrevia);
   }
 
-  /** Título de 5 a 150 caracteres sin contar los espacios de los extremos (RN-03). */
+  /**
+   * Caracteres que no se ven: separadores Unicode (espacio duro, espacio de
+   * ancho variable) y de formato (espacio de ancho cero, BOM).
+   */
+  private static final java.util.regex.Pattern INVISIBLES = java.util.regex.Pattern.compile("[\\p{Z}\\p{Cf}\\s]+");
+
+  /**
+   * Título de 5 a 150 caracteres sin contar los espacios de los extremos (RN-03).
+   * Se cuentan puntos de código, como {@code char_length} de PostgreSQL: un
+   * emoji es un carácter, no dos.
+   */
   public static String titulo(String valor) {
-    String limpio = valor == null ? "" : valor.strip();
-    if (limpio.length() < TITULO_MIN || limpio.length() > TITULO_MAX) {
+    String limpio = limpiar(valor);
+    int largo = limpio.codePointCount(0, limpio.length());
+    if (largo < TITULO_MIN || largo > TITULO_MAX || soloInvisibles(limpio)) {
       throw invalido("El título debe tener entre " + TITULO_MIN + " y " + TITULO_MAX + " caracteres.");
     }
     return limpio;
   }
 
-  /** Texto plano no vacío de hasta {@code maximo} caracteres. */
+  /** Texto plano visible de hasta {@code maximo} caracteres (puntos de código). */
   public static String texto(String valor, int maximo) {
-    String limpio = valor == null ? "" : valor.strip();
-    if (limpio.isEmpty() || limpio.length() > maximo) {
+    String limpio = limpiar(valor);
+    if (soloInvisibles(limpio) || limpio.codePointCount(0, limpio.length()) > maximo) {
       throw invalido("El texto debe tener entre 1 y " + maximo + " caracteres.");
     }
     return limpio;
+  }
+
+  /** PostgreSQL no admite el carácter NUL en un texto: se rechaza con 400 en lugar de un 500. */
+  private static String limpiar(String valor) {
+    if (valor == null) {
+      return "";
+    }
+    if (valor.indexOf('\u0000') >= 0) {
+      throw invalido("El texto contiene caracteres no permitidos.");
+    }
+    return valor.strip();
+  }
+
+  private static boolean soloInvisibles(String texto) {
+    return texto.isEmpty() || INVISIBLES.matcher(texto).matches();
   }
 
   static ResponseStatusException invalido(String mensaje) {

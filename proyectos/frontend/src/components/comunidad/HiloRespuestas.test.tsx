@@ -1,9 +1,9 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import type { RespuestaComunidad } from "@/types/comunidad";
 
-const api = vi.hoisted(() => ({ obtenerRespuestasComunidad: vi.fn() }));
+const api = vi.hoisted(() => ({ obtenerRespuestasComunidad: vi.fn(), crearRespuestaComunidad: vi.fn() }));
 vi.mock("@/services/api", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/services/api")>()),
   ...api,
@@ -70,6 +70,24 @@ describe("HiloRespuestas", () => {
 
     expect(await screen.findByText(/http:\/\/spam\.example/)).toBeTruthy();
     expect(container.querySelector("a[href^='http']")).toBeNull();
+  });
+
+  it("una hermana recién creada no se repite al cargar más respuestas", async () => {
+    api.obtenerRespuestasComunidad
+      .mockResolvedValueOnce({ items: [respuesta(11, { idRespuestaPadre: 10, profundidad: 2 })], nextCursor: "c1" })
+      .mockResolvedValueOnce({ items: [respuesta(12, { idRespuestaPadre: 10, profundidad: 2, enRespuestaA: "Ana" })], nextCursor: null });
+    api.crearRespuestaComunidad.mockResolvedValue(respuesta(12, { idRespuestaPadre: 10, profundidad: 2, enRespuestaA: "Ana" }));
+    render(<HiloRespuestas {...props} padre={10} nivel={2} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /responder a ana/i }));
+    fireEvent.change(screen.getByLabelText(/tu respuesta/i), { target: { value: "Respuesta 12" } });
+    fireEvent.click(screen.getByRole("button", { name: /^responder$/i }));
+    await screen.findByText("Respuesta 12");
+    fireEvent.click(screen.getByRole("button", { name: /cargar más respuestas/i }));
+
+    await waitFor(() => expect(api.obtenerRespuestasComunidad).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.queryByRole("button", { name: /cargar más respuestas/i })).toBeNull());
+    expect(screen.getAllByText("Respuesta 12")).toHaveLength(1);
   });
 
   it("Responder abre el formulario en línea y se usa con teclado", async () => {

@@ -124,15 +124,16 @@ apruebe». Los helpers `esResenaPublica`, `agregarResenaCreada` y
 `aplicarResenaEditada` de `src/data/resenas.ts` centralizan esa regla.
 
 La lista de palabras bloqueadas de `src/data/resenas.ts` debe coincidir con la
-de `ResenaModerationService` en el backend. En la Fase 1 se retiraron `spam`,
+de `AnalizadorContenido` en el backend. En la Fase 1 se retiraron `spam`,
 `estafa` y `fraude` (críticas legítimas de compra) y ambos lados revisan el
 texto tal cual y con sustituciones leet.
 
 ### 3.2 Niveles de riesgo (Caso 6)
 
 El filtro es por reglas, sin IA. Clasifica cada comentario en cuatro niveles
-(`analizarComentario` en el frontend, `ResenaModerationService.analizar` en el
-backend):
+(`analizarComentario` en el frontend y `AnalizadorContenido.analizar` en el
+backend). Desde la fase 0 de la comunidad, el motor está en `AnalizadorContenido`,
+común a reseñas y comunidad; `ResenaModerationService` conserva su API y delega en él:
 
 | Nivel | Qué detecta | Formulario | Backend |
 |---|---|---|---|

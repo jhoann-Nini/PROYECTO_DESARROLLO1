@@ -34,7 +34,8 @@ proyectos/
 
 Las skills de proyecto están en `.claude/skills/`:
 `ficha-tecnica-auditor`, `comparador-tecreview`, `moderacion-inteligente`,
-`supabase-auditor`, `springboot-api-auditor` y `tecreview-qa`.
+`supabase-auditor`, `springboot-api-auditor`, `tecreview-qa` y
+`pruebas-e2e-tecreview` (pruebas de navegador con Playwright).
 
 ## Base de datos
 

@@ -83,6 +83,11 @@ public class PublicacionComunidad {
         return LocalDateTime.now().truncatedTo(ChronoUnit.MICROS);
     }
 
+    /** Las fechas se guardan en microsegundos, como PostgreSQL, para que el cursor coincida. */
+    public static LocalDateTime micros(LocalDateTime fecha) {
+        return fecha == null ? null : fecha.truncatedTo(ChronoUnit.MICROS);
+    }
+
     /** Visible para cualquiera: publicada, no oculta y no eliminada. */
     public boolean esVisiblePublicamente() {
         return !eliminada && estadoModeracion == EstadoModeracion.PUBLICADA
@@ -109,15 +114,15 @@ public class PublicacionComunidad {
     public boolean isEliminada() { return eliminada; }
     public void setEliminada(boolean eliminada) { this.eliminada = eliminada; }
     public LocalDateTime getFechaEliminacion() { return fechaEliminacion; }
-    public void setFechaEliminacion(LocalDateTime fechaEliminacion) { this.fechaEliminacion = fechaEliminacion; }
+    public void setFechaEliminacion(LocalDateTime fechaEliminacion) { this.fechaEliminacion = PublicacionComunidad.micros(fechaEliminacion); }
     public Usuario getEliminadaPor() { return eliminadaPor; }
     public void setEliminadaPor(Usuario eliminadaPor) { this.eliminadaPor = eliminadaPor; }
     public boolean isCerrada() { return cerrada; }
     public void setCerrada(boolean cerrada) { this.cerrada = cerrada; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = PublicacionComunidad.micros(fechaCreacion); }
     public LocalDateTime getFechaEdicion() { return fechaEdicion; }
-    public void setFechaEdicion(LocalDateTime fechaEdicion) { this.fechaEdicion = fechaEdicion; }
+    public void setFechaEdicion(LocalDateTime fechaEdicion) { this.fechaEdicion = PublicacionComunidad.micros(fechaEdicion); }
     public LocalDateTime getFechaUltimaActividad() { return fechaUltimaActividad; }
-    public void setFechaUltimaActividad(LocalDateTime fechaUltimaActividad) { this.fechaUltimaActividad = fechaUltimaActividad; }
+    public void setFechaUltimaActividad(LocalDateTime fechaUltimaActividad) { this.fechaUltimaActividad = PublicacionComunidad.micros(fechaUltimaActividad); }
 }

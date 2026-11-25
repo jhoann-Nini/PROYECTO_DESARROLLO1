@@ -54,39 +54,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /** Comunidad, fase 1: publicaciones (CA-06, CA-07, CA-08, CA-09). */
-@SpringBootTest
-@Transactional
 @DisplayName("Comunidad: publicaciones")
-class ComunidadPublicacionesIntegrationTest {
+class ComunidadPublicacionesIntegrationTest extends ComunidadIntegrationTestBase {
 
   private static final String RUTA = "/api/comunidad/publicaciones";
 
-  @Autowired private WebApplicationContext context;
-  @Autowired private UsuarioRepository usuarioRepository;
-  @Autowired private RolRepository rolRepository;
-  @Autowired private UsuarioRolRepository usuarioRolRepository;
-  @Autowired private ProductoRepository productoRepository;
-  @Autowired private CategoriaRepository categoriaRepository;
-  @Autowired private MarcaRepository marcaRepository;
-  @Autowired private ResenaRepository resenaRepository;
-  @Autowired private ResenaModeracionAuditoriaRepository auditoriaRepository;
   @Autowired private PublicacionComunidadRepository publicacionRepository;
-
-  private MockMvc mockMvc;
-  private Usuario autor;
-  private Usuario otro;
-  private Usuario moderador;
-  private Producto producto;
-
-  @BeforeEach
-  void setUp() {
-    mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-    Rol rolUsuario = rol("Usuario registrado");
-    autor = usuario("Autor comunidad", rolUsuario);
-    otro = usuario("Otro comunidad", rolUsuario);
-    moderador = usuario("Moderador comunidad", rol("Moderador"));
-    producto = producto(true);
-  }
 
   // ---------- Crear ----------
 
@@ -464,84 +437,5 @@ class ComunidadPublicacionesIntegrationTest {
   private static String cuerpo(String tipo, Long idProducto, String titulo, String contenido) {
     return "{\"tipo\":" + json(tipo) + ",\"idProducto\":" + idProducto
       + ",\"titulo\":" + json(titulo) + ",\"contenido\":" + json(contenido) + "}";
-  }
-
-  private static String json(String valor) {
-    return "\"" + valor.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-  }
-
-  private void faltas(Usuario usuario, int cantidad) {
-    for (int i = 0; i < cantidad; i++) {
-      Resena r = new Resena();
-      r.setProducto(producto(true));
-      r.setUsuario(usuario);
-      r.setComentario("Contenido rechazado");
-      r.setPuntuacion(2);
-      r.setEstado(true);
-      r.setEstadoModeracion(EstadoModeracion.RECHAZADA);
-      r.setFechaCreacion(LocalDateTime.now().minusDays(2));
-      r = resenaRepository.save(r);
-      ResenaModeracionAuditoria e = new ResenaModeracionAuditoria();
-      e.setResena(r);
-      e.setModerador(moderador);
-      e.setAccion("RECHAZAR");
-      e.setMotivo("Lenguaje ofensivo");
-      e.setComentarioRevisado(r.getComentario());
-      e.setFechaEvento(LocalDateTime.now().minusDays(1 + i));
-      auditoriaRepository.saveAndFlush(e);
-    }
-  }
-
-  private Producto producto(boolean activo) {
-    Categoria categoria = new Categoria();
-    categoria.setNombre("Comunidad " + UUID.randomUUID());
-    categoria.setDescripcion("Categoría de prueba");
-    categoria.setEstado(true);
-    categoria = categoriaRepository.save(categoria);
-    Marca marca = new Marca();
-    marca.setNombre("Marca " + UUID.randomUUID());
-    marca.setDescripcion("Marca de prueba");
-    marca.setEstado(true);
-    marca = marcaRepository.save(marca);
-    Producto p = new Producto();
-    p.setNombre("Producto comunidad " + UUID.randomUUID());
-    p.setDescripcion("Producto de prueba");
-    p.setCategoria(categoria);
-    p.setMarca(marca);
-    p.setPrecioReferencia(new BigDecimal("1000000"));
-    p.setEstado(activo);
-    return productoRepository.save(p);
-  }
-
-  private RequestPostProcessor como(Usuario usuario) {
-    return jwt().jwt(b -> b.subject(usuario.getSupabaseUid()).claim("email", usuario.getCorreo()));
-  }
-
-  private Rol rol(String nombre) {
-    return rolRepository.findByNombre(nombre).orElseGet(() -> {
-      Rol r = new Rol();
-      r.setNombre(nombre);
-      r.setDescripcion(nombre);
-      return rolRepository.save(r);
-    });
-  }
-
-  private Usuario usuario(String nombre, Rol rol) {
-    Usuario u = new Usuario();
-    u.setNombre(nombre);
-    u.setCorreo("comunidad_" + UUID.randomUUID() + "@tecreview.test");
-    u.setSupabaseUid(UUID.randomUUID().toString());
-    u.setRol(rol);
-    u.setEstado(true);
-    u.setFechaRegistro(LocalDateTime.now());
-    u = usuarioRepository.save(u);
-    UsuarioRol ur = new UsuarioRol();
-    ur.setUsuario(u);
-    ur.setRol(rol);
-    ur.setEstado(true);
-    ur.setFechaAsignacion(LocalDateTime.now());
-    u.agregarRol(ur);
-    usuarioRolRepository.save(ur);
-    return usuarioRepository.save(u);
   }
 }

@@ -106,11 +106,11 @@ public class RespuestaComunidad {
     public boolean isEliminada() { return eliminada; }
     public void setEliminada(boolean eliminada) { this.eliminada = eliminada; }
     public LocalDateTime getFechaEliminacion() { return fechaEliminacion; }
-    public void setFechaEliminacion(LocalDateTime fechaEliminacion) { this.fechaEliminacion = fechaEliminacion; }
+    public void setFechaEliminacion(LocalDateTime fechaEliminacion) { this.fechaEliminacion = PublicacionComunidad.micros(fechaEliminacion); }
     public Usuario getEliminadaPor() { return eliminadaPor; }
     public void setEliminadaPor(Usuario eliminadaPor) { this.eliminadaPor = eliminadaPor; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = PublicacionComunidad.micros(fechaCreacion); }
     public LocalDateTime getFechaEdicion() { return fechaEdicion; }
-    public void setFechaEdicion(LocalDateTime fechaEdicion) { this.fechaEdicion = fechaEdicion; }
+    public void setFechaEdicion(LocalDateTime fechaEdicion) { this.fechaEdicion = PublicacionComunidad.micros(fechaEdicion); }
 }

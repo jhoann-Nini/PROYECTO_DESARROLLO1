@@ -27,9 +27,9 @@ function ProductoSugerido({
         type="button"
         onClick={() => onSeleccionar(producto.nombre)}
         aria-label={`Buscar ${producto.nombre}`}
-        className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+        className={`flex w-full items-center gap-3 rounded-card px-2 py-2 text-left transition-colors hover:bg-canvas ${CLASE_FOCO}`}
       >
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-1">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-card border border-hairline bg-paper p-1">
           {tieneImagen ? (
             <img
               src={producto.imagen ?? ""}
@@ -49,10 +49,10 @@ function ProductoSugerido({
           )}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-[var(--color-ink)]">
+          <span className="block truncate text-sm font-medium text-ink">
             {producto.nombre}
           </span>
-          <span className="block truncate text-xs text-[var(--color-subtle)]">
+          <span className="block truncate text-xs text-subtle">
             {producto.marca} · {producto.categoriaEtiqueta}
           </span>
         </span>
@@ -70,12 +70,12 @@ export default function SugerenciasBusqueda({
   return (
     <section
       aria-label="Sugerencias del catálogo"
-      className="mt-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-paper)]"
+      className="mt-3 rounded-card border border-hairline bg-paper p-3"
     >
-      <h2 className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+      <h2 className="px-2 pb-1 text-xs font-medium uppercase tracking-normal text-subtle">
         Sugerencias del catálogo
       </h2>
-      <ul className="divide-y divide-[var(--color-hairline)]">
+      <ul className="divide-y divide-dotted divide-line">
         {productos.slice(0, 5).map((producto) => (
           <ProductoSugerido
             key={producto.idProducto}

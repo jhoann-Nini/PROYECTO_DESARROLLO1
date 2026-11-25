@@ -22,17 +22,17 @@ export default function ValoracionProducto({
   return (
     <section
       aria-labelledby="titulo-valoracion"
-      className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+      className="rounded-card border border-line bg-paper p-5 "
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2
             id="titulo-valoracion"
-            className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+            className="text-lg font-medium uppercase tracking-normal text-ink"
           >
             Valoración de la comunidad
           </h2>
-          <p className="mt-1 text-sm text-[var(--color-subtle)]">
+          <p className="mt-1 text-sm text-subtle">
             Estrellas otorgadas por usuarios registrados a través de sus opiniones.
           </p>
         </div>
@@ -40,9 +40,9 @@ export default function ValoracionProducto({
         <div className="shrink-0 text-left sm:text-right">
           {hayPromedio ? (
             <>
-              <p className="text-3xl font-bold tracking-tight text-[var(--color-ink)]">
+              <p className="text-3xl font-medium uppercase tracking-normal text-ink">
                 {promedio.toFixed(1).replace(".", ",")}
-                <span className="ml-1 text-sm font-medium text-[var(--color-subtle)]">
+                <span className="ml-1 text-sm font-medium text-subtle">
                   / 5
                 </span>
               </p>
@@ -56,7 +56,7 @@ export default function ValoracionProducto({
               </div>
             </>
           ) : (
-            <p className="text-sm font-medium text-[var(--color-subtle)]">
+            <p className="text-sm font-medium text-subtle">
               Sin valoraciones todavía
             </p>
           )}

@@ -13,7 +13,7 @@ export default function ContadorPendientes({
     <>
       <span
         aria-hidden="true"
-        className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-[var(--color-brand-solid)] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[var(--color-on-solid)]"
+        className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-brand-solid px-1.5 py-0.5 text-[10px] font-medium leading-none text-on-solid"
       >
         {texto}
       </span>

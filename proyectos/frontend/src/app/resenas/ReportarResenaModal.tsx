@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import { buttonClassName } from "@/components/ui/Button";
 import { crearReporteResena } from "@/services/api";
 
 const SELECTOR_ENFOCABLES = [
@@ -159,7 +160,7 @@ export default function ReportarResenaModal({
         onClick={() => {
           if (!enviando) onCerrar();
         }}
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-inverse/50"
       />
       <div
         ref={dialogoRef}
@@ -167,24 +168,24 @@ export default function ReportarResenaModal({
         aria-modal="true"
         aria-label="Reportar reseña"
         onKeyDown={manejarTeclaDialogo}
-        className="relative w-full max-w-md rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+        className="relative w-full max-w-md rounded-card border border-line bg-paper p-5"
       >
-        <h2 className="text-base font-semibold text-[var(--color-ink)]">
+        <h2 className="text-base font-medium uppercase text-ink">
           Reportar reseña
         </h2>
-        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+        <p className="mt-1 text-sm text-subtle">
           Cuéntanos por qué esta opinión debería revisarse.
         </p>
 
         <form onSubmit={enviarReporte}>
           <fieldset className="mt-4">
-            <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <legend className="text-xs font-medium uppercase tracking-normal text-subtle">
               Motivo
             </legend>
             <ul className="mt-2 space-y-2">
               {MOTIVOS_REPORTE.map((opcion, indice) => (
                 <li key={opcion.valor}>
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-ink)]">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                     <input
                       ref={indice === 0 ? primerRadioRef : undefined}
                       type="radio"
@@ -195,7 +196,7 @@ export default function ReportarResenaModal({
                         setMotivo(opcion.valor);
                         setError("");
                       }}
-                      className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`h-4 w-4 accent-brand-blue ${CLASE_FOCO}`}
                     />
                     {opcion.etiqueta}
                   </label>
@@ -208,7 +209,7 @@ export default function ReportarResenaModal({
             <div className="mt-3">
               <label
                 htmlFor="detalle-reporte"
-                className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                className="block text-xs font-medium uppercase tracking-normal text-subtle"
               >
                 Cuéntanos qué ocurre
               </label>
@@ -217,13 +218,13 @@ export default function ReportarResenaModal({
                 rows={3}
                 value={detalle}
                 onChange={(evento) => setDetalle(evento.target.value)}
-                className={`mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`mt-1 min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
               />
             </div>
           )}
 
           {error && (
-            <p role="alert" className="mt-3 text-sm text-red-700">
+            <p role="alert" className="mt-3 text-sm text-status-error">
               {error}
             </p>
           )}
@@ -233,14 +234,14 @@ export default function ReportarResenaModal({
               type="button"
               onClick={onCerrar}
               disabled={enviando}
-              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+              className={buttonClassName("secondary", "text-sm")}
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={enviando}
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+              className={buttonClassName("primary", "text-sm")}
             >
               {enviando ? "Enviando…" : "Enviar reporte"}
             </button>

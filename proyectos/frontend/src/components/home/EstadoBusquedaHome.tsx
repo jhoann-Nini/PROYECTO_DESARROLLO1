@@ -23,7 +23,7 @@ function irAResultados() {
 }
 
 const CLASE_BOTON =
-  "cursor-pointer font-semibold text-[var(--color-brand-blue)] underline-offset-2 hover:underline";
+  "cursor-pointer font-medium text-brand-blue underline underline-offset-4";
 
 /**
  * Resultado de la búsqueda de la portada mostrado junto a la barra. Los
@@ -46,10 +46,10 @@ export default function EstadoBusquedaHome({
       role="status"
       aria-live="polite"
       aria-label="Resultado de la búsqueda"
-      className={`mt-2 rounded-lg border px-3 py-2 text-xs leading-relaxed ${
+      className={`mt-2 rounded-card border px-3 py-2 text-xs leading-relaxed ${
         generica || sinResultados
-          ? "border-amber-300 bg-amber-50 text-amber-950"
-          : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)]"
+          ? "border-status-error bg-paper text-status-error"
+          : "border-hairline bg-paper text-ink"
       }`}
     >
       {generica ? (

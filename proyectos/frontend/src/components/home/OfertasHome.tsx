@@ -30,18 +30,18 @@ export default function OfertasHome({
   const visibles = mostrarTodas ? ofertas : ofertas.slice(0, 3);
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
-      <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--color-hairline)] pb-3">
+    <div className="flex h-full flex-col rounded-card border border-hairline bg-paper p-5 sm:p-6">
+      <div className="mb-4 flex items-center justify-between gap-3 border-b border-dotted border-line pb-3">
         <div className="flex items-center gap-2">
           <span
-            className="h-2 w-2 animate-pulse rounded-full bg-[var(--color-star)]"
+            className="h-2 w-2 animate-pulse rounded-full bg-star"
             aria-hidden="true"
           />
-          <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+          <h3 className="text-sm font-medium text-ink">
             Ofertas destacadas
           </h3>
         </div>
-        <span className="rounded-md border border-[var(--color-brand-blue)]/20 bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--color-brand-blue)]">
+        <span className="rounded-card border border-line bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-brand-blue">
           En promoción ({ofertas.length})
         </span>
       </div>
@@ -54,10 +54,10 @@ export default function OfertasHome({
             aria-busy="true"
           >
             <div
-              className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]"
+              className="h-6 w-6 animate-spin rounded-full border-2 border-hairline border-t-brand-blue"
               aria-hidden="true"
             />
-            <p className="mt-3 text-xs text-[var(--color-subtle)]">
+            <p className="mt-3 text-xs text-subtle">
               Cargando ofertas reales...
             </p>
           </div>
@@ -65,14 +65,14 @@ export default function OfertasHome({
           <div className="flex min-h-[220px] items-center justify-center">
             <div
               role="alert"
-              className="w-full rounded-md border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 px-4 py-6 text-center text-xs"
+              className="w-full rounded-card border border-line bg-surface-2 px-4 py-6 text-center text-xs"
             >
-              <p className="font-medium text-[var(--color-ink)]">⚠️ {error}</p>
+              <p className="font-medium text-ink">⚠️ {error}</p>
               <button
                 type="button"
                 onClick={onReintentar}
                 aria-label="Reintentar ofertas"
-                className="mt-2 cursor-pointer text-xs font-semibold text-[var(--color-brand-blue)] underline decoration-[var(--color-brand-blue)]/40 underline-offset-4 transition-colors hover:no-underline"
+                className="mt-2 cursor-pointer text-xs font-medium text-brand-blue underline decoration-brand-blue underline-offset-4 transition-colors hover:no-underline"
               >
                 Reintentar ofertas
               </button>
@@ -82,12 +82,12 @@ export default function OfertasHome({
           visibles.map((oferta) => (
             <div
               key={`oferta-${oferta.idProducto}-${oferta.idEstablecimiento}`}
-              className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)]/40"
+              className="rounded-card border border-hairline bg-canvas p-3 transition-colors hover:border-line"
             >
               <button type="button" onClick={() => onVerDetalle(oferta)}
                 className={`group flex w-full cursor-pointer items-center justify-between gap-3 text-left ${CLASE_FOCO}`}
               >
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-1">
+              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-card border border-hairline bg-paper p-1">
                 {oferta.imagen && oferta.imagen.trim().length > 0 ? (
                   <img
                     src={oferta.imagen}
@@ -104,15 +104,15 @@ export default function OfertasHome({
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-brand-blue)]">
+                <p className="truncate text-xs font-medium text-ink transition-colors group-hover:text-brand-blue">
                   {oferta.nombre}
                 </p>
-                <p className="truncate text-[11px] text-[var(--color-subtle)]">
+                <p className="truncate text-[11px] text-subtle">
                   {oferta.nombreEstablecimiento}
                   {oferta.descripcion ? ` · ${oferta.descripcion}` : ""}
                 </p>
                 {oferta.ahorroMonetario > 0 && (
-                  <p className="text-[10px] font-medium text-[var(--color-positive)]">
+                  <p className="text-[10px] font-medium text-positive">
                     Ahorras: {formatearCOP(oferta.ahorroMonetario)}
                   </p>
                 )}
@@ -120,15 +120,15 @@ export default function OfertasHome({
 
               <div className="shrink-0 text-right">
                 {oferta.porcentajeDescuento > 0 && (
-                  <span className="inline-block rounded-md border border-[var(--color-positive)]/20 bg-[var(--color-positive)]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-positive)]">
+                  <span className="inline-block rounded-card border border-line bg-surface-2 px-1.5 py-0.5 text-[10px] font-medium text-positive">
                     -{Math.round(oferta.porcentajeDescuento)}%
                   </span>
                 )}
-                <div className="text-xs font-semibold text-[var(--color-brand-blue)]">
+                <div className="text-xs font-medium text-brand-blue">
                   {formatearCOP(oferta.precioActual)}
                 </div>
                 {oferta.precioReferencia && (
-                  <div className="text-[10px] text-[var(--color-subtle)] line-through">
+                  <div className="text-[10px] text-subtle line-through">
                     {formatearCOP(oferta.precioReferencia)}
                   </div>
                 )}
@@ -136,23 +136,23 @@ export default function OfertasHome({
               </button>
               <button type="button" onClick={() => onReportar(oferta)}
                 aria-label={`Reportar precio o enlace de ${oferta.nombre} en ${oferta.nombreEstablecimiento}`}
-                className={`mt-2 cursor-pointer text-xs font-medium text-[var(--color-brand-blue)] underline underline-offset-4 ${CLASE_FOCO}`}
+                className={`mt-2 cursor-pointer text-xs font-medium text-brand-blue underline underline-offset-4 ${CLASE_FOCO}`}
               >Reportar precio o enlace</button>
             </div>
           ))
         ) : (
-          <div className="py-8 text-center text-xs text-[var(--color-subtle)]">
+          <div className="py-8 text-center text-xs text-subtle">
             No hay ofertas coincidentes con este filtro.
           </div>
         )}
       </div>
 
       {ofertas.length > 3 && (
-        <div className="mt-4 border-t border-[var(--color-hairline)] pt-3 text-center">
+        <div className="mt-4 border-t border-dotted border-line pt-3 text-center">
           <button
             type="button"
             onClick={onAlternar}
-            className="cursor-pointer text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:underline"
+            className="cursor-pointer text-xs font-medium text-brand-blue transition-colors hover:underline"
           >
             {mostrarTodas
               ? "Ocultar ofertas adicionales"

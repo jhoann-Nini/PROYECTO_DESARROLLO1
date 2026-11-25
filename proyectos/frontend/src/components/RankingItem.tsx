@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { formatearCOP } from "@/data/specsHelper";
 import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
+import { buttonClassName } from "@/components/ui/Button";
 
 export interface RankingItemProps {
   ranking: number;
@@ -48,21 +49,21 @@ export default function RankingItem({
   return (
     <article
       onClick={() => onVerDetalle?.()}
-      className="group relative flex cursor-pointer flex-col gap-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)] transition-all duration-200 hover:border-[var(--color-brand-blue)]/30 hover:shadow-[var(--shadow-paper-hover)]"
+      className="group relative flex cursor-pointer flex-col gap-3 rounded-card border border-line bg-paper p-4 transition-colors hover:border-brand-blue"
     >
       <div className="flex items-start gap-3">
         {/* Posición en el ranking */}
-        <div className="flex h-14 w-11 shrink-0 flex-col items-center justify-center rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)]">
-          <span className="text-sm font-bold tracking-tight text-[var(--color-ink)]">
+        <div className="flex h-14 w-11 shrink-0 flex-col items-center justify-center rounded-card border border-line bg-canvas">
+          <span className="text-sm font-medium tracking-normal text-ink">
             #{ranking}
           </span>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--color-brand-blue)]">
+          <span className="text-[9px] font-medium uppercase tracking-normal text-brand-blue">
             TOP
           </span>
         </div>
 
         {/* Miniatura del producto */}
-        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-1.5">
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-card border border-line bg-surface-0 p-1.5">
           {tieneImagenValida ? (
             <img
               src={imagen!}
@@ -84,12 +85,12 @@ export default function RankingItem({
         {/* Marca, título y métrica real */}
         <div className="min-w-0 flex-1">
           {marca && (
-            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <p className="truncate text-[10px] font-medium uppercase tracking-normal text-subtle">
               {marca}
             </p>
           )}
 
-          <h4 className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug text-[var(--color-ink)]">
+          <h4 className="mt-0.5 line-clamp-2 text-sm font-medium uppercase leading-snug text-ink">
             {nombre}
           </h4>
 
@@ -98,11 +99,11 @@ export default function RankingItem({
               typeof puntuacion === "number" && (
                 <>
                   <span
-                    className="inline-flex items-center gap-1 rounded-full border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-ink)]"
+                    className="inline-flex items-center gap-1 rounded-full border border-star bg-transparent px-2 py-0.5 text-[10px] font-medium text-star"
                     aria-label={`Puntuación ${puntuacion.toFixed(1)} de 5`}
                   >
                     <svg
-                      className="h-3 w-3 text-[var(--color-star)]"
+                      className="h-3 w-3 text-star"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       aria-hidden="true"
@@ -113,7 +114,7 @@ export default function RankingItem({
                   </span>
 
                   {typeof cantidadValoraciones === "number" && (
-                    <span className="text-[10px] font-medium text-[var(--color-subtle)]">
+                    <span className="text-[10px] font-medium text-subtle">
                       {pluralizar(
                         cantidadValoraciones,
                         "valoración",
@@ -126,7 +127,7 @@ export default function RankingItem({
 
             {metricaTipo === "comentario" &&
               typeof cantidadResenas === "number" && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-brand-blue)]">
+                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-ink">
                   <svg
                     className="h-3 w-3"
                     fill="none"
@@ -146,7 +147,7 @@ export default function RankingItem({
               )}
 
             {metricaTipo === "deseo" && typeof cantidadDeseados === "number" && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-star)]/25 bg-[var(--color-star)]/10 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-ink)]">
+              <span className="inline-flex items-center gap-1 rounded-full border border-star bg-transparent px-2 py-0.5 text-[10px] font-medium text-star">
                 <svg
                   className="h-3 w-3"
                   fill="none"
@@ -170,18 +171,18 @@ export default function RankingItem({
 
       {/* Ficha sintetizada: dos líneas máximo para no saturar la tarjeta */}
       {descripcion && (
-        <p className="line-clamp-2 text-xs leading-relaxed text-[var(--color-subtle)]">
+        <p className="line-clamp-2 text-xs leading-relaxed text-subtle">
           {descripcion}
         </p>
       )}
 
       {/* Precio y acción en una fila propia, sin competir con el texto */}
-      <div className="mt-auto flex items-center justify-between gap-3 border-t border-[var(--color-hairline)] pt-3">
+      <div className="mt-auto flex items-center justify-between gap-3 border-t border-dotted border-line pt-3">
         <span
-          className={`min-w-0 truncate text-sm font-semibold tracking-tight ${
+          className={`min-w-0 truncate text-sm font-medium uppercase tracking-normal ${
             precio !== null && precio !== undefined
-              ? "text-[var(--color-ink)]"
-              : "text-[10px] font-medium text-[var(--color-subtle)]"
+              ? "text-ink"
+              : "text-[10px] font-medium text-subtle"
           }`}
         >
           {precio !== null && precio !== undefined
@@ -196,7 +197,7 @@ export default function RankingItem({
             onVerDetalle?.();
           }}
           aria-label={`Ver ficha de ${nombre}`}
-          className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:bg-[var(--color-brand-blue)]/5 hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-paper)]"
+          className={buttonClassName("secondary", "shrink-0")}
         >
           Ver ficha
           <svg

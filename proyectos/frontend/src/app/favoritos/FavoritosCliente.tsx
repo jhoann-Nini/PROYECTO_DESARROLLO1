@@ -29,6 +29,7 @@ import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 import AuthModal from "@/components/AuthModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import Button, { buttonClassName } from "@/components/ui/Button";
 
 export default function FavoritosCliente() {
   const router = useRouter();
@@ -143,10 +144,10 @@ export default function FavoritosCliente() {
         <div
           role="status"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-line bg-paper p-12 text-center"
         >
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-line border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Verificando tu sesión…
           </p>
         </div>
@@ -157,10 +158,10 @@ export default function FavoritosCliente() {
   if (!usuario) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <section className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center shadow-[var(--shadow-paper)] sm:p-10">
+        <section className="rounded-card border border-line bg-paper p-8 text-center sm:p-10">
           <span
             aria-hidden="true"
-            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue"
           >
             <svg
               viewBox="0 0 24 24"
@@ -177,48 +178,48 @@ export default function FavoritosCliente() {
             </svg>
           </span>
 
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--color-ink)]">
+          <h1 className="mt-4 text-2xl font-medium uppercase tracking-normal text-ink">
             Inicia sesión para ver tus favoritos
           </h1>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--color-subtle)]">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-subtle">
             Solo las cuentas con sesión activa pueden guardar, consultar y
             quitar favoritos. Tus favoritos se conservan en este navegador y no
             se sincronizan entre dispositivos.
           </p>
 
           {errorSesion && (
-            <p role="alert" className="mt-4 text-sm text-red-700">
+            <p role="alert" className="mt-4 text-sm text-status-error">
               {errorSesion}
             </p>
           )}
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <button
+            <Button
+              variant="primary"
               type="button"
               onClick={() => {
                 limpiarError();
                 setModalAuthAbierto(true);
               }}
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Iniciar sesión
-            </button>
+            </Button>
             <Link
               href="/productos"
-              className={`rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-5 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              className={buttonClassName("secondary")}
             >
               Explorar catálogo
             </Link>
             {errorSesion && (
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={() => {
                   void reintentarSesion();
                 }}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-5 py-2.5 text-sm font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Reintentar
-              </button>
+              </Button>
             )}
           </div>
         </section>
@@ -241,10 +242,10 @@ export default function FavoritosCliente() {
         <div
           role="status"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-line bg-paper p-12 text-center"
         >
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-line border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Cargando tus favoritos…
           </p>
         </div>
@@ -269,13 +270,13 @@ export default function FavoritosCliente() {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+          <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
             Tu selección personal
           </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+          <h1 className="mt-2 text-2xl font-medium uppercase tracking-normal text-ink sm:text-3xl">
             Favoritos
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
+          <p className="mt-2 text-sm leading-relaxed text-subtle">
             Solo puedes ver y administrar tus favoritos con la sesión iniciada.
             Se conservan en este navegador y no se sincronizan entre
             dispositivos.
@@ -283,26 +284,27 @@ export default function FavoritosCliente() {
         </div>
 
         {hidratado && ids.length > 0 && (
-          <button
+          <Button
+            variant="danger"
             type="button"
             onClick={vaciarFavoritos}
-            className={`self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 sm:self-auto ${CLASE_FOCO}`}
+            className="self-start sm:self-auto"
           >
             Vaciar favoritos
-          </button>
+          </Button>
         )}
       </header>
 
       <p
         role="status"
         aria-live="polite"
-        className="mb-4 min-h-4 text-xs text-[var(--color-subtle)]"
+        className="mb-4 min-h-4 text-xs text-subtle"
       >
         {aviso}
       </p>
 
       {!hidratado ? (
-        <p role="status" className="text-sm text-[var(--color-subtle)]">
+        <p role="status" className="text-sm text-subtle">
           Cargando tu lista de favoritos…
         </p>
       ) : favoritos.length === 0 ? (
@@ -328,7 +330,7 @@ export default function FavoritosCliente() {
         />
       ) : (
         <>
-          <p className="mb-4 text-sm text-[var(--color-subtle)]">
+          <p className="mb-4 text-sm text-subtle">
             {favoritos.length} producto{favoritos.length === 1 ? "" : "s"} en
             favoritos.
           </p>
@@ -336,7 +338,7 @@ export default function FavoritosCliente() {
           {noDisponibles > 0 && (
             <p
               role="status"
-              className="mb-4 rounded-md bg-[var(--color-star)]/10 px-3 py-2 text-sm text-[var(--color-ink)]"
+              className="mb-4 rounded-card border border-line bg-surface-2 px-3 py-2 text-sm text-ink"
             >
               {noDisponibles} producto{noDisponibles === 1 ? "" : "s"} guardado
               {noDisponibles === 1 ? "" : "s"} ya no aparece
@@ -348,7 +350,7 @@ export default function FavoritosCliente() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="favoritos-categoria"
-                className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                className="text-xs font-medium uppercase tracking-normal text-subtle"
               >
                 Filtrar por categoría
               </label>
@@ -360,7 +362,7 @@ export default function FavoritosCliente() {
                     evento.target.value as FiltroCategoriaFavoritos,
                   )
                 }
-                className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`min-h-11 rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
               >
                 <option value="todas">Todas las categorías</option>
                 {opcionesCategoria.map((opcion) => (
@@ -374,7 +376,7 @@ export default function FavoritosCliente() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="favoritos-orden"
-                className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                className="text-xs font-medium uppercase tracking-normal text-subtle"
               >
                 Ordenar favoritos
               </label>
@@ -384,7 +386,7 @@ export default function FavoritosCliente() {
                 onChange={(evento) =>
                   setOrden(evento.target.value as OrdenCatalogo)
                 }
-                className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`min-h-11 rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
               >
                 {ORDENES_CATALOGO.map((opcion) => (
                   <option key={opcion.valor} value={opcion.valor}>

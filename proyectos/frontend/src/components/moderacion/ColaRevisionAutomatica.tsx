@@ -103,7 +103,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
 
   return (
     <div>
-      <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
+      <p className="mt-3 rounded-card border border-line bg-canvas p-3 text-xs text-subtle">
         El filtro automático retuvo estas reseñas antes de publicarlas (enlaces, lenguaje no
         permitido o texto repetido). No son visibles para nadie hasta que las apruebes. Rechazar
         exige una justificación; ambas decisiones quedan registradas con tu usuario y la fecha.
@@ -112,7 +112,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
       {mensajeExito && (
         <p
           role="status"
-          className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"
+          className="mt-3 rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink"
         >
           {mensajeExito}
         </p>
@@ -121,7 +121,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
       {errorAccion && (
         <p
           role="alert"
-          className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+          className="mt-3 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
         >
           {errorAccion}
         </p>
@@ -136,7 +136,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
             accion={{ etiqueta: "Reintentar", onClick: () => setIntento((valor) => valor + 1) }}
           />
         ) : resenas === null ? (
-          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-[var(--color-subtle)]">
+          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-subtle">
             Cargando reseñas en revisión…
           </p>
         ) : resenas.length === 0 ? (
@@ -149,15 +149,15 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
             {resenas.map((resena) => (
               <li
                 key={resena.idResena}
-                className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+                className="rounded-card border border-line bg-paper p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                    <h3 className="text-sm font-medium text-ink">
                       {resena.idProducto !== null ? (
                         <Link
                           href={`/productos/${resena.idProducto}`}
-                          className={`text-[var(--color-brand-blue)] hover:underline ${CLASE_FOCO}`}
+                          className={`text-brand-blue hover:underline ${CLASE_FOCO}`}
                         >
                           {resena.nombreProducto ?? `Producto #${resena.idProducto}`}
                         </Link>
@@ -165,37 +165,37 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
                         "Producto no disponible"
                       )}
                     </h3>
-                    <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-1 text-xs text-subtle">
                       Por {resena.nombreUsuario ?? "Usuario"} · {formatearFecha(resena.fechaCreacion)}
                       {typeof resena.puntuacion === "number" && ` · ${resena.puntuacion}/5`}
                     </p>
                   </div>
                   <span className="flex flex-wrap gap-1">
                     {resena.riesgo === "ALTO" && (
-                      <span className="rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-800">
+                      <span className="rounded-full bg-paper px-2.5 py-1 text-[11px] font-medium text-status-error">
                         Prioridad alta
                       </span>
                     )}
-                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+                    <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-star">
                       En revisión
                     </span>
                   </span>
                 </div>
 
-                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink">
                   {resena.comentario}
                 </p>
 
                 {resena.motivosDeteccion.length > 0 && (
-                  <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-2 text-xs text-subtle">
                     Motivo de la retención: {resena.motivosDeteccion.join(" · ")}
                   </p>
                 )}
 
-                <div className="mt-3 border-t border-[var(--color-hairline)] pt-3">
+                <div className="mt-3 border-t border-line pt-3">
                   <label
                     htmlFor={`justificacion-revision-${resena.idResena}`}
-                    className="block text-xs font-medium text-[var(--color-subtle)]"
+                    className="block text-xs font-medium text-subtle"
                   >
                     Justificación
                     <textarea
@@ -210,17 +210,17 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
                       }}
                       rows={2}
                       maxLength={2000}
-                      className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block w-full rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                     />
                   </label>
-                  <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                  <p className="mt-1 text-[11px] text-subtle">
                     Obligatoria para rechazar; opcional para aprobar.
                   </p>
 
                   {errorJustificacion === resena.idResena && (
                     <p
                       role="alert"
-                      className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"
+                      className="mt-2 rounded-card border border-status-error bg-paper p-2 text-xs text-status-error"
                     >
                       {MENSAJE_JUSTIFICACION_RECHAZO}
                     </p>
@@ -232,7 +232,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
                       onClick={() => decidir(resena, "aprobar")}
                       disabled={enCurso !== null}
                       aria-label={`Aprobar reseña de ${resena.nombreUsuario ?? "usuario"}`}
-                      className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-brand-blue transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                     >
                       {accionActual(resena.idResena, "aprobar") ? "Aprobando…" : "Aprobar y publicar"}
                     </button>
@@ -241,7 +241,7 @@ export default function ColaRevisionAutomatica({ onCambio }: { onCambio?: () => 
                       onClick={() => decidir(resena, "rechazar")}
                       disabled={enCurso !== null}
                       aria-label={`Rechazar reseña de ${resena.nombreUsuario ?? "usuario"}`}
-                      className={`cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card border border-status-error px-3 py-1.5 text-xs font-medium text-status-error transition-colors hover:border-status-error hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                     >
                       {accionActual(resena.idResena, "rechazar") ? "Rechazando…" : "Rechazar"}
                     </button>

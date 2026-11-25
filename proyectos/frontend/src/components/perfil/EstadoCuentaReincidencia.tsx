@@ -69,13 +69,13 @@ export default function EstadoCuentaReincidencia({
     <section
       role="status"
       aria-label="Estado de tu cuenta"
-      className={`mt-4 rounded-xl border p-4 text-sm ${
+      className={`mt-4 rounded-card border bg-paper p-4 text-sm ${
         restrictivo
-          ? "border-red-200 bg-red-50 text-red-800"
-          : "border-amber-200 bg-amber-50 text-amber-900"
+          ? "border-status-error text-ink"
+          : "border-surface-border-strong text-ink"
       }`}
     >
-      <h2 className="font-semibold">Estado de tu cuenta</h2>
+      <h2 className="font-medium uppercase">Estado de tu cuenta</h2>
       <p className="mt-1">{mensajeNivel(estado)}</p>
       <p className="mt-1 text-xs">
         {`Faltas en los últimos 90 días: ${estado.faltas}. La más antigua deja de contar el ${formatear(estado.proximaCaducidad, FORMATO_FECHA)}.`}

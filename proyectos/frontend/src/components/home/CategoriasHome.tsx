@@ -68,10 +68,10 @@ export default function CategoriasHome({
       <button
         type="button"
         onClick={onSeleccionarTodos}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-[var(--color-brand-solid)] px-4 py-2 text-[13px] font-semibold text-[var(--color-on-solid)] shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-brand-solid)]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-brand-solid px-4 py-2 text-[13px] font-medium text-on-solid transition-all duration-200 hover:bg-brand-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
       >
         <span
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15"
+          className="flex h-6 w-6 items-center justify-center rounded-full bg-surface-2"
           aria-hidden="true"
         >
           <svg
@@ -97,10 +97,10 @@ export default function CategoriasHome({
           key={categoria.slug}
           href={obtenerRutaCategoria(categoria.slug)}
           title={`Ver todos los productos de ${categoria.etiqueta}`}
-          className="group inline-flex items-center gap-2 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-2 text-[13px] font-medium text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-brand-blue)]/45 hover:bg-[var(--color-brand-blue)]/5 hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-canvas)]"
+          className="group inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[13px] font-medium text-ink transition-all duration-200 hover:border-line hover:bg-surface-2 hover:text-brand-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
         >
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-canvas)] text-[var(--color-brand-blue)] transition-colors duration-200 group-hover:bg-[var(--color-brand-blue)]/10"
+            className="flex h-6 w-6 items-center justify-center rounded-full bg-canvas text-brand-blue transition-colors duration-200 group-hover:bg-surface-2"
             aria-hidden="true"
           >
             <IconoCategoria slug={categoria.slug} />

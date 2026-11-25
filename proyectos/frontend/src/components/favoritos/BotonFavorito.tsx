@@ -95,8 +95,8 @@ export default function BotonFavorito({
                   ? "Guardar en favoritos"
                   : "Inicia sesión para guardar en favoritos"
           }
-          className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 text-[var(--color-subtle)] shadow-[var(--shadow-paper)] backdrop-blur transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
-            esFavorito ? "text-[var(--color-brand-blue)]" : ""
+          className={`inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line bg-paper text-subtle transition-colors hover:border-brand-blue hover:text-brand-blue disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
+            esFavorito ? "text-brand-blue" : ""
           } ${className}`}
         >
           <svg
@@ -142,10 +142,10 @@ export default function BotonFavorito({
           disabled={!hidratado}
           aria-describedby={idAviso}
           aria-pressed={esFavorito}
-          className={`inline-flex cursor-pointer items-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
+          className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-ghost px-4 py-2.5 text-sm font-medium uppercase transition-colors disabled:cursor-wait disabled:opacity-60 ${CLASE_FOCO} ${
             esFavorito
-              ? "border border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] hover:bg-[var(--color-brand-blue)]/15"
-              : "border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+              ? "border border-brand-blue bg-surface-2 text-ink hover:bg-surface-muted"
+              : "border border-ink bg-transparent text-ink hover:bg-surface-muted"
           } ${className}`}
         >
           <svg
@@ -174,7 +174,7 @@ export default function BotonFavorito({
           id={idAviso}
           role="status"
           aria-live="polite"
-          className="min-h-4 text-xs text-[var(--color-subtle)]"
+          className="min-h-4 text-xs text-subtle"
         >
           {aviso}
         </p>

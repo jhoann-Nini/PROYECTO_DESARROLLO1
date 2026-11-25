@@ -149,20 +149,20 @@ export default function ProductImagePlaceholder({
         aria-label={descripcionAccesible}
         className={`flex h-full w-full select-none flex-col items-center justify-center rounded-control border p-1 transition-colors ${
           esClaro
-            ? "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]"
-            : "border-line/70 bg-surface-1/60 text-slate-500"
+            ? "border-line bg-canvas text-subtle"
+            : "border-line/70 bg-surface-1/60 text-subtle"
         } ${className}`}
       >
         <IconoCategoria
           tipo={catTipo}
           className={`mb-0.5 h-5 w-5 shrink-0 ${
-            esClaro ? "text-[var(--color-subtle)]" : "text-slate-400"
+            esClaro ? "text-subtle" : "text-subtle"
           }`}
         />
         {marcaLimpia ? (
           <span
             className={`max-w-full truncate text-[8px] font-medium uppercase leading-none ${
-              esClaro ? "text-[var(--color-ink)]" : "text-slate-300"
+              esClaro ? "text-ink" : "text-subtle"
             }`}
           >
             {marcaLimpia}
@@ -170,7 +170,7 @@ export default function ProductImagePlaceholder({
         ) : (
           <span
             className={`text-[7.5px] font-medium uppercase leading-none ${
-              esClaro ? "text-[var(--color-subtle)]" : "text-slate-500"
+              esClaro ? "text-subtle" : "text-subtle"
             }`}
           >
             Pendiente
@@ -186,15 +186,15 @@ export default function ProductImagePlaceholder({
       aria-label={descripcionAccesible}
       className={`flex h-full w-full select-none flex-col items-center justify-center rounded-card border p-4 transition-colors ${
         esClaro
-          ? "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]"
-          : "border-line/70 bg-surface-1/40 text-slate-500"
+          ? "border-line bg-canvas text-subtle"
+          : "border-line/70 bg-surface-1/40 text-subtle"
       } ${className}`}
     >
       <div
         className={`mb-2.5 flex h-12 w-12 items-center justify-center rounded-control border ${
           esClaro
-            ? "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)]"
-            : "border-line bg-surface-1 text-slate-300"
+            ? "border-line bg-paper text-subtle"
+            : "border-line bg-surface-1 text-subtle"
         }`}
       >
         <IconoCategoria tipo={catTipo} className="h-6 w-6" />
@@ -204,8 +204,8 @@ export default function ProductImagePlaceholder({
         <span
           className={`mb-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
             esClaro
-              ? "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)]"
-              : "border-line bg-surface-1 text-slate-300"
+              ? "border-line bg-paper text-ink"
+              : "border-line bg-surface-1 text-subtle"
           }`}
         >
           {marcaLimpia}
@@ -214,16 +214,16 @@ export default function ProductImagePlaceholder({
 
       <div
         className={`flex items-center gap-1.5 text-xs font-medium ${
-          esClaro ? "text-[var(--color-subtle)]" : "text-slate-400"
+          esClaro ? "text-subtle" : "text-subtle"
         }`}
       >
-        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-star)]" aria-hidden="true" />
+        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-star" aria-hidden="true" />
         <span>Imagen pendiente</span>
       </div>
 
       <span
         className={`mt-1 text-[11px] ${
-          esClaro ? "text-[var(--color-subtle)]" : "text-slate-500"
+          esClaro ? "text-subtle" : "text-subtle"
         }`}
       >
         {catInfo.etiqueta}

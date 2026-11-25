@@ -233,10 +233,10 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+        <h1 className="text-2xl font-medium uppercase tracking-normal text-ink sm:text-3xl">
           Catálogo de productos
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+        <p className="mt-1 text-sm text-subtle">
           Compara especificaciones, precios y disponibilidad antes de decidir.
         </p>
       </header>
@@ -252,10 +252,10 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
         <div
           aria-live="polite"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-hairline bg-paper p-12 text-center"
         >
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-hairline border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Cargando catálogo de productos…
           </p>
         </div>
@@ -297,7 +297,7 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
                 onClick={() => setDrawerAbierto(true)}
                 aria-expanded={drawerAbierto}
                 aria-controls="filtros-catalogo"
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] md:hidden ${CLASE_FOCO}`}
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-card border border-hairline bg-paper px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-canvas md:hidden ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"
@@ -316,7 +316,7 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
               <div className="flex items-center gap-2 sm:ml-auto">
                 <label
                   htmlFor="orden-catalogo"
-                  className="text-xs font-medium text-[var(--color-subtle)]"
+                  className="text-xs font-medium text-subtle"
                 >
                   Ordenar por
                 </label>
@@ -326,7 +326,7 @@ function CatalogoFiltrado({ precioMaxInicial }: { precioMaxInicial: number }) {
                   onChange={(event) =>
                     cambiarOrden(event.target.value as OrdenCatalogo)
                   }
-                  className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className={`cursor-pointer rounded-card border border-hairline bg-paper px-3 py-2 text-sm font-medium text-ink transition-colors focus:border-brand-blue ${CLASE_FOCO}`}
                 >
                   {ORDENES_CATALOGO.map((opcion) => (
                     <option key={opcion.valor} value={opcion.valor}>

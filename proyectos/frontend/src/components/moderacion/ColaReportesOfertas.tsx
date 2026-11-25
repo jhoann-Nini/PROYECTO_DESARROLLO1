@@ -31,10 +31,10 @@ const ETIQUETA_ESTADO: Record<EstadoReporte, string> = {
 };
 
 const CLASE_ESTADO: Record<EstadoReporte, string> = {
-  PENDIENTE: "bg-amber-100 text-amber-800",
-  EN_REVISION: "bg-sky-100 text-sky-800",
-  ACEPTADO: "bg-emerald-100 text-emerald-800",
-  RECHAZADO: "bg-slate-200 text-slate-700",
+  PENDIENTE: "bg-surface-2 text-star",
+  EN_REVISION: "bg-surface-2 text-ink",
+  ACEPTADO: "bg-surface-2 text-ink",
+  RECHAZADO: "bg-surface-2 text-subtle",
 };
 
 const FILTROS: { valor: EstadoReporte | ""; etiqueta: string }[] = [
@@ -157,7 +157,7 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
 
   return (
     <div>
-      <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
+      <p className="mt-3 rounded-card border border-line bg-canvas p-3 text-xs text-subtle">
         Usuarios registrados reportaron estas ofertas por un precio o un enlace incorrecto.
         Compara el reporte con el precio actual. Aceptar no cambia la oferta: corrígela desde la
         administración de establecimientos. Rechazar exige una justificación; cada paso queda
@@ -171,10 +171,10 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
             type="button"
             aria-pressed={filtro === opcion.valor}
             onClick={() => cambiarFiltro(opcion.valor)}
-            className={`cursor-pointer rounded-full border px-3 py-1 text-[11px] font-semibold transition-colors ${
+            className={`cursor-pointer rounded-full border px-3 py-1 text-[11px] font-medium transition-colors ${
               filtro === opcion.valor
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)] text-white"
-                : "border-[var(--color-hairline)] text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                ? "border-brand-solid bg-brand-solid text-on-solid"
+                : "border-line text-subtle hover:text-ink"
             } ${CLASE_FOCO}`}
           >
             {opcion.etiqueta}
@@ -183,13 +183,13 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
       </div>
 
       {mensajeExito && (
-        <p role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
+        <p role="status" className="mt-3 rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink">
           {mensajeExito}
         </p>
       )}
 
       {errorAccion && (
-        <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+        <p role="alert" className="mt-3 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error">
           {errorAccion}
         </p>
       )}
@@ -203,7 +203,7 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
             accion={{ etiqueta: "Reintentar", onClick: () => setIntento((valor) => valor + 1) }}
           />
         ) : reportes === null ? (
-          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-[var(--color-subtle)]">
+          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-subtle">
             Cargando reportes de ofertas…
           </p>
         ) : reportes.length === 0 ? (
@@ -220,37 +220,37 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
             {reportes.map((reporte) => (
               <li
                 key={reporte.idReporte}
-                className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+                className="rounded-card border border-line bg-paper p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                    <h3 className="text-sm font-medium text-ink">
                       <Link
                         href={`/productos/${reporte.idProducto}`}
-                        className={`text-[var(--color-brand-blue)] hover:underline ${CLASE_FOCO}`}
+                        className={`text-brand-blue hover:underline ${CLASE_FOCO}`}
                       >
                         {reporte.nombreProducto ?? `Producto #${reporte.idProducto}`}
                       </Link>
                       {" · "}
                       {reporte.nombreEstablecimiento ?? `Tienda #${reporte.idEstablecimiento}`}
                     </h3>
-                    <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-1 text-xs text-subtle">
                       Reportado por {reporte.nombreUsuario ?? "Usuario"} · {formatearFecha(reporte.fechaCreacion)}
                     </p>
                   </div>
-                  <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${CLASE_ESTADO[reporte.estado]}`}>
+                  <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${CLASE_ESTADO[reporte.estado]}`}>
                     {ETIQUETA_ESTADO[reporte.estado]}
                   </span>
                 </div>
 
                 <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-xs sm:grid-cols-2">
                   <div>
-                    <dt className="inline text-[var(--color-subtle)]">Motivo: </dt>
-                    <dd className="inline font-medium text-[var(--color-ink)]">{ETIQUETA_MOTIVO[reporte.motivo] ?? reporte.motivo}</dd>
+                    <dt className="inline text-subtle">Motivo: </dt>
+                    <dd className="inline font-medium text-ink">{ETIQUETA_MOTIVO[reporte.motivo] ?? reporte.motivo}</dd>
                   </div>
                   <div>
-                    <dt className="inline text-[var(--color-subtle)]">Precio actual: </dt>
-                    <dd className="inline font-medium text-[var(--color-ink)]">
+                    <dt className="inline text-subtle">Precio actual: </dt>
+                    <dd className="inline font-medium text-ink">
                       {reporte.precioActual !== null ? formatoPrecio.format(reporte.precioActual) : "Sin precio registrado"}
                       {reporte.disponibilidadActual === false && " · No disponible"}
                     </dd>
@@ -258,15 +258,15 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                 </dl>
 
                 {reporte.descripcion && (
-                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                  <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink">
                     {reporte.descripcion}
                   </p>
                 )}
 
                 {reporte.historial.length > 0 && (
-                  <ol className="mt-3 space-y-1 border-l-2 border-[var(--color-hairline)] pl-3" aria-label="Historial del reporte">
+                  <ol className="mt-3 space-y-1 border-l-2 border-line pl-3" aria-label="Historial del reporte">
                     {reporte.historial.map((evento) => (
-                      <li key={evento.idHistorial} className="text-[11px] text-[var(--color-subtle)]">
+                      <li key={evento.idHistorial} className="text-[11px] text-subtle">
                         {ETIQUETA_ESTADO[evento.estadoNuevo]} por {evento.nombreModerador ?? "moderación"} ·{" "}
                         {formatearFecha(evento.fechaEvento)}
                         {evento.justificacion && ` — ${evento.justificacion}`}
@@ -276,10 +276,10 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                 )}
 
                 {esAbierto(reporte.estado) && (
-                  <div className="mt-3 border-t border-[var(--color-hairline)] pt-3">
+                  <div className="mt-3 border-t border-line pt-3">
                     <label
                       htmlFor={`justificacion-oferta-${reporte.idReporte}`}
-                      className="block text-xs font-medium text-[var(--color-subtle)]"
+                      className="block text-xs font-medium text-subtle"
                     >
                       Justificación
                       <textarea
@@ -294,15 +294,15 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                         }}
                         rows={2}
                         maxLength={2000}
-                        className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                        className={`mt-1 block w-full rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                       />
                     </label>
-                    <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                    <p className="mt-1 text-[11px] text-subtle">
                       Obligatoria para rechazar; opcional para tomar o aceptar.
                     </p>
 
                     {errorJustificacion === reporte.idReporte && (
-                      <p role="alert" className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
+                      <p role="alert" className="mt-2 rounded-card border border-status-error bg-paper p-2 text-xs text-status-error">
                         {MENSAJE_JUSTIFICACION_RECHAZO_OFERTA}
                       </p>
                     )}
@@ -314,7 +314,7 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                           onClick={() => decidir(reporte, "en-revision")}
                           disabled={enCurso !== null}
                           aria-label={`Tomar reporte ${reporte.idReporte}`}
-                          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                          className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                         >
                           {accionActual(reporte.idReporte, "en-revision") ? "Tomando…" : "Tomar para revisar"}
                         </button>
@@ -324,7 +324,7 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                         onClick={() => decidir(reporte, "aceptar")}
                         disabled={enCurso !== null}
                         aria-label={`Aceptar reporte ${reporte.idReporte}`}
-                        className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-brand-blue transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                       >
                         {accionActual(reporte.idReporte, "aceptar") ? "Aceptando…" : "Aceptar"}
                       </button>
@@ -333,7 +333,7 @@ export default function ColaReportesOfertas({ onCambio }: { onCambio?: () => voi
                         onClick={() => decidir(reporte, "rechazar")}
                         disabled={enCurso !== null}
                         aria-label={`Rechazar reporte ${reporte.idReporte}`}
-                        className={`cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className={`cursor-pointer rounded-card border border-status-error px-3 py-1.5 text-xs font-medium text-status-error transition-colors hover:border-status-error hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                       >
                         {accionActual(reporte.idReporte, "rechazar") ? "Rechazando…" : "Rechazar"}
                       </button>

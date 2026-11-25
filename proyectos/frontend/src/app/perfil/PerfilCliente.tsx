@@ -17,6 +17,8 @@ import DecisionesModeracion from "@/components/perfil/DecisionesModeracion";
 import PanelRepresentanteModal from "@/components/representante/PanelRepresentanteModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import Button, { buttonClassName } from "@/components/ui/Button";
+import Tag from "@/components/ui/Tag";
 
 function formatearFecha(valor?: string): string {
   if (!valor) return "No registrada";
@@ -112,10 +114,10 @@ export default function PerfilCliente() {
         <div
           role="status"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-line bg-paper p-12 text-center"
         >
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-line border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Consultando tu perfil…
           </p>
         </div>
@@ -126,10 +128,10 @@ export default function PerfilCliente() {
   if (!usuario) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <section className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center shadow-[var(--shadow-paper)] sm:p-10">
+        <section className="rounded-card border border-line bg-paper p-8 text-center sm:p-10">
           <span
             aria-hidden="true"
-            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue"
           >
             <svg
               viewBox="0 0 24 24"
@@ -143,46 +145,46 @@ export default function PerfilCliente() {
             </svg>
           </span>
 
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-[var(--color-ink)]">
+          <h1 className="mt-4 text-2xl font-medium uppercase tracking-normal text-ink">
             Inicia sesión para ver tu perfil
           </h1>
-          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[var(--color-subtle)]">
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-subtle">
             Tu perfil reúne tus reseñas y el acceso a tus favoritos y al
             comparador. La sesión se valida con Supabase y el backend de
             TecReview.
           </p>
 
           {error && (
-            <p role="alert" className="mt-4 text-sm text-red-700">
+            <p role="alert" className="mt-4 text-sm text-status-error">
               {error}
             </p>
           )}
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <button
+            <Button
+              variant="primary"
               type="button"
               onClick={() => {
                 limpiarError();
                 setModalAuthAbierto(true);
               }}
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-5 py-2.5 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
             >
               Iniciar sesión
-            </button>
+            </Button>
             <Link
               href="/productos"
-              className={`rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-5 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              className={buttonClassName("secondary")}
             >
               Explorar catálogo
             </Link>
             {error && (
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={reintentar}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-5 py-2.5 text-sm font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Reintentar conexión
-              </button>
+              </Button>
             )}
           </div>
         </section>
@@ -202,13 +204,13 @@ export default function PerfilCliente() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="max-w-2xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+        <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
           Cuenta TecReview
         </p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-medium uppercase tracking-normal text-ink sm:text-3xl">
           Mi perfil
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
+        <p className="mt-2 text-sm leading-relaxed text-subtle">
           Datos confirmados por el backend y tu actividad dentro de la
           plataforma.
         </p>
@@ -216,7 +218,7 @@ export default function PerfilCliente() {
 
       <section
         aria-labelledby="titulo-datos-perfil"
-        className="mt-6 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6"
+        className="mt-6 rounded-card border border-line bg-paper p-5 sm:p-6"
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
@@ -225,13 +227,13 @@ export default function PerfilCliente() {
               <img
                 src={usuario.avatar}
                 alt={`Avatar de ${usuario.nombre}`}
-                className="h-16 w-16 shrink-0 rounded-full border border-[var(--color-hairline)] object-cover"
+                className="h-16 w-16 shrink-0 rounded-full border border-line object-cover"
               />
             ) : (
               <span
                 aria-hidden="true"
                 data-testid="avatar-placeholder"
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)]"
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue"
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -252,90 +254,84 @@ export default function PerfilCliente() {
             <div className="min-w-0">
               <h2
                 id="titulo-datos-perfil"
-                className="truncate text-xl font-bold tracking-tight text-[var(--color-ink)]"
+                className="truncate text-xl font-medium uppercase tracking-normal text-ink"
               >
                 {usuario.nombre}
               </h2>
-              <p className="text-sm text-[var(--color-subtle)]">
+              <p className="text-sm text-subtle">
                 @{usuario.usuario}
               </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                <span className="rounded-full bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--color-brand-blue)]">
+                <Tag variant="neutral">
                   {usuario.rol || "Usuario registrado"}
-                </span>
-                <span
-                  className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                    usuario.activo === false
-                      ? "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
-                      : "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
-                  }`}
-                >
+                </Tag>
+                <Tag variant={usuario.activo === false ? "pending" : "verified"}>
                   {usuario.activo === false ? "Cuenta inactiva" : "Cuenta activa"}
-                </span>
+                </Tag>
               </div>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
             {esAdmin && (
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={() => setModalAdminAbierto(true)}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Panel de administración
-              </button>
+              </Button>
             )}
             {esModerador && (
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={() => setModalModeracionAbierto(true)}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Panel de moderación
                 <ContadorPendientes cantidad={resumenPendientes?.total} />
-              </button>
+              </Button>
             )}
             {(esAdmin || esRep) && (
-              <button
+              <Button
+                variant="secondary"
                 type="button"
                 onClick={() => setModalRepresentanteAbierto(true)}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
               >
                 Panel de representante
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant="danger"
               type="button"
               onClick={cerrarSesion}
-              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-2 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
             >
               Cerrar sesión
-            </button>
+            </Button>
           </div>
         </div>
 
-        <dl className="mt-6 grid gap-4 border-t border-[var(--color-hairline)] pt-5 sm:grid-cols-2">
+        <dl className="mt-6 grid gap-4 border-t border-dotted border-line pt-5 sm:grid-cols-2">
           <div>
-            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <dt className="text-[11px] font-medium uppercase tracking-normal text-subtle">
               Correo electrónico
             </dt>
-            <dd className="mt-1 break-all text-sm font-medium text-[var(--color-ink)]">
+            <dd className="mt-1 break-all text-sm font-medium text-ink">
               {usuario.email}
             </dd>
           </div>
           <div>
-            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <dt className="text-[11px] font-medium uppercase tracking-normal text-subtle">
               Miembro desde
             </dt>
-            <dd className="mt-1 text-sm font-medium text-[var(--color-ink)]">
+            <dd className="mt-1 text-sm font-medium text-ink">
               {formatearFecha(usuario.fechaRegistro)}
             </dd>
           </div>
         </dl>
 
         {error && (
-          <p role="alert" className="mt-4 text-sm text-red-700">
+          <p role="alert" className="mt-4 text-sm text-status-error">
             {error}
           </p>
         )}
@@ -345,39 +341,39 @@ export default function PerfilCliente() {
       <DecisionesModeracion idUsuario={usuario.idUsuario} />
 
       <section aria-label="Resumen de actividad" className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+        <div className="rounded-card border border-line bg-paper p-4">
+          <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
             Mis reseñas
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">
+          <p className="mt-1 text-2xl font-medium tabular-nums text-ink">
             {cargandoResenas ? "—" : resenas.length}
           </p>
         </div>
         <Link
           href="/favoritos"
-          className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+          className={`rounded-card border border-line bg-paper p-4 transition-colors hover:border-brand-blue ${CLASE_FOCO}`}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+          <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
             Favoritos
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">
+          <p className="mt-1 text-2xl font-medium tabular-nums text-ink">
             {favoritosHidratados ? favoritos.length : "—"}
           </p>
-          <p className="mt-1 text-xs text-[var(--color-brand-blue)]">
+          <p className="mt-1 text-xs text-brand-blue">
             Ver favoritos →
           </p>
         </Link>
         <Link
           href="/comparador"
-          className={`rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+          className={`rounded-card border border-line bg-paper p-4 transition-colors hover:border-brand-blue ${CLASE_FOCO}`}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+          <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
             Comparador
           </p>
-          <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">
+          <p className="mt-1 text-2xl font-medium tabular-nums text-ink">
             {comparadorHidratado ? comparador.length : "—"}
           </p>
-          <p className="mt-1 text-xs text-[var(--color-brand-blue)]">
+          <p className="mt-1 text-xs text-brand-blue">
             Ver comparador →
           </p>
         </Link>
@@ -386,16 +382,16 @@ export default function PerfilCliente() {
       <section aria-labelledby="titulo-mis-resenas" className="mt-8">
         <h2
           id="titulo-mis-resenas"
-          className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+          className="text-lg font-medium uppercase tracking-normal text-ink"
         >
           Mis reseñas
         </h2>
-        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+        <p className="mt-1 text-sm text-subtle">
           Opiniones que has publicado en el catálogo.
         </p>
 
         {cargandoResenas ? (
-          <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
+          <p role="status" className="mt-4 text-sm text-subtle">
             Cargando tus reseñas…
           </p>
         ) : errorResenas ? (
@@ -418,20 +414,20 @@ export default function PerfilCliente() {
             {resenas.map((resena) => (
               <li
                 key={resena.idResena}
-                className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+                className="rounded-card border border-line bg-paper p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Link
                     href={`/productos/${resena.idProducto}`}
-                    className={`text-sm font-semibold text-[var(--color-brand-blue)] hover:underline ${CLASE_FOCO}`}
+                    className={`text-sm font-medium uppercase text-brand-blue hover:underline ${CLASE_FOCO}`}
                   >
                     {resena.nombreProducto || `Producto #${resena.idProducto}`}
                   </Link>
-                  <span className="text-xs text-[var(--color-subtle)]">
+                  <span className="text-xs text-subtle">
                     {formatearFecha(resena.fechaCreacion)}
                   </span>
                 </div>
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                <p className="mt-2 whitespace-pre-line border-t border-dotted border-line pt-3 text-sm leading-relaxed text-text-body">
                   {resena.comentario}
                 </p>
               </li>

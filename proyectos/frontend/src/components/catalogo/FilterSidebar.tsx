@@ -17,6 +17,7 @@ import {
 import type { CategoriaDispositivo } from "@/types/producto";
 import { formatearCOP } from "@/data/specsHelper";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Input from "@/components/ui/Input";
 
 interface FilterSidebarProps {
   catalogo: CatalogoPreparado;
@@ -234,10 +235,10 @@ export default function FilterSidebar({
   }
 
   const clasesDrawer = modoDrawer
-    ? `fixed inset-y-0 left-0 z-50 w-[85vw] max-w-sm overflow-y-auto rounded-r-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)] md:static md:inset-auto md:z-auto md:w-auto md:max-w-none md:overflow-visible md:rounded-lg ${
+    ? `fixed inset-y-0 left-0 z-50 w-[85vw] max-w-sm overflow-y-auto rounded-r-card border border-hairline bg-paper p-4 md:static md:inset-auto md:z-auto md:w-auto md:max-w-none md:overflow-visible md:rounded-card ${
         drawerAbierto ? "block" : "hidden md:block"
       }`
-    : "rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)]";
+    : "rounded-card border border-hairline bg-paper p-4";
 
   return (
     <>
@@ -246,7 +247,7 @@ export default function FilterSidebar({
           data-testid="backdrop-filtros"
           aria-hidden="true"
           onClick={onCerrar}
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-inverse/50 md:hidden"
         />
       )}
 
@@ -261,7 +262,7 @@ export default function FilterSidebar({
         className={clasesDrawer}
       >
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+          <h2 className="text-sm font-medium text-ink">
             Filtros
           </h2>
           <div className="flex items-center gap-1">
@@ -271,7 +272,7 @@ export default function FilterSidebar({
                 type="button"
                 onClick={onCerrar}
                 aria-label="Cerrar filtros"
-                className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] md:hidden ${CLASE_FOCO}`}
+                className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-card text-subtle transition-colors hover:bg-canvas hover:text-ink md:hidden ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"
@@ -289,7 +290,7 @@ export default function FilterSidebar({
               type="button"
               onClick={onLimpiar}
               disabled={!hayFiltros}
-              className={`cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card px-2 py-1 text-xs font-medium text-brand-blue transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:text-subtle ${CLASE_FOCO}`}
             >
               Limpiar filtros
             </button>
@@ -297,13 +298,13 @@ export default function FilterSidebar({
         </div>
 
         <fieldset className="mt-5">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+          <legend className="text-xs font-medium uppercase tracking-normal text-subtle">
             Categoría
           </legend>
           <ul className="mt-2 space-y-2">
             {catalogo.categorias.map((categoria) => (
               <li key={categoria.valor}>
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-ink)]">
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                   <input
                     type="checkbox"
                     checked={filtros.categorias.includes(categoria.valor)}
@@ -316,7 +317,7 @@ export default function FilterSidebar({
                         ),
                       })
                     }
-                    className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                    className={`h-4 w-4 accent-brand-blue ${CLASE_FOCO}`}
                   />
                   <span className="flex-1">
                     {categoria.etiqueta} ({categoria.cantidad})
@@ -328,22 +329,22 @@ export default function FilterSidebar({
         </fieldset>
 
         <fieldset className="mt-5">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+          <legend className="text-xs font-medium uppercase tracking-normal text-subtle">
             Marca
           </legend>
-          <input
+          <Input
             type="search"
             value={busquedaMarca}
             onChange={(event) => setBusquedaMarca(event.target.value)}
             placeholder="Buscar marca..."
             aria-label="Buscar marcas"
-            className={`mt-2 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+            className="mt-2 text-sm"
           />
           {marcasFiltradas.length > 0 ? (
             <ul className="mt-2 max-h-52 space-y-2 overflow-y-auto pr-1">
               {marcasFiltradas.map((marca) => (
                 <li key={marca.nombre}>
-                  <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-ink)]">
+                  <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                     <input
                       type="checkbox"
                       checked={filtros.marcas.includes(marca.nombre)}
@@ -361,7 +362,7 @@ export default function FilterSidebar({
                         }
                         onCambiar(cambios);
                       }}
-                      className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`h-4 w-4 accent-brand-blue ${CLASE_FOCO}`}
                     />
                     <span className="flex-1">
                       {marca.nombre} ({marca.cantidad})
@@ -371,11 +372,11 @@ export default function FilterSidebar({
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-xs text-[var(--color-subtle)]">
+            <p className="mt-2 text-xs text-subtle">
               No encontramos marcas.
             </p>
           )}
-          <label className="mt-3 flex cursor-pointer items-center gap-2 text-xs text-[var(--color-ink)]">
+          <label className="mt-3 flex cursor-pointer items-center gap-2 text-xs text-ink">
             <input
               type="checkbox"
               checked={Boolean(filtros.excluirMarcas)}
@@ -383,21 +384,21 @@ export default function FilterSidebar({
               onChange={(event) =>
                 onCambiar({ ...filtros, excluirMarcas: event.target.checked })
               }
-              className={`h-4 w-4 accent-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+              className={`h-4 w-4 accent-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
             />
             <span>Excluir marcas</span>
           </label>
         </fieldset>
 
         <fieldset className="mt-5" disabled={!rangoValido}>
-          <legend className="text-xs font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+          <legend className="text-xs font-medium uppercase tracking-normal text-subtle">
             Precio
           </legend>
           <div className="mt-2 space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              <label className="block text-xs text-[var(--color-subtle)]">
+              <label className="block text-xs text-subtle">
                 Precio mínimo en pesos
-                <input
+                <Input
                   type="number"
                   inputMode="numeric"
                   min={rangoPrecio.min}
@@ -418,12 +419,12 @@ export default function FilterSidebar({
                     }
                   }}
                   placeholder={formatearCOP(rangoPrecio.min)}
-                  className={`mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className="mt-1 text-sm"
                 />
               </label>
-              <label className="block text-xs text-[var(--color-subtle)]">
+              <label className="block text-xs text-subtle">
                 Precio máximo en pesos
-                <input
+                <Input
                   type="number"
                   inputMode="numeric"
                   min={rangoPrecio.min}
@@ -444,12 +445,12 @@ export default function FilterSidebar({
                     }
                   }}
                   placeholder={formatearCOP(rangoPrecio.max)}
-                  className={`mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 py-1.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className="mt-1 text-sm"
                 />
               </label>
             </div>
 
-            <label className="block text-xs text-[var(--color-subtle)]">
+            <label className="block text-xs text-subtle">
               Mínimo: {formatearCOP(minActual)}
               <input
                 type="range"
@@ -467,10 +468,10 @@ export default function FilterSidebar({
                     precioMax: Math.max(filtros.precioMax, valor),
                   });
                 }}
-                className={`mt-1 w-full accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`mt-1 w-full accent-brand-blue ${CLASE_FOCO}`}
               />
             </label>
-            <label className="block text-xs text-[var(--color-subtle)]">
+            <label className="block text-xs text-subtle">
               Máximo: {formatearCOP(maxActual)}
               <input
                 type="range"
@@ -491,20 +492,20 @@ export default function FilterSidebar({
                     precioMin: Math.min(filtros.precioMin, valor),
                   });
                 }}
-                className={`mt-1 w-full accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`mt-1 w-full accent-brand-blue ${CLASE_FOCO}`}
               />
             </label>
           </div>
         </fieldset>
 
         <fieldset className="mt-5">
-          <legend className="text-xs font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+          <legend className="text-xs font-medium uppercase tracking-normal text-subtle">
             Características
           </legend>
           <ul className="mt-2 space-y-2">
             {catalogo.caracteristicas.map((caracteristica) => (
               <li key={caracteristica.valor}>
-                <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--color-ink)]">
+                <label className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                   <input
                     type="checkbox"
                     checked={filtros.caracteristicas.includes(
@@ -519,7 +520,7 @@ export default function FilterSidebar({
                         ),
                       })
                     }
-                    className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                    className={`h-4 w-4 accent-brand-blue ${CLASE_FOCO}`}
                   />
                   <span className="flex-1">
                     {caracteristica.etiqueta} ({caracteristica.cantidad})
@@ -531,11 +532,11 @@ export default function FilterSidebar({
         </fieldset>
 
         {modoDrawer && (
-          <div className="mt-5 border-t border-[var(--color-hairline)] pt-4 md:hidden">
+          <div className="mt-5 border-t border-dotted border-line pt-4 md:hidden">
             <button
               type="button"
               onClick={onCerrar}
-              className={`w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+              className={`w-full cursor-pointer rounded-card bg-brand-solid px-4 py-2 text-sm font-medium text-on-solid transition-colors hover:bg-brand-solid ${CLASE_FOCO}`}
             >
               Ver resultados
             </button>

@@ -9,12 +9,7 @@ interface GeometricBackgroundProps {
 /**
  * GeometricBackground
  * Fondo topográfico y de curvas de nivel orgánicas (Topographic Waves / Contour Lines)
- * inspirado fielmente en la imagen de referencia del usuario, adaptado a la cromática
- * de morado y azul (púrpura eléctrico y azul zafiro).
- * 
- * En modo oscuro presenta un cielo nocturno profundo (#090714) con resplandor morado en la
- * esquina superior derecha y azul en la inferior izquierda, atravesado por sutiles líneas
- * de contorno topográfico con opacidad calibrada para no comprometer la legibilidad (WCAG AA).
+ * inspirado en curvas de nivel, con superficies y líneas del sistema Kiwi.
  */
 export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgroundProps) {
   const esOscuro = tema === "oscuro";
@@ -22,7 +17,7 @@ export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgr
   // Colección de curvas de nivel topográficas onduladas que recorren la pantalla
   // de forma orgánica emulando mapas topográficos de relieve y ondas de elevación
   const lineasTopograficas = [
-    // Bloque Superior (Ondas que bordean el resplandor morado)
+    // Bloque Superior (ondas que bordean la superficie acentuada)
     "M -80 30 C 260 -40, 560 90, 880 20 C 1200 -50, 1420 80, 1680 30",
     "M -80 65 C 250 -10, 570 125, 890 55 C 1210 -15, 1410 115, 1680 65",
     "M -80 105 C 240 25, 580 165, 900 95 C 1220 25, 1400 155, 1680 105",
@@ -61,45 +56,38 @@ export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgr
     >
       {/* ─────────────────────────────────────────────────────────────
           1. CAPA BASE DE COLOR
-          Claro: perla suave
-          Oscuro: noche azul profunda (#090714)
+          Superficie del tema activo
       ───────────────────────────────────────────────────────────── */}
       <div
         className={`absolute inset-0 transition-colors duration-500 ${
-          esOscuro ? "bg-[#090714]" : "bg-[#f8fafc]"
+          esOscuro ? "bg-canvas" : "bg-paper"
         }`}
       />
 
       {/* ─────────────────────────────────────────────────────────────
           2. RESPLANDORES RADIALES SUAVES
-          Azul zafiro, índigo y un acento rojo muy contenido
+          Superficies y acentos del tema activo
       ───────────────────────────────────────────────────────────── */}
-      {/* Resplandor superior derecho (azul) */}
+      {/* Superficie superior derecha */}
       <div
         className={`absolute -right-40 -top-40 h-[650px] w-[650px] rounded-full blur-[110px] transition-opacity duration-700 ${
-          esOscuro ? "bg-blue-700/25" : "bg-blue-200/40"
+          esOscuro ? "bg-surface-2/20" : "bg-surface-2/30"
         }`}
       />
 
-      {/* Resplandor inferior izquierdo (azul zafiro profundo) */}
+      {/* Acento inferior izquierdo */}
       <div
-        className={`absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full blur-[110px] transition-opacity duration-700 ${
-          esOscuro ? "bg-blue-600/25" : "bg-blue-300/35"
-        }`}
+        className="absolute -bottom-40 -left-40 h-[600px] w-[600px] rounded-full bg-brand-blue/10 blur-[110px] transition-opacity duration-700"
       />
 
-      {/* Resplandor superior izquierdo sutil (índigo) */}
+      {/* Superficie superior izquierda */}
       <div
-        className={`absolute -left-20 -top-32 h-[450px] w-[450px] rounded-full blur-[120px] transition-opacity duration-700 ${
-          esOscuro ? "bg-indigo-700/20" : "bg-indigo-200/30"
-        }`}
+        className="absolute -left-20 -top-32 h-[450px] w-[450px] rounded-full bg-line/20 blur-[120px] transition-opacity duration-700"
       />
 
-      {/* Resplandor inferior derecho (acento rojo contenido) */}
+      {/* Acento inferior derecho */}
       <div
-        className={`absolute -bottom-32 -right-20 h-[420px] w-[420px] rounded-full blur-[120px] transition-opacity duration-700 ${
-          esOscuro ? "bg-red-900/20" : "bg-red-200/20"
-        }`}
+        className="absolute -bottom-32 -right-20 h-[420px] w-[420px] rounded-full bg-star/10 blur-[120px] transition-opacity duration-700"
       />
 
       {/* ─────────────────────────────────────────────────────────────
@@ -113,26 +101,26 @@ export default function GeometricBackground({ tema = "oscuro" }: GeometricBackgr
         viewBox="0 0 1600 1000"
       >
         <defs>
-          {/* Gradiente lineal horizontal de trazo para Modo Oscuro (azul a rojo) */}
+          {/* Gradiente lineal horizontal de trazo para modo oscuro */}
           <linearGradient id="topoStrokeOscuro" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.45" />
-            <stop offset="45%" stopColor="#6366f1" stopOpacity="0.35" />
-            <stop offset="78%" stopColor="#2563eb" stopOpacity="0.40" />
-            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.30" />
+            <stop offset="0%" stopColor="var(--color-brand-blue)" stopOpacity="0.45" />
+            <stop offset="45%" stopColor="var(--color-line)" stopOpacity="0.35" />
+            <stop offset="78%" stopColor="var(--color-brand-blue)" stopOpacity="0.40" />
+            <stop offset="100%" stopColor="var(--color-star)" stopOpacity="0.30" />
           </linearGradient>
 
           {/* Gradiente lineal horizontal de trazo para Modo Claro */}
           <linearGradient id="topoStrokeClaro" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2563eb" stopOpacity="0.30" />
-            <stop offset="55%" stopColor="#6366f1" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#dc2626" stopOpacity="0.18" />
+            <stop offset="0%" stopColor="var(--color-brand-blue)" stopOpacity="0.30" />
+            <stop offset="55%" stopColor="var(--color-line)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--color-star)" stopOpacity="0.18" />
           </linearGradient>
 
           {/* Gradiente secundario invertido para dar profundidad tridimensional */}
           <linearGradient id="topoStrokeInvertido" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ef4444" stopOpacity="0.22" />
-            <stop offset="50%" stopColor="#6366f1" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.35" />
+            <stop offset="0%" stopColor="var(--color-star)" stopOpacity="0.22" />
+            <stop offset="50%" stopColor="var(--color-line)" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="var(--color-brand-blue)" stopOpacity="0.35" />
           </linearGradient>
         </defs>
 

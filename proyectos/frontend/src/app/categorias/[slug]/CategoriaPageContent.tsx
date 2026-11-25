@@ -21,6 +21,8 @@ import { aplicarResumenOfertasAVistas } from "@/data/catalogoApi";
 import { coincideProductoConBusqueda } from "@/data/catalogo";
 import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 type OrdenProductos = "nombre" | "precio-asc" | "precio-desc";
 
@@ -167,10 +169,10 @@ export default function CategoriaPageContent({
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav
         aria-label="Migas de pan"
-        className="mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-subtle)]"
+        className="mb-6 flex flex-wrap items-center justify-between gap-3 text-xs text-subtle"
       >
         <div className="flex flex-wrap items-center gap-2">
-          <Link href="/" className="transition-colors hover:text-[var(--color-brand-blue)]">
+          <Link href="/" className="transition-colors hover:text-brand-blue">
             Inicio
           </Link>
           <span aria-hidden="true">/</span>
@@ -178,7 +180,7 @@ export default function CategoriaPageContent({
           {nombreCategoria && (
             <>
               <span aria-hidden="true">/</span>
-              <span className="font-medium text-[var(--color-ink)]">
+              <span className="font-medium text-ink">
                 {nombreCategoria}
               </span>
             </>
@@ -187,7 +189,7 @@ export default function CategoriaPageContent({
 
         <Link
           href="/productos"
-          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+          className="inline-flex items-center gap-1.5 rounded-card border border-hairline bg-paper px-4 py-2 text-xs font-medium text-ink transition-colors hover:border-brand-blue hover:text-brand-blue"
         >
           ← Volver al catálogo
         </Link>
@@ -195,60 +197,60 @@ export default function CategoriaPageContent({
 
       {cargando ? (
         <section
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] py-24"
+          className="flex flex-col items-center justify-center rounded-card border border-hairline bg-paper py-24"
           aria-live="polite"
           aria-busy="true"
         >
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-hairline border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Consultando productos de la categoría...
           </p>
         </section>
       ) : noEncontrada ? (
-        <section className="mt-10 rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center sm:p-12">
-          <p className="text-2xl font-bold tracking-tight text-[var(--color-ink)]">
+        <section className="mt-10 rounded-card border border-dashed border-hairline bg-paper p-10 text-center sm:p-12">
+          <p className="text-2xl font-medium tracking-normal text-ink">
             Categoría no encontrada
           </p>
-          <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[var(--color-subtle)]">
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-subtle">
             La categoría solicitada no existe en el catálogo actual o su nombre
             cambió en la base de datos.
           </p>
           <Link
             href="/productos"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-6 inline-flex min-h-11 items-center gap-1.5 rounded-pill bg-brand-solid px-5 py-3 text-xs font-medium uppercase text-on-solid"
           >
             ← Volver al catálogo
           </Link>
         </section>
       ) : error ? (
         <section
-          className="mt-10 rounded-xl border border-red-200 bg-red-50 p-8 text-center"
+          className="mt-10 rounded-card border border-status-error bg-paper p-8 text-center"
           role="alert"
         >
-          <p className="text-lg font-semibold text-red-900">
+          <p className="text-lg font-medium text-status-error">
             No fue posible cargar la categoría
           </p>
-          <p className="mt-2 text-sm text-red-800">{error}</p>
-          <button
+          <p className="mt-2 text-sm text-status-error">{error}</p>
+          <Button
             type="button"
             onClick={reintentar}
-            className="mt-5 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-5 text-xs"
           >
             Reintentar
-          </button>
+          </Button>
         </section>
       ) : (
         <>
-          <header className="border-b border-[var(--color-hairline)] pb-6">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[var(--color-brand-blue)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-positive)]" />
+          <header className="border-b border-dotted border-line pb-6">
+            <span className="inline-flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1 text-[11px] font-medium uppercase tracking-normal text-brand-blue">
+              <span className="h-1.5 w-1.5 rounded-full bg-positive" />
               {categoria?.definicion.etiqueta || "Categoría"}
             </span>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-[var(--color-ink)] sm:text-4xl">
+            <h1 className="mt-3 text-3xl font-medium uppercase tracking-normal text-ink sm:text-4xl">
               {nombreCategoria}
             </h1>
             {descripcionCategoria && (
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--color-subtle)]">
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-subtle">
                 {descripcionCategoria}
               </p>
             )}
@@ -259,17 +261,17 @@ export default function CategoriaPageContent({
               <div className="w-full lg:max-w-md">
                 <label
                   htmlFor="buscar-categoria"
-                  className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]"
+                  className="mb-2 block text-[11px] font-medium uppercase tracking-normal text-subtle"
                 >
                   Buscar dentro de la categoría
                 </label>
-                <input
+                <Input
                   id="buscar-categoria"
                   type="search"
                   value={busqueda}
                   onChange={(event) => setBusqueda(event.target.value)}
                   placeholder="Busca por marca o modelo"
-                  className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                  className="text-sm"
                 />
               </div>
 
@@ -277,7 +279,7 @@ export default function CategoriaPageContent({
                 <div>
                   <label
                     htmlFor="ordenar-categoria"
-                    className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]"
+                    className="mb-2 block text-[11px] font-medium uppercase tracking-normal text-subtle"
                   >
                     Ordenar productos
                   </label>
@@ -287,7 +289,7 @@ export default function CategoriaPageContent({
                     onChange={(event) =>
                       setOrden(event.target.value as OrdenProductos)
                     }
-                    className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-3 text-sm text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                    className="min-h-11 cursor-pointer rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-brand-blue"
                   >
                     <option value="nombre">Nombre (A-Z)</option>
                     <option value="precio-asc">Menor precio</option>
@@ -295,7 +297,7 @@ export default function CategoriaPageContent({
                   </select>
                 </div>
 
-                <span className="inline-flex items-center rounded-full bg-[var(--color-paper)] px-3.5 py-2 text-xs font-medium text-[var(--color-subtle)] ring-1 ring-[var(--color-hairline)]">
+                <span className="inline-flex items-center rounded-full bg-paper px-3.5 py-2 text-xs font-medium text-subtle ring-1 ring-hairline">
                   {total} producto{total === 1 ? "" : "s"} encontrado
                   {total === 1 ? "" : "s"}
                 </span>
@@ -327,26 +329,26 @@ export default function CategoriaPageContent({
               ))}
             </section>
           ) : (
-            <section className="rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center sm:p-12">
+            <section className="rounded-card border border-dashed border-hairline bg-paper p-10 text-center sm:p-12">
               {busqueda.trim() ? (
                 <>
-                  <p className="font-semibold text-[var(--color-ink)]">
+                  <p className="font-medium text-ink">
                     No se encontraron productos para &ldquo;{busqueda}&rdquo;.
                   </p>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setBusqueda("")}
-                    className="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                    className="mt-3 text-xs"
                   >
                     Limpiar búsqueda
-                  </button>
+                  </Button>
                 </>
               ) : (
                 <>
-                  <p className="font-semibold text-[var(--color-ink)]">
+                  <p className="font-medium text-ink">
                     Aún no hay productos registrados en esta categoría.
                   </p>
-                  <p className="mt-2 text-sm text-[var(--color-subtle)]">
+                  <p className="mt-2 text-sm text-subtle">
                     Cuando se registren productos en la base de datos
                     aparecerán aquí automáticamente.
                   </p>

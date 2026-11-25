@@ -699,7 +699,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="theme-tecreview flex min-h-screen flex-col">
+    <div className="theme-tecreview flex min-h-screen flex-col bg-canvas text-ink">
       <SiteHeader>
         <ResumenSesion
           cargando={cargandoAuth}
@@ -717,32 +717,32 @@ export default function Home() {
         />
       </SiteHeader>
 
-      <main className="flex-1 pb-20 md:pb-0">
-        <section className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]">
+      <main className="flex-1 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0">
+        <section className="border-b border-dotted border-line bg-canvas">
           <div className="mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8 lg:pt-14">
             <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
               <div className="flex flex-col gap-6 lg:col-span-7">
                 <div>
-                  <span className="inline-flex items-center gap-2 rounded-md border border-[var(--color-brand-blue)]/20 bg-[var(--color-brand-blue)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1 text-micro font-medium uppercase tracking-normal text-brand-blue">
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-solid)]"
+                      className="h-1.5 w-1.5 rounded-full bg-brand-solid"
                       aria-hidden="true"
                     />
                     Catálogo y comparador de tecnología
                   </span>
 
-                  <h1 className="mt-4 max-w-2xl text-3xl font-bold leading-[1.08] tracking-tight text-[var(--color-ink)] sm:text-4xl lg:text-5xl">
+                  <h1 className="mt-4 max-w-2xl text-heading-sm font-medium uppercase leading-[1.09] tracking-normal text-ink sm:text-heading lg:text-display">
                     Encuentra y compara tu próximo dispositivo.
                   </h1>
 
-                  <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-subtle)] sm:text-base">
+                  <p className="mt-4 max-w-xl text-base font-normal leading-relaxed text-text-body">
                     Consulta fichas técnicas completas, análisis imparciales y
                     precios de referencia en pesos colombianos (COP).
                   </p>
                 </div>
 
                 <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                  <p className="mb-2 text-micro font-medium uppercase tracking-normal text-subtle">
                     Buscar dispositivos tecnológicos
                   </p>
                   <div ref={contenedorBusquedaRef}>
@@ -776,7 +776,7 @@ export default function Home() {
                       hayAlternativas={alternativasBusqueda.length > 0}
                     />
                   )}
-                  <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-2 text-base text-text-secondary">
                     Presupuesto de referencia: hasta{" "}
                     {formatearCOP(presupuestoMax)}. Confirma para ver productos
                     de todas las categorías en el catálogo general.
@@ -784,7 +784,7 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                  <p className="mb-2 text-micro font-medium uppercase tracking-normal text-subtle">
                     Explorar por categoría
                   </p>
                   <CategoriasHome onSeleccionarTodos={seleccionarTodos} />
@@ -819,7 +819,7 @@ export default function Home() {
                   }}
                 />
                 {reporteConfirmado && (
-                  <p role="status" className="mt-2 text-sm text-[var(--color-positive)]">
+                  <p role="status" className="mt-2 text-sm text-positive">
                     {reporteConfirmado}
                   </p>
                 )}

@@ -25,6 +25,9 @@ import { useComparador } from "@/hooks/useComparador";
 import { useResumenOfertas } from "@/hooks/useResumenOfertas";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Tag from "@/components/ui/Tag";
 
 export default function ComparadorCliente() {
   const [catalogo, setCatalogo] = useState<Producto[] | null>(null);
@@ -189,10 +192,10 @@ export default function ComparadorCliente() {
         <div
           role="status"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-line bg-paper p-12 text-center"
         >
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-line border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Cargando catálogo para el comparador…
           </p>
         </div>
@@ -223,13 +226,13 @@ export default function ComparadorCliente() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="mb-8 max-w-3xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+        <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
           Compara · Analiza · Decide
         </p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-medium uppercase tracking-normal text-ink sm:text-3xl">
           Comparador de productos
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
+        <p className="mt-2 text-sm leading-relaxed text-subtle">
           Revisa hasta {MAX_COMPARADOR} productos de la misma categoría lado a lado. Las diferencias se
           calculan solo con los datos registrados en el catálogo.
         </p>
@@ -237,28 +240,28 @@ export default function ComparadorCliente() {
 
       <section
         aria-labelledby="titulo-selector"
-        className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+        className="rounded-card border border-line bg-paper p-5"
       >
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2
               id="titulo-selector"
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-lg font-medium uppercase tracking-normal text-ink"
             >
               Agregar productos
             </h2>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm text-subtle">
               El primer producto fija la categoría. Busca y suma productos de
               esa misma categoría; vacía la selección para cambiarla.
             </p>
           </div>
-          <span className="shrink-0 rounded-full bg-[var(--color-canvas)] px-3 py-1 text-xs font-semibold text-[var(--color-subtle)]">
+          <span className="shrink-0 rounded-full bg-canvas px-3 py-1 text-xs font-medium text-subtle">
             {ids.length} de {MAX_COMPARADOR} seleccionados
           </span>
         </div>
 
         {idCategoria !== null && (
-          <p role="status" className="mt-3 text-sm text-[var(--color-subtle)]">
+          <p role="status" className="mt-3 text-sm text-subtle">
             Categoría de la comparación: {catalogo?.find(
               (producto) => producto.idProducto === ids[0],
             )?.nombreCategoria || `Categoría #${idCategoria}`}.
@@ -266,30 +269,30 @@ export default function ComparadorCliente() {
           </p>
         )}
         {seleccionDepurada && (
-          <p role="status" className="mt-3 text-sm text-[var(--color-subtle)]">
+          <p role="status" className="mt-3 text-sm text-subtle">
             Se depuró la selección guardada: se conservaron el primer producto válido y los de su misma categoría.
           </p>
         )}
 
         <label
           htmlFor="buscar-comparador"
-          className="mt-4 block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]"
+          className="mt-4 block text-xs font-medium uppercase tracking-normal text-subtle"
         >
           Buscar productos para comparar
         </label>
-        <input
+        <Input
           id="buscar-comparador"
           type="search"
           value={busqueda}
           onChange={(evento) => setBusqueda(evento.target.value)}
           placeholder="Ej. Galaxy S25, Lenovo, laptops…"
-          className={`mt-1.5 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+          className="mt-1.5 text-sm"
         />
 
         {ids.length >= MAX_COMPARADOR && (
           <p
             role="status"
-            className="mt-3 rounded-md bg-[var(--color-star)]/10 px-3 py-2 text-sm font-medium text-[var(--color-ink)]"
+            className="mt-3 rounded-card border border-surface-border-strong bg-paper px-3 py-2 text-sm font-medium text-ink"
           >
             El comparador admite hasta {MAX_COMPARADOR} productos. Quita uno
             para agregar otro.
@@ -299,7 +302,7 @@ export default function ComparadorCliente() {
         <p
           role="status"
           aria-live="polite"
-          className="mt-3 min-h-4 text-xs text-[var(--color-subtle)]"
+          className="mt-3 min-h-4 text-xs text-subtle"
         >
           {aviso}
         </p>
@@ -316,23 +319,24 @@ export default function ComparadorCliente() {
               return (
                 <li
                   key={producto.idProducto}
-                  className="flex flex-col justify-between gap-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3"
+                  className="flex flex-col justify-between gap-3 rounded-card border border-line bg-paper p-3"
                 >
                   <div className="min-w-0">
-                    <p className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                    <p className="line-clamp-2 text-sm font-medium uppercase text-ink">
                       {producto.nombre}
                     </p>
-                    <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-1 text-xs text-subtle">
                       {producto.marca} · {producto.categoriaEtiqueta}
                     </p>
-                    <p className="mt-1 text-xs font-medium text-[var(--color-ink)]">
+                    <p className="mt-1 text-xs font-medium uppercase text-ink">
                       {producto.precioCOP > 0
                         ? producto.precioFormateado
                         : "Precio no registrado"}
                     </p>
                   </div>
 
-                  <button
+                  <Button
+                    variant="secondary"
                     type="button"
                     onClick={() => agregarProducto(producto)}
                     disabled={!validado || seleccionado || lleno}
@@ -341,7 +345,7 @@ export default function ComparadorCliente() {
                         ? `${producto.nombre} ya está en el comparador`
                         : `Agregar ${producto.nombre} al comparador`
                     }
-                    className={`cursor-pointer rounded-md border border-[var(--color-brand-blue)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-solid)] hover:text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:border-[var(--color-hairline)] disabled:text-[var(--color-subtle)] disabled:hover:bg-transparent ${CLASE_FOCO}`}
+                    className="text-xs disabled:text-subtle"
                   >
                     {seleccionado
                       ? "En el comparador"
@@ -350,7 +354,7 @@ export default function ComparadorCliente() {
                         : categoriaIncompatible
                           ? "Otra categoría"
                           : "Agregar"}
-                  </button>
+                  </Button>
                 </li>
               );
             })}
@@ -358,7 +362,7 @@ export default function ComparadorCliente() {
         ) : (
           <p
             role="status"
-            className="mt-3 rounded-lg border border-dashed border-[var(--color-hairline)] p-4 text-center text-sm text-[var(--color-subtle)]"
+            className="mt-3 rounded-card border border-dashed border-line p-4 text-center text-sm text-subtle"
           >
             {productos.length === 0
               ? "No hay productos registrados en el catálogo."
@@ -372,11 +376,11 @@ export default function ComparadorCliente() {
           <div>
             <h2
               id="titulo-comparacion"
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-lg font-medium uppercase tracking-normal text-ink"
             >
               Comparación
             </h2>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm text-subtle">
               {seleccionados.length === 0
                 ? "Tu comparación está vacía."
                 : `${seleccionados.length} ${
@@ -387,30 +391,31 @@ export default function ComparadorCliente() {
 
           {seleccionados.length > 0 && (
             <div className="flex flex-wrap items-center gap-4">
-              <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-[var(--color-ink)]">
+              <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-ink">
                 <input
                   type="checkbox"
                   checked={soloDiferencias}
                   onChange={(evento) =>
                     setSoloDiferencias(evento.target.checked)
                   }
-                  className={`h-4 w-4 rounded border-[var(--color-hairline)] accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className={`h-4 w-4 rounded border-line accent-brand-blue ${CLASE_FOCO}`}
                 />
                 Solo diferencias
               </label>
-              <button
+              <Button
+                variant="danger"
                 type="button"
                 onClick={vaciarComparador}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
+                className="text-xs"
               >
                 Vaciar comparador
-              </button>
+              </Button>
             </div>
           )}
         </div>
 
         {!hidratado ? (
-          <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
+          <p role="status" className="mt-4 text-sm text-subtle">
             Cargando tu comparador…
           </p>
         ) : seleccionados.length === 0 ? (
@@ -421,14 +426,14 @@ export default function ComparadorCliente() {
           />
         ) : (
           <>
-            {seleccionados.some((producto) => producto.fichaTecnica?.estado === "invalida") && <p role="alert" className="mt-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-900">Una o más fichas tienen una versión o estructura inválida. No se usarán como V1/V2 ni participarán en la comparación V3.</p>}
-            {seleccionados.some((producto) => producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.advertenciaCategoria) && <p role="alert" className="mt-4 rounded border border-amber-400 bg-amber-50 p-3 text-sm text-amber-950">Una categoría V3 no coincide o no pudo contrastarse con la categoría del catálogo. Esa ficha no participará en la comparación V3.</p>}
+            {seleccionados.some((producto) => producto.fichaTecnica?.estado === "invalida") && <p role="alert" className="mt-4 rounded-card border border-status-error bg-paper p-3 text-sm text-status-error">Una o más fichas tienen una versión o estructura inválida. No se usarán como V1/V2 ni participarán en la comparación V3.</p>}
+            {seleccionados.some((producto) => producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.advertenciaCategoria) && <p role="alert" className="mt-4 rounded-card border border-surface-border-strong bg-paper p-3 text-sm text-text-secondary">Una categoría V3 no coincide o no pudo contrastarse con la categoría del catálogo. Esa ficha no participará en la comparación V3.</p>}
             {!filas.some((fila) => fila.clave.startsWith("tecnica:")) && (
-              <p role="status" className="mt-4 text-sm text-[var(--color-subtle)]">
+              <p role="status" className="mt-4 text-sm text-subtle">
                 No hay características técnicas registradas para esta selección.
               </p>
             )}
-            <div className="mt-4 overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)]">
+            <div className="mt-4 overflow-x-auto rounded-card border border-line bg-paper">
               <table
                 aria-label="Comparación de productos"
                 className="w-full min-w-[640px] border-collapse text-left text-sm"
@@ -438,10 +443,10 @@ export default function ComparadorCliente() {
                   disponibilidad, marca, categoría y especificaciones.
                 </caption>
                 <thead>
-                  <tr className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]">
+                  <tr className="border-b border-dotted border-line bg-paper">
                     <th
                       scope="col"
-                      className="w-40 p-3 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                      className="w-40 p-3 text-xs font-medium uppercase tracking-normal text-subtle"
                     >
                       Característica
                     </th>
@@ -449,32 +454,33 @@ export default function ComparadorCliente() {
                       <th
                         key={producto.idProducto}
                         scope="col"
-                        className="min-w-44 p-3 align-top"
+                        className="min-w-44 border-l border-dotted border-line p-3 align-top"
                       >
                         {producto.idProducto > 0 ? (
                           <Link
                             href={`/productos/${producto.idProducto}`}
-                            className={`line-clamp-2 font-semibold text-[var(--color-ink)] transition-colors hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                            className={`line-clamp-2 font-medium uppercase text-ink transition-colors hover:text-brand-blue ${CLASE_FOCO}`}
                           >
                             {producto.nombre}
                           </Link>
                         ) : (
-                          <span className="line-clamp-2 font-semibold text-[var(--color-ink)]">
+                          <span className="line-clamp-2 font-medium uppercase text-ink">
                             {producto.nombre}
                           </span>
                         )}
-                        <p className="mt-1 text-xs font-normal text-[var(--color-subtle)]">
+                        <p className="mt-1 text-xs font-normal text-subtle">
                           {producto.marca}
                         </p>
-                        {producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.ficha.variantes.length > 1 && <label className="mt-2 block text-xs">Variante<select aria-label={`Variante de ${producto.nombre}`} className="mt-1 block w-full rounded border p-1.5" value={variantesSeleccionadas[producto.idProducto] ?? ""} onChange={(event) => setVariantesSeleccionadas((actual) => ({ ...actual, [producto.idProducto]: event.target.value }))}><option value="">Selecciona una variante</option>{producto.fichaTecnica.ficha.variantes.map((variante: VarianteFichaV3) => <option key={variante.id} value={variante.id}>{[variante.modelo, variante.sku, variante.mercado].filter(Boolean).join(" · ") || variante.id}</option>)}</select></label>}
-                        <button
+                        {producto.fichaTecnica?.version === "v3" && producto.fichaTecnica.estado === "valida" && producto.fichaTecnica.ficha.variantes.length > 1 && <label className="mt-2 block text-xs">Variante<select aria-label={`Variante de ${producto.nombre}`} className="mt-1 block min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-brand-blue" value={variantesSeleccionadas[producto.idProducto] ?? ""} onChange={(event) => setVariantesSeleccionadas((actual) => ({ ...actual, [producto.idProducto]: event.target.value }))}><option value="">Selecciona una variante</option>{producto.fichaTecnica.ficha.variantes.map((variante: VarianteFichaV3) => <option key={variante.id} value={variante.id}>{[variante.modelo, variante.sku, variante.mercado].filter(Boolean).join(" · ") || variante.id}</option>)}</select></label>}
+                        <Button
+                          variant="danger"
                           type="button"
                           onClick={() => quitarProducto(producto)}
                           aria-label={`Quitar ${producto.nombre} del comparador`}
-                          className={`mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-300 hover:text-red-700 ${CLASE_FOCO}`}
+                          className="mt-2 text-xs"
                         >
                           Quitar
-                        </button>
+                        </Button>
                       </th>
                     ))}
                   </tr>
@@ -483,25 +489,25 @@ export default function ComparadorCliente() {
                   {filasVisibles.map((fila) => (
                     <tr
                       key={fila.clave}
-                      className={`border-b border-[var(--color-hairline)] last:border-b-0 ${
-                        fila.difiere ? "bg-[var(--color-star)]/5" : ""
+                      className={`border-b border-dotted border-line last:border-b-0 ${
+                        fila.difiere ? "bg-surface-muted" : ""
                       }`}
                     >
                       <th
                         scope="row"
-                        className="p-3 align-top text-xs font-semibold text-[var(--color-ink)]"
+                        className="p-3 align-top text-xs font-medium text-ink"
                       >
                         <span className="block">{fila.etiqueta}</span>
-                        {fila.comparabilidad && <span className="mt-1 block text-[10px] font-normal text-[var(--color-subtle)]">{fila.comparabilidad}</span>}
+                        {fila.comparabilidad && <span className="mt-1 block text-[10px] font-normal text-subtle">{fila.comparabilidad}</span>}
                         {fila.difiere && (
-                          <span className="mt-1 inline-flex rounded-full bg-[var(--color-star)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-ink)]">
+                          <Tag variant="neutral" className="mt-1 text-[10px]">
                             Distinto
-                          </span>
+                          </Tag>
                         )}
                         {fila.incompleta && (
-                          <span className="mt-1 inline-flex rounded-full bg-[var(--color-hairline)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-subtle)]">
+                          <Tag variant="missing" className="mt-1 text-[10px]">
                             Datos incompletos
-                          </span>
+                          </Tag>
                         )}
                       </th>
                       {seleccionados.map((producto, indice) => {
@@ -509,10 +515,10 @@ export default function ComparadorCliente() {
                         return (
                           <td
                             key={producto.idProducto}
-                            className="p-3 align-top text-[var(--color-ink)]"
+                            className="border-l border-dotted border-line p-3 align-top text-ink"
                           >
                             {valor ?? (
-                              <span className="text-[var(--color-subtle)]">
+                              <span className="italic text-subtle">
                                 Sin dato
                               </span>
                             )}
@@ -528,7 +534,7 @@ export default function ComparadorCliente() {
             {filasVisibles.length === 0 && (
               <p
                 role="status"
-                className="mt-3 rounded-lg border border-dashed border-[var(--color-hairline)] p-4 text-center text-sm text-[var(--color-subtle)]"
+                className="mt-3 rounded-card border border-dashed border-line p-4 text-center text-sm text-subtle"
               >
                 No hay diferencias registradas entre estos productos.
               </p>
@@ -537,16 +543,16 @@ export default function ComparadorCliente() {
             {seleccionados.length >= 2 && (
               <section
                 aria-labelledby="titulo-recomendacion"
-                className="mt-6 rounded-xl border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/5 p-5"
+                className="mt-6 rounded-card border border-line bg-paper p-5"
               >
                 <h2
                   id="titulo-recomendacion"
-                  className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+                  className="text-lg font-medium uppercase tracking-normal text-ink"
                 >
                   En qué destaca cada producto
                 </h2>
 
-                <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink)]">
+                <p className="mt-2 text-sm leading-relaxed text-ink">
                   {insignias.mensaje}
                 </p>
 
@@ -555,27 +561,27 @@ export default function ComparadorCliente() {
                     {insignias.insignias.map((item) => (
                       <li
                         key={`${item.criterio}-${item.idsProductos.join("-")}`}
-                        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-sm"
+                        className="rounded-card border border-line bg-paper p-3 text-sm"
                       >
-                        <p className="font-semibold text-[var(--color-ink)]">
+                        <p className="font-medium uppercase text-ink">
                           {item.criterio}: {item.nombres.join(", ")}
                         </p>
-                        <p className="mt-0.5 text-[var(--color-ink)]">{item.dato}</p>
-                        <p className="mt-0.5 text-xs text-[var(--color-subtle)]">Fuente: {item.fuente}</p>
+                        <p className="mt-0.5 text-ink">{item.dato}</p>
+                        <p className="mt-0.5 text-xs text-subtle">Fuente: {item.fuente}</p>
                       </li>
                     ))}
                   </ul>
                 )}
 
                 {insignias.notas.length > 0 && (
-                  <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-[var(--color-subtle)]">
+                  <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-subtle">
                     {insignias.notas.map((nota) => (
                       <li key={nota}>{nota}</li>
                     ))}
                   </ul>
                 )}
 
-                <p className="mt-3 text-xs leading-relaxed text-[var(--color-subtle)]">
+                <p className="mt-3 text-xs leading-relaxed text-subtle">
                   Cada insignia se basa en un único criterio con datos registrados. No es una
                   calificación editorial y no declara un ganador global: revisa la tabla y decide
                   según lo que te importa.
@@ -589,15 +595,15 @@ export default function ComparadorCliente() {
       {hidratado && productosRecientes.length > 0 && (
         <section
           aria-labelledby="titulo-recientes"
-          className="mt-8 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+          className="mt-8 rounded-card border border-line bg-paper p-5"
         >
           <h2
             id="titulo-recientes"
-            className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+            className="text-lg font-medium uppercase tracking-normal text-ink"
           >
             Comparados recientemente
           </h2>
-          <p className="mt-1 text-sm text-[var(--color-subtle)]">
+          <p className="mt-1 text-sm text-subtle">
             Retoma la comparación desde los últimos productos que agregaste.
           </p>
 
@@ -607,23 +613,23 @@ export default function ComparadorCliente() {
                 {producto.idProducto > 0 ? (
                   <Link
                     href={`/productos/${producto.idProducto}`}
-                    className={`block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                    className={`block rounded-card border border-line bg-paper p-3 transition-colors hover:border-brand-blue ${CLASE_FOCO}`}
                   >
-                    <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                    <span className="line-clamp-2 text-sm font-medium uppercase text-ink">
                       {producto.nombre}
                     </span>
-                    <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                    <span className="mt-1 block text-xs text-subtle">
                       {producto.marca} · {producto.categoriaEtiqueta}
                     </span>
                   </Link>
                 ) : (
                   <div
-                    className="block rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3"
+                    className="block rounded-card border border-line bg-paper p-3"
                   >
-                    <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                    <span className="line-clamp-2 text-sm font-medium uppercase text-ink">
                       {producto.nombre}
                     </span>
-                    <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                    <span className="mt-1 block text-xs text-subtle">
                       {producto.marca} · {producto.categoriaEtiqueta}
                     </span>
                   </div>

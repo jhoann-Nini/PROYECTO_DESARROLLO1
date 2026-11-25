@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -81,25 +83,25 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[var(--color-canvas)] p-4">
-      <section className="w-full max-w-md rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 shadow-xl">
-        <h1 className="mb-2 text-2xl font-bold text-[var(--color-ink)]">Restablecer contraseña</h1>
-        <p className="mb-6 text-sm text-[var(--color-subtle)]">
+    <main className="flex min-h-screen items-center justify-center bg-canvas p-4">
+      <section className="w-full max-w-md rounded-card border border-line bg-paper p-8">
+        <h1 className="mb-2 text-2xl font-medium uppercase text-ink">Restablecer contraseña</h1>
+        <p className="mb-6 text-sm text-subtle">
           Crea una contraseña nueva para tu cuenta de TecReview.
         </p>
 
         {verificando ? (
-          <p className="text-sm text-[var(--color-subtle)]" role="status">Verificando el enlace...</p>
+          <p className="text-sm text-subtle" role="status">Verificando el enlace...</p>
         ) : null}
 
         {!verificando && error ? (
-          <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert">
+          <div className="mb-4 rounded-card border border-status-error bg-paper p-3 text-sm text-status-error" role="alert">
             {error}
           </div>
         ) : null}
 
         {!verificando && exito ? (
-          <div className="mb-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+          <div className="mb-4 rounded-card border border-line bg-surface-2 p-3 text-sm text-ink" role="status">
             {exito}
           </div>
         ) : null}
@@ -107,10 +109,10 @@ export default function ResetPasswordPage() {
         {!verificando && sesionValida && !exito ? (
           <form onSubmit={manejarCambioPassword} className="space-y-4">
             <div>
-              <label htmlFor="new-password" className="mb-1 block text-sm font-medium text-[var(--color-ink)]">
+              <label htmlFor="new-password" className="mb-1 block text-sm font-medium text-ink">
                 Nueva contraseña
               </label>
-              <input
+              <Input
                 id="new-password"
                 type="password"
                 autoComplete="new-password"
@@ -118,14 +120,13 @@ export default function ResetPasswordPage() {
                 required
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)]"
               />
             </div>
             <div>
-              <label htmlFor="confirm-password" className="mb-1 block text-sm font-medium text-[var(--color-ink)]">
+              <label htmlFor="confirm-password" className="mb-1 block text-sm font-medium text-ink">
                 Confirmar contraseña
               </label>
-              <input
+              <Input
                 id="confirm-password"
                 type="password"
                 autoComplete="new-password"
@@ -133,21 +134,21 @@ export default function ResetPasswordPage() {
                 required
                 value={confirmacion}
                 onChange={(event) => setConfirmacion(event.target.value)}
-                className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)]"
               />
             </div>
-            <button
+            <Button
+              variant="primary"
               type="submit"
               disabled={cargando}
-              className="w-full rounded-md bg-[var(--color-brand-solid)] py-3 text-sm font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full disabled:opacity-70"
             >
               {cargando ? "Actualizando..." : "Guardar nueva contraseña"}
-            </button>
+            </Button>
           </form>
         ) : null}
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm font-semibold text-[var(--color-brand-blue)] hover:underline">
+          <Link href="/" className="text-sm font-medium text-brand-blue hover:underline">
             Volver a TecReview
           </Link>
         </div>

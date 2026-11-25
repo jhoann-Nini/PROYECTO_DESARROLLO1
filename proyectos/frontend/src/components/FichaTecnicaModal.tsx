@@ -30,6 +30,7 @@ import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import { obtenerAtribucionImagen } from "@/data/atribucionImagenes";
 import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import { buttonClassName } from "@/components/ui/Button";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 import FichaTecnicaV3Panel from "@/components/FichaTecnicaV3Panel";
 import { clasificarFichaTecnicaProducto, type EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
@@ -395,27 +396,27 @@ export default function FichaTecnicaModal({
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-3 backdrop-blur-sm sm:p-5"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-inverse/45 p-3 sm:p-5"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-titulo-dispositivo"
     >
-      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col overflow-hidden rounded-card border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] lg:max-w-5xl">
+      <div className="relative flex max-h-[92vh] w-full max-w-4xl animate-scale-in flex-col overflow-hidden rounded-card border border-line bg-paper text-ink  lg:max-w-5xl">
         
         {/* Cabecera accesible superior */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-4 sm:px-7">
+        <div className="flex shrink-0 items-center justify-between border-b border-dotted border-line bg-canvas px-5 py-4 sm:px-7">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="rounded-full border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-brand-blue)]">
+            <span className="rounded-full border border-brand-blue/25 bg-brand-blue/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-normal text-brand-blue">
               FICHA TÉCNICA
             </span>
 
-            <span className="flex items-center gap-1.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)]">
+            <span className="flex items-center gap-1.5 rounded-full border border-line bg-canvas px-2.5 py-1 text-[11px] font-medium text-ink">
               <span aria-hidden="true">{ficha.categoriaIcono}</span>
               <span>{ficha.categoriaEtiqueta}</span>
             </span>
 
             {ranking !== null && (
-              <span className="hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-subtle)] sm:inline-block">
+              <span className="hidden rounded-full border border-line bg-canvas px-2.5 py-1 text-[11px] font-medium text-subtle sm:inline-block">
                 RANKING #{ranking}
               </span>
             )}
@@ -423,7 +424,7 @@ export default function FichaTecnicaModal({
 
           <button
             onClick={onClose}
-            className="shrink-0 cursor-pointer whitespace-nowrap rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50"
+            className={buttonClassName("secondary", "shrink-0 whitespace-nowrap text-xs")}
             aria-label="Cerrar ventana de especificaciones técnicas (Escape)"
           >
             ✕ CERRAR
@@ -436,13 +437,13 @@ export default function FichaTecnicaModal({
             
             {/* Columna Izquierda: Imagen y Resumen de Puntuación */}
             <div className="lg:col-span-5 flex flex-col gap-4">
-              <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6">
+              <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-card border border-line bg-surface-0 p-6">
                 {ficha.imagen && ficha.imagen.trim().length > 0 && errorImagenUrl !== ficha.imagen ? (
                   <img
                     src={ficha.imagen}
                     alt={`Vista frontal de ${ficha.nombre}`}
                     onError={() => setErrorImagenUrl(ficha.imagen)}
-                    className={`max-h-full max-w-full object-contain ${imagenSinDerivados ? "" : "filter drop-shadow-md transition-transform duration-300 hover:scale-105"}`}
+                    className={`max-h-full max-w-full object-contain ${imagenSinDerivados ? "" : "transition-transform duration-300 hover:scale-105"}`}
                   />
                 ) : (
                   <ProductImagePlaceholder
@@ -452,29 +453,29 @@ export default function FichaTecnicaModal({
                     tamano="lg"
                   />
                 )}
-                <AtribucionImagenProducto src={ficha.imagen} className="absolute bottom-10 left-3 right-3 rounded bg-[var(--color-paper)]/90 px-2 py-1" />
+                <AtribucionImagenProducto src={ficha.imagen} className="absolute bottom-10 left-3 right-3 rounded-card bg-paper/90 px-2 py-1" />
 
-                <span className="absolute left-3 top-3 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)]/95 px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink)] backdrop-blur">
+                <span className="absolute left-3 top-3 rounded-full border border-line bg-paper/95 px-2.5 py-1 text-[11px] font-medium text-ink backdrop-blur">
                   {ficha.marca}
                 </span>
 
-                <span className="absolute bottom-3 right-3 rounded-full bg-[var(--color-brand-solid)] px-3 py-1 text-sm font-semibold tracking-tight text-[var(--color-on-solid)] shadow-[var(--shadow-paper-hover)]">
+                <span className="absolute bottom-3 right-3 rounded-pill bg-brand-solid px-3 py-1 text-sm font-medium uppercase tracking-normal text-on-solid">
                   {precioFormateado}
                 </span>
               </div>
 
               {/* Evaluación Global y Técnica */}
-              <div className="rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
-                <div className="mb-3 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+              <div className="rounded-card border border-line bg-canvas p-5">
+                <div className="mb-3 flex items-center justify-between border-b border-dotted border-line pb-3">
+                  <span className="text-[11px] font-medium uppercase tracking-normal text-subtle">
                     Puntuación TecReview
                   </span>
                   {ficha.puntuacionGlobal !== null ? (
-                    <span className="text-xl font-semibold tracking-tight text-[var(--color-brand-blue)]">
+                    <span className="text-xl font-medium tracking-normal text-brand-blue">
                       {ficha.puntuacionGlobal.toFixed(1)} / 10
                     </span>
                   ) : (
-                    <span className="text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                    <span className="text-xs font-medium uppercase tracking-normal text-subtle">
                       Pendiente de valoraciones
                     </span>
                   )}
@@ -482,11 +483,11 @@ export default function FichaTecnicaModal({
 
                 {/* Benchmark real (solo si está disponible) */}
                 {ficha.benchmark && (
-                  <div className="mb-4 flex items-center justify-between rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs">
-                    <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                  <div className="mb-4 flex items-center justify-between rounded-card border border-line bg-canvas p-3 text-xs">
+                    <span className="text-[11px] font-medium uppercase tracking-normal text-subtle">
                       {ficha.benchmark.etiqueta}:
                     </span>
-                    <span className="font-semibold tracking-tight text-[var(--color-ink)]">
+                    <span className="font-medium tracking-normal text-ink">
                       {ficha.benchmark.valor}
                     </span>
                   </div>
@@ -497,15 +498,15 @@ export default function FichaTecnicaModal({
                   <div className="space-y-3 text-xs">
                     {ficha.metricas.map((metrica, idx) => (
                       <div key={idx}>
-                        <div className="mb-1 flex justify-between font-medium text-[var(--color-subtle)]">
+                        <div className="mb-1 flex justify-between font-medium text-subtle">
                           <span>{metrica.nombre}</span>
-                          <span className="font-semibold text-[var(--color-ink)]">
+                          <span className="font-medium text-ink">
                             {metrica.puntos.toFixed(1)}
                           </span>
                         </div>
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-canvas)]">
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-canvas">
                           <div
-                            className="h-full rounded-full bg-[var(--color-brand-solid)] transition-all duration-300"
+                            className="h-full rounded-full bg-brand-solid transition-all duration-300"
                             style={{ width: `${Math.min(metrica.puntos * 10, 100)}%` }}
                           ></div>
                         </div>
@@ -516,10 +517,10 @@ export default function FichaTecnicaModal({
                   !ficha.benchmark &&
                   ficha.puntuacionGlobal === null && (
                     <div className="py-2 text-center">
-                      <p className="text-xs text-[var(--color-subtle)]">
+                      <p className="text-xs text-subtle">
                         Sin evaluación técnica de laboratorio registrada aún.
                       </p>
-                      <p className="mt-0.5 text-[10px] text-[var(--color-subtle)]">
+                      <p className="mt-0.5 text-[10px] text-subtle">
                         (Pruebas de hardware y benchmarks no cargados)
                       </p>
                     </div>
@@ -528,15 +529,15 @@ export default function FichaTecnicaModal({
 
                 {/* Estadísticas de valoración comunitaria (promedio estrellas) */}
                 {valoracionStats && valoracionStats.cantidadValoraciones > 0 && (
-                  <div className="mt-3 flex items-center justify-between rounded-md border border-amber-200 bg-amber-50 p-2.5">
-                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-amber-700">
+                  <div className="mt-3 flex items-center justify-between rounded-card border border-surface-border-strong bg-paper p-2.5">
+                    <span className="flex items-center gap-1.5 text-[11px] font-medium text-text-secondary">
                       <span aria-hidden="true">⭐</span> Valoración de la comunidad:
                     </span>
-                    <span className="text-xs font-semibold">
-                      <span className="text-amber-700">
+                    <span className="text-xs font-medium">
+                      <span className="text-text-secondary">
                         {valoracionStats.promedioPuntuacion?.toFixed(1)} / 5
                       </span>
-                      <span className="ml-1 text-[var(--color-subtle)]">
+                      <span className="ml-1 text-subtle">
                         ({valoracionStats.cantidadValoraciones} {valoracionStats.cantidadValoraciones === 1 ? "voto" : "votos"})
                       </span>
                     </span>
@@ -547,38 +548,38 @@ export default function FichaTecnicaModal({
                 <button
                   type="button"
                   onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
-                  className="mt-2 flex w-full cursor-pointer items-center justify-between rounded-md border border-[var(--color-brand-blue)]/25 bg-[var(--color-canvas)] p-2.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-brand-blue)]/10"
+                  className="mt-2 flex w-full cursor-pointer items-center justify-between rounded-card border border-brand-blue/25 bg-canvas p-2.5 text-xs font-medium text-ink transition-colors hover:bg-brand-blue/10"
                 >
-                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--color-brand-blue)]">
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-brand-blue">
                     <span aria-hidden="true">💬</span> Opiniones de la comunidad:
                   </span>
-                  <span className="rounded-full bg-[var(--color-brand-blue)]/10 px-2 py-0.5 text-xs font-semibold text-[var(--color-brand-blue)]">
+                  <span className="rounded-full bg-brand-blue/10 px-2 py-0.5 text-xs font-medium text-brand-blue">
                     {cargandoResenas ? "..." : `${resenasProducto.length} ${resenasProducto.length === 1 ? "reseña" : "reseñas"}`}
                   </span>
                 </button>
               </div>
 
               {/* SECCIÓN INFORMATIVA DE VALORACIONES Y OPINIONES UNIFICADAS */}
-              <div className="mt-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
-                <div className="mb-3 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
-                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+              <div className="mt-4 rounded-card border border-line bg-canvas p-5">
+                <div className="mb-3 flex items-center justify-between border-b border-dotted border-line pb-3">
+                  <span className="text-[11px] font-medium uppercase tracking-normal text-subtle">
                     TU CALIFICACIÓN (1 A 5 ESTRELLAS)
                   </span>
                   {puntuacionActual !== null && (
-                    <span className="text-xs font-semibold text-[var(--color-star)]">
+                    <span className="text-xs font-medium text-star">
                       ★ {puntuacionActual} / 5
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs leading-relaxed text-[var(--color-subtle)] mb-3">
+                <p className="text-xs leading-relaxed text-subtle mb-3">
                   Las valoraciones se integran con las opiniones de la comunidad. Publica tu puntuación de 1 a 5 estrellas junto con tu comentario.
                 </p>
 
                 <button
                   type="button"
                   onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
-                  className={`w-full cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                  className={`w-full cursor-pointer rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 ${CLASE_FOCO}`}
                 >
                   {usuarioSesion ? "Calificar y escribir opinión" : "Ver opiniones de la comunidad"}
                 </button>
@@ -588,39 +589,39 @@ export default function FichaTecnicaModal({
             {/* Columna Derecha: Selector de Pestañas y Contenido Dinámico */}
             <div className="lg:col-span-7 flex flex-col gap-5">
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
+                <span className="text-[11px] font-medium uppercase tracking-normal text-brand-blue">
                   {ficha.marca} / Especificaciones técnicas
                 </span>
                 <h2
                   id="modal-titulo-dispositivo"
-                  className="mt-1 text-2xl font-semibold leading-tight tracking-[-0.02em] text-[var(--color-ink)] sm:text-3xl"
+                  className="mt-1 text-2xl font-medium leading-tight tracking-normal text-ink sm:text-3xl"
                 >
                   {ficha.nombre}
                 </h2>
-                <p className="mt-2 border-l-2 border-[var(--color-brand-blue)]/60 pl-3 text-sm leading-relaxed text-[var(--color-subtle)]">
+                <p className="mt-2 border-l-2 border-brand-blue/60 pl-3 text-sm leading-relaxed text-subtle">
                   {ficha.resumen}
                 </p>
                 {estadoFicha?.version === "v3" && <FichaTecnicaV3Panel key={claveProductoUnica ?? "v3"} estado={estadoFicha} />}
-                {estadoFicha?.version === "error" && <div role="alert" className="rounded border border-red-300 bg-red-50 p-4 text-sm text-red-900">No se pudo interpretar la ficha técnica. No se mostrará como ficha V1/V2.</div>}
+                {estadoFicha?.version === "error" && <div role="alert" className="rounded-card border border-status-error bg-paper p-4 text-sm text-status-error">No se pudo interpretar la ficha técnica. No se mostrará como ficha V1/V2.</div>}
                 {estadoFicha?.version !== "v3" && estadoFicha?.version !== "error" && usaFichaV2 && fichaTecnicaV2 && <FichaTecnicaV2Panel ficha={fichaTecnicaV2} />}
 
                 {estadoFicha?.version !== "v3" && estadoFicha?.version !== "error" && !usaFichaV2 && ficha.datosTecnicos && (
                   <section
                     aria-label="Datos técnicos verificados"
-                    className="mt-4 space-y-4 rounded-card border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"
+                    className="mt-4 space-y-4 rounded-card border border-line bg-canvas p-4"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] pb-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-dotted border-line pb-3">
                       <div>
-                        <h3 className="text-sm font-semibold text-[var(--color-ink)]">Ficha técnica detallada</h3>
-                        <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">Datos declarados para esta variante del producto</p>
+                        <h3 className="text-sm font-medium text-ink">Ficha técnica detallada</h3>
+                        <p className="mt-0.5 text-[11px] text-subtle">Datos declarados para esta variante del producto</p>
                       </div>
                       <span
-                        className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                        className={`rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-normal ${
                           ficha.datosTecnicos.estado_verificacion === "verificado"
-                            ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                            ? "border-transparent bg-surface-2 text-ink"
                             : ficha.datosTecnicos.estado_verificacion === "requiere_revision"
-                              ? "border-amber-300 bg-amber-50 text-amber-800"
-                              : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)]"
+                              ? "border-surface-border-strong bg-paper text-text-secondary"
+                              : "border-line bg-paper text-subtle"
                         }`}
                       >
                         {ficha.datosTecnicos.estado_verificacion === "requiere_revision"
@@ -635,7 +636,7 @@ export default function FichaTecnicaModal({
 
                     {ficha.datosTecnicos.variante && (
                       <div>
-                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Variante / identificación</h4>
+                        <h4 className="mb-2 text-[11px] font-medium uppercase tracking-normal text-subtle">Variante / identificación</h4>
                         <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                           {([
                             ["Modelo", ficha.datosTecnicos.variante.modelo],
@@ -646,9 +647,9 @@ export default function FichaTecnicaModal({
                             ["Conectividad", ficha.datosTecnicos.variante.conectividad],
                             ["Identificador", ficha.datosTecnicos.variante.identificador],
                           ] as const).filter(([, value]) => Boolean(value)).map(([label, value]) => (
-                            <div key={label} className="flex items-start justify-between gap-3 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs">
-                              <dt className="text-[var(--color-subtle)]">{label}</dt>
-                              <dd className="text-right font-medium text-[var(--color-ink)]">{value}</dd>
+                            <div key={label} className="flex items-start justify-between gap-3 rounded-card border border-line bg-paper px-3 py-2 text-xs">
+                              <dt className="text-subtle">{label}</dt>
+                              <dd className="text-right font-medium text-ink">{value}</dd>
                             </div>
                           ))}
                         </dl>
@@ -657,15 +658,15 @@ export default function FichaTecnicaModal({
 
                     {ficha.datosTecnicos.metricasComparables.length > 0 && (
                       <div>
-                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Métricas técnicas comparables</h4>
-                        <div className="overflow-hidden rounded-md border border-[var(--color-hairline)]">
+                        <h4 className="mb-2 text-[11px] font-medium uppercase tracking-normal text-subtle">Métricas técnicas comparables</h4>
+                        <div className="overflow-hidden rounded-card border border-line">
                           {ficha.datosTecnicos.metricasComparables.map((metrica) => (
-                            <div key={metrica.clave} className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2.5 text-xs last:border-b-0">
+                            <div key={metrica.clave} className="flex flex-wrap items-center justify-between gap-2 border-b border-dotted border-line bg-paper px-3 py-2.5 text-xs last:border-b-0">
                               <div>
-                                <p className="font-medium text-[var(--color-ink)]">{metrica.nombre}</p>
-                                <p className="text-[10px] text-[var(--color-subtle)]">{metrica.grupo}{metrica.comparable ? " · Comparable" : " · Solo informativa"}</p>
+                                <p className="font-medium text-ink">{metrica.nombre}</p>
+                                <p className="text-[10px] text-subtle">{metrica.grupo}{metrica.comparable ? " · Comparable" : " · Solo informativa"}</p>
                               </div>
-                              <span className="font-semibold tabular-nums text-[var(--color-ink)]">
+                              <span className="font-medium tabular-nums text-ink">
                                 {typeof metrica.valor === "boolean" ? (metrica.valor ? "Sí" : "No") : String(metrica.valor)}{metrica.unidad ? ` ${metrica.unidad}` : ""}
                               </span>
                             </div>
@@ -676,14 +677,14 @@ export default function FichaTecnicaModal({
 
                     {ficha.datosTecnicos.benchmarks.length > 0 && (
                       <div>
-                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Resultados de benchmarks</h4>
+                        <h4 className="mb-2 text-[11px] font-medium uppercase tracking-normal text-subtle">Resultados de benchmarks</h4>
                         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                           {ficha.datosTecnicos.benchmarks.map((benchmark, index) => (
-                            <article key={`${benchmark.nombre}-${benchmark.prueba ?? ""}-${index}`} className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3">
-                              <p className="text-xs font-semibold text-[var(--color-ink)]">{benchmark.nombre}</p>
-                              <p className="mt-1 text-lg font-semibold tabular-nums text-[var(--color-brand-blue)]">{benchmark.valor}{benchmark.unidad ? ` ${benchmark.unidad}` : ""}</p>
+                            <article key={`${benchmark.nombre}-${benchmark.prueba ?? ""}-${index}`} className="rounded-card border border-line bg-paper p-3">
+                              <p className="text-xs font-medium text-ink">{benchmark.nombre}</p>
+                              <p className="mt-1 text-lg font-medium tabular-nums text-brand-blue">{benchmark.valor}{benchmark.unidad ? ` ${benchmark.unidad}` : ""}</p>
                               {(benchmark.prueba || benchmark.version || benchmark.fecha) && (
-                                <p className="mt-1 text-[10px] leading-relaxed text-[var(--color-subtle)]">
+                                <p className="mt-1 text-[10px] leading-relaxed text-subtle">
                                   {[benchmark.prueba, benchmark.version ? `Versión ${benchmark.version}` : null, benchmark.fecha].filter(Boolean).join(" · ")}
                                 </p>
                               )}
@@ -695,23 +696,23 @@ export default function FichaTecnicaModal({
 
                     {ficha.datosTecnicos.fuentes.length > 0 && (
                       <div>
-                        <h4 className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">Fuentes y verificación</h4>
+                        <h4 className="mb-2 text-[11px] font-medium uppercase tracking-normal text-subtle">Fuentes y verificación</h4>
                         <ul className="space-y-2">
                           {ficha.datosTecnicos.fuentes.map((fuente, index) => (
-                            <li key={fuente.id ?? `${fuente.nombre}-${index}`} className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2.5 text-xs">
+                            <li key={fuente.id ?? `${fuente.nombre}-${index}`} className="rounded-card border border-line bg-paper px-3 py-2.5 text-xs">
                               <div className="flex flex-wrap items-center justify-between gap-2">
-                                <span className="font-medium text-[var(--color-ink)]">{fuente.nombre}</span>
-                                <span className="rounded-full bg-[var(--color-canvas)] px-2 py-0.5 text-[10px] capitalize text-[var(--color-subtle)]">{fuente.tipo}</span>
+                                <span className="font-medium text-ink">{fuente.nombre}</span>
+                                <span className="rounded-full bg-canvas px-2 py-0.5 text-[10px] capitalize text-subtle">{fuente.tipo}</span>
                               </div>
                               {(fuente.vendedor || fuente.fecha_consulta) && (
-                                <p className="mt-1 text-[10px] text-[var(--color-subtle)]">
+                                <p className="mt-1 text-[10px] text-subtle">
                                   {[fuente.vendedor ? `Vendedor: ${fuente.vendedor}` : null, fuente.fecha_consulta ? `Consulta: ${fuente.fecha_consulta}` : null].filter(Boolean).join(" · ")}
                                 </p>
                               )}
-                              {fuente.variante && <p className="mt-1 text-[10px] text-[var(--color-subtle)]">Variante: {fuente.variante}</p>}
-                              {fuente.observaciones && <p className="mt-1 text-[11px] text-[var(--color-subtle)]">{fuente.observaciones}</p>}
+                              {fuente.variante && <p className="mt-1 text-[10px] text-subtle">Variante: {fuente.variante}</p>}
+                              {fuente.observaciones && <p className="mt-1 text-[11px] text-subtle">{fuente.observaciones}</p>}
                               {fuente.url && (
-                                <a href={fuente.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block font-medium text-[var(--color-brand-blue)] underline underline-offset-2">
+                                <a href={fuente.url} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block font-medium text-brand-blue underline underline-offset-2">
                                   Consultar fuente
                                 </a>
                               )}
@@ -725,7 +726,7 @@ export default function FichaTecnicaModal({
                       ficha.datosTecnicos.metricasComparables.length === 0 &&
                       ficha.datosTecnicos.benchmarks.length === 0 &&
                       ficha.datosTecnicos.fuentes.length === 0 && (
-                        <p className="text-xs text-[var(--color-subtle)]">Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.</p>
+                        <p className="text-xs text-subtle">Aún no se han registrado variante, métricas, benchmarks ni fuentes para este producto.</p>
                       )}
                   </section>
                 )}
@@ -733,12 +734,12 @@ export default function FichaTecnicaModal({
 
               {/* Barra de pestañas que incluye especificaciones de hardware y opiniones de la comunidad */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between px-0.5 text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                <div className="flex items-center justify-between px-0.5 text-[11px] font-medium uppercase tracking-normal text-subtle">
                   <span className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true" />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-solid" aria-hidden="true" />
                     <span>Especificaciones & Comunidad ({ficha.categoriaEtiqueta}):</span>
                   </span>
-                  <span className="text-[10px] font-medium lowercase tracking-normal text-[var(--color-brand-blue)]">
+                  <span className="text-[10px] font-medium lowercase tracking-normal text-brand-blue">
                     (selecciona para ver)
                   </span>
                 </div>
@@ -746,7 +747,7 @@ export default function FichaTecnicaModal({
                 <div
                   role="tablist"
                   aria-label="Categorías de especificaciones del dispositivo"
-                  className="flex flex-wrap gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-1.5"
+                  className="flex flex-wrap gap-2 rounded-card border border-line bg-canvas p-1.5"
                 >
                   {pestanas.map((p) => {
                     const activa = pestanaActiva === p.id;
@@ -758,17 +759,17 @@ export default function FichaTecnicaModal({
                         aria-controls={`panel-${p.id}`}
                         id={`tab-${p.id}`}
                         onClick={() => setPestanaSeleccionada(p.id)}
-                        className={`group relative flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/50 ${
+                        className={`group relative flex cursor-pointer items-center gap-2 rounded-card border px-3 py-2 text-xs font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 ${
                           activa
-                            ? "border-[var(--color-brand-blue)]/50 bg-[var(--color-canvas)] text-[var(--color-brand-blue)]"
-                            : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-brand-blue)]"
+                            ? "border-brand-blue/50 bg-canvas text-brand-blue"
+                            : "border-line bg-paper text-subtle hover:border-brand-blue hover:bg-canvas hover:text-brand-blue"
                         }`}
                       >
                         <span
                           className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
                             activa
-                              ? "bg-[var(--color-brand-solid)] scale-125 shadow-[0_0_8px_rgba(163,230,53,0.8)]"
-                              : "bg-[var(--color-subtle)]/50 group-hover:bg-[var(--color-brand-blue)]/60 group-hover:scale-110"
+                              ? "bg-brand-solid scale-125 "
+                              : "bg-subtle/50 group-hover:bg-brand-blue/60 group-hover:scale-110"
                           }`}
                           aria-hidden="true"
                         />
@@ -789,21 +790,21 @@ export default function FichaTecnicaModal({
                   aria-labelledby="tab-tab-opiniones-comunidad"
                   className="space-y-4 mt-1"
                 >
-                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
+                  <div className="rounded-card border border-line bg-canvas p-4">
                     <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
-                      <h4 className="flex items-center gap-2 text-xs font-semibold text-[var(--color-ink)]">
+                      <h4 className="flex items-center gap-2 text-xs font-medium text-ink">
                         <span aria-hidden="true">💬</span>
                         <span>Opiniones de la comunidad ({resenasProducto.length})</span>
                       </h4>
                       {idProductoApi && (
-                        <span className="text-[10px] text-[var(--color-subtle)]">
+                        <span className="text-[10px] text-subtle">
                           Ref #{idProductoApi}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs leading-relaxed text-[var(--color-subtle)]">
+                    <p className="text-xs leading-relaxed text-subtle">
                       Reseñas y comentarios compartidos por los usuarios para{" "}
-                      <span className="font-medium text-[var(--color-ink)]">
+                      <span className="font-medium text-ink">
                         {ficha.nombre}
                       </span>.
                     </p>
@@ -811,11 +812,11 @@ export default function FichaTecnicaModal({
 
                   {/* Listado de reseñas */}
                   {cargandoResenas && resenasProducto.length === 0 ? (
-                    <div className="py-6 text-center text-xs text-[var(--color-subtle)]">
+                    <div className="py-6 text-center text-xs text-subtle">
                       Cargando opiniones de la comunidad...
                     </div>
                   ) : errorCargaResenas ? (
-                    <div className="rounded-md border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                    <div className="rounded-card border border-status-error bg-paper p-3 text-xs text-status-error">
                       {errorCargaResenas}
                     </div>
                   ) : resenasProducto.length > 0 ? (
@@ -823,20 +824,20 @@ export default function FichaTecnicaModal({
                       {resenasProducto.map((r) => (
                         <div
                           key={r.idResena}
-                          className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3.5 text-xs transition-colors"
+                          className="rounded-card border border-line bg-canvas p-3.5 text-xs transition-colors"
                         >
-                          <div className="mb-1.5 flex items-center justify-between text-[var(--color-subtle)]">
+                          <div className="mb-1.5 flex items-center justify-between text-subtle">
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-[var(--color-brand-blue)]">
+                              <span className="font-medium text-brand-blue">
                                 @{r.nombreUsuario || "Usuario de TecReview"}
                               </span>
                               {r.puntuacion && (
-                                <span className="font-semibold text-[var(--color-star)]">
+                                <span className="font-medium text-star">
                                   ★ {r.puntuacion}/5
                                 </span>
                               )}
                               <span
-                                className="rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] px-1.5 py-0.5 text-[10px] text-[var(--color-subtle)]"
+                                className="rounded-full border border-line bg-paper px-1.5 py-0.5 text-[10px] text-subtle"
                                 title={`Reseña del producto #${r.idProducto}`}
                               >
                                 #{r.idProducto}
@@ -848,37 +849,37 @@ export default function FichaTecnicaModal({
                                 : ""}
                             </span>
                           </div>
-                          <p className="whitespace-pre-wrap text-xs leading-relaxed text-[var(--color-ink)] sm:text-sm">
+                          <p className="whitespace-pre-wrap text-xs leading-relaxed text-ink sm:text-sm">
                             {r.comentario}
                           </p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6 text-center text-xs text-[var(--color-subtle)]">
+                    <div className="rounded-card border border-dashed border-line bg-canvas p-6 text-center text-xs text-subtle">
                       Aún no hay opiniones de la comunidad para este dispositivo. ¡Sé el primero en compartir tu experiencia!
                     </div>
                   )}
 
                   {/* Formulario unificado para publicar una opinión con calificación */}
-                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
-                    <span className="mb-2 block text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                  <div className="rounded-card border border-line bg-canvas p-4">
+                    <span className="mb-2 block text-[11px] font-medium uppercase tracking-normal text-subtle">
                       Publicar una opinión sobre este dispositivo
                     </span>
                     {!idProductoApi ? (
-                      <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 text-center text-xs text-[var(--color-subtle)]">
+                      <div className="rounded-card border border-dashed border-line bg-canvas p-4 text-center text-xs text-subtle">
                         Las opiniones y valoraciones comunitarias están disponibles para dispositivos registrados en el catálogo.
                       </div>
                     ) : !usuarioSesion ? (
                       <div className="flex flex-col items-center justify-between gap-3 text-xs sm:flex-row">
-                        <p className="text-[var(--color-subtle)]">
+                        <p className="text-subtle">
                           Debes iniciar sesión para publicar una opinión en la comunidad.
                         </p>
                         {onPedirLogin && (
                           <button
                             type="button"
                             onClick={onPedirLogin}
-                            className={`shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                            className={`shrink-0 cursor-pointer rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 ${CLASE_FOCO}`}
                           >
                             Identificarse para valorar
                           </button>
@@ -888,7 +889,7 @@ export default function FichaTecnicaModal({
                       <form onSubmit={manejarGuardarResena} className="flex flex-col gap-3">
                         {/* Selector de calificación de 1 a 5 estrellas */}
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                          <span className="text-xs font-medium text-subtle">
                             Calificación:
                           </span>
                           <div
@@ -910,14 +911,14 @@ export default function FichaTecnicaModal({
                                   onMouseEnter={() => setHoverEstrella(estrella)}
                                   onMouseLeave={() => setHoverEstrella(0)}
                                   aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
-                                  className={`cursor-pointer rounded p-1 text-xl leading-none transition-transform hover:scale-110 focus:outline-none disabled:opacity-50 ${CLASE_FOCO}`}
+                                  className={`cursor-pointer rounded-card p-1 text-xl leading-none transition-transform hover:scale-110 focus:outline-none disabled:opacity-50 ${CLASE_FOCO}`}
                                 >
                                   <span
                                     aria-hidden="true"
                                     className={
                                       activa
-                                        ? "text-[var(--color-star)]"
-                                        : "text-neutral-400 dark:text-neutral-500"
+                                        ? "text-star"
+                                        : "text-subtle dark:text-subtle"
                                     }
                                   >
                                     {activa ? "★" : "☆"}
@@ -926,7 +927,7 @@ export default function FichaTecnicaModal({
                               );
                             })}
                           </div>
-                          <span className="text-xs font-medium text-[var(--color-subtle)]">
+                          <span className="text-xs font-medium text-subtle">
                             {puntuacionSeleccionada > 0
                               ? `Puntuación seleccionada: ${puntuacionSeleccionada} de 5 estrellas`
                               : "Selecciona de 1 a 5 estrellas"}
@@ -938,16 +939,16 @@ export default function FichaTecnicaModal({
                           value={nuevaResenaTexto}
                           onChange={(e) => setNuevaResenaTexto(e.target.value)}
                           placeholder={`Comparte tu experiencia con ${ficha.nombre}...`}
-                          className="w-full resize-none rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30 sm:text-sm"
+                          className="min-h-16 w-full resize-none rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-xs text-ink placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-brand-blue sm:text-sm"
                         />
                         <AvisoTerminosResena riesgo={riesgoComentario} />
                         {errorResena && (
-                          <p className="text-xs text-red-700 font-medium" role="alert">
+                          <p className="text-xs text-status-error font-medium" role="alert">
                             ⚠️ {errorResena}
                           </p>
                         )}
                         {exitoResena && (
-                          <p className="text-xs text-emerald-700 font-medium" role="status">
+                          <p className="text-xs text-positive font-medium" role="status">
                             ✓ {exitoResena}
                           </p>
                         )}
@@ -955,7 +956,7 @@ export default function FichaTecnicaModal({
                           <button
                             type="submit"
                             disabled={enviandoResena || !nuevaResenaTexto.trim()}
-                            className={`rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${CLASE_FOCO}`}
+                            className={`rounded-card bg-brand-solid px-4 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${CLASE_FOCO}`}
                           >
                             {enviandoResena ? "Publicando..." : "Publicar opinión"}
                           </button>
@@ -972,12 +973,12 @@ export default function FichaTecnicaModal({
                   aria-labelledby={`tab-${pestanaActiva}`}
                   className="space-y-3.5 mt-1"
                 >
-                  <div className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4">
-                    <h4 className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-[var(--color-ink)]">
+                  <div className="rounded-card border border-line bg-canvas p-4">
+                    <h4 className="mb-1.5 flex items-center gap-2 text-xs font-medium text-ink">
                       <span aria-hidden="true">{seccionActiva.icono}</span>
                       <span>{seccionActiva.titulo}</span>
                     </h4>
-                    <p className="text-sm leading-relaxed text-[var(--color-subtle)]">
+                    <p className="text-sm leading-relaxed text-subtle">
                       {seccionActiva.descripcion}
                     </p>
                   </div>
@@ -992,10 +993,10 @@ export default function FichaTecnicaModal({
                         .map((parte, pIdx) => (
                           <div
                             key={pIdx}
-                            className="flex items-start gap-2.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3.5"
+                            className="flex items-start gap-2.5 rounded-card border border-line bg-canvas p-3.5"
                           >
-                            <span className="mt-0.5 text-sm font-semibold text-[var(--color-brand-blue)]">•</span>
-                            <span className="text-xs font-medium leading-relaxed text-[var(--color-ink)]">
+                            <span className="mt-0.5 text-sm font-medium text-brand-blue">•</span>
+                            <span className="text-xs font-medium leading-relaxed text-ink">
                               {parte}
                             </span>
                           </div>
@@ -1004,30 +1005,30 @@ export default function FichaTecnicaModal({
                   )}
 
                   {seccionActiva.detalleExtra && (
-                    <div className="rounded-xl border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/5 p-3.5 text-xs text-[var(--color-ink)]">
-                      <span className="font-bold">Detalle adicional: </span>
+                    <div className="rounded-card border border-brand-blue/25 bg-brand-blue/5 p-3.5 text-xs text-ink">
+                      <span className="font-medium">Detalle adicional: </span>
                       <span>{seccionActiva.detalleExtra}</span>
                     </div>
                   )}
                 </div>
               ) : (
                 /* Estado vacío cuando el producto no tiene especificaciones registradas */
-                <div className="my-auto rounded-card border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]">
+                <div className="my-auto rounded-card border border-dashed border-line bg-paper p-8 text-center">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-line bg-canvas text-subtle">
                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                  <h3 className="text-sm font-medium text-ink">
                     Sin especificaciones técnicas registradas
                   </h3>
-                  <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-[var(--color-subtle)]">
+                  <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-subtle">
                     Este producto no dispone de características técnicas detalladas registradas en el catálogo. Podrán ser asignadas a través del módulo de administración en una próxima actualización.
                   </p>
                   <button
                     type="button"
                     onClick={() => setPestanaSeleccionada("tab-opiniones-comunidad")}
-                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-card bg-brand-solid px-4 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90"
                   >
                     <span aria-hidden="true">💬</span>
                     <span>Ver opiniones de la comunidad ({resenasProducto.length})</span>
@@ -1039,10 +1040,10 @@ export default function FichaTecnicaModal({
         </div>
 
         {/* Pie de modal */}
-        <div className="flex shrink-0 justify-end border-t border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-3.5 sm:px-7">
+        <div className="flex shrink-0 justify-end border-t border-dotted border-line bg-canvas px-5 py-3.5 sm:px-7">
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+            className={buttonClassName("secondary", "text-xs")}
           >
             Cerrar ficha técnica
           </button>

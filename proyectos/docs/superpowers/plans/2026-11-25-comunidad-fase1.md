@@ -60,7 +60,7 @@
 **Interfaces que produce (tablas):**
 
 - **`publicacion_comunidad`:**
-  - `id_publicacion` BIGINT identity, PK.
+  - `id_publicacion` BIGSERIAL, PK (como la 026 y la 027).
   - `tipo` VARCHAR(10), `CHECK IN ('GENERAL','PRODUCTO')`.
   - `id_producto`, FK a `producto`.
   - `id_autor`, FK a `usuario`, NOT NULL.
@@ -77,7 +77,7 @@
     - `(id_producto, fecha_ultima_actividad DESC, id_publicacion DESC)`.
   - Índice `(id_autor, fecha_creacion)`.
 - **`respuesta_comunidad`:**
-  - `id_respuesta` BIGINT identity, PK.
+  - `id_respuesta` BIGSERIAL, PK.
   - `id_publicacion` NOT NULL, FK.
   - `id_respuesta_padre`.
   - `id_respuesta_citada`, FK a `respuesta_comunidad`.

@@ -3,6 +3,8 @@ package com.example.backend.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.backend.dto.comunidad.CrearPublicacionRequest;
+import com.example.backend.dto.comunidad.MeGustaResponse;
+import com.example.backend.repository.ReaccionPublicacionRepository;
 import com.example.backend.entity.PublicacionComunidad;
 import com.example.backend.entity.Rol;
 import com.example.backend.entity.TipoPublicacion;
@@ -70,11 +72,14 @@ class ComunidadPostgresIntegrationTest {
   @Autowired PublicacionComunidadRepository publicacionRepository;
   @Autowired UsuarioRepository usuarioRepository;
   @Autowired RolRepository rolRepository;
+  @Autowired ReaccionComunidadService reaccionService;
+  @Autowired ReaccionPublicacionRepository reaccionPublicacionRepository;
 
   private final List<Long> publicacionesCreadas = new ArrayList<>();
 
   @AfterEach
   void limpiar() {
+    reaccionPublicacionRepository.deleteAll();
     publicacionRepository.deleteAllById(publicacionesCreadas);
   }
 
@@ -102,6 +107,30 @@ class ComunidadPostgresIntegrationTest {
       .filter(p -> p.getAutor().getIdUsuario().equals(autor.getIdUsuario()))
       .forEach(p -> publicacionesCreadas.add(p.getIdPublicacion()));
     assertEquals(5, publicacionRepository.contarDelAutorDesde(autor.getIdUsuario(), LocalDateTime.now().minusHours(1)));
+  }
+
+  @Test
+  @DisplayName("Dos Me gusta simultáneos del mismo usuario dejan uno (CA-05)")
+  void dosMeGustaSimultaneosDejanUno() throws Exception {
+    Usuario autor = usuario();
+    Usuario lector = usuario();
+    PublicacionComunidad p = new PublicacionComunidad();
+    p.setTipo(TipoPublicacion.GENERAL);
+    p.setAutor(autor);
+    p.setTitulo("Publicación con Me gusta");
+    p.setContenido("Contenido");
+    Long id = publicacionRepository.save(p).getIdPublicacion();
+    publicacionesCreadas.add(id);
+
+    List<Object> resultados = simultaneos(4, () -> reaccionService.darMeGustaPublicacion(jwt(lector), id));
+
+    resultados.forEach(r -> {
+      if (r instanceof Throwable t) {
+        throw new AssertionError("Un Me gusta simultáneo falló", t);
+      }
+    });
+    assertEquals(1, reaccionPublicacionRepository.countByIdPublicacion(id));
+    resultados.forEach(r -> assertEquals(1, ((MeGustaResponse) r).meGusta()));
   }
 
   /** Ejecuta la tarea en {@code hilos} hilos a la vez; devuelve cada resultado o la excepción. */

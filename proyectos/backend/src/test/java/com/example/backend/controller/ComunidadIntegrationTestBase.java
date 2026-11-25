@@ -20,9 +20,11 @@ import com.example.backend.repository.ResenaRepository;
 import com.example.backend.repository.RolRepository;
 import com.example.backend.repository.UsuarioRepository;
 import com.example.backend.repository.UsuarioRolRepository;
+import com.example.backend.service.GeneralRateLimiterService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,6 +48,7 @@ abstract class ComunidadIntegrationTestBase {
   @Autowired protected MarcaRepository marcaRepository;
   @Autowired protected ResenaRepository resenaRepository;
   @Autowired protected ResenaModeracionAuditoriaRepository auditoriaRepository;
+  @Autowired protected GeneralRateLimiterService limitadorGeneral;
 
   protected MockMvc mockMvc;
   protected Usuario autor;
@@ -55,12 +58,19 @@ abstract class ComunidadIntegrationTestBase {
 
   @BeforeEach
   void prepararComunidad() {
+    limitadorGeneral.reset();
     mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     Rol rolUsuario = rol("Usuario registrado");
     autor = usuario("Autor comunidad", rolUsuario);
     otro = usuario("Otro comunidad", rolUsuario);
     moderador = usuario("Moderador comunidad", rol("Moderador"));
     producto = producto(true);
+  }
+
+  /** Estas pruebas hacen muchas peticiones: no deben gastar el límite general de las siguientes. */
+  @AfterEach
+  void liberarLimiteGeneral() {
+    limitadorGeneral.reset();
   }
 
   protected static String json(String valor) {
@@ -76,9 +86,11 @@ abstract class ComunidadIntegrationTestBase {
       r.setComentario("Contenido rechazado");
       r.setPuntuacion(2);
       r.setEstado(true);
-      r.setEstadoModeracion(EstadoModeracion.RECHAZADA);
+      // Orden de los triggers de la 020: la reseña está PENDIENTE cuando se
+      // audita el rechazo y pasa a RECHAZADA después.
+      r.setEstadoModeracion(EstadoModeracion.PENDIENTE);
       r.setFechaCreacion(LocalDateTime.now().minusDays(2));
-      r = resenaRepository.save(r);
+      r = resenaRepository.saveAndFlush(r);
       ResenaModeracionAuditoria e = new ResenaModeracionAuditoria();
       e.setResena(r);
       e.setModerador(moderador);
@@ -87,6 +99,8 @@ abstract class ComunidadIntegrationTestBase {
       e.setComentarioRevisado(r.getComentario());
       e.setFechaEvento(LocalDateTime.now().minusDays(1 + i));
       auditoriaRepository.saveAndFlush(e);
+      r.setEstadoModeracion(EstadoModeracion.RECHAZADA);
+      resenaRepository.saveAndFlush(r);
     }
   }
 

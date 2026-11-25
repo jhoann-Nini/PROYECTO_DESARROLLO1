@@ -293,10 +293,7 @@ class ComunidadPublicacionesIntegrationTest extends ComunidadIntegrationTestBase
   @Test
   void lasDeHaceMasDeUnaHoraNoCuentan() throws Exception {
     for (int i = 0; i < 5; i++) {
-      long id = idCreada(autor, "Publicación " + i, "Contenido " + i);
-      PublicacionComunidad p = publicacionRepository.findById(id).orElseThrow();
-      p.setFechaCreacion(LocalDateTime.now().minusMinutes(61));
-      publicacionRepository.saveAndFlush(p);
+      publicacionDirecta("Publicación " + i, LocalDateTime.now().minusMinutes(61));
     }
     crear(autor, "GENERAL", null, "Publicación 6", "Contenido").andExpect(status().isCreated());
   }
@@ -382,8 +379,8 @@ class ComunidadPublicacionesIntegrationTest extends ComunidadIntegrationTestBase
 
   @Test
   void cursorDeOtroOrden400() throws Exception {
-    publicacionDirecta("Uno", LocalDateTime.now().minusMinutes(2));
-    publicacionDirecta("Dos", LocalDateTime.now().minusMinutes(1));
+    publicacionDirecta("Primera", LocalDateTime.now().minusMinutes(2));
+    publicacionDirecta("Segunda", LocalDateTime.now().minusMinutes(1));
     String pagina = mockMvc.perform(get(RUTA).param("limite", "1").param("orden", "recientes"))
       .andReturn().getResponse().getContentAsString();
     String cursor = JsonPath.read(pagina, "$.nextCursor");

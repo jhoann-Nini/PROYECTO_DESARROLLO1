@@ -670,6 +670,27 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
   - `id_desactivado_por` y `fecha_desactivacion`.
 
   Un índice único parcial impide dos términos activos con la misma forma normalizada. Los triggers exigen que agregue o desactive un administrador activo, solo permiten desactivar una vez y prohíben borrar. No tiene permisos para `anon` ni `authenticated`. Verificación de comportamiento: `docs/sql/tests/027_verificacion_terminos.sql`.
+- Comunidad (migración 029): cuatro tablas separadas de `resena` y `valoracion`, con RLS sin políticas y sin privilegios para `anon` ni `authenticated`.
+  - `publicacion_comunidad`:
+    - `tipo`: `GENERAL` sin producto o `PRODUCTO` con producto, exigido por un CHECK;
+    - `titulo` (5 a 150 caracteres sin espacios de los extremos) y `contenido` (hasta 5000);
+    - `estado_moderacion`, `oculta_por_moderacion`, `oculta_por_reportes`, eliminación lógica y `cerrada`;
+    - `fecha_creacion`, `fecha_edicion` y `fecha_ultima_actividad`.
+  - `respuesta_comunidad`:
+    - `profundidad` de 0 a 2;
+    - FK compuestas `(id_respuesta_padre, id_publicacion)` e `(id_respuesta_citada, id_publicacion)`: la madre y la citada son siempre de la misma publicación;
+    - las mismas columnas de visibilidad, eliminación y fechas.
+  - `reaccion_publicacion` y `reaccion_respuesta`:
+    - PK `(contenido, usuario)`: un «Me gusta» por persona;
+    - `ON DELETE CASCADE` desde el contenido.
+  - Triggers de `respuesta_comunidad`:
+    - calculan la profundidad;
+    - rechazan más de 2;
+    - exigen que la citada sea de nivel 2 y tenga la misma madre (hermana que cita);
+    - rechazan responder en publicaciones cerradas o eliminadas, bloqueando la fila de la publicación (`FOR NO KEY UPDATE`) para no cruzarse con un cierre en curso;
+    - impiden cambiar id, madre, citada, publicación, autor, profundidad y fecha de creación (la base de las cuotas).
+  - Trigger de `publicacion_comunidad`: impide cambiar id, autor, tipo, producto y fecha de creación.
+  - Los conteos se calculan con consultas; no hay columnas acumuladas. Verificación: `docs/sql/tests/029_verificacion_comunidad.sql`.
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 

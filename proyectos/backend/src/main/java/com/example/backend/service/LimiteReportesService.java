@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.TooManyRequestsException;
 import com.example.backend.repository.ReporteOfertaRepository;
+import com.example.backend.repository.ReporteComunidadRepository;
 import com.example.backend.repository.ReporteResenaRepository;
 import com.example.backend.repository.UsuarioRepository;
 import java.time.LocalDateTime;
@@ -27,14 +28,17 @@ public class LimiteReportesService {
   private final UsuarioRepository usuarioRepository;
   private final ReporteOfertaRepository reporteOfertaRepository;
   private final ReporteResenaRepository reporteResenaRepository;
+  private final ReporteComunidadRepository reporteComunidadRepository;
 
   public LimiteReportesService(
     UsuarioRepository usuarioRepository,
     ReporteOfertaRepository reporteOfertaRepository,
-    ReporteResenaRepository reporteResenaRepository) {
+    ReporteResenaRepository reporteResenaRepository,
+    ReporteComunidadRepository reporteComunidadRepository) {
     this.usuarioRepository = usuarioRepository;
     this.reporteOfertaRepository = reporteOfertaRepository;
     this.reporteResenaRepository = reporteResenaRepository;
+    this.reporteComunidadRepository = reporteComunidadRepository;
   }
 
   /**
@@ -48,7 +52,8 @@ public class LimiteReportesService {
 
     LocalDateTime desde = LocalDateTime.now().minusHours(1);
     long total = reporteOfertaRepository.countByUsuarioIdUsuarioAndFechaCreacionAfter(idUsuario, desde)
-      + reporteResenaRepository.countByUsuarioIdUsuarioAndFechaCreacionAfter(idUsuario, desde);
+      + reporteResenaRepository.countByUsuarioIdUsuarioAndFechaCreacionAfter(idUsuario, desde)
+      + reporteComunidadRepository.countByUsuarioIdUsuarioAndFechaCreacionAfter(idUsuario, desde);
 
     if (total >= MAX_REPORTES_POR_HORA) {
       throw new TooManyRequestsException(MENSAJE_LIMITE_REPORTES);

@@ -20,7 +20,7 @@ valoraciones.
 | P2. Reincidencia | Historial único para reseñas y foro | Las faltas de `resena_moderacion_auditoria` y `moderacion_comunidad_auditoria` suman, sin las apelaciones aceptadas. Un bloqueo aplica en los dos espacios |
 | P3. Cuotas | 5 publicaciones y 20 respuestas por hora | En base de datos, con bloqueo de la fila del usuario. Exceder devuelve 429 |
 | P4. Notificaciones | Fase 5, solo dentro de la aplicación | La migración 032 no entra en las fases 0 a 4 |
-| P5. RLS de `apelacion` y `termino_moderacion` | Migración propia 028, antes de las de la comunidad | Corrige el hallazgo D4 sin mezclarlo con el foro |
+| P5. RLS en las migraciones | Migración propia 028, antes de las de la comunidad | Producción ya tiene RLS sin políticas en sus 23 tablas, pero las migraciones solo lo activan en 3. La 028 lo activa en todas (sin efecto en producción), para que una base creada desde el repositorio quede igual. Cambio aprobado el 24 de noviembre de 2026 |
 
 ## 2. Correcciones respecto de la auditoría
 
@@ -76,7 +76,7 @@ valoraciones.
 
 | Migración | Contenido | Requisito previo |
 |---|---|---|
-| `028_rls_tablas_moderacion` | RLS sin políticas en `apelacion` y `termino_moderacion` | 027 |
+| `028_rls_tablas_publicas` | RLS sin políticas en las 23 tablas existentes de `public` (idempotente; sin efecto en producción) | 027 |
 | `029_comunidad` | Publicaciones, respuestas (FK compuesta, profundidad 0 a 2, triggers) y las dos tablas de reacciones | 028 |
 | `030_moderacion_comunidad` | Auditoría del foro, reportes y su historial, ocultamiento por 3 reportes | 029 |
 | `031_apelaciones_comunidad` | Apelaciones del foro, como la 026 | 030 |
@@ -132,7 +132,7 @@ del documento compartido. Puntos clave:
 
 | Fase | Migración | Entregable | Criterios |
 |---|---|---|---|
-| 0 | 028 | `AnalizadorContenido` extraído sin cambios funcionales; RLS corregido | CA-01, CA-17, CA-18 |
+| 0 | 028 | `AnalizadorContenido` extraído sin cambios funcionales; RLS en todas las tablas desde las migraciones | CA-01, CA-17, CA-18 |
 | 1 | 029 | Foro básico y las tres páginas | CA-02 a CA-11, CA-17, CA-18 |
 | 2 | 030 | Moderación del foro | CA-12, CA-13, CA-17, CA-18 |
 | 3 | 031 | Apelaciones y reincidencia unificada | CA-14, CA-15, CA-17, CA-18 |

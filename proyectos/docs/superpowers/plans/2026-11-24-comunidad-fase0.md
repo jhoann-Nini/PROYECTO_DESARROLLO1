@@ -5,7 +5,7 @@
 **Objetivo:** dejar listo el terreno de la comunidad sin cambiar ningún
 comportamiento. El motor de moderación pasa a un componente común,
 `AnalizadorContenido`, y el RLS de `apelacion` y `termino_moderacion` se
-corrige con la migración 028.
+activa con la migración 028 en las 23 tablas de `public`. En producción ya está activo en todas, así que la 028 no cambia nada allí; sirve para que una base creada desde el repositorio quede igual que producción.
 
 **Arquitectura:**
 - `AnalizadorContenido` (`@Component`) contiene todo el análisis que hoy está en `ResenaModerationService`: listas, normalización, patrones, términos agregados, señales de spam, niveles de riesgo y motivos.
@@ -37,19 +37,19 @@ corrige con la migración 028.
 ### Tarea 1: Migración 028 y su verificación
 
 **Archivos:**
-- Crear: `backend/src/main/resources/db/migration/028_rls_tablas_moderacion.sql` y una copia idéntica en `docs/sql/`
+- Crear: `backend/src/main/resources/db/migration/028_rls_tablas_publicas.sql` y una copia idéntica en `docs/sql/`
 - Crear: `docs/sql/tests/028_verificacion_rls.sql`
 
-- [ ] **Paso 1: escribir el script de verificación.** Para `apelacion` y `termino_moderacion` comprueba:
+- [ ] **Paso 1: escribir el script de verificación.** Para **todas** las tablas de `public` comprueba:
   - `relrowsecurity` verdadero;
   - ninguna política en `pg_policies`;
-  - `anon` y `authenticated` sin `SELECT`, `INSERT`, `UPDATE` ni `DELETE`;
-  - la fila `028_rls_tablas_moderacion` en `schema_version`.
-- [ ] **Paso 2: ejecutarlo antes de la migración** en PostgreSQL 17 local restaurado con `pg_dump --schema-only --schema=public`. Resultado esperado: falla porque RLS no está habilitado.
-- [ ] **Paso 3: escribir la migración.** Preflight de la 027; `ALTER TABLE … ENABLE ROW LEVEL SECURITY` en las dos tablas; fila en `schema_version`.
+  - `anon` y `authenticated` sin ningún privilegio (incluidos `TRUNCATE`, `REFERENCES` y `TRIGGER`, que RLS no frena) en tablas, vistas y secuencias;
+  - la fila `028_rls_tablas_publicas` en `schema_version`.
+- [ ] **Paso 2: ejecutarlo antes de la migración** en PostgreSQL 17 local restaurado con `pg_dump --schema-only --schema=public`, desactivando RLS en las 20 tablas que las migraciones no cubren (así queda una base «creada desde el repositorio»). Resultado esperado: falla.
+- [ ] **Paso 3: escribir la migración.** Preflight de la 027; `SET LOCAL lock_timeout = '5s'`; `ALTER TABLE … ENABLE ROW LEVEL SECURITY` en las 23 tablas, nombradas una por una; comprobación final de que no queda ninguna tabla sin RLS; fila en `schema_version`.
 - [ ] **Paso 4: aplicarla dos veces** y ejecutar el script. Resultado esperado: «OK». Comprobar con `cmp` que las dos copias son idénticas.
 - [ ] **Paso 5: punto de control 1.** Revisión independiente de la migración contra la especificación y la salida del script. Se corrigen los hallazgos críticos o importantes.
-- [ ] **Paso 6: commit** `feat(db): RLS en apelacion y termino_moderacion (028)`. Pedir al equipo que la apruebe y la aplique en Supabase.
+- [ ] **Paso 6: commit** `feat(db): RLS en todas las tablas de public desde las migraciones (028)`. Pedir al equipo que la apruebe y la aplique en Supabase.
 
 ### Tarea 2: Extraer `AnalizadorContenido`
 

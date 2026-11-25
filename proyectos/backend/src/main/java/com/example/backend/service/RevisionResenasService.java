@@ -125,7 +125,7 @@ public class RevisionResenasService {
     }
 
     private ResenaEnRevisionResponse toResponse(Resena resena) {
-        ResenaModerationService.ResultadoModeracion analisis =
+        ResultadoModeracion analisis =
                 resenaModerationService.analizar(resena.getComentario(),
                         resena.getUsuario() != null
                                 ? resenaRepository.comentariosDeOtrasResenasDelAutor(
@@ -137,7 +137,7 @@ public class RevisionResenasService {
         if (!analisis.riesgo().requiereRevision() && resena.getUsuario() != null
                 && reincidenciaService.contarFaltas(resena.getUsuario().getIdUsuario())
                         >= ReincidenciaService.MIN_FALTAS_REVISION_PREVIA) {
-            analisis = new ResenaModerationService.ResultadoModeracion(
+            analisis = new ResultadoModeracion(
                     RiesgoModeracion.MEDIO, java.util.List.of(ReincidenciaService.MOTIVO_REVISION_PREVIA));
         }
         return new ResenaEnRevisionResponse(

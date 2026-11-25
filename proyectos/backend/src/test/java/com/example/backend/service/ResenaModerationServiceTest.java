@@ -51,7 +51,7 @@ class ResenaModerationServiceTest {
 
   @Test
   void lasAmenazasTienenRiesgoAltoYMotivoPropio() {
-    ResenaModerationService.ResultadoModeracion resultado =
+    ResultadoModeracion resultado =
       moderationService.analizar("te voy a matar si no me devuelves el dinero");
     assertEquals(RiesgoModeracion.ALTO, resultado.riesgo());
     assertEquals(java.util.List.of(ResenaModerationService.MOTIVO_AMENAZA), resultado.motivos());

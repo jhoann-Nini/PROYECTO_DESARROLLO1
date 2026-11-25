@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CLASE_FOCO } from "./foco";
+import Button, { buttonClassName } from "./Button";
 
 export type TipoEstadoVacio = "vacio" | "error";
 
@@ -67,7 +67,6 @@ export default function EstadoVacio({
   className = "",
 }: EstadoVacioProps) {
   const esError = tipo === "error";
-  const claseAccion = `mt-5 inline-flex cursor-pointer items-center justify-center rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`;
 
   return (
     <div
@@ -108,17 +107,17 @@ export default function EstadoVacio({
 
       {accion &&
         (accion.href ? (
-          <Link href={accion.href} className={claseAccion}>
+          <Link href={accion.href} className={buttonClassName("primary", "mt-5")}>
             {accion.etiqueta}
           </Link>
         ) : (
-          <button
+          <Button
             type="button"
             onClick={accion.onClick}
-            className={claseAccion}
+            className="mt-5"
           >
             {accion.etiqueta}
-          </button>
+          </Button>
         ))}
     </div>
   );

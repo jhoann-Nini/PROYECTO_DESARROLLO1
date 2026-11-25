@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Pantallas móviles públicas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+
+<div style="width:2294px;height:1060px;box-sizing:border-box;padding:56px 60px;background:#1A2010;display:flex;gap:56px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Inicio</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 18px 10px;display:flex;align-items:center;justify-content:space-between;background:#171D0F"><span class="d" style="font-size:20px;font-weight:500">Tec<span style="color:#A5D64C">Review</span></span><button class="ico" aria-label="Tema oscuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></button></div>
+<div style="flex:1;overflow:hidden;padding:14px 16px;display:flex;flex-direction:column;gap:16px">
+<h1 style="font-size:26px;line-height:1.1">Busca, compara y decide.</h1>
+<button style="height:48px;display:flex;align-items:center;gap:10px;padding:0 14px;border:1px solid #3A4626;border-radius:12px;background:#171D0F;color:#B4B397;font:15px Inter"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Marca o modelo</button>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="4"><a href="Catalogo.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;background:#171D0F;border:1px solid #3A4626;border-radius:12px;text-decoration:none;color:#F4F1DC;font-size:12px;font-weight:500"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A5D64C" stroke-width="1.6" aria-hidden="true"><path d="{{c.d}}"/></svg>{{c.n}}</a></sc-for>
+</div>
+<div class="card" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+<span class="lab">Tu presupuesto</span>
+<span class="d num" style="font-size:26px;font-weight:500">$ 2.500.000</span>
+<span style="position:relative;height:22px;display:block" aria-hidden="true"><span style="position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:#3A4626"></span><span style="position:absolute;left:0;width:42%;top:9px;height:4px;background:#A5D64C"></span><span style="position:absolute;left:calc(42% - 11px);top:0;width:22px;height:22px;border-radius:50%;background:#171D0F;border:2px solid #A5D64C"></span></span>
+<a class="btn bp" href="Catalogo.dc.html">Ver catálogo</a>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font-size:18px">Destacados</h2><a href="Catalogo.dc.html" style="font-size:13px;font-weight:500">Ver todo</a></div>
+<div style="display:flex;gap:10px">
+<div class="card" style="width:170px;flex:none;padding:10px;display:flex;flex-direction:column;gap:6px"><div class="ph" style="height:96px"><span class="d" style="font-weight:500;color:#8C7A50;font-size:20px">S24</span></div><span style="font-size:13px;font-weight:500">Galaxy S24</span><span class="d num" style="font-weight:500">$ 2.999.900</span></div>
+<div class="card" style="width:170px;flex:none;padding:10px;display:flex;flex-direction:column;gap:6px"><div class="ph" style="height:96px"><span class="d" style="font-weight:500;color:#8C7A50;font-size:20px">WH5</span></div><span style="font-size:13px;font-weight:500">Sony WH-1000XM5</span><span class="d num" style="font-weight:500">$ 1.249.900</span></div>
+<div class="card" style="width:170px;flex:none;padding:10px"></div>
+</div>
+</div>
+<nav aria-label="Navegación" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#171D0F;border-top:1px dashed #3A4626;padding:8px 4px 20px">
+<sc-for list="{{tabsA}}" as="t" hint-placeholder-count="5"><a href="{{t.h}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;font-size:11px;font-weight:500;color:{{t.c}};position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="{{t.d}}"/></svg>{{t.n}}<sc-if value="{{t.badge}}" hint-placeholder-val="{{false}}"><span class="num" style="position:absolute;top:-4px;right:14px;background:#A5D64C;color:#10140A;font-size:10px;border-radius:999px;padding:0 5px">3</span></sc-if></a></sc-for>
+</nav>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Categoría Celulares · panel de filtros</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 16px 12px;background:#171D0F;display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;color:#B4B397">Catálogo /</span><h1 style="font-size:24px">Celulares</h1>
+<div style="display:flex;gap:8px"><span class="inp" style="flex:1;display:flex;align-items:center;color:#B4B397;height:40px">Buscar en celulares</span><button class="btn bs" style="height:40px;padding:0 12px">Filtros · 4</button></div></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;opacity:.35">
+<div class="card" style="height:110px"></div><div class="card" style="height:110px"></div><div class="card" style="height:110px"></div>
+</div>
+<div style="position:absolute;inset:0;background:rgba(16,20,10,.75)"></div>
+<div role="dialog" aria-label="Filtros" style="position:absolute;left:0;right:0;bottom:0;height:640px;background:#171D0F;border-radius:22px 22px 0 0;display:flex;flex-direction:column">
+<div style="width:40px;height:4px;border-radius:2px;background:#3A4626;margin:10px auto 0"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 18px"><h2 style="font-size:20px">Filtros</h2><button class="btn bg" style="height:36px;font-size:13px;padding:0 4px">Limpiar todo</button></div>
+<div style="flex:1;overflow:hidden;padding:0 18px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip" style="height:30px">Samsung ×</span><span class="chip" style="height:30px">Xiaomi ×</span><span class="chip" style="height:30px">Hasta $ 2,5 M ×</span><span class="chip" style="height:30px">5G ×</span></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span class="lab">Ordenar</span><div style="display:inline-flex;background:transparent;border:1px solid #3A4626;border-radius:9999px;padding:3px;align-self:flex-start"><span style="padding:8px 14px;border-radius:9999px;background:#2F4416;font-size:13px;font-weight:500">Nombre</span><span style="padding:8px 14px;font-size:13px;color:#CFCDB3">Precio ↑</span><span style="padding:8px 14px;font-size:13px;color:#CFCDB3">Precio ↓</span></div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><span class="lab">Precio (COP)</span>
+<span style="position:relative;height:22px;display:block" aria-hidden="true"><span style="position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:#3A4626"></span><span style="position:absolute;left:12%;width:40%;top:9px;height:4px;background:#A5D64C"></span><span style="position:absolute;left:calc(12% - 11px);top:0;width:22px;height:22px;border-radius:50%;background:#171D0F;border:2px solid #A5D64C"></span><span style="position:absolute;left:calc(52% - 11px);top:0;width:22px;height:22px;border-radius:50%;background:#171D0F;border:2px solid #A5D64C"></span></span>
+<div style="display:flex;gap:8px"><input class="inp num" aria-label="Mínimo" value="$ 800.000" style="flex:1;min-width:0"><input class="inp num" aria-label="Máximo" value="$ 2.500.000" style="flex:1;min-width:0"></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span class="lab">Marca</span>
+<label style="display:flex;gap:10px;align-items:center;font-size:15px;height:36px"><input type="checkbox" checked style="width:20px;height:20px;accent-color:#A5D64C">Samsung</label>
+<label style="display:flex;gap:10px;align-items:center;font-size:15px;height:36px"><input type="checkbox" checked style="width:20px;height:20px;accent-color:#A5D64C">Xiaomi</label>
+<label style="display:flex;gap:10px;align-items:center;font-size:15px;height:36px"><input type="checkbox" style="width:20px;height:20px;accent-color:#A5D64C">Apple</label></div>
+</div>
+<div style="padding:12px 18px 24px;border-top:1px dashed #3A4626"><button class="btn bp" style="width:100%;height:50px;font-size:15px">Ver 48 resultados</button></div>
+</div>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Detalle · tema claro</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#F6F3DF;border:1px solid #CFCBA9;overflow:hidden;display:flex;flex-direction:column;position:relative;color:#10140A">
+<div style="padding:16px;display:flex;justify-content:space-between;align-items:center"><a href="Catalogo.dc.html" style="color:#3D6614;font-size:14px;text-decoration:none">← Celulares</a><button class="ico" aria-label="Tema oscuro" style="background:#ECE8CC;border-color:#CFCBA9"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10140A" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg></button></div>
+<div style="flex:1;overflow:hidden;padding:0 16px;display:flex;flex-direction:column;gap:14px">
+<div class="ph" style="height:180px;background:#ECE8CC"><span class="d" style="font-size:28px;font-weight:500;color:#8C7A50">S24</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#454A2E">Samsung · Celulares</span><h1 style="font-size:26px">Galaxy S24</h1><span style="font-size:13px;color:#454A2E"><span style="color:#6B5200;font-weight:500">★ 4,6</span> · 212 opiniones · <span style="color:#3D6614">● Disponible</span></span></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span class="d num" style="font-size:28px;font-weight:500">$ 2.999.900</span><span class="tag" style="color:#6B5200;border:1px solid #6B5200">−17%</span></div>
+<div style="display:flex;background:#ECE8CC;border-radius:12px;padding:3px"><span style="flex:1;text-align:center;padding:9px 0;font-size:13px;color:#454A2E">Comprar</span><span style="flex:1;text-align:center;padding:9px 0;border-radius:12px;background:#CFCBA9;font-size:13px;font-weight:500">Ficha</span><span style="flex:1;text-align:center;padding:9px 0;font-size:13px;color:#454A2E">Opiniones</span></div>
+<div style="background:#ECE8CC;border:1px solid #CFCBA9;border-radius:14px;padding:4px 14px">
+<span style="display:block;padding:12px 0 6px;font:500 14px Inter">Batería y carga</span>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #CFCBA9;font-size:14px"><span style="color:#454A2E">Capacidad</span><span style="display:flex;gap:8px;align-items:center"><b style="font-weight:500" class="num">4.000 mAh</b><span class="tag" style="background:#2F4416;color:#F6F3DF">✓</span></span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #CFCBA9;font-size:14px"><span style="color:#454A2E">Carga con cable</span><span style="display:flex;gap:8px;align-items:center"><span class="num" style="color:#454A2E">25 W</span><span class="tag" style="background:transparent;border:1px solid #8C7A50;color:#10140A">◷ Pendiente</span></span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid #CFCBA9;font-size:14px"><span style="color:#454A2E">Cargador incluido</span><span class="tag" style="border:1px dashed #8C7A50;color:#454A2E">— Sin dato</span></div>
+</div>
+</div>
+<div style="padding:12px 16px 22px;border-top:1px solid #CFCBA9;display:flex;gap:8px;background:#F6F3DF">
+<button class="btn" style="flex:1;background:#2F4416;color:#F6F3DF">+ Comparar</button>
+<button class="ico" aria-label="Guardar en favoritos" style="width:44px;height:44px;background:#ECE8CC;border-color:#CFCBA9"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10140A" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg></button>
+<button class="ico" aria-label="Compartir" style="width:44px;height:44px;background:#ECE8CC;border-color:#CFCBA9"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10140A" stroke-width="2"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 11l7.6-3.8M8.2 13l7.6 3.8"/></svg></button>
+</div>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Comparador · tabla móvil</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 16px 10px;background:#171D0F;display:flex;flex-direction:column;gap:10px;border-bottom:1px dashed #3A4626">
+<div style="display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:22px">Comparador</h1><button class="btn bg" style="height:32px;font-size:13px;color:#FF8C69;padding:0">Vaciar</button></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<div style="border:1px solid #3A4626;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:2px;position:relative"><span style="font-size:13px;font-weight:500">Galaxy S24</span><span class="num" style="font-size:13px;font-weight:500">$ 2.999.900</span><span style="font-size:11px;color:#B4B397">128 GB ▾</span><button aria-label="Quitar Galaxy S24" style="position:absolute;top:4px;right:4px;border:0;background:none;font-size:16px;color:#B4B397;width:28px;height:28px">×</button></div>
+<div style="border:1px solid #3A4626;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:2px;position:relative"><span style="font-size:13px;font-weight:500">Pixel 8</span><span class="num" style="font-size:13px;font-weight:500">$ 2.849.000</span><span style="font-size:11px;color:#B4B397">128 GB ▾</span><button aria-label="Quitar Pixel 8" style="position:absolute;top:4px;right:4px;border:0;background:none;font-size:16px;color:#B4B397;width:28px;height:28px">×</button></div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#CFCDB3">Viendo 1–2 de 3 · desliza →</span><span style="display:flex;gap:4px"><span style="width:16px;height:6px;border-radius:3px;background:#A5D64C"></span><span style="width:6px;height:6px;border-radius:3px;background:#3A4626"></span></span></div>
+<label style="display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:500">Solo diferencias<span style="width:44px;height:26px;border-radius:13px;background:#A5D64C;position:relative;display:inline-block"><span style="position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#171D0F"></span></span></label>
+</div>
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+<sc-for list="{{mrows}}" as="r" hint-placeholder-count="7">
+<div style="background:#171D0F;border-bottom:1px dashed #3A4626;padding:8px 16px 10px">
+<span style="font-size:12px;color:#B4B397">{{r.k}}</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px">
+<span class="num" style="font-size:15px;font-weight:{{r.w1}};color:{{r.c1}}">{{r.a}}</span><span class="num" style="font-size:15px;font-weight:{{r.w2}};color:{{r.c2}}">{{r.b}}</span>
+</div></div>
+</sc-for>
+</div>
+<nav aria-label="Navegación" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#171D0F;border-top:1px dashed #3A4626;padding:8px 4px 20px">
+<sc-for list="{{tabsC}}" as="t" hint-placeholder-count="5"><a href="{{t.h}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;font-size:11px;font-weight:500;color:{{t.c}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="{{t.d}}"/></svg>{{t.n}}</a></sc-for>
+</nav>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Comunidad · reseñas y blog</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 16px 12px;background:#171D0F;display:flex;flex-direction:column;gap:12px">
+<h1 style="font-size:24px">Comunidad</h1>
+<div style="display:flex;background:transparent;border:1px solid #3A4626;border-radius:9999px;padding:3px"><span style="flex:1;text-align:center;padding:9px 0;border-radius:9999px;background:#2F4416;font-size:14px;font-weight:500">Reseñas</span><span style="flex:1;text-align:center;padding:9px 0;font-size:14px;color:#CFCDB3">Blog y guías</span></div>
+<div style="display:flex;gap:8px"><span class="inp" style="flex:1;display:flex;align-items:center;color:#B4B397;height:40px">Buscar reseñas</span><button class="btn bs" style="height:40px;padding:0 12px">Recientes ▾</button></div>
+<div style="display:flex;gap:6px"><span class="chip" style="height:30px;background:#F4F1DC;color:#10140A;border-color:#F4F1DC">Todos</span><span class="chip" style="height:30px">Galaxy S24</span><span class="chip" style="height:30px">Pixel 8</span></div>
+</div>
+<div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:6px;border-color:#8C7A50;background:#141A0C"><span style="display:flex;gap:6px;align-items:center"><span class="tag" style="background:#2F4416;color:#A5D64C">Tuya</span><span class="tag pend">◷ En moderación</span></span><span style="font-size:13px;font-weight:500;color:#A5D64C">IdeaPad Slim 5</span><p style="font-size:14px;line-height:1.45">El teclado es cómodo para escribir trabajos largos…</p><span style="display:flex;gap:6px"><button class="btn bs" style="height:34px;font-size:12px;padding:0 10px">Editar</button><button class="btn bd" style="height:34px;font-size:12px;padding:0 10px">Eliminar</button></span></div>
+<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:6px"><span style="display:flex;justify-content:space-between;font-size:13px"><b style="font-weight:500">Laura M.</b><span style="color:#E6E3CB;font-weight:500">★ 5/5</span></span><span style="font-size:13px;font-weight:500;color:#A5D64C">Sony WH-1000XM5</span><p style="font-size:14px;line-height:1.45">La cancelación de ruido funciona muy bien en el bus.</p><button class="btn bg" style="height:32px;font-size:12px;padding:0;align-self:flex-start;color:#CFCDB3">Reportar</button></div>
+<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:6px"><span style="display:flex;justify-content:space-between;font-size:13px"><b style="font-weight:500">Julián C.</b><span style="color:#E6E3CB;font-weight:500">★ 4/5</span></span><span style="font-size:13px;font-weight:500;color:#A5D64C">Pixel 8</span><p style="font-size:14px;line-height:1.45">Las fotos de noche son lo mejor.</p></div>
+</div>
+<button class="btn bp" style="position:absolute;right:16px;bottom:96px;height:52px;border-radius:36px;">+ Escribir reseña</button>
+<nav aria-label="Navegación" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#171D0F;border-top:1px dashed #3A4626;padding:8px 4px 20px">
+<sc-for list="{{tabsR}}" as="t" hint-placeholder-count="5"><a href="{{t.h}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;font-size:11px;font-weight:500;color:{{t.c}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="{{t.d}}"/></svg>{{t.n}}</a></sc-for>
+</nav>
+</div></div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2294,"height":1060}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = [
+{ n:'Inicio', h:'Inicio.dc.html', d:'M4 11l8-7 8 7v9H4z' },
+{ n:'Catálogo', h:'Catalogo.dc.html', d:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z' },
+{ n:'Comparar', h:'Comparador.dc.html', d:'M3 4h7v16H3zM14 4h7v16h-7z' },
+{ n:'Comunidad', h:'Resenas.dc.html', d:'M4 5h16v11H9l-5 4z' },
+{ n:'Cuenta', h:'Perfil.dc.html', d:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0' }
+];
+const tabs = (a) => T.map(t => ({ ...t, c: t.n===a ? '#A5D64C' : '#B4B397', badge: t.n==='Comparar' }));
+const cats = [
+{ n:'Celulares', d:'M7 2.5h10v19H7zM11 18.5h2' },{ n:'Tablets', d:'M4 3h16v18H4zM11 18h2' },
+{ n:'Portátiles', d:'M4 5h16v11H4zM2 19h20' },{ n:'Auriculares', d:'M4 15v-3a8 8 0 0116 0v3M3 14h4v6H3zM17 14h4v6h-4z' }
+];
+const r = (k,a,b,best) => ({ k, a, b, w1: best===1?700:500, w2: best===2?700:500, c1: a==='Sin dato'?'#B4B397':(best===1?'#A5D64C':'#F4F1DC'), c2: b==='Sin dato'?'#B4B397':(best===2?'#A5D64C':'#F4F1DC') });
+const mrows = [
+r('Mejor precio verificado','$ 2.999.900','$ 2.849.000',2), r('Disponibilidad','3 tiendas','2 tiendas',0),
+r('Brillo máximo','2.600 nits','2.000 nits',1), r('Almacenamiento','128 GB','128 GB',0),
+r('Batería','4.000 mAh','4.575 mAh',2), r('Carga con cable','25 W ◷','27 W ◷',0), r('Zoom óptico','3×','Sin dato',1)
+];
+return { cats, mrows, tabsA: tabs('Inicio'), tabsC: tabs('Comparar'), tabsR: tabs('Comunidad') };
+}
+}
+</script>
+</body>
+</html>

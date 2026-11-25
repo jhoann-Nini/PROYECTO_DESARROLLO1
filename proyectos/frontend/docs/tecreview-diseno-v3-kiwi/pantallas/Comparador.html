@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Comparador (escritorio)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+<header style="background:#171D0F;border-bottom:1px dashed #3A4626">
+<div style="max-width:1360px;margin:0 auto;padding:12px 32px;min-height:44px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+<a href="Inicio.dc.html" class="d" style="font-size:22px;font-weight:500;color:#F4F1DC;text-decoration:none">Tec<span style="color:#A5D64C">Review</span></a>
+<nav aria-label="Principal" style="display:flex;gap:2px;flex-wrap:wrap"><a class="nl" href="Inicio.dc.html">Inicio</a><a class="nl" href="Catalogo.dc.html">Catálogo</a><a class="nl" href="Comparador.dc.html" style="background:#2F4416;color:#A5D64C" aria-current="page">Comparador</a><a class="nl" href="Resenas.dc.html">Reseñas</a><a class="nl" href="Resenas.dc.html">Blog</a></nav>
+<button style="flex:1;min-width:220px;max-width:380px;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid #3A4626;border-radius:12px;background:#10140A;color:#B4B397;font:14px Inter;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Buscar marca o modelo<kbd style="margin-left:auto;font:500 11px Inter;border:1px solid #3A4626;border-radius:5px;padding:2px 6px;background:#171D0F">⌘K</kbd></button>
+<div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+<button class="ico" aria-label="Cambiar a tema oscuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></button>
+<a class="nl" href="Favoritos.dc.html" style="display:inline-flex;gap:6px;align-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>Favoritos</a>
+<a class="nl" href="Perfil.dc.html" style="display:inline-flex;gap:8px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;background:#F4F1DC;color:#10140A;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500">AR</span>Andrés</a>
+</div></div></header>
+<main style="max-width:1360px;margin:0 auto;padding:28px 32px 64px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+<div style="display:flex;flex-direction:column;gap:6px"><p class="lab">Comparador · Celulares</p><h1 style="font-size:40px">Compara fila por fila</h1><p style="color:#CFCDB3">3 de 4 espacios ocupados · solo productos de la misma categoría</p></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<label style="display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border:1px solid #3A4626;border-radius:12px;background:#171D0F;min-width:300px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="sr">Buscar celular para agregar</span><input placeholder="Agregar otro celular…" style="border:0;outline:0;flex:1;font-size:14px"></label>
+<button class="btn bd">Vaciar comparación</button>
+</div></div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+<div style="display:inline-flex;background:transparent;border:1px solid #3A4626;border-radius:9999px;padding:3px" role="group" aria-label="Filas visibles">
+<button onClick="{{showAll}}" style="border:0;cursor:pointer;padding:9px 16px;border-radius:12px;font:500 13px Inter;background:{{allBg}};color:{{allFg}}">Todas las filas</button>
+<button onClick="{{showDiff}}" style="border:0;cursor:pointer;padding:9px 16px;border-radius:12px;font:500 13px Inter;background:{{diffBg}};color:{{diffFg}}">Solo diferencias</button>
+</div>
+<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#CFCDB3;align-items:center"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#A5D64C"></span>Destaca en esta fila</span><span class="tag pend">◷ Pendiente: no cuenta</span><span class="tag na">— Sin dato</span></div>
+</div>
+
+<div class="card" style="overflow-x:auto">
+<div style="min-width:1000px">
+<div style="display:grid;grid-template-columns:220px repeat(4,minmax(0,1fr));border-bottom:1px dashed #3A4626;background:#171D0F;border-radius:14px 14px 0 0">
+<div style="padding:20px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px"><span style="font-size:13px;color:#B4B397">Comparando</span><span class="d" style="font-size:20px;font-weight:500">3 celulares</span></div>
+<sc-for list="{{prods}}" as="p" hint-placeholder-count="3">
+<div style="padding:20px 18px;border-left:1px dashed #3A4626;display:flex;flex-direction:column;gap:10px;position:relative">
+<button aria-label="Quitar de la comparación" class="ico" style="position:absolute;top:12px;right:12px;width:32px;height:32px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+<div class="ph" style="height:96px"><span class="d" style="font-size:24px;font-weight:500;color:#8C7A50">{{p.init}}</span></div>
+<a href="Detalle.dc.html" class="d" style="font-size:17px;font-weight:500;color:#F4F1DC;text-decoration:none">{{p.name}}</a>
+<sc-if value="{{p.hasVar}}" hint-placeholder-val="{{true}}"><label style="font-size:12px;color:#B4B397;display:flex;flex-direction:column;gap:4px">Variante<select class="inp" style="height:36px;font-size:13px"><option>{{p.var}}</option></select></label></sc-if>
+<sc-if value="{{p.noVar}}" hint-placeholder-val="{{false}}"><span style="font-size:12px;color:#B4B397;height:56px;display:flex;align-items:flex-end">Sin variantes registradas</span></sc-if>
+<span class="d num" style="font-size:22px;font-weight:500">{{p.price}}</span>
+</div>
+</sc-for>
+<div style="padding:20px 18px;border-left:1px dashed #3A4626;display:flex"><button style="flex:1;border:2px dashed #3A4626;border-radius:12px;background:#141A0C;color:#CFCDB3;font:500 14px Inter;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:200px"><span style="font-size:28px;color:#A5D64C">+</span>Agregar celular<span style="font-weight:400;font-size:12px">1 espacio libre</span></button></div>
+</div>
+
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:220px repeat(4,minmax(0,1fr));background:#141A0C;border-bottom:1px dashed #3A4626"><div style="padding:10px 20px" class="lab">{{g.name}}</div></div>
+<sc-for list="{{g.rows}}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:220px repeat(4,minmax(0,1fr));border-bottom:1px dashed #3A4626;font-size:14px">
+<div style="padding:13px 20px;color:#CFCDB3">{{r.k}}</div>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="3">
+<div style="padding:13px 18px;border-left:1px dashed #3A4626;display:flex;align-items:center;gap:8px;background:{{c.bg}}">
+<sc-if value="{{c.best}}" hint-placeholder-val="{{false}}"><span style="width:8px;height:8px;border-radius:50%;background:#A5D64C;flex:none" aria-label="Destaca"></span></sc-if>
+<span class="num" style="font-weight:{{c.fw}};color:{{c.color}};font-style:{{c.fs}}">{{c.v}}</span>
+<sc-if value="{{c.pend}}" hint-placeholder-val="{{false}}"><span class="tag pend" style="font-size:11px">◷</span></sc-if>
+</div>
+</sc-for>
+<div style="border-left:1px dashed #3A4626"></div>
+</div>
+</sc-for>
+</sc-for>
+</div>
+</div>
+
+<section style="display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2 style="font-size:24px">En qué destaca cada uno</h2><span style="font-size:13px;color:#B4B397">Según datos verificados y comparables. No declaramos un ganador: depende de lo que priorices.</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+<sc-for list="{{strengths}}" as="s" hint-placeholder-count="3">
+<div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px">
+<span class="d" style="font-size:17px;font-weight:500">{{s.name}}</span>
+<sc-for list="{{s.items}}" as="i" hint-placeholder-count="2"><div style="display:flex;gap:10px;font-size:14px;line-height:1.45"><span style="width:8px;height:8px;border-radius:50%;background:#A5D64C;margin-top:6px;flex:none"></span><span>{{i}}</span></div></sc-for>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:12px">
+<h2 style="font-size:20px">Comparados recientemente</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<a class="chip" href="Comparador.dc.html" style="height:40px">MacBook Air M3 · IdeaPad Slim 5 <span style="color:#B4B397">· ayer</span></a>
+<a class="chip" href="Comparador.dc.html" style="height:40px">WH-1000XM5 · AirPods Pro 2 · Buds2 Pro <span style="color:#B4B397">· 20 nov</span></a>
+<a class="chip" href="Comparador.dc.html" style="height:40px">Galaxy A55 · Redmi Note 13 Pro <span style="color:#B4B397">· 18 nov</span></a>
+<button class="btn bg" style="height:40px;font-size:13px;color:#CFCDB3">Borrar historial</button>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+constructor(p){ super(p); this.state = { diff:false }; }
+renderVals() {
+const diff = this.state.diff;
+const cell = (v, opt={}) => {
+const na = v === null; const pend = !!opt.pend;
+return { v: na ? 'Sin dato' : v, best: !!opt.best && !pend, pend, bg: opt.best && !pend ? '#1E2812' : 'transparent', fw: na ? 400 : 600, color: na ? '#B4B397' : (pend ? '#CFCDB3' : '#F4F1DC'), fs: na ? 'italic' : 'normal' };
+};
+const all = [
+{ name:'Precio y disponibilidad', rows:[
+{ k:'Mejor precio verificado', d:true, cells:[cell('$ 2.999.900'),cell('$ 2.849.000',{best:true}),cell('$ 3.799.900')] },
+{ k:'Disponibilidad', d:true, cells:[cell('3 tiendas'),cell('2 tiendas'),cell('Agotado')] } ]},
+{ name:'Pantalla', rows:[
+{ k:'Tamaño', d:true, cells:[cell('6,2″'),cell('6,2″'),cell('6,1″')] },
+{ k:'Frecuencia', d:false, cells:[cell('120 Hz'),cell('120 Hz'),cell('120 Hz')] },
+{ k:'Brillo máximo', d:true, cells:[cell('2.600 nits',{best:true}),cell('2.000 nits'),cell(null)] } ]},
+{ name:'Rendimiento', rows:[
+{ k:'RAM', d:false, cells:[cell('8 GB'),cell('8 GB'),cell('8 GB')] },
+{ k:'Almacenamiento', d:true, cells:[cell('128 GB'),cell('128 GB'),cell('256 GB',{best:true})] },
+{ k:'Años de actualizaciones', d:false, cells:[cell('7 años'),cell('7 años'),cell(null)] } ]},
+{ name:'Batería y cámara', rows:[
+{ k:'Batería', d:true, cells:[cell('4.000 mAh'),cell('4.575 mAh',{best:true}),cell('3.582 mAh')] },
+{ k:'Carga con cable', d:true, cells:[cell('25 W',{pend:true}),cell('27 W',{pend:true}),cell('20 W')] },
+{ k:'Zoom óptico', d:true, cells:[cell('3×',{best:true}),cell(null),cell('2×')] } ]}
+];
+const groups = all.map(g => ({ name:g.name, rows: diff ? g.rows.filter(r=>r.d) : g.rows })).filter(g => g.rows.length);
+const prods = [
+{ init:'S24', name:'Galaxy S24', hasVar:true, noVar:false, var:'128 GB · Negro', price:'$ 2.999.900' },
+{ init:'P8', name:'Pixel 8', hasVar:true, noVar:false, var:'128 GB', price:'$ 2.849.000' },
+{ init:'15P', name:'iPhone 15 Pro', hasVar:false, noVar:true, price:'$ 3.799.900' }
+];
+const strengths = [
+{ name:'Galaxy S24', items:['Mayor brillo de pantalla registrado (2.600 nits)','Único con zoom óptico 3×'] },
+{ name:'Pixel 8', items:['Precio verificado más bajo del grupo','Batería de mayor capacidad (4.575 mAh)'] },
+{ name:'iPhone 15 Pro', items:['Más almacenamiento en la variante seleccionada (256 GB)','Brillo y actualizaciones sin dato: no se comparan'] }
+];
+const on = '#2F4416', off = 'transparent';
+return { groups, prods, strengths,
+showAll: () => this.setState({ diff:false }), showDiff: () => this.setState({ diff:true }),
+allBg: diff?off:on, allFg: diff?'#CFCDB3':'#F4F1DC', diffBg: diff?on:off, diffFg: diff?'#F4F1DC':'#CFCDB3' };
+}
+}
+</script>
+</body>
+</html>

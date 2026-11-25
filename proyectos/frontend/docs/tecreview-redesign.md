@@ -1,5 +1,17 @@
 # TecReview — Especificación de rediseño
 
+> Actualización 2026-11-24: la **fase 1 de Kiwi V3** sustituye los tokens
+> visuales globales descritos abajo. La equivalencia, el alcance y las pruebas
+> están en [kiwi-fase-1.md](kiwi-fase-1.md). Las secciones visuales anteriores
+> se conservan como historial; las siguientes fases todavía no se han aplicado.
+
+> Fase 2: componentes base Kiwi e integración de la acción de `EstadoVacio`,
+> documentados en [kiwi-fase-2.md](kiwi-fase-2.md). Las fases de pantallas
+> siguen pendientes.
+
+> Fase 3: shell y búsqueda global adaptados a Kiwi; alcance y validación en
+> [kiwi-fase-3.md](kiwi-fase-3.md). El rediseño de Inicio comienza en la fase 4.
+
 **Estado:** Bloques A–P completados; la tarjeta de producto y las calificaciones
 se unificaron en el Bloque K (TEC-62/TEC-69), los filtros del catálogo con
 cajón móvil, precios manuales, buscador de marcas y ordenamiento en el Bloque L

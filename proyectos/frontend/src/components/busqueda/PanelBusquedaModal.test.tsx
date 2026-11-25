@@ -125,8 +125,8 @@ describe("PanelBusquedaModal", () => {
       4,
     );
     expect(dialogo.querySelector(".h-12.w-12.rounded-md")).not.toBeNull();
-    expect(dialogo.querySelector(".h-4.w-3\\/4.rounded")).not.toBeNull();
-    expect(dialogo.querySelector(".h-3.w-1\\/2.rounded")).not.toBeNull();
+    expect(dialogo.querySelector(".h-4.w-3\\/4.rounded-full")).not.toBeNull();
+    expect(dialogo.querySelector(".h-3.w-1\\/2.rounded-full")).not.toBeNull();
     expect(screen.getByText("Buscando dispositivos…")).toBeDefined();
   });
 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import PanelBusquedaModal from "@/components/busqueda/PanelBusquedaModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import { buttonClassName } from "@/components/ui/Button";
 import BotonTema from "./BotonTema";
 
 interface EnlaceNavegacion {
@@ -43,14 +44,14 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[var(--color-hairline)] bg-[var(--color-paper)]/95 backdrop-blur-md">
-        <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-dotted border-line bg-paper">
+        <div className="mx-auto flex min-h-16 max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link
             href="/"
-            className={`group flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight ${CLASE_FOCO}`}
+            className={`group flex min-h-11 shrink-0 items-center gap-2 text-sub font-medium uppercase tracking-normal ${CLASE_FOCO}`}
             aria-label="TecReview, ir al inicio"
           >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-xs transition-transform duration-200 group-hover:scale-105">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-hairline bg-paper transition-transform duration-200 group-hover:scale-105">
               <Image
                 src="/kiwi-logo.jpg"
                 alt=""
@@ -61,8 +62,8 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
               />
             </span>
             <span className="flex items-baseline">
-              <span className="text-[var(--color-ink)]">Tec</span>
-              <span className="text-[var(--color-brand-blue)]">Review</span>
+              <span className="text-ink">Tec</span>
+              <span className="text-brand-blue">Review</span>
             </span>
           </Link>
 
@@ -78,10 +79,10 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
                   aria-current={
                     rutaActual === enlace.href ? "page" : undefined
                   }
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${CLASE_FOCO} ${
+                  className={`inline-flex min-h-11 items-center rounded-full px-3 py-2 text-label font-medium uppercase tracking-normal transition-colors ${CLASE_FOCO} ${
                     rutaActual === enlace.href
-                      ? "bg-[var(--color-canvas)] text-[var(--color-ink)]"
-                      : "text-[var(--color-subtle)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)]"
+                      ? "bg-surface-2 text-ink"
+                      : "text-subtle hover:bg-surface-muted hover:text-ink"
                   }`}
                 >
                   {enlace.etiqueta}
@@ -91,7 +92,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
                   key={enlace.etiqueta}
                   aria-disabled="true"
                   title="Próximamente"
-                  className="cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium text-[var(--color-subtle)]/60"
+                  className="cursor-not-allowed inline-flex min-h-11 items-center rounded-full px-3 py-2 text-label font-medium uppercase tracking-normal text-subtle"
                 >
                   {enlace.etiqueta}
                 </span>
@@ -99,7 +100,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
             )}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <div className="flex max-w-full flex-wrap items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setBusquedaAbierta(true)}
@@ -108,7 +109,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
               aria-expanded={busquedaAbierta}
               aria-keyshortcuts="Control+K Meta+K"
               title="Buscar dispositivos (Ctrl+K)"
-              className={`inline-flex h-9 cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2.5 text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              className={`inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-2 rounded-card border border-line bg-canvas px-3 text-subtle transition-colors hover:border-brand-blue hover:text-brand-blue ${CLASE_FOCO}`}
             >
               <svg
                 className="h-4 w-4"
@@ -123,10 +124,10 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
                 <circle cx="11" cy="11" r="7" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
-              <span className="hidden text-xs font-medium sm:inline">
+              <span className="hidden text-label font-medium uppercase tracking-normal sm:inline">
                 Buscar
               </span>
-              <kbd className="inline rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-1 py-0.5 text-[9px] font-semibold text-[var(--color-subtle)] sm:px-1.5 sm:text-[10px]">
+              <kbd className="inline rounded-card border border-line bg-paper px-2 py-1 font-sans text-micro font-medium text-subtle">
                 Ctrl K
               </kbd>
             </button>
@@ -138,7 +139,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
                 href="/perfil"
                 aria-label="Iniciar sesión o ver mi perfil"
                 title="Iniciar sesión o ver mi perfil"
-                className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+                className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink bg-transparent text-ink transition-colors hover:bg-surface-muted ${CLASE_FOCO}`}
               >
                 <svg
                   className="h-5 w-5"
@@ -158,7 +159,7 @@ export default function SiteHeader({ children }: { children?: ReactNode }) {
 
             <Link
               href="/productos"
-              className={`hidden shrink-0 items-center gap-2 rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 sm:inline-flex ${CLASE_FOCO}`}
+              className={buttonClassName("primary", "shrink-0 max-sm:hidden")}
             >
               Explorar catálogo
             </Link>

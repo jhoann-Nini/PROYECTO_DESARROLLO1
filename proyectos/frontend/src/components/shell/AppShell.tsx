@@ -9,9 +9,9 @@ interface AppShellProps {
 
 export default function AppShell({ children }: AppShellProps) {
   return (
-    <div className="theme-tecreview flex min-h-screen flex-col">
+    <div className="theme-tecreview flex min-h-screen flex-col bg-canvas pb-[calc(6rem+env(safe-area-inset-bottom))] text-ink md:pb-0">
       <SiteHeader />
-      <div className="flex-1 pb-20 md:pb-0">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
       <SiteFooter />
       <BottomNav />
     </div>

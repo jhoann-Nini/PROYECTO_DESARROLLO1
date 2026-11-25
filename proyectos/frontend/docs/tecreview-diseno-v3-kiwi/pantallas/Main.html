@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Sistema visual</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.u{margin:0;font-weight:500;text-transform:uppercase;letter-spacing:0}
+p{margin:0}.num{font-variant-numeric:tabular-nums}
+.lab{font-size:11px;font-weight:500;text-transform:uppercase;color:#B4B397}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase}
+.sec{border-top:1px dashed #3A4626;padding-top:40px;display:flex;flex-direction:column;gap:28px}
+.sw{height:96px;border-radius:12px;border:1px solid #3A4626}
+a{color:#A5D64C;text-underline-offset:4px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div style="max-width:1360px;margin:0 auto;padding:40px 40px 80px;display:flex;flex-direction:column;gap:48px">
+
+<header style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+<span class="u" style="font-size:13px">TecReview</span>
+<nav aria-label="Secciones del sistema" style="display:flex;gap:24px;font-size:12px;font-weight:500;text-transform:uppercase"><a href="#color" style="text-decoration:underline dashed #8C7A50">Color</a><a href="#tipo" style="text-decoration:none">Tipografía</a><a href="#comp" style="text-decoration:none">Componentes</a><a href="#datos" style="text-decoration:none">Datos</a></nav>
+</header>
+
+<section style="display:flex;flex-wrap:wrap;gap:40px;align-items:flex-end;min-height:420px">
+<div style="flex:2 1 560px;display:flex;flex-direction:column;gap:18px">
+<span class="lab" style="color:#F4F1DC">Medir antes de comprar. Comparar antes de decidir.</span>
+<h1 style="font-size:132px;line-height:.9">Tec<br>Review</h1>
+</div>
+<div style="flex:1 1 320px;display:flex;flex-direction:column;gap:18px;border:1px solid #3A4626;border-radius:12px;padding:24px;background:rgba(244,241,220,.03)">
+<span class="u" style="font-size:14px;line-height:1.1">Paleta kiwi sobre la estructura “cuarto oscuro” de ORYZO.</span>
+<span style="border-top:1px dashed #3A4626"></span>
+<p style="font-size:16px;line-height:1.5;color:#CFCDB3">Cada dispositivo se presenta como pieza de museo sobre el tono oscuro de la semilla. La tipografía crema hace el trabajo; los datos técnicos son las etiquetas de la vitrina.</p>
+<span class="lab" style="color:#E6C34A">* Datos de producto de ejemplo</span>
+</div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:center;min-height:440px;border-top:1px dashed #3A4626;padding-top:40px">
+<h2 style="font-size:51px">No es solo un celular.</h2>
+<div style="aspect-ratio:1/1;max-width:400px;width:100%;justify-self:center;border-radius:12px;background:#0A0D06;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px">
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#8C7A50" stroke-width=".7" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>
+<span class="lab">Galaxy S24 · vista aislada</span>
+</div>
+<p style="font-size:29px;line-height:1.26;font-weight:400">Pantalla, batería y cámara medidas con la misma regla. TecReview hace que comparar se sienta considerado.</p>
+</section>
+
+<section id="color" class="sec">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline"><h2 style="font-size:41px">Color · kiwi</h2><span class="lab">Semilla, pulpa, piel y corazón · sin sombras</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:18px"><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#10140A"></div><span class="u" style="font-size:12px">Semilla</span><span class="lab num">#10140A · lienzo</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#0A0D06"></div><span class="u" style="font-size:12px">Vacío</span><span class="lab num">#0A0D06 · vitrina</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#2F4416"></div><span class="u" style="font-size:12px">Pulpa honda</span><span class="lab num">#2F4416 · elevado</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#3A4626"></div><span class="u" style="font-size:12px">Hoja</span><span class="lab num">#3A4626 · líneas</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#8C7A50"></div><span class="u" style="font-size:12px">Piel</span><span class="lab num">#8C7A50 · estructura</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#F4F1DC"></div><span class="u" style="font-size:12px">Corazón</span><span class="lab num">#F4F1DC · texto</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#A5D64C"></div><span class="u" style="font-size:12px">Kiwi</span><span class="lab num">#A5D64C · acción</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#E6C34A"></div><span class="u" style="font-size:12px">Kiwi dorado</span><span class="lab num">#E6C34A · descuento</span></div><div style="display:flex;flex-direction:column;gap:8px"><div class="sw" style="background:#FF8C69"></div><span class="u" style="font-size:12px">Coral</span><span class="lab num">#FF8C69 · error</span></div></div>
+<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:stretch">
+<div style="flex:1 1 380px;border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:4px"><span class="lab" style="margin-bottom:6px">Contraste verificado · WCAG AA (mín. 4,5:1)</span><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Texto corazón / semilla</span><span class="u num" style="font-size:13px">16,4:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Texto terciario / tarjeta</span><span class="u num" style="font-size:13px">8,1:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Verde kiwi / semilla</span><span class="u num" style="font-size:13px">10,9:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Semilla sobre botón kiwi</span><span class="u num" style="font-size:13px">10,9:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Dorado / tarjeta</span><span class="u num" style="font-size:13px">10,1:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Coral / tarjeta</span><span class="u num" style="font-size:13px">7,6:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Terciario / pulpa honda</span><span class="u num" style="font-size:13px">5,0:1</span></div><div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;font-size:14px"><span style="color:#CFCDB3">Piel (bordes de estado) / tarjeta</span><span class="u num" style="font-size:13px">4,1:1 · mín. 3:1</span></div></div>
+<div style="flex:1 1 380px;display:flex;flex-direction:column;gap:18px">
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px"><span class="lab">Quién hace qué</span><p style="font-size:15px;line-height:1.5;color:#CFCDB3">Verde kiwi: acción principal, enlaces, elemento activo y valor que destaca en el comparador. Dorado: descuentos y valoraciones. Coral: errores y acciones destructivas. La piel marrón solo dibuja líneas de estado.</p></div>
+<div style="border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;background:#F6F3DF;color:#10140A"><span class="lab" style="color:#454A2E">Tema claro · corazón del kiwi</span><p style="font-size:15px;line-height:1.5">Lienzo <span class="num">#F6F3DF</span> y texto semilla. El verde se oscurece a <span class="num" style="color:#3D6614;font-weight:500">#3D6614</span> (5,5:1) y el dorado a <span class="num" style="color:#6B5200;font-weight:500">#6B5200</span> (6,0:1).</p></div>
+</div></div>
+</section>
+<section id="tipo" class="sec">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline"><h2 style="font-size:41px">Tipografía</h2><span class="lab">Inter (sustituto de Halyard) · 400 y 500 · ss01</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px">
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<span class="lab">Voz 1 · etiqueta · mayúsculas 500</span>
+<span class="u" style="font-size:51px;line-height:.9">Galaxy S24</span>
+<span class="u" style="font-size:24px;line-height:1.09">Dónde comprar</span>
+<span class="u" style="font-size:12px">Ficha técnica · Pantalla · 6,2″</span>
+<span class="u num" style="font-size:41px;line-height:.9">$ 2.999.900</span>
+</div>
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<span class="lab">Voz 2 · descripción · mixta 400</span>
+<p style="font-size:29px;line-height:1.26">Compacto, con tres cámaras y siete años de actualizaciones según el fabricante.</p>
+<p style="font-size:16px;line-height:1.5;color:#CFCDB3">En pantallas de datos la voz descriptiva baja a 15–16 px: reseñas, descripciones y ayudas de formulario. Cuando el texto cambia de mayúsculas a minúsculas, la persona sabe que está leyendo una explicación y no una etiqueta.</p>
+</div>
+</div>
+</section>
+
+<section id="comp" class="sec">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline"><h2 style="font-size:41px">Componentes</h2><span class="lab">Radios: 36 · 22,5 · 12 · 0</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+<button class="btn" style="background:#A5D64C;color:#10140A;border-radius:36px">Agregar al comparador</button>
+<button class="btn" style="background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px">Guardar</button>
+<a href="#comp" style="font-size:12px;font-weight:500;text-transform:uppercase">Ver ficha completa</a>
+<button class="btn" style="background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px">Eliminar reseña</button>
+<span class="lab">Un solo botón relleno por sección</span>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<span class="tag" style="background:#F4F1DC;color:#10140A;height:24px">Celulares</span>
+<span class="tag" style="border:1px solid #3A4626;height:24px">Samsung ×</span>
+<span class="tag" style="border:1px solid #3A4626;height:24px">Hasta $ 2.500.000 ×</span>
+<span class="tag" style="color:#E6C34A;border:1px solid #E6C34A">−17%</span>
+<span class="tag" style="border:1px solid #3A4626">● Disponible</span>
+<span class="tag" style="color:#FF8C69;border:1px solid #FF8C69">○ Agotado</span>
+<span class="tag" style="border:1px dashed #8C7A50;color:#B4B397">Sin información</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:end">
+<label style="display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:500;text-transform:uppercase;color:#B4B397">Búsqueda global
+<span style="display:flex;align-items:center;gap:10px;border-bottom:1px solid #F4F1DC;padding:0 2px;height:44px"><input value="pixel 8" style="border:0;outline:0;flex:1;font-size:16px;background:transparent;color:#F4F1DC"><kbd style="font:500 11px Inter;border:1px solid #3A4626;border-radius:9999px;padding:2px 8px;color:#F4F1DC">⌘K</kbd></span></label>
+<div style="display:flex;flex-direction:column;gap:8px"><span class="lab">Pestañas</span><div style="display:flex;gap:24px;font-size:12px;font-weight:500;text-transform:uppercase"><span style="padding:8px 0;border-bottom:1px dashed #F4F1DC">Ficha técnica</span><span style="padding:8px 0;color:#B4B397">Dónde comprar</span><span style="padding:8px 0;color:#B4B397">Opiniones</span></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span class="lab">Segmentado</span><div style="display:inline-flex;border:1px solid #3A4626;border-radius:9999px;padding:3px;align-self:flex-start"><span style="padding:9px 16px;border-radius:9999px;background:#2F4416;font-size:11px;font-weight:500;text-transform:uppercase">Todas</span><span style="padding:9px 16px;font-size:11px;font-weight:500;text-transform:uppercase;color:#B4B397">Solo diferencias</span></div></div>
+</div>
+</section>
+
+<section id="datos" class="sec">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline"><h2 style="font-size:41px">Estado del dato</h2><span class="lab">Se distingue por relleno, línea e icono, sin depender del color</span></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px"><span class="tag" style="background:#2F4416;align-self:flex-start">✓ Verificado</span><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Batería</span><span class="u num" style="font-size:24px">4.000 mAh</span></div><p style="font-size:14px;color:#CFCDB3">Relleno pulpa honda. Muestra fuente y fecha.</p></div>
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px"><span class="tag" style="border:1px solid #8C7A50;align-self:flex-start">◷ Pendiente de revisión</span><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Carga con cable</span><span class="u num" style="font-size:24px;color:#CFCDB3">25 W</span></div><p style="font-size:14px;color:#CFCDB3">Línea continua color piel. No cuenta en el comparador.</p></div>
+<div style="border:1px solid #3A4626;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px"><span class="tag" style="border:1px dashed #8C7A50;color:#B4B397;align-self:flex-start">— Sin dato</span><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Peso</span><span style="font-size:15px;color:#B4B397;font-style:italic">No registrado</span></div><p style="font-size:14px;color:#CFCDB3">Línea punteada. Nunca se rellena ni se estima.</p></div>
+</div>
+</section>
+
+<section class="sec">
+<h2 style="font-size:41px">Adaptaciones para una app de datos</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">
+<p style="font-size:15px;line-height:1.5;color:#CFCDB3"><span class="u" style="color:#F4F1DC;font-size:12px">Secciones a pantalla completa solo en vitrinas.</span><br>Inicio y la cabecera del detalle usan el modo vitrina. Catálogo, comparador y paneles son densos: filas con líneas punteadas y tarjetas con borde de corcho.</p>
+<p style="font-size:15px;line-height:1.5;color:#CFCDB3"><span class="u" style="color:#F4F1DC;font-size:12px">La acción principal es verde kiwi.</span><br>Un solo botón kiwi con texto semilla por bloque; el resto, botones de contorno.</p>
+<p style="font-size:15px;line-height:1.5;color:#CFCDB3"><span class="u" style="color:#F4F1DC;font-size:12px">Dorado y coral señalan.</span><br>El dorado marca dinero y el coral marca errores: significados distintos, colores distintos. Nunca rellenan un botón.</p>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3800}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

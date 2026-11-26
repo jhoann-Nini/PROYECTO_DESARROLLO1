@@ -11,5 +11,6 @@ public record ResumenPendientesModeracionResponse(
         long apelaciones,
         long comunidadRevision,
         long comunidadReportes,
+        long comunidadApelaciones,
         long total
 ) {}

@@ -31,6 +31,7 @@ public class ModeracionResumenService {
     private final UsuarioService usuarioService;
     private final ApelacionRepository apelacionRepository;
     private final ModeracionComunidadService moderacionComunidadService;
+    private final ApelacionComunidadService apelacionComunidadService;
 
     public ModeracionResumenService(
             ResenaRepository resenaRepository,
@@ -38,8 +39,10 @@ public class ModeracionResumenService {
             ReporteOfertaRepository reporteOfertaRepository,
             UsuarioService usuarioService,
             ApelacionRepository apelacionRepository,
-            ModeracionComunidadService moderacionComunidadService) {
+            ModeracionComunidadService moderacionComunidadService,
+            ApelacionComunidadService apelacionComunidadService) {
         this.moderacionComunidadService = moderacionComunidadService;
+        this.apelacionComunidadService = apelacionComunidadService;
         this.apelacionRepository = apelacionRepository;
         this.resenaRepository = resenaRepository;
         this.reporteResenaRepository = reporteResenaRepository;
@@ -57,9 +60,11 @@ public class ModeracionResumenService {
         long apelaciones = apelacionRepository.countByEstado(EstadoApelacion.PENDIENTE);
         long comunidadRevision = moderacionComunidadService.contarEnRevision();
         long comunidadReportes = moderacionComunidadService.contarReportesAbiertos();
+        long comunidadApelaciones = apelacionComunidadService.contarPendientes();
         return new ResumenPendientesModeracionResponse(revision, reportesResenas, reportesOfertas, apelaciones,
-                comunidadRevision, comunidadReportes,
-                revision + reportesResenas + reportesOfertas + apelaciones + comunidadRevision + comunidadReportes);
+                comunidadRevision, comunidadReportes, comunidadApelaciones,
+                revision + reportesResenas + reportesOfertas + apelaciones + comunidadRevision + comunidadReportes
+                        + comunidadApelaciones);
     }
 
     private static void validarPermisoModeracion(Usuario usuario) {

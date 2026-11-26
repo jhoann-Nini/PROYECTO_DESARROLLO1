@@ -74,6 +74,8 @@ public class ModeracionComunidadAuditoria {
     public String getMotivo() { return motivo; }
     public String getContenidoRevisado() { return contenidoRevisado; }
     public LocalDateTime getFechaEvento() { return fechaEvento; }
+    /** Solo para pruebas y datos históricos; en producción la fija el constructor. */
+    public void setFechaEvento(LocalDateTime fechaEvento) { this.fechaEvento = PublicacionComunidad.micros(fechaEvento); }
 
     @Override
     public String toString() {

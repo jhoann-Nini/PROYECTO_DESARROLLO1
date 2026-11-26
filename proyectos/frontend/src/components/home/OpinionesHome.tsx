@@ -65,14 +65,13 @@ export default function OpinionesHome({
   return (
     <section
       aria-labelledby="seccion-opiniones"
-      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
     >
-      <div className="rounded-card border border-hairline bg-paper p-5 sm:p-6">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2
               id="seccion-opiniones"
-              className="flex items-center gap-2 text-xl font-medium uppercase tracking-normal text-ink sm:text-2xl"
+              className="flex items-center gap-2 text-[28px] font-medium uppercase leading-none tracking-normal text-ink"
             >
               <span className="text-brand-blue">/</span>{" "}
               Opiniones de la comunidad ({resenas.length}).
@@ -82,18 +81,7 @@ export default function OpinionesHome({
               dispositivos con otros usuarios.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onActualizar}
-            disabled={cargando}
-            className="self-start cursor-pointer rounded-card border border-hairline bg-canvas px-3.5 py-2 text-xs font-medium text-ink transition-colors hover:border-line hover:text-brand-blue disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
-            title="Actualizar listado de opiniones desde el servidor"
-          >
-            {cargando ? "Actualizando..." : "Actualizar"}
-          </button>
-        </div>
-
-        <div className="mb-6">
+          <div className="flex flex-wrap items-center gap-2">
           <label htmlFor="input-filtro-opiniones" className="sr-only">
             Filtrar opiniones de la comunidad
           </label>
@@ -103,8 +91,18 @@ export default function OpinionesHome({
             value={filtro}
             onChange={(evento) => onCambiarFiltro(evento.target.value)}
             placeholder="Buscar por comentario, autor o producto..."
-            className="w-full rounded-card border border-hairline bg-canvas px-4 py-2.5 text-xs text-ink transition-colors placeholder:text-subtle focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue sm:max-w-md"
+            className="min-h-10 min-w-0 flex-1 rounded-card border border-hairline bg-paper px-4 py-2.5 text-xs text-ink transition-colors placeholder:text-subtle focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue sm:w-64"
           />
+          <button
+            type="button"
+            onClick={onActualizar}
+            disabled={cargando}
+            className="min-h-10 cursor-pointer rounded-pill border border-ink bg-canvas px-4 py-2 text-xs font-medium text-ink transition-colors hover:border-line hover:text-brand-blue disabled:cursor-not-allowed disabled:opacity-50"
+            title="Actualizar listado de opiniones desde el servidor"
+          >
+            {cargando ? "Actualizando..." : "Actualizar"}
+          </button>
+          </div>
         </div>
 
         {!usuario && (
@@ -141,7 +139,7 @@ export default function OpinionesHome({
                   onChange={(evento) =>
                     onCambiarProducto(Number(evento.target.value))
                   }
-                  className="rounded-card border border-hairline bg-canvas px-3 py-1.5 text-xs text-ink transition-colors focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
+                  className="max-w-full min-w-0 rounded-card border border-hairline bg-canvas px-3 py-1.5 text-xs text-ink transition-colors focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
                 >
                   {productos.map((producto) => (
                     <option key={producto.idProducto} value={producto.idProducto}>
@@ -191,11 +189,11 @@ export default function OpinionesHome({
             Cargando opiniones de la comunidad...
           </div>
         ) : resenasFiltradas.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {resenasFiltradas.map((resena) => (
               <div
                 key={resena.idResena}
-                className="rounded-card border border-hairline bg-canvas p-4 text-xs transition-colors hover:border-line"
+                className="rounded-card border border-hairline bg-paper p-5 text-xs transition-colors hover:border-line"
               >
                 <div className="mb-1 flex flex-wrap items-center justify-between gap-2 text-subtle">
                   <div className="flex flex-wrap items-center gap-2">

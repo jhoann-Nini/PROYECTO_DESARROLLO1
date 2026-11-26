@@ -46,6 +46,21 @@ describe("Shell de TecReview", () => {
     expect(comparador.getAttribute("href")).toBe("/comparador");
   });
 
+  it("mantiene navegación, búsqueda y acciones en una sola fila", () => {
+    render(<SiteHeader />);
+
+    const header = screen.getByRole("banner");
+    const fila = header.firstElementChild;
+    const navegacion = within(header).getByRole("navigation", { name: "Navegación principal" });
+    const busqueda = within(header).getByRole("button", { name: /Abrir búsqueda/i });
+    const tema = within(header).getByRole("button", { name: /Cambiar.*tema/i });
+
+    expect(fila?.classList.contains("flex-nowrap")).toBe(true);
+    expect(navegacion.parentElement).toBe(fila);
+    expect(busqueda.parentElement).toBe(tema.parentElement);
+    expect(navegacion.classList.contains("w-full")).toBe(false);
+  });
+
   it("enlaza las rutas secundarias del rediseño", () => {
     render(<SiteHeader />);
 

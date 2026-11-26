@@ -84,13 +84,13 @@ describe("seleccionarDestacados", () => {
     expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 2, 3]);
   });
 
-  it("ignora rankings de productos que no están en el catálogo recibido", () => {
+  it("ignora rankings ajenos al catálogo y completa los cupos disponibles", () => {
     const productos = [crearVista(1), crearVista(2)];
     const valorados = [crearValorado(99, 1), crearValorado(2, 2)];
 
     const resultado = seleccionarDestacados(productos, valorados);
 
-    expect(resultado.map((producto) => producto.idProducto)).toEqual([2]);
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([2, 1]);
   });
 
   it("no repite productos aunque el ranking traiga duplicados", () => {
@@ -136,5 +136,23 @@ describe("seleccionarDestacados", () => {
     const resultado = seleccionarDestacados(productos, valorados);
 
     expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 2, 3]);
+  });
+
+  it("combina el ranking con otras marcas y categorías cuando las hay", () => {
+    const productos = [
+      ...Array.from({ length: 6 }, (_, indice) => crearVista(indice + 1, { marca: "Samsung" })),
+      crearVista(7, { marca: "Apple", categoria: "tablets" }),
+      crearVista(8, { marca: "Lenovo", categoria: "laptops" }),
+      crearVista(9, { marca: "Sony", categoria: "auriculares" }),
+    ];
+    const valorados = productos.slice(0, 6).map((producto, indice) =>
+      crearValorado(producto.idProducto, indice + 1),
+    );
+
+    const resultado = seleccionarDestacados(productos, valorados);
+
+    expect(resultado.map((producto) => producto.idProducto)).toEqual([1, 2, 7, 8, 9, 3]);
+    expect(resultado[0].posicionRanking).toBe(1);
+    expect(resultado[2].posicionRanking).toBeUndefined();
   });
 });

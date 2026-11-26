@@ -111,7 +111,7 @@ export default function ResumenSesion({
           onClick={onAbrirAuth}
           aria-label="Iniciar sesión"
           title="Iniciar sesión"
-          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-hairline bg-brand-solid text-on-solid transition-colors hover:bg-brand-solid"
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-ink transition-colors hover:border-ink"
         >
           <svg
             className="h-5 w-5"

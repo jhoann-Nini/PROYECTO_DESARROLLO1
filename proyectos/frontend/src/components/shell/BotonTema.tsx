@@ -3,7 +3,7 @@
 import { useTema } from "@/hooks/useTema";
 import Button from "@/components/ui/Button";
 
-export default function BotonTema() {
+export default function BotonTema({ compacto = false }: { compacto?: boolean }) {
   const { tema, alternarTema } = useTema();
 
   const etiqueta =
@@ -17,7 +17,9 @@ export default function BotonTema() {
       aria-label={etiqueta}
       aria-pressed={tema === "oscuro"}
       title={etiqueta}
-      className="h-11 w-11 shrink-0 p-0!"
+      className={compacto
+        ? "h-10 w-10 shrink-0 border-line p-0! [border-radius:9999px]"
+        : "h-11 w-11 shrink-0 p-0!"}
     >
       <svg
         aria-hidden="true"

@@ -11,29 +11,23 @@ import {
 export interface EstadoBusquedaHomeProps {
   busqueda: string;
   totalResultados: number;
-  /** Hay productos registrados similares para mostrar en «Destacados». */
+  /** Hay productos registrados similares en el buscador global. */
   hayAlternativas: boolean;
-}
-
-/** Baja a la sección de resultados («Destacados»). */
-function irAResultados() {
-  document
-    .getElementById("seccion-destacados")
-    ?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+  onVerResultados: () => void;
 }
 
 const CLASE_BOTON =
   "cursor-pointer font-medium text-brand-blue underline underline-offset-4";
 
 /**
- * Resultado de la búsqueda de la portada mostrado junto a la barra. Los
- * resultados están más abajo, en «Destacados»; sin este aviso, una búsqueda
- * sin coincidencias parecía no hacer nada.
+ * Estado de la búsqueda de la portada junto a su activador. Los resultados
+ * permanecen en el buscador global y no alteran Productos destacados.
  */
 export default function EstadoBusquedaHome({
   busqueda,
   totalResultados,
   hayAlternativas,
+  onVerResultados,
 }: EstadoBusquedaHomeProps) {
   const termino = busqueda.trim();
   if (!termino) return null;
@@ -60,7 +54,7 @@ export default function EstadoBusquedaHome({
         <p>
           {mensajeNoEnCatalogo(termino)}{" "}
           {hayAlternativas ? (
-            <button type="button" onClick={irAResultados} className={CLASE_BOTON}>
+            <button type="button" onClick={onVerResultados} className={CLASE_BOTON}>
               Ver productos parecidos
             </button>
           ) : (
@@ -70,7 +64,7 @@ export default function EstadoBusquedaHome({
       ) : (
         <p>
           {textoProductosEncontrados(totalResultados)}{" "}
-          <button type="button" onClick={irAResultados} className={CLASE_BOTON}>
+          <button type="button" onClick={onVerResultados} className={CLASE_BOTON}>
             Ver resultados
           </button>
         </p>

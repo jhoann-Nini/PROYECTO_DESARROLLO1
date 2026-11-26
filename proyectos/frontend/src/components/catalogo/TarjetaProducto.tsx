@@ -12,7 +12,7 @@ import { CLASE_FOCO } from "@/components/ui/foco";
 import Button from "@/components/ui/Button";
 import RatingStars from "./RatingStars";
 
-export type VarianteTarjetaProducto = "grid" | "lista";
+export type VarianteTarjetaProducto = "grid" | "lista" | "inicio";
 
 interface TarjetaProductoProps {
   producto: ProductoViewModel;
@@ -36,6 +36,7 @@ export default function TarjetaProducto({
   const [errorImagen, setErrorImagen] = useState(false);
 
   const esLista = variante === "lista";
+  const esInicio = variante === "inicio";
   const tieneImagen =
     Boolean(producto.imagen) && producto.imagen !== null && !errorImagen;
   const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
@@ -65,14 +66,18 @@ export default function TarjetaProducto({
       className={
         esLista
           ? "group flex gap-4 overflow-hidden rounded-card border border-line bg-paper p-3 transition-colors duration-200 hover:border-brand-blue"
-          : "group flex flex-col overflow-hidden rounded-card border border-line bg-paper transition-colors duration-200 hover:border-brand-blue"
+          : esInicio
+            ? "group flex flex-col overflow-hidden rounded-card border border-line bg-paper p-4 transition-colors duration-200 hover:border-brand-blue"
+            : "group flex flex-col overflow-hidden rounded-card border border-line bg-paper transition-colors duration-200 hover:border-brand-blue"
       }
     >
       <div
         className={
           esLista
             ? "relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-card border border-line bg-surface-0 p-2"
-            : "relative flex h-40 items-center justify-center overflow-hidden border-b border-dotted border-line bg-surface-0 p-4"
+            : esInicio
+              ? "relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-card border border-hairline bg-surface-0 p-4"
+              : "relative flex h-40 items-center justify-center overflow-hidden border-b border-dotted border-line bg-surface-0 p-4"
         }
       >
         <button
@@ -122,7 +127,9 @@ export default function TarjetaProducto({
         className={
           esLista
             ? "flex min-w-0 flex-1 flex-col py-1 pr-1"
-            : "flex flex-1 flex-col p-4"
+            : esInicio
+              ? "flex flex-1 flex-col pt-4"
+              : "flex flex-1 flex-col p-4"
         }
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
@@ -195,7 +202,7 @@ export default function TarjetaProducto({
               </span>
             )}
             <span
-              className={`block text-base font-medium uppercase ${
+              className={`block font-medium uppercase ${esInicio ? "text-lg leading-none" : "text-base"} ${
  producto.precioCOP > 0 || mostrarPrecioTiendas
  ? "text-ink"
  : "text-subtle"
@@ -212,8 +219,9 @@ export default function TarjetaProducto({
 
           <Button
             type="button"
+            variant={esInicio ? "secondary" : "primary"}
             onClick={() => onVerDetalle?.(producto)}
-            className="shrink-0 text-xs"
+            className={esInicio ? "min-h-9 shrink-0 px-3 py-1.5 text-[11px]" : "shrink-0 text-xs"}
           >
             Ver detalle
           </Button>

@@ -168,6 +168,51 @@ html.dark .theme-tecreview {
   color-scheme: dark;
 }
 
+/* Ajustes de composición exclusivos de Inicio Kiwi V3. */
+.home-kiwi .home-search input {
+  min-height: 48px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+}
+
+.home-kiwi footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px max(24px, calc((100vw - 1296px) / 2));
+  border-top-style: dashed;
+  text-align: left;
+}
+
+.home-kiwi footer p {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .home-kiwi footer {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    text-align: center;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] {
+    border-top-style: dashed;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] a {
+    border-radius: 0;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: none;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] a[aria-current="page"] {
+    color: var(--color-brand-blue);
+  }
+}
+
 img,
 svg {
   max-width: 100%;

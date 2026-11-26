@@ -61,24 +61,23 @@ function ColumnaRanking({
   children,
 }: ColumnaRankingProps) {
   return (
-    <div className="flex flex-col justify-between rounded-card border border-hairline bg-paper p-5 sm:p-6">
+    <div className="flex flex-col justify-between rounded-card border border-hairline bg-paper p-5">
       <div className="flex flex-1 flex-col">
-        <div className="mb-6 border-b border-dotted border-line pb-4">
+        <div className="mb-3 border-b border-dashed border-line pb-3">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="flex min-w-0 items-center gap-2 text-lg font-medium uppercase tracking-normal text-ink sm:text-xl">
+            <h3 className="flex min-w-0 items-center gap-2 text-[17px] font-medium uppercase leading-tight tracking-normal text-ink">
               <span className="text-brand-blue">/</span> {titulo}
             </h3>
-            <span className="shrink-0 pt-1 text-[11px] font-medium text-subtle">
+            <span className="shrink-0 pt-0.5 text-[11px] font-medium text-subtle">
               ({cantidad} dispositivos)
             </span>
           </div>
-          <p className="mt-1 text-xs text-subtle">
+          <p className="mt-1 text-[11px] text-subtle">
             {"//"} {subtitulo}
           </p>
-          <div className="mt-3 h-0.5 w-12 rounded-full bg-surface-2" />
         </div>
 
-        <div className="flex-1 space-y-3.5">
+        <div className="flex-1 space-y-0">
           {cargando ? (
             <div
               className="flex flex-col items-center justify-center py-12 text-center"
@@ -117,7 +116,7 @@ function ColumnaRanking({
       </div>
 
       {pie && (
-        <div className="mt-6 border-t border-dotted border-line pt-4 text-center">
+        <div className="mt-4 border-t border-dashed border-line pt-3 text-center">
           {pie}
         </div>
       )}
@@ -176,23 +175,20 @@ export default function RankingsHome({
   const vacioDeseos = sinDeseos ?? masDeseados.length === 0;
 
   return (
-    <section
-      aria-labelledby="seccion-rankings"
-      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
-    >
+    <section aria-labelledby="seccion-rankings">
       <div className="mb-6">
         <h2
           id="seccion-rankings"
-          className="text-xl font-medium uppercase tracking-normal text-ink sm:text-2xl"
+          className="text-[28px] font-medium uppercase leading-none tracking-normal text-ink"
         >
           Rankings de la comunidad.
         </h2>
-        <p className="mt-1 text-sm text-subtle">
+        <p className="mt-2 text-sm text-subtle">
           Los dispositivos que más puntuación, conversación e interés generan.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         <ColumnaRanking
           titulo="Mejor valorados."
           subtitulo="Puntuación real de usuarios registrados"
@@ -203,7 +199,7 @@ export default function RankingsHome({
           onReintentar={onReintentarMejorValorados}
           etiquetaReintento="Reintentar valoraciones"
           vacio={
-            <div className="rounded-card border border-dashed border-hairline bg-canvas p-8 text-center text-sm text-subtle">
+            <div className="rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
               {vacioValoraciones
                 ? "Aún no hay productos con valoraciones registradas en el catálogo."
                 : "No se encontraron dispositivos con este filtro."}
@@ -249,7 +245,7 @@ export default function RankingsHome({
           onReintentar={onReintentarMasComentados}
           etiquetaReintento="Reintentar comentarios"
           vacio={
-            <div className="rounded-card border border-dashed border-hairline bg-canvas p-8 text-center text-sm text-subtle">
+            <div className="rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
               {vacioComentarios
                 ? "Aún no hay reseñas registradas para los productos en la plataforma."
                 : "No se encontraron dispositivos con este filtro."}
@@ -294,7 +290,7 @@ export default function RankingsHome({
           onReintentar={onReintentarMasDeseados}
           etiquetaReintento="Reintentar deseos"
           vacio={
-            <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-hairline bg-canvas p-8 text-center text-sm text-subtle">
+            <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-paper text-subtle">
                 <svg
                   className="h-5 w-5"

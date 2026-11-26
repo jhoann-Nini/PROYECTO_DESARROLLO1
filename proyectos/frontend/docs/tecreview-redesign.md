@@ -1426,4 +1426,32 @@ comportamiento real y no se interpreta como estado verificado del boceto.
 La auditoría final del rediseño visual y sus resultados de contraste, pruebas y
 compilación se documentan en `docs/kiwi-fase-11.md`.
 
+### Búsqueda global en Inicio
+
+El activador principal del buscador global se muestra en el bloque principal de
+Inicio, en el espacio del campo de búsqueda anterior. En esa ruta el encabezado
+muestra además una lupa compacta junto al control de tema; en las demás páginas
+muestra el activador de búsqueda. Todos usan `PanelBusquedaModal` y conservan
+Ctrl/Cmd+K, Escape y el retorno del foco.
+
+El encabezado dispone marca, navegación, búsqueda y acciones en una sola fila.
+Entre los anchos de tableta y escritorio la navegación puede desplazarse
+horizontalmente dentro de esa fila para conservar todas las rutas. En pantallas
+móviles se mantiene `BottomNav`.
+
+Inicio entrega al modal el catálogo ya cargado, de modo que la búsqueda global
+cubre todas las categorías. El aviso junto al activador muestra la cantidad de
+coincidencias y reabre el modal para verlas. Si falla la carga de Inicio, el
+modal puede volver a consultar el catálogo por sí mismo, como lo hace en las
+demás rutas.
+
+### Productos destacados en Inicio
+
+La sección se llama «Productos destacados» porque todavía no usa preferencias
+personales. La búsqueda y el presupuesto no modifican sus tarjetas. La
+selección prioriza el ranking real de mejor valorados y completa hasta seis
+productos con el catálogo disponible. Primero procura mostrar como máximo dos
+productos por marca y categoría; si faltan alternativas, relaja ese límite para
+aprovechar los cupos. La búsqueda y sus alternativas permanecen en el modal.
+
 

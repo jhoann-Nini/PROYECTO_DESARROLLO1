@@ -56,6 +56,8 @@ export interface PanelBusquedaModalProps {
    */
   productos?: ProductoViewModel[];
   cargando?: boolean;
+  busqueda?: string;
+  onBusquedaCambiar?: (busqueda: string) => void;
   onSeleccionarProducto?: (producto: ProductoViewModel) => void;
 }
 
@@ -173,9 +175,13 @@ export default function PanelBusquedaModal({
   onCerrar,
   productos,
   cargando,
+  busqueda: busquedaControlada,
+  onBusquedaCambiar,
   onSeleccionarProducto,
 }: PanelBusquedaModalProps) {
-  const [busqueda, setBusqueda] = useState("");
+  const [busquedaInterna, setBusquedaInterna] = useState("");
+  const busqueda = busquedaControlada ?? busquedaInterna;
+  const setBusqueda = onBusquedaCambiar ?? setBusquedaInterna;
   const [categoria, setCategoria] = useState<FiltroCategoria>("todos");
   const [productosInternos, setProductosInternos] = useState<ProductoViewModel[]>(
     [],

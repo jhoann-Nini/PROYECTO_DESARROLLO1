@@ -42,7 +42,7 @@ const ICONOS_CATEGORIA: Record<CategoriaSlug, ReactNode> = {
 function IconoCategoria({ slug }: { slug: CategoriaSlug }) {
   return (
     <svg
-      className="h-[18px] w-[18px] shrink-0"
+      className="h-6 w-6 shrink-0"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -61,21 +61,21 @@ export default function CategoriasHome({
 }: CategoriasHomeProps) {
   return (
     <div
-      className="flex flex-wrap items-center gap-2.5"
+      className="flex flex-col gap-3"
       role="group"
       aria-label="Explorar por categoría"
     >
       <button
         type="button"
         onClick={onSeleccionarTodos}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-brand-solid px-4 py-2 text-[13px] font-medium text-on-solid transition-all duration-200 hover:bg-brand-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        className="inline-flex min-h-9 w-fit cursor-pointer items-center gap-2 rounded-pill border border-brand-blue/60 bg-surface-2 px-3 py-1 text-xs font-medium text-ink transition-colors duration-200 hover:border-brand-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
       >
         <span
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-surface-2"
+          className="flex h-5 w-5 shrink-0 items-center justify-center text-brand-blue"
           aria-hidden="true"
         >
           <svg
-            className="h-[18px] w-[18px]"
+            className="h-4 w-4"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -89,25 +89,31 @@ export default function CategoriasHome({
             <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
           </svg>
         </span>
-        Todos
+        <span className="min-w-0 text-xs font-medium uppercase leading-tight text-ink">
+          Todos
+        </span>
       </button>
 
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
       {CATEGORIAS_NAVEGABLES.map((categoria) => (
         <Link
           key={categoria.slug}
           href={obtenerRutaCategoria(categoria.slug)}
           title={`Ver todos los productos de ${categoria.etiqueta}`}
-          className="group inline-flex items-center gap-2 rounded-full border border-hairline bg-paper px-4 py-2 text-[13px] font-medium text-ink transition-all duration-200 hover:border-line hover:bg-surface-2 hover:text-brand-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+          className="group flex min-h-[84px] min-w-0 flex-col items-center justify-center gap-1 rounded-card border border-hairline bg-paper p-2 text-ink transition-colors duration-200 hover:border-line hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas sm:flex-row sm:justify-start sm:gap-3 sm:p-4"
         >
           <span
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-canvas text-brand-blue transition-colors duration-200 group-hover:bg-surface-2"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-card border border-line bg-canvas text-brand-blue transition-colors duration-200 group-hover:bg-surface-2 sm:h-14 sm:w-14"
             aria-hidden="true"
           >
             <IconoCategoria slug={categoria.slug} />
           </span>
-          {categoria.etiqueta}
+          <span className="min-w-0 text-center text-[10px] font-medium uppercase leading-tight text-ink sm:text-left sm:text-base">
+            {categoria.etiqueta}
+          </span>
         </Link>
       ))}
+      </div>
     </div>
   );
 }

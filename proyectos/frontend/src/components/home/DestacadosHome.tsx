@@ -4,14 +4,6 @@ import Link from "next/link";
 import TarjetaProducto from "@/components/catalogo/TarjetaProducto";
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import type { ProductoViewModel } from "@/data/productoViewModel";
-import {
-  AYUDA_NO_EN_CATALOGO,
-  MENSAJE_BUSQUEDA_GENERICA,
-  TITULO_ALTERNATIVAS,
-  analizarBusqueda,
-  ayudaBusquedaGenerica,
-  mensajeNoEnCatalogo,
-} from "@/data/catalogo";
 
 export interface DestacadosHomeProps {
   productos: ProductoViewModel[];
@@ -20,11 +12,7 @@ export interface DestacadosHomeProps {
   totalMostrados: number;
   cargando: boolean;
   estadoBackend: "online" | "offline";
-  busqueda: string;
   onVerDetalle: (producto: ProductoViewModel) => void;
-  onLimpiarBusqueda: () => void;
-  /** Fase 4 (H-12): productos registrados similares cuando la búsqueda no encuentra nada. */
-  alternativas?: ProductoViewModel[];
   error?: string | null;
   onReintentar?: () => void;
 }
@@ -35,10 +23,7 @@ export default function DestacadosHome({
   totalMostrados,
   cargando,
   estadoBackend,
-  busqueda,
   onVerDetalle,
-  onLimpiarBusqueda,
-  alternativas = [],
   error = null,
   onReintentar,
 }: DestacadosHomeProps) {
@@ -46,25 +31,25 @@ export default function DestacadosHome({
     <section
       id="seccion-destacados"
       aria-labelledby="seccion-destacados-titulo"
-      className="mx-auto max-w-7xl scroll-mt-16 px-4 py-10 sm:px-6 lg:px-8"
+      className="scroll-mt-16"
     >
-      <div className="mb-6 flex flex-col gap-4 border-b border-dotted border-line pb-5 md:flex-row md:items-end md:justify-between">
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2
             id="seccion-destacados-titulo"
-            className="text-xl font-medium uppercase tracking-normal text-ink sm:text-2xl"
+            className="text-[28px] font-medium uppercase leading-none tracking-normal text-ink"
           >
-            Destacados para ti.
+            Productos destacados.
           </h2>
-          <p className="mt-1 text-xs text-subtle">
+          <p className="mt-2 text-xs text-subtle">
             {totalRegistrados} productos registrados en el catálogo •{" "}
             {totalMostrados} mostrado{totalMostrados === 1 ? "" : "s"}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-4">
           {estadoBackend === "online" ? (
-            <span className="inline-flex items-center gap-1.5 rounded-card border border-line bg-surface-2 px-3 py-1 text-xs font-medium text-ink">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-subtle">
               <span
                 className="h-2 w-2 rounded-full bg-positive"
                 aria-hidden="true"
@@ -72,7 +57,7 @@ export default function DestacadosHome({
               Servidor conectado
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-card border border-line bg-surface-2 px-3 py-1 text-xs font-medium text-ink">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-subtle">
               <span
                 className="h-2 w-2 rounded-full bg-star"
                 aria-hidden="true"
@@ -83,7 +68,7 @@ export default function DestacadosHome({
 
           <Link
             href="/productos"
-            className="inline-flex items-center gap-1.5 rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+            className="inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-normal text-brand-blue transition-colors hover:underline hover:underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
           >
             Ver catálogo completo
             <svg
@@ -132,21 +117,22 @@ export default function DestacadosHome({
         />
       ) : productos.length > 0 ? (
         <div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
             {productos.map((producto) => (
               <TarjetaProducto
                 key={`prod-${producto.idProducto}`}
                 producto={producto}
+                variante="inicio"
                 posicionRanking={producto.posicionRanking}
                 onVerDetalle={onVerDetalle}
               />
             ))}
           </div>
 
-          <div className="mt-8 flex justify-center">
+          <div className="mt-7 flex justify-center">
             <Link
               href="/productos"
-              className="group inline-flex items-center gap-2 rounded-card bg-brand-solid px-5 py-3 text-sm font-medium text-on-solid transition-all duration-200 hover:bg-brand-solid focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+              className="group inline-flex items-center gap-2 text-[12px] font-medium uppercase tracking-normal text-brand-blue transition-colors hover:underline hover:underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
             >
               Explorar todos los productos ({totalRegistrados})
               <svg
@@ -166,64 +152,9 @@ export default function DestacadosHome({
         </div>
       ) : (
         <div className="rounded-card border border-dashed border-hairline bg-paper p-8 text-center text-sm sm:p-12">
-          {busqueda.trim() && analizarBusqueda(busqueda).generica ? (
-            <div className="space-y-3">
-              <p role="status" className="text-base font-medium text-ink">
-                {MENSAJE_BUSQUEDA_GENERICA}
-              </p>
-              <p className="mx-auto max-w-md text-xs leading-relaxed text-subtle">
-                {ayudaBusquedaGenerica(busqueda)}
-              </p>
-              <button
-                type="button"
-                onClick={onLimpiarBusqueda}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid"
-              >
-                Limpiar búsqueda
-              </button>
-            </div>
-          ) : busqueda.trim() ? (
-            <div className="space-y-3">
-              <p role="status" className="text-base font-medium text-ink">
-                {mensajeNoEnCatalogo(busqueda)}
-              </p>
-              <p className="mx-auto max-w-md text-xs leading-relaxed text-subtle">
-                {AYUDA_NO_EN_CATALOGO} Prueba con menos palabras o revisa la escritura.
-              </p>
-              {alternativas.length > 0 && (
-                <div className="mx-auto max-w-md text-left">
-                  <p className="text-xs font-medium text-ink">
-                    {TITULO_ALTERNATIVAS}
-                  </p>
-                  <ul className="mt-2 space-y-1" aria-label={TITULO_ALTERNATIVAS}>
-                    {alternativas.map((producto) => (
-                      <li key={producto.idProducto}>
-                        <button
-                          type="button"
-                          onClick={() => onVerDetalle(producto)}
-                          className="cursor-pointer text-xs font-medium text-brand-blue hover:underline"
-                        >
-                          {producto.nombre}
-                          <span className="text-subtle"> · {producto.marca}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={onLimpiarBusqueda}
-                className="mt-2 inline-flex cursor-pointer items-center gap-1.5 rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid"
-              >
-                Limpiar búsqueda
-              </button>
-            </div>
-          ) : (
-            <p className="text-subtle">
-              No hay productos registrados en el catálogo en este momento.
-            </p>
-          )}
+          <p className="text-subtle">
+            No hay productos registrados en el catálogo en este momento.
+          </p>
         </div>
       )}
     </section>

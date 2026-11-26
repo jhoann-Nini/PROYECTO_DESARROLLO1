@@ -110,6 +110,20 @@ class ModeracionComunidadPostgresTest extends ComunidadIntegrationTestBase {
     assertThrows(Exception.class, this::confirmarRestricciones);
   }
 
+  @Test
+  void respuestaEnPublicacionEliminadaMientrasTanto409() throws Exception {
+    // La publicación queda en la caché de JPA como no eliminada, y en la base se elimina:
+    // el servicio la ve abierta y el trigger de la 029 rechaza la respuesta.
+    publicacionRepository.findById(publicacion.getIdPublicacion()).orElseThrow();
+    entityManager.createNativeQuery("UPDATE publicacion_comunidad SET eliminada = TRUE, fecha_eliminacion = now(),"
+        + " eliminada_por = id_autor WHERE id_publicacion = :id")
+      .setParameter("id", publicacion.getIdPublicacion()).executeUpdate();
+
+    mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/respuestas").with(como(otro))
+        .contentType(MediaType.APPLICATION_JSON).content("{\"contenido\":\"llego tarde\"}"))
+      .andExpect(status().isConflict());
+  }
+
   private long reportar(Usuario u) throws Exception {
     String cuerpo = mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/reportes")
         .with(como(u)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"spam\"}"))

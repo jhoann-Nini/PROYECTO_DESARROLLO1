@@ -39,6 +39,8 @@ export interface PublicacionDetalle {
   esAutor: boolean;
   estadoModeracion: EstadoModeracionComunidad | null;
   cerrada: boolean;
+  /** Solo en las de producto: false si el producto se desactivó y no admite respuestas nuevas. */
+  productoActivo: boolean | null;
 }
 
 export interface RespuestaComunidad {

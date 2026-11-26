@@ -153,7 +153,7 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
             )}
             {publicacion.estadoModeracion === "RECHAZADA" && (
               <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
-                Esta publicación fue rechazada por moderación y solo tú puedes verla.
+                Esta publicación fue rechazada por moderación: solo tú y los moderadores pueden verla.
               </p>
             )}
             <TextoPlano texto={publicacion.contenido} />
@@ -198,6 +198,8 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
         <h2 id="titulo-respuestas" className="text-lg font-semibold text-[var(--color-ink)]">Respuestas</h2>
         {publicacion.cerrada ? (
           <p className="text-sm text-[var(--color-subtle)]">Esta publicación está cerrada y no admite respuestas nuevas.</p>
+        ) : publicacion.productoActivo === false ? (
+          <p className="text-sm text-[var(--color-subtle)]">El producto está desactivado y la conversación no admite respuestas nuevas.</p>
         ) : usuario ? (
           <FormularioRespuesta
             idPublicacion={idPublicacion}
@@ -214,7 +216,7 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
           idPublicacion={idPublicacion}
           padre={null}
           nivel={0}
-          puedeResponder={!publicacion.cerrada}
+          puedeResponder={!publicacion.cerrada && publicacion.productoActivo !== false}
           autenticado={usuario !== null}
           onRequiereSesion={() => setModalAuth(true)}
           nuevas={nuevas}

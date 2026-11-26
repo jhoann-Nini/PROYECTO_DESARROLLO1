@@ -1,6 +1,8 @@
 package com.example.backend.service;
 
 import com.example.backend.entity.Usuario;
+import com.example.backend.repository.UsuarioRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,9 +16,22 @@ import org.springframework.web.server.ResponseStatusException;
 public class PermisosComunidad {
 
   private final ReincidenciaService reincidenciaService;
+  private final UsuarioRepository usuarioRepository;
 
-  public PermisosComunidad(ReincidenciaService reincidenciaService) {
+  public PermisosComunidad(ReincidenciaService reincidenciaService, UsuarioRepository usuarioRepository) {
     this.reincidenciaService = reincidenciaService;
+    this.usuarioRepository = usuarioRepository;
+  }
+
+  /**
+   * Lecturas públicas: el usuario si existe, o null (anónimo). No aprovisiona
+   * cuentas ni rechaza la lectura: un GET no debe crear usuarios.
+   */
+  public Usuario lectorOpcional(Jwt jwt) {
+    if (jwt == null || jwt.getSubject() == null) {
+      return null;
+    }
+    return usuarioRepository.findBySupabaseUid(jwt.getSubject()).orElse(null);
   }
 
   public boolean esModerador(Usuario usuario) {

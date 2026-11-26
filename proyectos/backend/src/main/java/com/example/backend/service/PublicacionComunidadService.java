@@ -134,7 +134,7 @@ public class PublicacionComunidadService {
 
   @Transactional
   public PublicacionDetalleResponse detalle(Jwt jwt, Long id) {
-    Usuario usuario = jwt == null ? null : usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    Usuario usuario = permisos.lectorOpcional(jwt);
     PublicacionComunidad publicacion = publicacionRepository.findById(id)
       .filter(p -> puedeVer(p, usuario))
       .orElseThrow(() -> noEncontrada(id));
@@ -173,7 +173,7 @@ public class PublicacionComunidadService {
   }
 
   private PaginaPublicaciones listar(Jwt jwt, Long idProducto, String orden, String cursor, Integer limite) {
-    Usuario usuario = jwt == null ? null : usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    Usuario usuario = permisos.lectorOpcional(jwt);
     String ordenValido = orden(orden);
     int tamano = limite(limite);
     CursorComunidad.Posicion desde = cursor == null || cursor.isBlank()
@@ -235,7 +235,8 @@ public class PublicacionComunidadService {
       p.getTitulo(), p.getContenido(), p.getAutor().getNombre(),
       p.getFechaCreacion(), p.getFechaEdicion(), p.getFechaUltimaActividad(),
       respuestas, meGusta, propio, esAutor(p, usuario),
-      verEstado(p, usuario) ? p.getEstadoModeracion().name() : null, p.isCerrada());
+      verEstado(p, usuario) ? p.getEstadoModeracion().name() : null, p.isCerrada(),
+      p.getProducto() == null ? null : Boolean.TRUE.equals(p.getProducto().getEstado()));
   }
 
   private boolean verEstado(PublicacionComunidad p, Usuario usuario) {

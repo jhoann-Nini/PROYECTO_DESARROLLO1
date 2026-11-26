@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -100,7 +101,15 @@ public class RespuestaComunidadService {
     respuesta.setContenido(contenido);
     respuesta.setProfundidad((short) (padre == null ? 0 : padre.getProfundidad() + 1));
     respuesta.setEstadoModeracion(moderacion.estadoInicial(contenido, permisos.requiereRevisionPrevia(autor)));
-    respuesta = respuestaRepository.save(respuesta);
+    try {
+      respuesta = respuestaRepository.saveAndFlush(respuesta);
+    } catch (DataAccessException ex) {
+      // Se cerró o eliminó la publicación entre la lectura y el INSERT: lo detecta el trigger de la 029.
+      if (String.valueOf(ex.getMostSpecificCause().getMessage()).contains("cerrada o eliminada")) {
+        throw new ConflictException("La publicación se cerró o se eliminó mientras respondías.");
+      }
+      throw ex;
+    }
     if (respuesta.getEstadoModeracion() == EstadoModeracion.PUBLICADA) {
       publicacionRepository.registrarActividad(publicacion.getIdPublicacion(), respuesta.getFechaCreacion());
     }
@@ -146,7 +155,7 @@ public class RespuestaComunidadService {
 
   @Transactional
   public PaginaRespuestas listarNivel(Jwt jwt, Long idPublicacion, Long padre, String cursor, Integer limite) {
-    Usuario usuario = jwt == null ? null : usuarioService.obtenerUsuarioDesdeJwt(jwt);
+    Usuario usuario = permisos.lectorOpcional(jwt);
     PublicacionComunidad publicacion = publicacionService.visibleParaEscribir(idPublicacion, usuario);
     int tamano = PublicacionComunidadService.limite(limite);
     CursorComunidad.Posicion desde = cursor == null || cursor.isBlank()

@@ -77,6 +77,11 @@ export default function RespuestaItem({
           {respuesta.estadoModeracion === "PENDIENTE" && " · En revisión: solo tú y los moderadores la ven"}
         </p>
       )}
+      {visible && respuesta.estadoModeracion === "RECHAZADA" && (
+        <p className="mt-1 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
+          Esta respuesta fue rechazada por moderación: solo tú y los moderadores pueden verla.
+        </p>
+      )}
       {respuesta.enRespuestaA && (
         <p className="mt-1 text-xs text-[var(--color-subtle)]">{`En respuesta a @${respuesta.enRespuestaA}`}</p>
       )}

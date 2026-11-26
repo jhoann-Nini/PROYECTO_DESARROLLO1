@@ -19,5 +19,7 @@ public record PublicacionDetalleResponse(
     boolean meGustaPropio,
     boolean esAutor,
     String estadoModeracion,
-    boolean cerrada) {
+    boolean cerrada,
+    /** Solo en las de producto: false si el producto se desactivó (no admite respuestas nuevas). */
+    Boolean productoActivo) {
 }

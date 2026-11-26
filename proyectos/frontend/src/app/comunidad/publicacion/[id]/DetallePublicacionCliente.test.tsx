@@ -35,7 +35,7 @@ function detalle(extra: Partial<PublicacionDetalle> = {}): PublicacionDetalle {
     idPublicacion: 1, tipo: "GENERAL", idProducto: null, nombreProducto: null, titulo: "Qué celular compro",
     contenido: "Vi uno en https://tienda.example\n¿Opiniones?", autor: "Luis", fechaCreacion: "2026-11-25T10:00:00",
     fechaEdicion: null, fechaUltimaActividad: "2026-11-25T10:00:00", respuestas: 0, meGusta: 2, meGustaPropio: false,
-    esAutor: false, estadoModeracion: null, cerrada: false, ...extra,
+    esAutor: false, estadoModeracion: null, cerrada: false, productoActivo: null, ...extra,
   };
 }
 
@@ -92,6 +92,19 @@ describe("DetallePublicacionCliente", () => {
     render(<DetallePublicacionCliente idPublicacion={1} />);
     expect(await screen.findByText(/está cerrada/i)).toBeTruthy();
     expect(screen.queryByLabelText(/tu respuesta/i)).toBeNull();
+  });
+
+  it("con el producto desactivado no ofrece responder", async () => {
+    api.obtenerPublicacionComunidad.mockResolvedValue(detalle({ tipo: "PRODUCTO", idProducto: 3, nombreProducto: "Teléfono X", productoActivo: false }));
+    render(<DetallePublicacionCliente idPublicacion={1} />);
+    expect(await screen.findByText(/producto está desactivado/i)).toBeTruthy();
+    expect(screen.queryByLabelText(/tu respuesta/i)).toBeNull();
+  });
+
+  it("el aviso de publicación rechazada incluye a los moderadores", async () => {
+    api.obtenerPublicacionComunidad.mockResolvedValue(detalle({ esAutor: true, estadoModeracion: "RECHAZADA" }));
+    render(<DetallePublicacionCliente idPublicacion={1} />);
+    expect((await screen.findByText(/rechazada por moderación/i)).textContent).toMatch(/solo tú y los moderadores/i);
   });
 
   it("eliminar la propia vuelve a la comunidad", async () => {

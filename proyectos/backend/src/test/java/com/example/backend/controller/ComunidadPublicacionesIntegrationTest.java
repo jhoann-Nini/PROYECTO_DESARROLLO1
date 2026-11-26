@@ -200,6 +200,34 @@ class ComunidadPublicacionesIntegrationTest extends ComunidadIntegrationTestBase
     mockMvc.perform(get(RUTA).param("cursor", cursor)).andExpect(status().isBadRequest());
   }
 
+  // ---------- Pendientes de la fase 1 ----------
+
+  @Test
+  void detalleInformaProductoActivo() throws Exception {
+    Producto p = producto(true);
+    String json = crear(autor, "PRODUCTO", p.getIdProducto(), "Sobre el producto", "Contenido")
+      .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+    long id = ((Number) JsonPath.read(json, "$.idPublicacion")).longValue();
+    mockMvc.perform(get(RUTA + "/" + id)).andExpect(jsonPath("$.productoActivo").value(true));
+
+    p.setEstado(false);
+    productoRepository.saveAndFlush(p);
+    mockMvc.perform(get(RUTA + "/" + id)).andExpect(jsonPath("$.productoActivo").value(false));
+  }
+
+  @Test
+  void lecturaPublicaConTokenDeUsuarioInexistenteNoLoCrea() throws Exception {
+    String sub = java.util.UUID.randomUUID().toString();
+
+    mockMvc.perform(get(RUTA).with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+        .jwt().jwt(b -> b.subject(sub).claim("email", "nuevo@tecreview.test"))))
+      .andExpect(status().isOk());
+
+    if (usuarioRepository.findBySupabaseUid(sub).isPresent()) {
+      throw new AssertionError("Una lectura pública aprovisionó un usuario");
+    }
+  }
+
   // ---------- Visibilidad (CA-08) ----------
 
   @Test

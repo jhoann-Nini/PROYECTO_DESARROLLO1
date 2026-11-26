@@ -5,10 +5,17 @@ Migraciones en `proyectos/backend/src/main/resources/db/migration/` (copia en `p
 
 ## 1. Filtro automático de reseñas
 
-- `service/ResenaModerationService.java`:
-  - `determinarEstado(comentario)`, `estadoTrasEdicion(actual, comentario)`, `detectarMotivos`.
-  - Motivos: `MOTIVO_PALABRA_NO_PERMITIDA`, `MOTIVO_ENLACE`, `MOTIVO_TEXTO_REPETIDO`.
-  - Lista `PALABRAS_BLOQUEADAS` + sustituciones leet + patrón de enlaces/dominios.
+- `service/AnalizadorContenido.java`: el **motor común** de reseñas y comunidad (desde la fase 0
+  de la comunidad).
+  - Listas `PALABRAS_BLOQUEADAS`, `PALABRAS_OFENSIVAS`, `FRASES_AMENAZA` y derivaciones.
+  - Normalización: NFKC, homoglifos, leet y separadores.
+  - Patrones de enlaces y teléfono.
+  - Términos agregados (`FuenteTerminosModeracion`).
+  - Constantes `MOTIVO_*`.
+  - `analizar(texto, otrosTextosDelAutor)` devuelve `ResultadoModeracion(riesgo, motivos)`.
+- `service/ResenaModerationService.java`: decisiones de estado de las reseñas
+  (`determinarEstado`, `estadoTrasEdicion`, `detectarMotivos`). Delega el análisis en
+  `AnalizadorContenido` y mantiene sus constantes y estáticos por compatibilidad.
 - Si salta una regla, la reseña queda en `EstadoModeracion.PENDIENTE` con `motivo_moderacion`.
 - Revisión humana: `controller/RevisionResenasController.java` (`/api/moderacion/resenas/en-revision`,
   aprobar/rechazar) + `service/RevisionResenasService.java`. Salir de `PENDIENTE` exige un evento
@@ -67,3 +74,32 @@ Migraciones en `proyectos/backend/src/main/resources/db/migration/` (copia en `p
 `proyectos/docs/FASE_2_AUDITORIA_Y_OCULTAMIENTO_MODERACION.md`,
 `proyectos/docs/FASE_2_AUTORIZACION_REPRESENTANTE.md`,
 `proyectos/frontend/docs/moderacion-resenas.md`.
+
+
+## Comunidad (foro): filtro, reportes y moderación (migraciones 029 y 030)
+
+- **Filtro:** `service/ModeracionComunidad.java` usa el mismo `AnalizadorContenido`. Con riesgo MEDIO
+  o ALTO, o un autor en revisión previa, el contenido queda `PENDIENTE`; al editarlo, lo `PENDIENTE` o
+  `RECHAZADO` vuelve a `PENDIENTE`.
+- **Reportes:**
+  - Endpoints: `POST /api/comunidad/{publicaciones|respuestas}/{id}/reportes`, en `ReporteComunidadService`.
+  - Tabla `reporte_comunidad`, con destino exclusivo y un reporte abierto por usuario y contenido.
+  - Motivos: `spam`, `lenguaje-ofensivo`, `acoso`, `falso` y `otro` (este último con descripción).
+  - Nadie reporta lo suyo. El límite de 10 por hora se comparte con reseñas y ofertas.
+  - Con 3 reportes no rechazados, el trigger de la 030 oculta el contenido; si bajan de 3, lo restaura.
+- **Moderación:**
+  - Endpoints: `/api/moderacion/comunidad/**`, en `ModeracionComunidadService`.
+  - La cola `en-revision` muestra primero el riesgo ALTO.
+  - Acciones `aprobar`, `rechazar`, `ocultar`, `restaurar` y `eliminar`, siempre con motivo.
+  - Resolver reportes: `en-revision`, `aceptar` (con acción `NINGUNA`, `OCULTAR` o `ELIMINAR`) y `rechazar`.
+- **Auditoría:** `moderacion_comunidad_auditoria`, de solo inserción y con el texto revisado.
+  - Al insertar, los triggers exigen rol activo, que no sea el autor y una acción coherente con el estado.
+  - Al confirmar, exigen que el estado final coincida.
+  - Cambiar el estado, ocultar, eliminar como moderador o cerrar sin su auditoría en la misma
+    transacción falla.
+  - Historial de reportes: `reporte_comunidad_historial`.
+- **Pruebas:**
+  - H2 no ejecuta triggers.
+  - `ModeracionComunidadPostgresTest` corre con `-Dtecreview.postgres.real=true` contra un
+    PostgreSQL local con las migraciones.
+  - Script `docs/sql/tests/030_verificacion_moderacion_comunidad.sql`.

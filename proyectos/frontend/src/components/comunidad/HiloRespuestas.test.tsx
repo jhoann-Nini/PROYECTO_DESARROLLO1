@@ -90,6 +90,14 @@ describe("HiloRespuestas", () => {
     expect(screen.getAllByText("Respuesta 12")).toHaveLength(1);
   });
 
+  it("una respuesta propia rechazada muestra el aviso", async () => {
+    api.obtenerRespuestasComunidad.mockResolvedValue({
+      items: [respuesta(7, { esAutor: true, estadoModeracion: "RECHAZADA" })], nextCursor: null });
+    render(<HiloRespuestas {...props} padre={null} nivel={0} />);
+
+    expect((await screen.findByText(/rechazada por moderación/i)).textContent).toMatch(/solo tú y los moderadores/i);
+  });
+
   it("Responder abre el formulario en línea y se usa con teclado", async () => {
     api.obtenerRespuestasComunidad.mockResolvedValue({ items: [respuesta(6)], nextCursor: null });
     render(<HiloRespuestas {...props} padre={null} nivel={0} />);

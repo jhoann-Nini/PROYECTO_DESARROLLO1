@@ -8,6 +8,7 @@ import {
   obtenerCategorias,
   obtenerMarcas,
   obtenerProductoPorId,
+  obtenerPublicacionesProducto,
   obtenerTiendasProducto,
   obtenerResenas,
   obtenerValoracionStats,
@@ -86,6 +87,22 @@ export default function DetalleProductoCliente({
   const [intentoResenas, setIntentoResenas] = useState(0);
 
   const [pestana, setPestana] = useState<PestanaDetalle>("especificaciones");
+  const [totalComunidad, setTotalComunidad] = useState<number | null>(null);
+
+  // Comunidad: el número de publicaciones es informativo; si falla, el enlace sigue.
+  useEffect(() => {
+    let activo = true;
+    obtenerPublicacionesProducto(idProducto, { limite: 1 })
+      .then((pagina) => {
+        if (activo) setTotalComunidad(pagina.total);
+      })
+      .catch(() => {
+        if (activo) setTotalComunidad(null);
+      });
+    return () => {
+      activo = false;
+    };
+  }, [idProducto]);
   const [modalAuthAbierto, setModalAuthAbierto] = useState(false);
   const [errorImagen, setErrorImagen] = useState(false);
   const [tiendasReales, setTiendasReales] = useState<TiendaProductoResponse[] | null>(null);
@@ -604,6 +621,15 @@ export default function DetalleProductoCliente({
             Opiniones ({resenas.length})
           </button>
         </div>
+        <p className="mt-3 text-sm text-[var(--color-subtle)]">
+          ¿Tienes una pregunta sobre este producto?{" "}
+          <Link
+            href={`/productos/${idProducto}/comunidad`}
+            className={`font-semibold text-[var(--color-brand-blue)] hover:underline ${CLASE_FOCO}`}
+          >
+            {totalComunidad === null ? "Comunidad" : `Comunidad (${totalComunidad})`}
+          </Link>
+        </p>
 
         <div
           role="tabpanel"

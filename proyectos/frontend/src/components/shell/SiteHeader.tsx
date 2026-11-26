@@ -20,6 +20,7 @@ const ENLACES: EnlaceNavegacion[] = [
   { href: "/productos", etiqueta: "Productos" },
   { href: "/comparador", etiqueta: "Comparador" },
   { href: "/resenas", etiqueta: "Reseñas" },
+  { href: "/comunidad", etiqueta: "Comunidad" },
   { href: "/blog", etiqueta: "Blog" },
   { href: "/favoritos", etiqueta: "Favoritos" },
 ];

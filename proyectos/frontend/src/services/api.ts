@@ -40,6 +40,15 @@ import type { RolAdmin, UsuarioAdmin,
   TerminoModeracion,
 } from "@/types/administracion";
 import type {
+  MeGusta,
+  OrdenComunidad,
+  Pagina,
+  PaginaPublicaciones,
+  PublicacionDetalle,
+  RespuestaComunidad,
+  TipoPublicacion,
+} from "@/types/comunidad";
+import type {
   CrearReporteOfertaRequest,
   ReporteOfertaResponse,
   TiendaProductoResponse,
@@ -1374,4 +1383,114 @@ export async function revocarRepresentante(
     `/api/admin/usuarios/${usuarioId}/establecimientos/${establecimientoId}/representacion`,
     { method: "DELETE", ...(body ? { body } : {}) },
   );
+}
+
+// ---------- Comunidad (fase 1) ----------
+
+/**
+ * Lecturas públicas de la comunidad: envían el token si hay sesión, para que
+ * el backend informe meGustaPropio, esAutor y el contenido propio en revisión.
+ */
+async function apiFetchConSesionOpcional<T>(endpoint: string): Promise<T> {
+  const token = await obtenerTokenAcceso();
+  return apiFetch<T>(endpoint, token ? { method: "GET", headers: { Authorization: `Bearer ${token}` } } : { method: "GET" });
+}
+
+function consulta(parametros: Record<string, string | number | undefined | null>): string {
+  const busqueda = new URLSearchParams();
+  for (const [clave, valor] of Object.entries(parametros)) {
+    if (valor !== undefined && valor !== null && valor !== "") busqueda.set(clave, String(valor));
+  }
+  const texto = busqueda.toString();
+  return texto ? `?${texto}` : "";
+}
+
+export interface OpcionesListaComunidad {
+  orden?: OrdenComunidad;
+  cursor?: string | null;
+  limite?: number;
+}
+
+export async function obtenerPublicacionesComunidad(opciones: OpcionesListaComunidad = {}): Promise<PaginaPublicaciones> {
+  return apiFetchConSesionOpcional<PaginaPublicaciones>(`/api/comunidad/publicaciones${consulta({ ...opciones })}`);
+}
+
+export async function obtenerPublicacionesProducto(
+  idProducto: number,
+  opciones: OpcionesListaComunidad = {},
+): Promise<PaginaPublicaciones> {
+  return apiFetchConSesionOpcional<PaginaPublicaciones>(
+    `/api/productos/${idProducto}/comunidad/publicaciones${consulta({ ...opciones })}`,
+  );
+}
+
+export async function obtenerPublicacionComunidad(idPublicacion: number): Promise<PublicacionDetalle> {
+  return apiFetchConSesionOpcional<PublicacionDetalle>(`/api/comunidad/publicaciones/${idPublicacion}`);
+}
+
+export async function crearPublicacionComunidad(datos: {
+  tipo: TipoPublicacion;
+  idProducto?: number | null;
+  titulo: string;
+  contenido: string;
+}): Promise<PublicacionDetalle> {
+  return apiFetchAutenticado<PublicacionDetalle>("/api/comunidad/publicaciones", {
+    method: "POST",
+    body: JSON.stringify({ ...datos, idProducto: datos.idProducto ?? null }),
+  });
+}
+
+export async function editarPublicacionComunidad(
+  idPublicacion: number,
+  datos: { titulo: string; contenido: string },
+): Promise<PublicacionDetalle> {
+  return apiFetchAutenticado<PublicacionDetalle>(`/api/comunidad/publicaciones/${idPublicacion}`, {
+    method: "PUT",
+    body: JSON.stringify(datos),
+  });
+}
+
+export async function eliminarPublicacionComunidad(idPublicacion: number): Promise<void> {
+  await apiFetchAutenticado<void>(`/api/comunidad/publicaciones/${idPublicacion}`, { method: "DELETE" });
+}
+
+export async function obtenerRespuestasComunidad(
+  idPublicacion: number,
+  opciones: { padre?: number | null; cursor?: string | null; limite?: number } = {},
+): Promise<Pagina<RespuestaComunidad>> {
+  return apiFetchConSesionOpcional<Pagina<RespuestaComunidad>>(
+    `/api/comunidad/publicaciones/${idPublicacion}/respuestas${consulta({ ...opciones })}`,
+  );
+}
+
+export async function crearRespuestaComunidad(
+  idPublicacion: number,
+  contenido: string,
+  idRespuestaPadre?: number | null,
+): Promise<RespuestaComunidad> {
+  return apiFetchAutenticado<RespuestaComunidad>(`/api/comunidad/publicaciones/${idPublicacion}/respuestas`, {
+    method: "POST",
+    body: JSON.stringify({ contenido, idRespuestaPadre: idRespuestaPadre ?? null }),
+  });
+}
+
+export async function editarRespuestaComunidad(idRespuesta: number, contenido: string): Promise<RespuestaComunidad> {
+  return apiFetchAutenticado<RespuestaComunidad>(`/api/comunidad/respuestas/${idRespuesta}`, {
+    method: "PUT",
+    body: JSON.stringify({ contenido }),
+  });
+}
+
+export async function eliminarRespuestaComunidad(idRespuesta: number): Promise<void> {
+  await apiFetchAutenticado<void>(`/api/comunidad/respuestas/${idRespuesta}`, { method: "DELETE" });
+}
+
+export type ContenidoReaccionable = "publicaciones" | "respuestas";
+
+export async function darMeGustaComunidad(tipo: ContenidoReaccionable, id: number): Promise<MeGusta> {
+  return apiFetchAutenticado<MeGusta>(`/api/comunidad/${tipo}/${id}/me-gusta`, { method: "PUT" });
+}
+
+export async function retirarMeGustaComunidad(tipo: ContenidoReaccionable, id: number): Promise<MeGusta> {
+  return apiFetchAutenticado<MeGusta>(`/api/comunidad/${tipo}/${id}/me-gusta`, { method: "DELETE" });
 }

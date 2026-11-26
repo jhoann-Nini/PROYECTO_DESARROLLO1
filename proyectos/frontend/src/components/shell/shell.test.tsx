@@ -67,6 +67,7 @@ describe("Shell de TecReview", () => {
     const header = screen.getByRole("banner");
     for (const [etiqueta, href] of [
       ["Reseñas", "/resenas"],
+      ["Comunidad", "/comunidad"],
       ["Blog", "/blog"],
       ["Favoritos", "/favoritos"],
     ]) {

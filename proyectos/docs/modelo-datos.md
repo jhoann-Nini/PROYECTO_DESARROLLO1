@@ -651,7 +651,7 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
 - Revisión humana de reseñas retenidas (migración 020): resena.estado_moderacion admite RECHAZADA y resena_moderacion_auditoria admite las acciones APROBAR y RECHAZAR. Salir de PENDIENTE exige un evento de auditoría en la misma transacción (trigger diferido trg_exigir_auditoria_estado_moderacion_resena).
 - Moderación de reportes de ofertas (migración 021): tabla append-only reporte_oferta_historial (moderador, estado anterior y nuevo, justificación, id_transaccion y fecha), índice único parcial uq_reporte_oferta_abierto_usuario (un reporte PENDIENTE o EN_REVISION por usuario y oferta), trigger que valida las transiciones PENDIENTE → EN_REVISION → ACEPTADO | RECHAZADO y actualiza fecha_actualizacion, y trigger diferido trg_exigir_historial_transicion_reporte_oferta que exige el evento de historial en la misma transacción. También registra en schema_version la 017 y la 018, cuyas estructuras ya existían en Supabase sin su fila.
 - Enlace y fecha de las ofertas (migración 022): producto_establecimiento.url_oferta (TEXT opcional, solo http o https, máximo 2048 caracteres; restricción chk_producto_establecimiento_url_oferta) y producto_establecimiento.fecha_actualizacion_precio (NOT NULL, mantenida por el trigger trg_actualizar_fecha_precio_oferta al insertar y cuando cambian precio, disponibilidad o enlace). Desde la Fase 3, producto_establecimiento es la única fuente de tiendas y precios por tienda del detalle del producto; caracteristicas.tiendas queda solo para los datos mock y no se borra. Verificación del 20 de noviembre de 2026: en Supabase la tabla tenía 0 ofertas y 0 establecimientos, y ningún producto tenía caracteristicas.tiendas.
-- Seguridad de la API pública de Supabase (migración 023): las 20 tablas de public tienen RLS activado **sin políticas**, de forma intencional. El frontend usa Supabase solo para autenticación y el backend se conecta como `postgres`, dueño de las tablas, al que RLS no aplica; para la API pública (PostgREST, roles `anon` y `authenticated`) el resultado es denegar todo. La 023 retira además a `anon` y `authenticated` todos los privilegios sobre tablas, secuencias y funciones de public (incluido `TRUNCATE`, que RLS no frena), quita a `PUBLIC` la ejecución de funciones y cambia los privilegios por defecto de `postgres` para que los objetos nuevos no los vuelvan a otorgar. Los privilegios por defecto de `supabase_admin` no se pueden cambiar con el rol de la aplicación. Verificación: `docs/sql/tests/023_verificacion_privilegios.sql`. **Si en el futuro el frontend necesita leer una tabla directamente, hará falta un `GRANT` y una política RLS explícita para esa tabla.**
+- Seguridad de la API pública de Supabase (migraciones 023 y 028): las 23 tablas de public tienen RLS activado **sin políticas**, de forma intencional. En producción ya lo estaba en todas; la 028 (`028_rls_tablas_publicas.sql`) lo activa también desde las migraciones, que antes solo lo hacían en 3 tablas, para que una base creada con el esquema base y las migraciones quede igual. Toma `lock_timeout` de 5 s y aborta si queda alguna tabla de public sin RLS; verificación en `docs/sql/tests/028_verificacion_rls.sql`. El frontend usa Supabase solo para autenticación y el backend se conecta como `postgres`, dueño de las tablas, al que RLS no aplica; para la API pública (PostgREST, roles `anon` y `authenticated`) el resultado es denegar todo. La 023 retira además a `anon` y `authenticated` todos los privilegios sobre tablas, secuencias y funciones de public (incluido `TRUNCATE`, que RLS no frena), quita a `PUBLIC` la ejecución de funciones y cambia los privilegios por defecto de `postgres` para que los objetos nuevos no los vuelvan a otorgar. Los privilegios por defecto de `supabase_admin` no se pueden cambiar con el rol de la aplicación. Verificación de la 023: `docs/sql/tests/023_verificacion_privilegios.sql`. **Si en el futuro el frontend necesita leer una tabla directamente, hará falta un `GRANT` y una política RLS explícita para esa tabla.**
 - Texto revisado y suspensión de cuentas (migración 024): `resena_moderacion_auditoria.comentario_revisado` guarda el texto de la reseña en cada decisión; lo rellena el trigger `fn_validar_insert_resena_moderacion_auditoria`, así que el cliente no puede falsearlo. Tabla append-only `auditoria_usuario_estado` (administrador, estado anterior y nuevo, motivo, `id_transaccion`, fecha), con validación del actor (administrador activo, no sobre sí mismo ni sobre otro administrador activo) y el trigger diferido `trg_exigir_auditoria_estado_usuario`, que exige el evento al cambiar `usuario.estado`.
 - Índice de reseñas por autor (migración 025): `idx_resena_usuario` sobre `resena (id_usuario)`, sin filtro, para contar las faltas de reincidencia incluyendo reseñas eliminadas. No cambia la estructura: el backend funciona con o sin ella.
 - Apelaciones (migración 026): tabla `apelacion`, con una fila por apelación. Columnas:
@@ -670,6 +670,27 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
   - `id_desactivado_por` y `fecha_desactivacion`.
 
   Un índice único parcial impide dos términos activos con la misma forma normalizada. Los triggers exigen que agregue o desactive un administrador activo, solo permiten desactivar una vez y prohíben borrar. No tiene permisos para `anon` ni `authenticated`. Verificación de comportamiento: `docs/sql/tests/027_verificacion_terminos.sql`.
+- Comunidad (migración 029): cuatro tablas separadas de `resena` y `valoracion`, con RLS sin políticas y sin privilegios para `anon` ni `authenticated`.
+  - `publicacion_comunidad`:
+    - `tipo`: `GENERAL` sin producto o `PRODUCTO` con producto, exigido por un CHECK;
+    - `titulo` (5 a 150 caracteres sin espacios de los extremos) y `contenido` (hasta 5000);
+    - `estado_moderacion`, `oculta_por_moderacion`, `oculta_por_reportes`, eliminación lógica y `cerrada`;
+    - `fecha_creacion`, `fecha_edicion` y `fecha_ultima_actividad`.
+  - `respuesta_comunidad`:
+    - `profundidad` de 0 a 2;
+    - FK compuestas `(id_respuesta_padre, id_publicacion)` e `(id_respuesta_citada, id_publicacion)`: la madre y la citada son siempre de la misma publicación;
+    - las mismas columnas de visibilidad, eliminación y fechas.
+  - `reaccion_publicacion` y `reaccion_respuesta`:
+    - PK `(contenido, usuario)`: un «Me gusta» por persona;
+    - `ON DELETE CASCADE` desde el contenido.
+  - Triggers de `respuesta_comunidad`:
+    - calculan la profundidad;
+    - rechazan más de 2;
+    - exigen que la citada sea de nivel 2 y tenga la misma madre (hermana que cita);
+    - rechazan responder en publicaciones cerradas o eliminadas, bloqueando la fila de la publicación (`FOR NO KEY UPDATE`) para no cruzarse con un cierre en curso;
+    - impiden cambiar id, madre, citada, publicación, autor, profundidad y fecha de creación (la base de las cuotas).
+  - Trigger de `publicacion_comunidad`: impide cambiar id, autor, tipo, producto y fecha de creación.
+  - Los conteos se calculan con consultas; no hay columnas acumuladas. Verificación: `docs/sql/tests/029_verificacion_comunidad.sql`.
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 

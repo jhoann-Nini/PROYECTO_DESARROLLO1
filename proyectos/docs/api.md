@@ -1855,3 +1855,107 @@ Los términos no se borran: se desactivan, registrando quién y cuándo. Para re
 - **Respuesta `200`.**
 - **Errores:** `404`; `409` `Ese término ya está desactivado.`
 
+
+# 34. Comunidad: publicaciones, respuestas y «Me gusta» (fase 1, migración 029)
+
+Foro general y comunidades por producto, separados de reseñas y valoraciones: **no cambian calificaciones, reseñas ni rankings**. Especificación: `docs/superpowers/specs/2026-11-24-comunidad-design.md`.
+
+**Reglas comunes:**
+- **Lecturas (`GET`):** públicas. Con sesión, el backend añade `meGustaPropio` y `esAutor` y deja ver el contenido propio en revisión.
+- **Escrituras:** requieren sesión (`401` sin ella).
+  - **Cuenta suspendida:** `403` en cualquier escritura.
+  - **Bloqueo por reincidencia (§33.5):** `403` al publicar, responder y editar. No impide dar ni retirar «Me gusta».
+- **Contenido:** solo texto plano. Los largos cuentan caracteres reales (un emoji es uno). Un texto hecho solo de espacios invisibles o con el carácter NUL devuelve `400`.
+  - Título de 5 a 150 caracteres, sin contar espacios de los extremos.
+  - Publicación de 1 a 5000 caracteres; respuesta de 1 a 3000.
+  - Fuera de límites: `400`.
+- **Filtro:** el mismo de las reseñas (§33.1). Con riesgo MEDIO o ALTO, o con el autor en revisión previa, el contenido queda `PENDIENTE`, y solo lo ven su autor y los moderadores. Editar vuelve a pasar por el filtro: lo `PENDIENTE` o `RECHAZADO` vuelve a `PENDIENTE`.
+- **Cuotas:** 5 publicaciones y 20 respuestas en 60 minutos, contando las eliminadas. La siguiente devuelve `429`.
+- **Paginación por cursor:**
+  - `limite` de 1 a 50 (por defecto 20).
+  - `nextCursor` es opaco y es nulo en la última página.
+  - Un cursor inválido, de otro orden o de otra lista (otro producto, otra publicación u otra respuesta madre) devuelve `400`.
+- **Eliminación:** lógica y solo del autor. En la fase 1 el moderador no elimina contenido ajeno; esa acción llega en la fase 2 con su auditoría.
+
+## 34.1 Publicaciones
+
+### `GET /api/comunidad/publicaciones?orden=actividad|recientes&cursor=&limite=`
+Publicaciones generales visibles. `actividad` (por defecto) ordena por la fecha de la respuesta visible más reciente que se haya publicado, que no retrocede si esa respuesta se elimina después; `recientes`, por fecha de creación.
+- **Respuesta `200`:** `{ items, nextCursor, total }`.
+  - `total` cuenta las visibles.
+  - Cada elemento lleva `idPublicacion`, `tipo`, `idProducto`, `nombreProducto`, `titulo` y `extracto` (200 caracteres).
+  - También `autor`, `fechaCreacion`, `fechaUltimaActividad`, `respuestas` (visibles), `meGusta`, `estadoModeracion` y `cerrada`.
+  - `estadoModeracion` solo llega al autor y a los moderadores.
+
+### `GET /api/productos/{id}/comunidad/publicaciones?...`
+Las de un producto, con los mismos parámetros. Si el producto no existe, `404`. Las de un producto desactivado siguen visibles.
+
+### `GET /api/comunidad/publicaciones/{id}`
+Detalle, con `contenido`, `fechaEdicion`, `meGustaPropio` y `esAutor`. Si la publicación no existe, está eliminada o no es visible para quien la pide, `404`.
+
+### `POST /api/comunidad/publicaciones`
+Cuerpo: `{ "tipo": "GENERAL" | "PRODUCTO", "idProducto": 12 | null, "titulo": "…", "contenido": "…" }`.
+- **Respuesta `201`:** el detalle, con `estadoModeracion`.
+- **Errores:**
+  - `400`:
+    - tipo desconocido;
+    - una publicación GENERAL con producto o una de PRODUCTO sin él;
+    - largos fuera de límite;
+  - `404` producto inexistente;
+  - `409` producto desactivado;
+  - `429` cuota.
+
+### `PUT /api/comunidad/publicaciones/{id}`
+Cuerpo: `{ "titulo": "…", "contenido": "…" }`. Solo el autor.
+- **Errores:**
+  - `403` si no es el autor;
+  - `404` si está eliminada;
+  - `409` si está oculta por moderación.
+
+### `DELETE /api/comunidad/publicaciones/{id}`
+Solo el autor. Responde `204`.
+- **Errores:**
+  - `403` si no es el autor;
+  - `404` si ya estaba eliminada.
+
+## 34.2 Respuestas (tres niveles)
+
+### `GET /api/comunidad/publicaciones/{id}/respuestas?padre=&cursor=&limite=`
+Un nivel por petición, en orden de creación. Sin `padre` devuelve las directas. Si la publicación no es visible, `404`.
+
+Cada respuesta lleva:
+- `idRespuesta`, `idRespuestaPadre` y `profundidad` (0 a 2);
+- `contenido` y `autor`;
+- `enRespuestaA`: el nombre del autor citado;
+- `estadoVisible`: `VISIBLE`, `ELIMINADA`, `OCULTA` o `EN_REVISION`;
+- `estadoModeracion`, solo para el autor y los moderadores;
+- `respuestasHijas`, `meGusta`, `meGustaPropio` y `esAutor`;
+- las fechas.
+
+Si quien mira no puede leerla, `contenido` y `autor` llegan nulos. La respuesta conserva su lugar y sus hijas.
+
+### `POST /api/comunidad/publicaciones/{id}/respuestas`
+Cuerpo: `{ "contenido": "…", "idRespuestaPadre": 34 | null }`. Responder a una respuesta de nivel 2 crea una hermana en el nivel 2, con la misma madre, que la cita (`enRespuestaA`). La fecha de última actividad de la publicación solo cambia si la respuesta queda visible.
+- **Respuesta `201`.**
+- **Errores:**
+  - `400` si la madre no es de esa publicación;
+  - `404` si la publicación no existe o no es visible;
+  - `409`:
+    - publicación cerrada;
+    - producto desactivado;
+    - madre eliminada o no legible;
+  - `429` cuota.
+
+### `PUT /api/comunidad/respuestas/{id}` y `DELETE /api/comunidad/respuestas/{id}`
+Las mismas reglas que las publicaciones: solo el autor, `409` si está oculta por moderación, y la eliminación es lógica (`204`).
+
+## 34.3 «Me gusta»
+
+### `PUT` y `DELETE /api/comunidad/publicaciones/{id}/me-gusta`
+### `PUT` y `DELETE /api/comunidad/respuestas/{id}/me-gusta`
+`PUT` da el «Me gusta» y `DELETE` lo retira. Los dos son idempotentes: darlo dos veces deja uno, y retirarlo sin haberlo dado responde `200`.
+- **Respuesta `200`:** `{ "meGusta": 3, "meGustaPropio": true }`.
+- **Errores:**
+  - `401`;
+  - `403` cuenta suspendida;
+  - `404` si el contenido no existe, está eliminado o no es visible.

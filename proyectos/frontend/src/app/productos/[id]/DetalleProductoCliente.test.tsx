@@ -28,6 +28,7 @@ vi.mock("@/services/api", async (importOriginal) => {
     crearReporteOferta: vi.fn(),
     obtenerMiValoracion: vi.fn(),
     crearResena: vi.fn(),
+    obtenerPublicacionesProducto: vi.fn(),
   };
 });
 
@@ -65,6 +66,7 @@ import {
   obtenerValoracionStats,
   obtenerTiendasProducto,
   crearReporteOferta,
+  obtenerPublicacionesProducto,
 } from "@/services/api";
 import { CLAVE_COMPARADOR } from "@/data/comparador";
 import DetalleProductoCliente from "./DetalleProductoCliente";
@@ -166,6 +168,7 @@ beforeEach(() => {
   mockResenas.mockResolvedValue([RESENA]);
   mockMiValoracion.mockResolvedValue(null);
   mockTiendas.mockResolvedValue([]);
+  vi.mocked(obtenerPublicacionesProducto).mockResolvedValue({ items: [], nextCursor: null, total: 3 });
   mockReporteOferta.mockResolvedValue({
     idReporte: 80, idProducto: 204, idEstablecimiento: 17,
     motivo: "precio_incorrecto", descripcion: null, estado: "PENDIENTE", fechaCreacion: "2026-11-20T10:00:00",
@@ -179,6 +182,22 @@ afterEach(() => {
 });
 
 describe("DetalleProductoCliente", () => {
+  it("enlaza la comunidad del producto con su número de publicaciones", async () => {
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const enlace = await screen.findByRole("link", { name: "Comunidad (3)" });
+    expect(enlace.getAttribute("href")).toBe("/productos/204/comunidad");
+    expect(vi.mocked(obtenerPublicacionesProducto)).toHaveBeenCalledWith(204, { limite: 1 });
+  });
+
+  it("si el conteo de la comunidad falla, el enlace sigue disponible sin número", async () => {
+    vi.mocked(obtenerPublicacionesProducto).mockRejectedValue(new ApiError("Sin conexión", 500));
+    render(<DetalleProductoCliente idProducto={204} />);
+
+    const enlace = await screen.findByRole("link", { name: "Comunidad" });
+    expect(enlace.getAttribute("href")).toBe("/productos/204/comunidad");
+  });
+
   it("muestra un botón por oferta real, sin asignar IDs a las tiendas de datos heredados", async () => {
     mockProducto.mockResolvedValue(PRODUCTO_CON_TIENDAS);
     mockTiendas.mockResolvedValue([

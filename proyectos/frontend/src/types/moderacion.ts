@@ -116,6 +116,10 @@ export interface ResumenPendientesModeracion {
   reportesOfertas: number;
   /** Apelaciones pendientes. */
   apelaciones: number;
+  /** Contenido de la comunidad retenido por el filtro (fase 2). */
+  comunidadRevision?: number;
+  /** Reportes de la comunidad pendientes o en revisión (fase 2). */
+  comunidadReportes?: number;
   total: number;
 }
 

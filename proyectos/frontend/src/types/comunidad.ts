@@ -82,3 +82,49 @@ export const LIMITES_COMUNIDAD = {
   publicacionMax: 5000,
   respuestaMax: 3000,
 } as const;
+
+// ---------- Fase 2: reportes y moderación ----------
+
+export type MotivoReporteComunidad = "spam" | "lenguaje-ofensivo" | "acoso" | "falso" | "otro";
+export type TipoContenidoComunidad = "PUBLICACION" | "RESPUESTA";
+export type AccionAlAceptarReporte = "NINGUNA" | "OCULTAR" | "ELIMINAR";
+export type DecisionModeracionComunidad = "aprobar" | "rechazar" | "ocultar" | "restaurar" | "eliminar";
+
+export const MOTIVOS_REPORTE_COMUNIDAD: { valor: MotivoReporteComunidad; etiqueta: string }[] = [
+  { valor: "spam", etiqueta: "Spam o publicidad" },
+  { valor: "lenguaje-ofensivo", etiqueta: "Lenguaje ofensivo" },
+  { valor: "acoso", etiqueta: "Acoso a una persona" },
+  { valor: "falso", etiqueta: "Información falsa" },
+  { valor: "otro", etiqueta: "Otro" },
+];
+
+export interface ElementoRevisionComunidad {
+  tipo: TipoContenidoComunidad;
+  id: number;
+  idPublicacion: number;
+  titulo: string;
+  contenido: string;
+  autor: string;
+  fechaCreacion: string;
+  riesgo: "NINGUNO" | "BAJO" | "MEDIO" | "ALTO";
+  motivos: string[];
+}
+
+export interface ReporteModeracionComunidad {
+  idReporte: number;
+  tipo: TipoContenidoComunidad;
+  idContenido: number;
+  idPublicacion: number;
+  titulo: string;
+  contenido: string;
+  autorContenido: string;
+  reportante: string;
+  motivo: MotivoReporteComunidad;
+  descripcion: string | null;
+  estado: "PENDIENTE" | "EN_REVISION" | "ACEPTADO" | "RECHAZADO";
+  fechaCreacion: string;
+  reportesActivos: number;
+  ocultaPorReportes: boolean;
+  ocultaPorModeracion: boolean;
+  eliminada: boolean;
+}

@@ -98,6 +98,24 @@ describe("HiloRespuestas", () => {
     expect((await screen.findByText(/rechazada por moderación/i)).textContent).toMatch(/solo tú y los moderadores/i);
   });
 
+  it("«Reportar» aparece en lo ajeno y no en lo propio", async () => {
+    api.obtenerRespuestasComunidad.mockResolvedValue({
+      items: [respuesta(20, { autor: "Luis" }), respuesta(21, { autor: "Ana", esAutor: true })], nextCursor: null });
+    render(<HiloRespuestas {...props} padre={null} nivel={0} />);
+
+    expect(await screen.findByRole("button", { name: /reportar la respuesta de luis/i })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /reportar la respuesta de ana/i })).toBeNull();
+  });
+
+  it("sin sesión, «Reportar» pide iniciar sesión", async () => {
+    const onRequiereSesion = vi.fn();
+    api.obtenerRespuestasComunidad.mockResolvedValue({ items: [respuesta(22, { autor: "Luis" })], nextCursor: null });
+    render(<HiloRespuestas {...props} autenticado={false} onRequiereSesion={onRequiereSesion} padre={null} nivel={0} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /reportar la respuesta de luis/i }));
+    expect(onRequiereSesion).toHaveBeenCalled();
+  });
+
   it("Responder abre el formulario en línea y se usa con teclado", async () => {
     api.obtenerRespuestasComunidad.mockResolvedValue({ items: [respuesta(6)], nextCursor: null });
     render(<HiloRespuestas {...props} padre={null} nivel={0} />);

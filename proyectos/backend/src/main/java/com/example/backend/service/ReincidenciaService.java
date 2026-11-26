@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.EstadoReincidenciaResponse;
+import com.example.backend.repository.ModeracionComunidadAuditoriaRepository;
 import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,8 +38,12 @@ public class ReincidenciaService {
 
   private final ResenaModeracionAuditoriaRepository auditoriaRepository;
 
-  public ReincidenciaService(ResenaModeracionAuditoriaRepository auditoriaRepository) {
+  private final ModeracionComunidadAuditoriaRepository auditoriaComunidadRepository;
+
+  public ReincidenciaService(ResenaModeracionAuditoriaRepository auditoriaRepository,
+      ModeracionComunidadAuditoriaRepository auditoriaComunidadRepository) {
     this.auditoriaRepository = auditoriaRepository;
+    this.auditoriaComunidadRepository = auditoriaComunidadRepository;
   }
 
   /** Cálculo puro: recibe las fechas de las faltas dentro de la ventana. */
@@ -97,6 +102,10 @@ public class ReincidenciaService {
     if (idUsuario == null) {
       return List.of();
     }
-    return auditoriaRepository.findFechasFaltasDelAutorDesde(idUsuario, ahora.minusDays(VENTANA_DIAS));
+    // Historial único (comunidad, fase 3): faltas de reseñas y del foro.
+    LocalDateTime desde = ahora.minusDays(VENTANA_DIAS);
+    List<LocalDateTime> faltas = new java.util.ArrayList<>(auditoriaRepository.findFechasFaltasDelAutorDesde(idUsuario, desde));
+    faltas.addAll(auditoriaComunidadRepository.findFechasFaltasDelAutorDesde(idUsuario, desde));
+    return faltas;
   }
 }

@@ -7,6 +7,7 @@ import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.AuditoriaUsuarioEstadoRepository;
+import com.example.backend.repository.ModeracionComunidadAuditoriaRepository;
 import com.example.backend.repository.ResenaModeracionAuditoriaRepository;
 import com.example.backend.dto.CuentaReincidenteResponse;
 import com.example.backend.repository.UsuarioRepository;
@@ -34,14 +35,17 @@ public class AdministracionCuentasService {
   private final UsuarioService usuarioService;
   private final AdministracionConsultasService consultasService;
   private final ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository;
+  private final ModeracionComunidadAuditoriaRepository moderacionComunidadAuditoriaRepository;
 
   public AdministracionCuentasService(
     UsuarioRepository usuarioRepository,
     AuditoriaUsuarioEstadoRepository auditoriaRepository,
     UsuarioService usuarioService,
     AdministracionConsultasService consultasService,
-    ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository) {
+    ResenaModeracionAuditoriaRepository moderacionAuditoriaRepository,
+    ModeracionComunidadAuditoriaRepository moderacionComunidadAuditoriaRepository) {
     this.moderacionAuditoriaRepository = moderacionAuditoriaRepository;
+    this.moderacionComunidadAuditoriaRepository = moderacionComunidadAuditoriaRepository;
     this.usuarioRepository = usuarioRepository;
     this.auditoriaRepository = auditoriaRepository;
     this.usuarioService = usuarioService;
@@ -58,9 +62,38 @@ public class AdministracionCuentasService {
     if (!Boolean.TRUE.equals(administrador.getEstado()) || !tieneRolActivo(administrador, "Administrador")) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Se requiere un rol activo de Administrador.");
     }
-    return moderacionAuditoriaRepository.findCuentasReincidentes(
-      java.time.LocalDateTime.now().minusDays(ReincidenciaService.VENTANA_DIAS),
-      ReincidenciaService.MIN_FALTAS_ADMIN);
+    // Historial único (comunidad, fase 3): se suman las faltas de reseñas y del foro por usuario.
+    LocalDateTime desde = LocalDateTime.now().minusDays(ReincidenciaService.VENTANA_DIAS);
+    java.util.Map<Long, CuentaReincidenteResponse> porUsuario = new java.util.HashMap<>();
+    for (CuentaReincidenteResponse c : moderacionAuditoriaRepository.findCuentasReincidentes(desde, 1)) {
+      porUsuario.put(c.idUsuario(), c);
+    }
+    java.util.Map<Long, Object[]> delForo = new java.util.HashMap<>();
+    for (Object[] fila : moderacionComunidadAuditoriaRepository.contarFaltasPorAutorDesde(desde)) {
+      delForo.put(((Number) fila[0]).longValue(), fila);
+    }
+    java.util.Map<Long, Usuario> soloForo = new java.util.HashMap<>();
+    usuarioRepository.findAllById(delForo.keySet().stream().filter(id -> !porUsuario.containsKey(id)).toList())
+      .forEach(u -> soloForo.put(u.getIdUsuario(), u));
+    for (java.util.Map.Entry<Long, Object[]> e : delForo.entrySet()) {
+      long faltas = ((Number) e.getValue()[1]).longValue();
+      LocalDateTime ultima = (LocalDateTime) e.getValue()[2];
+      CuentaReincidenteResponse previa = porUsuario.get(e.getKey());
+      if (previa != null) {
+        porUsuario.put(e.getKey(), new CuentaReincidenteResponse(previa.idUsuario(), previa.nombre(), previa.correo(),
+          previa.faltas() + faltas, previa.ultimaFalta().isAfter(ultima) ? previa.ultimaFalta() : ultima));
+      } else {
+        Usuario u = soloForo.get(e.getKey());
+        if (u != null && Boolean.TRUE.equals(u.getEstado())) {
+          porUsuario.put(e.getKey(), new CuentaReincidenteResponse(u.getIdUsuario(), u.getNombre(), u.getCorreo(), faltas, ultima));
+        }
+      }
+    }
+    return porUsuario.values().stream()
+      .filter(c -> c.faltas() >= ReincidenciaService.MIN_FALTAS_ADMIN)
+      .sorted(java.util.Comparator.comparingLong(CuentaReincidenteResponse::faltas).reversed()
+        .thenComparing(CuentaReincidenteResponse::ultimaFalta, java.util.Comparator.reverseOrder()))
+      .toList();
   }
 
   @Transactional

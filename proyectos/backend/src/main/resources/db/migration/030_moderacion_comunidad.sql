@@ -22,10 +22,18 @@
 --      de un reporte exige su evento. Quien resuelve no puede ser quien
 --      reporto ni el autor del contenido.
 --   5. Con 3 reportes no rechazados el contenido se oculta solo; si bajan
---      de 3, se restaura (RN-13, mismo umbral que las resenas).
+--      de 3, se restaura (RN-13, mismo umbral que las resenas). La marca
+--      oculta_por_reportes siempre se recalcula con el conteo real: escribirla
+--      a mano no tiene efecto.
 --
 -- Las acciones CERRAR y REABRIR quedan admitidas; sus endpoints son de la
 -- fase 4.
+--
+-- Orden obligatorio: la auditoria se inserta ANTES de cambiar el contenido
+-- (su trigger valida el estado previo) y en la misma transaccion.
+-- Limite conocido: la base no sabe quien ejecuta; un moderador que firmara
+-- eliminada_por con el id del autor eliminaria sin auditoria. Lo impide el
+-- backend, que siempre firma con el moderador.
 --
 -- Seguridad: RLS sin politicas y REVOKE ALL a anon, authenticated y PUBLIC
 -- en tablas, secuencias y funciones; funciones con search_path = pg_catalog.
@@ -104,6 +112,9 @@ DECLARE
     v_cerrada BOOLEAN;
     v_valida BOOLEAN;
 BEGIN
+    IF num_nonnulls(NEW.id_publicacion, NEW.id_respuesta) <> 1 THEN
+        RAISE EXCEPTION 'Una decision de moderacion tiene exactamente un destino.';
+    END IF;
     IF NOT public.fn_usuario_tiene_rol_activo(NEW.id_moderador, ARRAY['moderador', 'administrador']) THEN
         RAISE EXCEPTION 'El actor de moderacion debe tener cuenta y rol activo.';
     END IF;
@@ -122,15 +133,28 @@ BEGIN
            FOR NO KEY UPDATE;
     END IF;
 
-    IF NOT FOUND OR v_autor = NEW.id_moderador THEN
-        RAISE EXCEPTION 'No existe el contenido o el moderador es su autor (conflicto de interes).';
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'No existe el contenido de la decision.';
+    END IF;
+    IF v_autor = NEW.id_moderador THEN
+        RAISE EXCEPTION 'Conflicto de interes: el moderador es el autor del contenido.';
+    END IF;
+
+    -- Una misma decision no se registra dos veces en la misma transaccion.
+    IF EXISTS (
+        SELECT 1 FROM public.moderacion_comunidad_auditoria a
+         WHERE a.accion = NEW.accion AND a.id_transaccion = txid_current()
+           AND a.id_publicacion IS NOT DISTINCT FROM NEW.id_publicacion
+           AND a.id_respuesta IS NOT DISTINCT FROM NEW.id_respuesta
+    ) THEN
+        RAISE EXCEPTION 'La decision % ya esta registrada para este contenido en esta transaccion.', NEW.accion;
     END IF;
 
     v_valida := CASE NEW.accion
         WHEN 'APROBAR' THEN v_estado = 'PENDIENTE' AND NOT v_eliminada
         WHEN 'RECHAZAR' THEN v_estado = 'PENDIENTE' AND NOT v_eliminada
         WHEN 'OCULTAR' THEN NOT v_oculta AND NOT v_eliminada
-        WHEN 'RESTAURAR' THEN v_oculta
+        WHEN 'RESTAURAR' THEN v_oculta AND NOT v_eliminada
         WHEN 'ELIMINAR_MODERADOR' THEN NOT v_eliminada
         WHEN 'CERRAR' THEN v_cerrada IS NOT NULL AND NOT v_cerrada AND NOT v_eliminada
         WHEN 'REABRIR' THEN v_cerrada IS NOT NULL AND v_cerrada
@@ -234,7 +258,11 @@ BEGIN
     -- Estado de moderacion.
     IF OLD.estado_moderacion IS DISTINCT FROM NEW.estado_moderacion THEN
         IF NEW.estado_moderacion = 'PENDIENTE' THEN
-            v_accion := NULL;  -- El autor edita y vuelve a revision.
+            -- Solo como edicion del autor: pasar a PENDIENTE sin editar
+            -- ocultaria el contenido sin rastro (RN-12).
+            IF NEW.fecha_edicion IS NOT DISTINCT FROM OLD.fecha_edicion THEN
+                RAISE EXCEPTION 'Volver a PENDIENTE solo ocurre al editar el contenido.';
+            END IF;
         ELSIF OLD.estado_moderacion = 'PENDIENTE' THEN
             v_accion := CASE NEW.estado_moderacion WHEN 'PUBLICADA' THEN 'APROBAR' ELSE 'RECHAZAR' END;
             IF NOT public.fn_auditoria_contenido_comunidad_existe(v_es_publicacion, v_id, v_accion) THEN
@@ -361,18 +389,29 @@ DECLARE
     v_autor BIGINT;
     v_eliminada BOOLEAN;
 BEGIN
+    IF num_nonnulls(NEW.id_publicacion, NEW.id_respuesta) <> 1 THEN
+        RAISE EXCEPTION 'Un reporte tiene exactamente un destino.';
+    END IF;
     IF NEW.estado <> 'PENDIENTE' THEN
         RAISE EXCEPTION 'Un reporte nuevo empieza en PENDIENTE.';
     END IF;
+    -- FOR NO KEY UPDATE: si el contenido se esta eliminando, el reporte espera
+    -- y ve el resultado (es el mismo bloqueo que toma el recalculo).
     IF NEW.id_publicacion IS NOT NULL THEN
         SELECT id_autor, eliminada INTO v_autor, v_eliminada
-          FROM public.publicacion_comunidad WHERE id_publicacion = NEW.id_publicacion FOR KEY SHARE;
+          FROM public.publicacion_comunidad WHERE id_publicacion = NEW.id_publicacion FOR NO KEY UPDATE;
     ELSE
-        SELECT id_autor, eliminada INTO v_autor, v_eliminada
-          FROM public.respuesta_comunidad WHERE id_respuesta = NEW.id_respuesta FOR KEY SHARE;
+        SELECT rc.id_autor, rc.eliminada OR p.eliminada INTO v_autor, v_eliminada
+          FROM public.respuesta_comunidad rc
+          JOIN public.publicacion_comunidad p ON p.id_publicacion = rc.id_publicacion
+         WHERE rc.id_respuesta = NEW.id_respuesta
+           FOR NO KEY UPDATE OF rc;
     END IF;
-    IF NOT FOUND OR v_eliminada THEN
-        RAISE EXCEPTION 'No existe el contenido o esta eliminado.';
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'No existe el contenido reportado.';
+    END IF;
+    IF v_eliminada THEN
+        RAISE EXCEPTION 'No se puede reportar contenido eliminado.';
     END IF;
     IF v_autor = NEW.id_usuario THEN
         RAISE EXCEPTION 'Nadie puede reportar su propio contenido.';
@@ -458,6 +497,35 @@ CREATE TRIGGER trg_recalcular_ocultamiento_reporte_comunidad
   AFTER INSERT OR UPDATE OF estado ON public.reporte_comunidad
   FOR EACH ROW EXECUTE FUNCTION public.fn_recalcular_ocultamiento_reporte_comunidad();
 
+-- La marca solo refleja el conteo real: un UPDATE directo no la cambia.
+CREATE OR REPLACE FUNCTION public.fn_marca_reportes_contenido_comunidad()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = pg_catalog
+AS $$
+DECLARE
+    v_activos BIGINT;
+BEGIN
+    IF TG_TABLE_NAME = 'publicacion_comunidad' THEN
+        SELECT count(*) INTO v_activos FROM public.reporte_comunidad
+         WHERE id_publicacion = NEW.id_publicacion AND estado <> 'RECHAZADO';
+    ELSE
+        SELECT count(*) INTO v_activos FROM public.reporte_comunidad
+         WHERE id_respuesta = NEW.id_respuesta AND estado <> 'RECHAZADO';
+    END IF;
+    NEW.oculta_por_reportes := v_activos >= 3;
+    RETURN NEW;
+END $$;
+
+DROP TRIGGER IF EXISTS trg_marca_reportes_publicacion_comunidad ON public.publicacion_comunidad;
+CREATE TRIGGER trg_marca_reportes_publicacion_comunidad
+  BEFORE UPDATE OF oculta_por_reportes ON public.publicacion_comunidad
+  FOR EACH ROW EXECUTE FUNCTION public.fn_marca_reportes_contenido_comunidad();
+DROP TRIGGER IF EXISTS trg_marca_reportes_respuesta_comunidad ON public.respuesta_comunidad;
+CREATE TRIGGER trg_marca_reportes_respuesta_comunidad
+  BEFORE UPDATE OF oculta_por_reportes ON public.respuesta_comunidad
+  FOR EACH ROW EXECUTE FUNCTION public.fn_marca_reportes_contenido_comunidad();
+
 -- ---------- 4. Historial de reportes ----------
 CREATE TABLE IF NOT EXISTS public.reporte_comunidad_historial (
   id_historial    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -503,9 +571,12 @@ BEGIN
       LEFT JOIN public.publicacion_comunidad p ON p.id_publicacion = r.id_publicacion
       LEFT JOIN public.respuesta_comunidad rc ON rc.id_respuesta = r.id_respuesta
      WHERE r.id_reporte = NEW.id_reporte
-       FOR KEY SHARE OF r;
-    IF NOT FOUND OR v_reportante = NEW.id_moderador OR v_autor = NEW.id_moderador THEN
-        RAISE EXCEPTION 'No existe el reporte o el actor tiene conflicto de interes.';
+       FOR NO KEY UPDATE OF r;  -- Dos resoluciones a la vez: la segunda espera y ve el estado nuevo.
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'No existe el reporte.';
+    END IF;
+    IF v_reportante = NEW.id_moderador OR v_autor = NEW.id_moderador THEN
+        RAISE EXCEPTION 'Conflicto de interes: el actor creo el reporte o es el autor del contenido.';
     END IF;
     IF v_estado IS DISTINCT FROM NEW.estado_anterior THEN
         RAISE EXCEPTION 'El estado anterior del evento no coincide con el estado actual del reporte.';
@@ -570,6 +641,7 @@ REVOKE ALL ON FUNCTION public.fn_auditoria_contenido_comunidad_existe(BOOLEAN, B
 REVOKE ALL ON FUNCTION public.fn_validar_insert_reporte_comunidad() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.fn_validar_update_reporte_comunidad() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.fn_recalcular_ocultamiento_reporte_comunidad() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.fn_marca_reportes_contenido_comunidad() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.fn_validar_insert_reporte_comunidad_historial() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.fn_exigir_historial_reporte_comunidad() FROM PUBLIC, anon, authenticated;
 

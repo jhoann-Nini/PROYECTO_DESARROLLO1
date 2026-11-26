@@ -8,6 +8,8 @@ import com.example.backend.entity.RespuestaComunidad;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
 import com.example.backend.repository.ReporteComunidadRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.Set;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,9 @@ public class ReporteComunidadService {
   private final UsuarioService usuarioService;
   private final PermisosComunidad permisos;
   private final LimiteReportesService limiteReportes;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   public ReporteComunidadService(ReporteComunidadRepository reporteRepository,
       PublicacionComunidadService publicacionService, RespuestaComunidadService respuestaService,
@@ -80,6 +85,7 @@ public class ReporteComunidadService {
     limiteReportes.verificarLimite(usuario);
     try {
       ReporteComunidad guardado = reporteRepository.saveAndFlush(reporte);
+      entityManager.refresh(guardado);  // la fecha de creación la fija el trigger de la 030
       return new ReporteComunidadResponse(guardado.getIdReporte(), guardado.getEstado().name(),
         guardado.getMotivo(), guardado.getFechaCreacion());
     } catch (DataIntegrityViolationException ex) {

@@ -22,9 +22,13 @@ import com.example.backend.repository.PublicacionComunidadRepository;
 import com.example.backend.repository.ReporteComunidadHistorialRepository;
 import com.example.backend.repository.ReporteComunidadRepository;
 import com.example.backend.repository.RespuestaComunidadRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -55,6 +59,9 @@ public class ModeracionComunidadService {
   private final UsuarioService usuarioService;
   private final PermisosComunidad permisos;
   private final AnalizadorContenido analizador;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   public ModeracionComunidadService(PublicacionComunidadRepository publicacionRepository,
       RespuestaComunidadRepository respuestaRepository, ModeracionComunidadAuditoriaRepository auditoriaRepository,
@@ -133,6 +140,8 @@ public class ModeracionComunidadService {
    */
   private void aplicar(Usuario moderador, PublicacionComunidad p, RespuestaComunidad r,
       AccionModeracionComunidad accion, String motivo) {
+    // Releer con bloqueo: si otra decisión llegó antes, se valida contra su resultado (409, no 500).
+    entityManager.refresh(p != null ? p : r, LockModeType.PESSIMISTIC_WRITE);
     Usuario autor = p != null ? p.getAutor() : r.getAutor();
     if (autor.getIdUsuario().equals(moderador.getIdUsuario())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No puedes moderar tu propio contenido.");
@@ -152,7 +161,11 @@ public class ModeracionComunidadService {
     }
 
     String revisado = p != null ? p.getTitulo() + "\n\n" + p.getContenido() : r.getContenido();
-    auditoriaRepository.saveAndFlush(new ModeracionComunidadAuditoria(p, r, moderador, accion, motivo, revisado));
+    try {
+      auditoriaRepository.saveAndFlush(new ModeracionComunidadAuditoria(p, r, moderador, accion, motivo, revisado));
+    } catch (DataAccessException ex) {
+      throw new ConflictException("Otra decisión cambió el contenido mientras tanto. Recarga la cola.");
+    }
 
     switch (accion) {
       case APROBAR -> cambiarEstado(p, r, EstadoModeracion.PUBLICADA);
@@ -255,7 +268,11 @@ public class ModeracionComunidadService {
 
   /** Cada paso guarda su historial y se escribe antes del siguiente: el trigger valida el estado anterior. */
   private void mover(ReporteComunidad reporte, Usuario moderador, EstadoReporte nuevo, String justificacion) {
-    historialRepository.saveAndFlush(new ReporteComunidadHistorial(reporte, moderador, nuevo, justificacion));
+    try {
+      historialRepository.saveAndFlush(new ReporteComunidadHistorial(reporte, moderador, nuevo, justificacion));
+    } catch (DataAccessException ex) {
+      throw new ConflictException("Otra persona resolvió el reporte mientras tanto. Recarga la cola.");
+    }
     reporte.setEstado(nuevo);
     reporteRepository.saveAndFlush(reporte);
   }
@@ -263,6 +280,8 @@ public class ModeracionComunidadService {
   private ReporteComunidad reporteResoluble(Long idReporte, Usuario moderador) {
     ReporteComunidad reporte = reporteRepository.findById(idReporte)
       .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id " + idReporte));
+    // Releer con bloqueo: dos moderadores a la vez sobre el mismo reporte se ponen en fila.
+    entityManager.refresh(reporte, LockModeType.PESSIMISTIC_WRITE);
     if (reporte.getUsuario().getIdUsuario().equals(moderador.getIdUsuario())
         || reporte.autorDelContenido().getIdUsuario().equals(moderador.getIdUsuario())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN,

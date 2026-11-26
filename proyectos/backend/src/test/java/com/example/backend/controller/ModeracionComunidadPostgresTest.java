@@ -124,6 +124,56 @@ class ModeracionComunidadPostgresTest extends ComunidadIntegrationTestBase {
       .andExpect(status().isConflict());
   }
 
+  @Test
+  void reporteYaResueltoPorOtroModerador409() throws Exception {
+    long idReporte = reportar(otro);
+    reporteRepository.findById(idReporte).orElseThrow();  // queda en la caché de JPA como PENDIENTE
+    Usuario otraModeradora = usuario("Otra moderadora", rol("Moderador"));
+    // Otra moderadora lo resuelve paso a paso, como el backend: evento y luego cambio de estado.
+    for (String[] paso : new String[][] {{"PENDIENTE", "EN_REVISION"}, {"EN_REVISION", "RECHAZADO"}}) {
+      entityManager.createNativeQuery("INSERT INTO reporte_comunidad_historial (id_reporte, id_moderador, estado_anterior, estado_nuevo, justificacion)"
+          + " VALUES (:r, :m, :a, :n, 'No incumple')")
+        .setParameter("r", idReporte).setParameter("m", otraModeradora.getIdUsuario())
+        .setParameter("a", paso[0]).setParameter("n", paso[1]).executeUpdate();
+      entityManager.createNativeQuery("UPDATE reporte_comunidad SET estado = :n WHERE id_reporte = :r")
+        .setParameter("n", paso[1]).setParameter("r", idReporte).executeUpdate();
+    }
+
+    mockMvc.perform(put("/api/moderacion/comunidad/reportes/" + idReporte + "/aceptar").with(como(moderador))
+        .contentType(MediaType.APPLICATION_JSON).content("{\"justificacion\":\"Es spam\",\"accion\":\"NINGUNA\"}"))
+      .andExpect(status().isConflict());
+  }
+
+  @Test
+  void decisionSobreContenidoYaModerado409() throws Exception {
+    publicacionRepository.findById(publicacion.getIdPublicacion()).orElseThrow();  // en caché, sin ocultar
+    Usuario otraModeradora = usuario("Otra moderadora", rol("Moderador"));
+    entityManager.createNativeQuery("INSERT INTO moderacion_comunidad_auditoria (id_publicacion, id_moderador, accion, motivo, contenido_revisado)"
+        + " VALUES (:p, :m, 'OCULTAR', 'Incumple', 'Contenido')")
+      .setParameter("p", publicacion.getIdPublicacion()).setParameter("m", otraModeradora.getIdUsuario()).executeUpdate();
+    entityManager.createNativeQuery("UPDATE publicacion_comunidad SET oculta_por_moderacion = TRUE WHERE id_publicacion = :p")
+      .setParameter("p", publicacion.getIdPublicacion()).executeUpdate();
+
+    mockMvc.perform(put("/api/moderacion/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/ocultar")
+        .with(como(moderador)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"Spam\"}"))
+      .andExpect(status().isConflict());
+  }
+
+  @Test
+  void laFechaDelReporteEsLaGuardada() throws Exception {
+    String cuerpo = mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/reportes")
+        .with(como(otro)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"spam\"}"))
+      .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+    long id = ((Number) JsonPath.read(cuerpo, "$.idReporte")).longValue();
+    String devuelta = JsonPath.read(cuerpo, "$.fechaCreacion");
+    entityManager.flush();
+    entityManager.clear();
+    String guardada = reporteRepository.findById(id).orElseThrow().getFechaCreacion().toString();
+    if (!guardada.startsWith(devuelta.replaceAll("0+$", ""))) {
+      throw new AssertionError("La respuesta dice " + devuelta + " y se guardó " + guardada);
+    }
+  }
+
   private long reportar(Usuario u) throws Exception {
     String cuerpo = mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/reportes")
         .with(como(u)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"spam\"}"))

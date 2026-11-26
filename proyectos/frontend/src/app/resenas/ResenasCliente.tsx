@@ -30,6 +30,8 @@ import RatingStars from "@/components/catalogo/RatingStars";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
 import EstadoVacio from "@/components/ui/EstadoVacio";
+import Input from "@/components/ui/Input";
+import { buttonClassName } from "@/components/ui/Button";
 import EditarResena from "./EditarResena";
 import ReportarResenaModal from "./ReportarResenaModal";
 
@@ -239,13 +241,13 @@ export default function ResenasCliente() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="max-w-3xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+        <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
           Experiencias reales
         </p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--color-ink)] sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-medium uppercase tracking-normal text-ink sm:text-3xl">
           Reseñas de la comunidad
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--color-subtle)]">
+        <p className="mt-2 text-sm leading-relaxed text-subtle">
           Opiniones escritas por usuarios registrados. Las estrellas provienen
           de las valoraciones y se muestran por separado: una reseña no crea una
           valoración automáticamente.
@@ -260,12 +262,12 @@ export default function ResenasCliente() {
         ].map(([etiqueta, valor]) => (
           <div
             key={String(etiqueta)}
-            className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)]"
+            className="rounded-card border border-line bg-paper p-4"
           >
-            <dt className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <dt className="text-[11px] font-medium uppercase tracking-normal text-subtle">
               {etiqueta}
             </dt>
-            <dd className="mt-1 text-2xl font-bold tracking-tight text-[var(--color-ink)]">
+            <dd className="mt-1 text-2xl font-medium tracking-normal text-ink">
               {cargando ? "—" : valor}
             </dd>
           </div>
@@ -276,15 +278,15 @@ export default function ResenasCliente() {
         <div className="space-y-6">
           <section
             aria-labelledby="titulo-publicar-resena"
-            className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+            className="rounded-card border border-line bg-paper p-5"
           >
             <h2
               id="titulo-publicar-resena"
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-lg font-medium uppercase tracking-normal text-ink"
             >
               Comparte tu experiencia
             </h2>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm text-subtle">
               {usuario
                 ? `Publicarás como ${usuario.nombre}.`
                 : "Inicia sesión para publicar una reseña."}
@@ -294,7 +296,7 @@ export default function ResenasCliente() {
               <div>
                 <label
                   htmlFor="producto-resena"
-                  className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                  className="block text-xs font-medium uppercase tracking-normal text-subtle"
                 >
                   Producto de la reseña
                 </label>
@@ -308,7 +310,7 @@ export default function ResenasCliente() {
                         : Number(evento.target.value),
                     )
                   }
-                  className="mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                  className={`mt-1 min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
                 >
                   <option value="">Selecciona un producto</option>
                   {productos.map((producto) => (
@@ -323,7 +325,7 @@ export default function ResenasCliente() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                <label className="block text-xs font-medium uppercase tracking-normal text-subtle">
                   Puntuación
                 </label>
                 <div role="group" aria-label="Calificación de 1 a 5 estrellas" className="mt-1 flex items-center gap-1">
@@ -338,14 +340,14 @@ export default function ResenasCliente() {
                         onMouseLeave={() => setHoverPuntuacion(0)}
                         aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
                         aria-pressed={puntuacion === estrella}
-                        className={`cursor-pointer rounded-md p-1 text-xl leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
+                        className={`cursor-pointer rounded-card p-1 text-xl leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
                       >
                         <span
                           aria-hidden="true"
                           className={
                             activa
-                              ? "text-[var(--color-star)]"
-                              : "text-neutral-400 dark:text-neutral-500"
+                              ? "text-star"
+                              : "text-subtle"
                           }
                         >
                           {activa ? "★" : "☆"}
@@ -354,7 +356,7 @@ export default function ResenasCliente() {
                     );
                   })}
                   {puntuacion && (
-                    <span className="ml-2 text-xs font-semibold text-[var(--color-ink)]">{puntuacion} / 5</span>
+                    <span className="ml-2 text-xs font-medium text-ink">{puntuacion} / 5</span>
                   )}
                 </div>
               </div>
@@ -362,13 +364,13 @@ export default function ResenasCliente() {
               <div>
                 <label
                   htmlFor="comentario-resena"
-                  className="block text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                  className="block text-xs font-medium uppercase tracking-normal text-subtle"
                 >
                   Tu reseña
                 </label>
                 <p
                   id="ayuda-comentario-resena"
-                  className="mt-1 text-xs text-[var(--color-subtle)]"
+                  className="mt-1 text-xs text-subtle"
                 >
                   Cuenta tu experiencia con el producto. No incluyas datos
                   personales. Máximo 1.000 caracteres.
@@ -385,12 +387,12 @@ export default function ResenasCliente() {
                       ? "¿Qué te pareció el producto? Comparte detalles útiles…"
                       : "Inicia sesión para escribir tu reseña…"
                   }
-                  className="mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                  className={`mt-1 min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink placeholder:text-text-muted ${CLASE_FOCO}`}
                 />
                 <p
                   id="contador-comentario-resena"
                   aria-live="polite"
-                  className="mt-1 text-right text-xs text-[var(--color-subtle)]"
+                  className="mt-1 text-right text-xs text-subtle"
                 >
                   {comentario.length}/1.000 caracteres
                 </p>
@@ -402,7 +404,7 @@ export default function ResenasCliente() {
                 <button
                   type="submit"
                   disabled={enviando || cargandoSesion}
-                  className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
+                  className={buttonClassName("primary", "text-sm disabled:opacity-60")}
                 >
                   {enviando ? "Publicando…" : "Publicar reseña"}
                 </button>
@@ -411,7 +413,7 @@ export default function ResenasCliente() {
                   <button
                     type="button"
                     onClick={() => setModalAuthAbierto(true)}
-                    className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                    className={buttonClassName("secondary", "text-sm")}
                   >
                     Iniciar sesión
                   </button>
@@ -419,12 +421,12 @@ export default function ResenasCliente() {
               </div>
 
               {errorEnvio && (
-                <p role="alert" className="text-sm text-red-700">
+                <p role="alert" className="text-sm text-status-error">
                   {errorEnvio}
                 </p>
               )}
               {exito && (
-                <p role="status" className="text-sm text-[var(--color-positive)]">
+                <p role="status" className="text-sm text-positive">
                   {exito}
                 </p>
               )}
@@ -436,11 +438,11 @@ export default function ResenasCliente() {
               <div>
                 <h2
                   id="titulo-listado-resenas"
-                  className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+                  className="text-lg font-medium uppercase tracking-normal text-ink"
                 >
                   Todas las reseñas
                 </h2>
-                <p className="mt-1 text-sm text-[var(--color-subtle)]">
+                <p className="mt-1 text-sm text-subtle">
                   {cargando
                     ? "Cargando reseñas…"
                     : `${resenasFiltradas.length} de ${resenas.length} reseñas.`}
@@ -451,7 +453,7 @@ export default function ResenasCliente() {
                 <div>
                   <label
                     htmlFor="filtro-producto-resenas"
-                    className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                    className="block text-[11px] font-medium uppercase tracking-normal text-subtle"
                   >
                     Filtrar por producto
                   </label>
@@ -465,7 +467,7 @@ export default function ResenasCliente() {
                           : Number(evento.target.value),
                       )
                     }
-                    className="mt-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                    className={`mt-1 min-h-11 rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-xs text-ink ${CLASE_FOCO}`}
                   >
                     <option value="todas">Todos los productos</option>
                     {productosConResenas.map((producto) => (
@@ -482,7 +484,7 @@ export default function ResenasCliente() {
                 <div>
                   <label
                     htmlFor="orden-resenas"
-                    className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+                    className="block text-[11px] font-medium uppercase tracking-normal text-subtle"
                   >
                     Orden
                   </label>
@@ -492,7 +494,7 @@ export default function ResenasCliente() {
                     onChange={(evento) =>
                       setOrden(evento.target.value as OrdenResenas)
                     }
-                    className="mt-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                    className={`mt-1 min-h-11 rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-xs text-ink ${CLASE_FOCO}`}
                   >
                     <option value="recientes">Más recientes</option>
                     <option value="antiguas">Más antiguas</option>
@@ -505,13 +507,13 @@ export default function ResenasCliente() {
               <label htmlFor="buscar-resenas" className="sr-only">
                 Buscar reseñas por comentario, autor o producto
               </label>
-              <input
+              <Input
                 id="buscar-resenas"
                 type="search"
                 value={busqueda}
                 onChange={(evento) => setBusqueda(evento.target.value)}
                 placeholder="Buscar por comentario, autor o producto…"
-                className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                className="text-sm"
               />
             </div>
 
@@ -519,7 +521,7 @@ export default function ResenasCliente() {
               <div
                 role="status"
                 aria-busy="true"
-                className="mt-4 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-8 text-center text-sm text-[var(--color-subtle)]"
+                className="mt-4 rounded-card border border-line bg-paper p-8 text-center text-sm text-subtle"
               >
                 Cargando reseñas de la comunidad…
               </div>
@@ -553,31 +555,31 @@ export default function ResenasCliente() {
                 {resenasFiltradas.map((resena) => (
                   <li
                     key={resena.idResena}
-                    className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)]"
+                    className="rounded-card border border-line bg-paper p-4"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-blue)]/10 text-sm font-bold text-[var(--color-brand-blue)]"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-blue/10 text-sm font-medium text-brand-blue"
                         >
                           {inicialDe(resena.nombreUsuario ?? "")}
                         </span>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="truncate text-sm font-semibold text-[var(--color-ink)]">
+                            <p className="truncate text-sm font-medium text-ink">
                               {resena.nombreUsuario || "Usuario"}
                             </p>
                             {resena.puntuacion && (
                               <span
-                                className="flex items-center text-xs text-[var(--color-star)]"
+                                className="flex items-center text-xs text-star"
                                 aria-label={`${resena.puntuacion} de 5 estrellas`}
                               >
                                 {"★".repeat(resena.puntuacion)}
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-[var(--color-subtle)]">
+                          <p className="text-xs text-subtle">
                             {formatearFecha(resena.fechaCreacion)}
                           </p>
                         </div>
@@ -586,14 +588,14 @@ export default function ResenasCliente() {
                       {resena.idProducto > 0 && (
                         <Link
                           href={`/productos/${resena.idProducto}`}
-                          className={`max-w-full truncate rounded-md bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/10 ${CLASE_FOCO}`}
+                          className={`max-w-full truncate rounded-card bg-canvas px-2.5 py-1 text-xs font-medium text-brand-blue transition-colors hover:bg-brand-blue/10 ${CLASE_FOCO}`}
                         >
                           {resena.nombreProducto || `Producto #${resena.idProducto}`}
                         </Link>
                       )}
                     </div>
 
-                    <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                    <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-ink">
                       {resena.comentario}
                     </p>
 
@@ -620,7 +622,7 @@ export default function ResenasCliente() {
 
                     {resena.idUsuario !== usuario?.idUsuario &&
                       (resenasReportadas.has(resena.idResena) ? (
-                        <p className="mt-3 text-xs font-medium text-[var(--color-positive)]">
+                        <p className="mt-3 text-xs font-medium text-positive">
                           Reporte enviado
                         </p>
                       ) : (
@@ -634,7 +636,7 @@ export default function ResenasCliente() {
                             setResenaAReportar(resena.idResena);
                           }}
                           aria-label="Reportar reseña"
-                          className={`mt-3 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
+                          className={`mt-3 inline-flex cursor-pointer items-center gap-1 rounded-card px-2 py-1 text-xs font-medium text-subtle transition-colors hover:bg-canvas hover:text-[var(--color-status-error)] ${CLASE_FOCO}`}
                         >
                           <svg
                             aria-hidden="true"
@@ -657,7 +659,7 @@ export default function ResenasCliente() {
                         type="button"
                         onClick={() => setModalAuthAbierto(true)}
                         aria-label="Iniciar sesión para reportar reseña"
-                        className={`mt-3 inline-flex cursor-pointer items-center rounded-md px-2 py-1 text-xs font-medium text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+                        className={`mt-3 inline-flex cursor-pointer items-center rounded-card px-2 py-1 text-xs font-medium text-brand-blue transition-colors hover:bg-canvas ${CLASE_FOCO}`}
                       >
                         Iniciar sesión para reportar
                       </button>
@@ -672,20 +674,20 @@ export default function ResenasCliente() {
         <aside className="space-y-4">
           <section
             aria-labelledby="titulo-mejor-valorados"
-            className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+            className="rounded-card border border-line bg-paper p-5"
           >
             <h2
               id="titulo-mejor-valorados"
-              className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]"
+              className="text-sm font-medium uppercase tracking-normal text-subtle"
             >
               Mejor valorados
             </h2>
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 text-xs text-subtle">
               Promedio real de valoraciones, independiente de las reseñas.
             </p>
 
             {mejorValorados.length === 0 ? (
-              <p className="mt-3 text-sm text-[var(--color-subtle)]">
+              <p className="mt-3 text-sm text-subtle">
                 Todavía no hay valoraciones registradas.
               </p>
             ) : (
@@ -694,9 +696,9 @@ export default function ResenasCliente() {
                   <li key={producto.idProducto}>
                     <Link
                       href={`/productos/${producto.idProducto}`}
-                      className={`block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+                      className={`block rounded-card p-1 transition-colors hover:bg-canvas ${CLASE_FOCO}`}
                     >
-                      <span className="line-clamp-2 text-sm font-semibold text-[var(--color-ink)]">
+                      <span className="line-clamp-2 text-sm font-medium text-ink">
                         {producto.nombre}
                       </span>
                       <span className="mt-1 block">
@@ -713,17 +715,17 @@ export default function ResenasCliente() {
             )}
           </section>
 
-          <section className="rounded-xl border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/5 p-5">
-            <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+          <section className="rounded-card border border-line bg-paper p-5">
+            <h2 className="text-sm font-medium text-ink">
               ¿Quieres comparar antes de opinar?
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm leading-relaxed text-subtle">
               Agrega hasta cuatro productos y revisa sus diferencias con datos
               del catálogo.
             </p>
             <Link
               href="/comparador"
-              className={`mt-3 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+              className={`mt-3 inline-flex rounded-card bg-brand-solid px-4 py-2 text-sm font-medium text-on-solid transition-colors hover:bg-brand-solid/90 ${CLASE_FOCO}`}
             >
               Ir al comparador
             </Link>

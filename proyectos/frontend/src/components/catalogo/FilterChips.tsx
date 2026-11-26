@@ -20,7 +20,7 @@ export default function FilterChips({
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p
-          className="text-xs font-semibold text-[var(--color-subtle)]"
+          className="text-xs font-medium text-subtle"
           aria-live="polite"
         >
           Filtros activos ({chips.length})
@@ -29,7 +29,7 @@ export default function FilterChips({
           <button
             type="button"
             onClick={onLimpiar}
-            className={`cursor-pointer text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:underline ${CLASE_FOCO}`}
+            className={`cursor-pointer text-xs font-medium text-brand-blue transition-colors hover:underline ${CLASE_FOCO}`}
           >
             Borrar filtros
           </button>
@@ -38,13 +38,13 @@ export default function FilterChips({
       <ul className="flex flex-wrap gap-2" aria-label="Filtros activos">
         {chips.map((chip) => (
           <li key={`${chip.tipo}-${chip.valor}`}>
-            <span className="inline-flex items-center gap-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] py-1 pl-2.5 pr-1 text-xs font-medium text-[var(--color-ink)]">
+            <span className="inline-flex items-center gap-1 rounded-card border border-hairline bg-paper py-1 pl-2.5 pr-1 text-xs font-medium text-ink">
               {chip.etiqueta}
               <button
                 type="button"
                 onClick={() => onQuitar(chip)}
                 aria-label={`Quitar filtro ${chip.etiqueta}`}
-                className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] ${CLASE_FOCO}`}
+                className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded text-subtle transition-colors hover:bg-canvas hover:text-ink ${CLASE_FOCO}`}
               >
                 <svg
                   aria-hidden="true"

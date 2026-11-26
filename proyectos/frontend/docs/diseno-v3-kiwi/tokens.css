@@ -1,0 +1,76 @@
+/* TecReview · Sistema visual V2 "Kiwi" (estructura ORYZO, paleta kiwi; contraste WCAG AA verificado)
+   Tokens para importar en el CSS global del proyecto. */
+
+:root,
+[data-theme="dark"] {
+  /* Superficies (sin sombras: la profundidad sale de estos pasos) */
+  --tr-canvas: #10140A;      /* semilla: fondo de página */
+  --tr-void: #0A0D06;        /* vitrina: fondo de imagen de producto */
+  --tr-card: #171D0F;        /* tarjeta, siempre con borde corcho */
+  --tr-raised: #2F4416;      /* pulpa honda: segmento activo, nav activa, tag verificado */
+  --tr-selected: #1E2812;    /* fila o elemento seleccionado */
+
+  /* Líneas */
+  --tr-border: #3A4626;      /* hoja: bordes y divisores punteados */
+  --tr-structure: #8C7A50;   /* piel: tag pendiente, línea punteada "sin dato" */
+
+  /* Texto */
+  --tr-text: #F4F1DC;        /* corazón: texto principal (nunca #fff) */
+  --tr-text-body: #E6E3CB;   /* texto de lectura larga */
+  --tr-text-2: #CFCDB3;      /* secundario */
+  --tr-text-3: #B4B397;      /* etiquetas, metadatos */
+
+  /* Acción y señales */
+  --tr-accent: #A5D64C;      /* verde kiwi: botón principal, enlaces, activo, valor destacado */
+  --tr-on-accent: #10140A;   /* texto sobre el botón principal (10,9:1) */
+  --tr-deal: #E6C34A;        /* kiwi dorado: descuentos y valoraciones (texto o contorno) */
+  --tr-danger: #FF8C69;      /* coral: errores y destructivo (texto o contorno) */
+
+  /* Tipografía (Inter sustituye a Halyard Display) */
+  --tr-font: "Inter", system-ui, sans-serif;
+  --tr-text-display: 51px;   /* lh .9, MAYÚSCULAS 500 */
+  --tr-text-heading: 41px;   /* lh .9 */
+  --tr-text-heading-sm: 24px;/* lh 1.09 */
+  --tr-text-sub: 18px;
+  --tr-text-body-lg: 29px;   /* lh 1.26, minúsculas 400: solo descripciones de vitrina */
+  --tr-text-base: 15px;      /* minúsculas 400: reseñas, descripciones, ayudas */
+  --tr-text-label: 12px;     /* MAYÚSCULAS 500: nav, botones, etiquetas */
+  --tr-text-micro: 11px;
+
+  /* Radios: este es todo el vocabulario */
+  --tr-radius-pill: 36px;    /* botón relleno */
+  --tr-radius-ghost: 22.5px; /* botón contorno */
+  --tr-radius-card: 12px;    /* contenedores (nunca menos) */
+  --tr-radius-full: 9999px;  /* chips, tags, segmentado */
+  --tr-radius-input: 0;      /* campos: solo línea inferior */
+
+  /* Espaciado */
+  --tr-gap: 18px;
+  --tr-card-padding: 24px;
+}
+
+/* Tema claro = inversión */
+[data-theme="light"] {
+  --tr-canvas: #F6F3DF;
+  --tr-void: #ECE8CC;
+  --tr-card: #FCFAEE;
+  --tr-raised: #E2E8C6;
+  --tr-selected: #ECE8CC;
+  --tr-border: #CFCBA9;
+  --tr-structure: #8C7A50;
+  --tr-text: #10140A;
+  --tr-text-body: #1E2410;
+  --tr-text-2: #454A2E;
+  --tr-text-3: #5C5F42;
+  --tr-accent: #3D6614;      /* 5,5:1 sobre lienzo claro (texto y enlaces) */
+  --tr-on-accent: #F6F3DF;   /* en tema claro el botón principal usa fondo #2F4416: 9,6:1 */
+  --tr-deal: #6B5200;        /* 6,0:1 */
+  --tr-danger: #B3361B;      /* 5,4:1 */
+}
+
+body {
+  background: var(--tr-canvas);
+  color: var(--tr-text);
+  font-family: var(--tr-font);
+  font-feature-settings: "ss01" on;
+}

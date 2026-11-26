@@ -457,28 +457,28 @@ function AdminFichaTecnicaDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby={idTitulo}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-sm"
     >
-      <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-2xl overflow-hidden">
+      <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] rounded-card border border-line bg-paper text-ink overflow-hidden">
         {/* Cabecera */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-line bg-canvas">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <span className="text-xs font-mono font-medium text-ink bg-surface-2 px-2 py-0.5 rounded-card border border-surface-border-strong">
                 Ficha Técnica V3
               </span>
-              <span className="text-xs text-[var(--color-subtle)]">
+              <span className="text-xs text-subtle">
                 Producto #{producto.idProducto}
               </span>
             </div>
-            <h2 id={idTitulo} className="text-lg font-bold text-[var(--color-ink)] mt-0.5">
+            <h2 id={idTitulo} className="text-lg font-medium text-ink mt-0.5">
               {producto.nombre}
             </h2>
           </div>
           <button
             type="button"
             onClick={onCerrar}
-            className={`p-2 rounded-lg text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper)] transition-colors ${CLASE_FOCO}`}
+            className={`p-2 rounded-card text-subtle hover:text-ink hover:bg-paper transition-colors ${CLASE_FOCO}`}
             aria-label="Cerrar modal de ficha técnica"
           >
             ✕
@@ -486,15 +486,15 @@ function AdminFichaTecnicaDialog({
         </header>
 
         {/* Resumen de Estado */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-3 border-b border-[var(--color-hairline)] bg-[var(--color-paper)] text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-3 border-b border-line bg-paper text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">Estado:</span>
+            <span className="font-medium">Estado:</span>
             {ficha ? (
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded font-medium ${
+                className={`inline-flex items-center px-2 py-0.5 rounded-card font-medium ${
                   validacionContrato.valido
-                    ? "bg-green-100 text-green-800 border border-green-300"
-                    : "bg-amber-100 text-amber-800 border border-amber-300"
+                    ? "bg-surface-2 text-brand-blue border border-line"
+                    : "bg-surface-2 text-star border border-surface-border-strong"
                 }`}
               >
                 {validacionContrato.valido
@@ -502,12 +502,12 @@ function AdminFichaTecnicaDialog({
                   : `⚠ V3 con advertencias (${validacionContrato.errores.length})`}
               </span>
             ) : (
-              <span className="inline-flex items-center px-2 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-300">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-card bg-surface-muted text-subtle border border-line">
                 Sin Ficha V3 (Pendiente o Legacy)
               </span>
             )}
             {ficha && (
-              <span className="text-[var(--color-subtle)]">
+              <span className="text-subtle">
                 Categoría V3: <strong>{ficha.categoria}</strong>
               </span>
             )}
@@ -515,17 +515,17 @@ function AdminFichaTecnicaDialog({
 
           {ficha && (
             <div className="flex items-center gap-2 font-mono text-[11px]">
-              <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-800" title="Total especificaciones">
+              <span className="px-1.5 py-0.5 rounded-card bg-surface-2 text-subtle" title="Total especificaciones">
                 Total: {metricasFicha.total}
               </span>
-              <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800" title="Verificadas">
+              <span className="px-1.5 py-0.5 rounded-card bg-surface-2 text-ink" title="Verificadas">
                 ✓ {metricasFicha.verificadas}
               </span>
-              <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800" title="Pendientes">
+              <span className="px-1.5 py-0.5 rounded-card bg-surface-2 text-star" title="Pendientes">
                 ⏳ {metricasFicha.pendientes}
               </span>
               {metricasFicha.revision > 0 && (
-                <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800" title="Requieren revisión">
+                <span className="px-1.5 py-0.5 rounded-card bg-paper text-status-error" title="Requieren revisión">
                   ⚠ {metricasFicha.revision}
                 </span>
               )}
@@ -535,17 +535,17 @@ function AdminFichaTecnicaDialog({
 
         {/* Mensajes de Alerta / Éxito */}
         {errorCarga && (
-          <div role="alert" className="mx-6 mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-800">
+          <div role="alert" className="mx-6 mt-3 p-3 rounded-card bg-paper border border-status-error text-xs text-status-error">
             {errorCarga}
           </div>
         )}
         {errorAccion && (
-          <div role="alert" className="mx-6 mt-3 p-3 rounded-lg bg-rose-50 border border-rose-300 text-xs text-rose-900">
+          <div role="alert" className="mx-6 mt-3 p-3 rounded-card bg-paper border border-status-error text-xs text-status-error">
             {errorAccion}
           </div>
         )}
         {mensajeExito && (
-          <div role="status" className="mx-6 mt-3 p-3 rounded-lg bg-emerald-50 border border-emerald-300 text-xs text-emerald-900">
+          <div role="status" className="mx-6 mt-3 p-3 rounded-card bg-surface-2 border border-surface-border-strong text-xs text-ink">
             {mensajeExito}
           </div>
         )}
@@ -553,17 +553,17 @@ function AdminFichaTecnicaDialog({
         {/* Contenido Principal */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {cargando ? (
-            <div className="py-16 text-center text-sm text-[var(--color-subtle)]">
+            <div className="py-16 text-center text-sm text-subtle">
               Consultando ficha técnica desde la API...
             </div>
           ) : !ficha ? (
-            <div className="py-12 text-center space-y-4 border border-dashed border-[var(--color-hairline)] rounded-xl bg-[var(--color-canvas)]">
+            <div className="py-12 text-center space-y-4 border border-dashed border-line rounded-card bg-canvas">
               <div className="text-3xl">📋</div>
               <div>
-                <h3 className="text-base font-semibold text-[var(--color-ink)]">
+                <h3 className="text-base font-medium text-ink">
                   Este producto no cuenta con ficha técnica V3
                 </h3>
-                <p className="mt-1 text-xs text-[var(--color-subtle)] max-w-md mx-auto">
+                <p className="mt-1 text-xs text-subtle max-w-md mx-auto">
                   Actualmente no tiene especificaciones registradas bajo el esquema canónico V3.
                   Puedes iniciar un borrador estructurado para documentar sus especificaciones con fuentes verificables.
                 </p>
@@ -571,7 +571,7 @@ function AdminFichaTecnicaDialog({
               <button
                 type="button"
                 onClick={iniciarPlantilla}
-                className={`px-4 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors cursor-pointer ${CLASE_FOCO}`}
+                className={`px-4 py-2 rounded-card bg-brand-solid text-on-solid text-xs font-medium hover:bg-brand-solid transition-colors cursor-pointer ${CLASE_FOCO}`}
               >
                 + Iniciar Ficha V3 (Borrador Pendiente)
               </button>
@@ -579,14 +579,14 @@ function AdminFichaTecnicaDialog({
           ) : (
             <>
               {/* Barra de pestañas */}
-              <div className="flex border-b border-[var(--color-hairline)] gap-4 text-xs font-semibold">
+              <div className="flex border-b border-line gap-4 text-xs font-medium">
                 <button
                   type="button"
                   onClick={() => setTab("especificaciones")}
                   className={`pb-2 transition-colors cursor-pointer ${
                     tab === "especificaciones"
-                      ? "border-b-2 border-emerald-600 text-emerald-600"
-                      : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                      ? "border-b-2 border-brand-blue text-ink"
+                      : "text-subtle hover:text-ink"
                   }`}
                 >
                   Especificaciones ({ficha.especificaciones.length})
@@ -596,8 +596,8 @@ function AdminFichaTecnicaDialog({
                   onClick={() => setTab("variantes")}
                   className={`pb-2 transition-colors cursor-pointer ${
                     tab === "variantes"
-                      ? "border-b-2 border-emerald-600 text-emerald-600"
-                      : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                      ? "border-b-2 border-brand-blue text-ink"
+                      : "text-subtle hover:text-ink"
                   }`}
                 >
                   Variantes ({ficha.variantes.length})
@@ -607,8 +607,8 @@ function AdminFichaTecnicaDialog({
                   onClick={() => setTab("fuentes_evidencias")}
                   className={`pb-2 transition-colors cursor-pointer ${
                     tab === "fuentes_evidencias"
-                      ? "border-b-2 border-emerald-600 text-emerald-600"
-                      : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                      ? "border-b-2 border-brand-blue text-ink"
+                      : "text-subtle hover:text-ink"
                   }`}
                 >
                   Fuentes ({ficha.fuentes.length}) & Evidencias ({ficha.evidencias.length})
@@ -618,8 +618,8 @@ function AdminFichaTecnicaDialog({
                   onClick={() => setTab("json")}
                   className={`pb-2 transition-colors cursor-pointer ${
                     tab === "json"
-                      ? "border-b-2 border-emerald-600 text-emerald-600"
-                      : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                      ? "border-b-2 border-brand-blue text-ink"
+                      : "text-subtle hover:text-ink"
                   }`}
                 >
                   JSON Crudo & Validación
@@ -631,14 +631,14 @@ function AdminFichaTecnicaDialog({
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <label htmlFor="filtro-verif" className="text-xs text-[var(--color-subtle)]">
+                      <label htmlFor="filtro-verif" className="text-xs text-subtle">
                         Filtrar:
                       </label>
                       <select
                         id="filtro-verif"
                         value={filtroEstadoVerificacion}
                         onChange={(e) => setFiltroEstadoVerificacion(e.target.value)}
-                        className="text-xs p-1 rounded border border-[var(--color-hairline)] bg-[var(--color-paper)]"
+                        className="text-xs p-1 rounded-card border border-line bg-paper"
                       >
                         <option value="todos">Todos los estados</option>
                         <option value="pendiente">Solo Pendientes</option>
@@ -651,15 +651,15 @@ function AdminFichaTecnicaDialog({
                     <button
                       type="button"
                       onClick={() => setMostrarFormNuevaSpec(!mostrarFormNuevaSpec)}
-                      className={`px-3 py-1.5 rounded bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors cursor-pointer ${CLASE_FOCO}`}
+                      className={`px-3 py-1.5 rounded-card bg-brand-solid text-on-solid text-xs font-medium hover:bg-brand-solid transition-colors cursor-pointer ${CLASE_FOCO}`}
                     >
                       {mostrarFormNuevaSpec ? "✕ Cancelar" : "+ Nueva Especificación"}
                     </button>
                   </div>
 
                   {mostrarFormNuevaSpec && (
-                    <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/50 space-y-3 text-xs">
-                      <h4 className="font-semibold text-emerald-900">Agregar Especificación Técnica</h4>
+                    <div className="p-4 rounded-card border border-surface-border-strong bg-surface-2 space-y-3 text-xs">
+                      <h4 className="font-medium text-ink">Agregar Especificación Técnica</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                           <label className="block text-[11px] font-medium mb-1">Clave (ID canónico):</label>
@@ -668,7 +668,7 @@ function AdminFichaTecnicaDialog({
                             placeholder="ej. display.diagonal"
                             value={nuevaClave}
                             onChange={(e) => setNuevaClave(e.target.value)}
-                            className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                            className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                           />
                         </div>
                         <div>
@@ -678,7 +678,7 @@ function AdminFichaTecnicaDialog({
                             placeholder="ej. Tamaño de Pantalla"
                             value={nuevoNombre}
                             onChange={(e) => setNuevoNombre(e.target.value)}
-                            className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                            className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                           />
                         </div>
                         <div>
@@ -688,7 +688,7 @@ function AdminFichaTecnicaDialog({
                             placeholder="ej. pantalla, procesador, etc."
                             value={nuevoGrupo}
                             onChange={(e) => setNuevoGrupo(e.target.value)}
-                            className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                            className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                           />
                         </div>
                       </div>
@@ -699,7 +699,7 @@ function AdminFichaTecnicaDialog({
                           <select
                             value={nuevoEstadoDato}
                             onChange={(e) => setNuevoEstadoDato(e.target.value as EstadoDatoV3)}
-                            className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                            className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                           >
                             <option value="conocido">Conocido</option>
                             <option value="desconocido">Desconocido</option>
@@ -717,7 +717,7 @@ function AdminFichaTecnicaDialog({
                                 placeholder="ej. 6.7 pulgadas"
                                 value={nuevoValorTexto}
                                 onChange={(e) => setNuevoValorTexto(e.target.value)}
-                                className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                                className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                               />
                             </div>
                             <div>
@@ -727,7 +727,7 @@ function AdminFichaTecnicaDialog({
                                 placeholder="ej. in, mm, mAh, GB"
                                 value={nuevaUnidad}
                                 onChange={(e) => setNuevaUnidad(e.target.value)}
-                                className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                                className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                               />
                             </div>
                           </>
@@ -739,7 +739,7 @@ function AdminFichaTecnicaDialog({
                               placeholder="Motivo por el cual no aplica a este dispositivo"
                               value={nuevaJustificacion}
                               onChange={(e) => setNuevaJustificacion(e.target.value)}
-                              className="w-full p-2 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                              className="w-full p-2 rounded-card border border-line bg-paper text-xs"
                             />
                           </div>
                         ) : null}
@@ -751,7 +751,7 @@ function AdminFichaTecnicaDialog({
                           <select
                             value={nuevoEstadoVerif}
                             onChange={(e) => setNuevoEstadoVerif(e.target.value as EstadoVerificacionV3)}
-                            className="p-1 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                            className="p-1 rounded-card border border-line bg-paper text-xs"
                           >
                             <option value="pendiente">Pendiente</option>
                             <option value="con_fuente">Con fuente</option>
@@ -762,7 +762,7 @@ function AdminFichaTecnicaDialog({
                         <button
                           type="button"
                           onClick={agregarEspecificacion}
-                          className="px-4 py-1.5 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 cursor-pointer"
+                          className="px-4 py-1.5 rounded-card bg-brand-solid text-on-solid font-medium hover:bg-brand-solid cursor-pointer"
                         >
                           Confirmar Especificación
                         </button>
@@ -771,13 +771,13 @@ function AdminFichaTecnicaDialog({
                   )}
 
                   {especificacionesFiltradas.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-[var(--color-subtle)] border border-dashed border-[var(--color-hairline)] rounded-lg">
+                    <div className="py-8 text-center text-xs text-subtle border border-dashed border-line rounded-card">
                       No hay especificaciones en esta categoría o filtro.
                     </div>
                   ) : (
-                    <div className="border border-[var(--color-hairline)] rounded-lg overflow-x-auto">
-                      <table className="w-full text-left text-xs divide-y divide-[var(--color-hairline)]">
-                        <thead className="bg-[var(--color-canvas)] text-[var(--color-subtle)] uppercase text-[10px] font-semibold">
+                    <div className="border border-line rounded-card overflow-x-auto">
+                      <table className="w-full text-left text-xs divide-y divide-line">
+                        <thead className="bg-canvas text-subtle uppercase text-[10px] font-medium">
                           <tr>
                             <th className="py-2 px-3">Clave / Nombre</th>
                             <th className="py-2 px-3">Grupo</th>
@@ -787,22 +787,22 @@ function AdminFichaTecnicaDialog({
                             <th className="py-2 px-3 text-right">Acciones</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--color-hairline)] bg-[var(--color-paper)]">
+                        <tbody className="divide-y divide-line bg-paper">
                           {especificacionesFiltradas.map((spec) => (
-                            <tr key={spec.id} className="hover:bg-[var(--color-canvas)] transition-colors">
+                            <tr key={spec.id} className="hover:bg-canvas transition-colors">
                               <td className="py-2 px-3 font-mono text-[11px]">
-                                <div className="font-semibold text-[var(--color-ink)] font-sans">{spec.nombre}</div>
-                                <span className="text-[var(--color-subtle)] text-[10px]">{spec.clave}</span>
+                                <div className="font-medium text-ink font-sans">{spec.nombre}</div>
+                                <span className="text-subtle text-[10px]">{spec.clave}</span>
                               </td>
-                              <td className="py-2 px-3 text-[var(--color-subtle)]">{spec.grupo}</td>
+                              <td className="py-2 px-3 text-subtle">{spec.grupo}</td>
                               <td className="py-2 px-3">
                                 <span
-                                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                                  className={`px-1.5 py-0.5 rounded-card text-[10px] font-medium ${
                                     spec.estado_dato === "conocido"
-                                      ? "bg-blue-50 text-blue-700"
+                                      ? "bg-surface-2 text-brand-blue"
                                       : spec.estado_dato === "no_aplica"
-                                        ? "bg-gray-100 text-gray-700"
-                                        : "bg-amber-50 text-amber-700"
+                                        ? "bg-surface-muted text-subtle"
+                                        : "bg-surface-2 text-star"
                                   }`}
                                 >
                                   {spec.estado_dato}
@@ -815,9 +815,9 @@ function AdminFichaTecnicaDialog({
                                     {spec.valor_original.unidad ? ` (${spec.valor_original.unidad})` : ""}
                                   </span>
                                 ) : spec.justificacion_estado ? (
-                                  <span className="italic text-[var(--color-subtle)]">{spec.justificacion_estado}</span>
+                                  <span className="italic text-subtle">{spec.justificacion_estado}</span>
                                 ) : (
-                                  <span className="text-[var(--color-subtle)]">—</span>
+                                  <span className="text-subtle">—</span>
                                 )}
                               </td>
                               <td className="py-2 px-3">
@@ -829,7 +829,7 @@ function AdminFichaTecnicaDialog({
                                       e.target.value as EstadoVerificacionV3,
                                     )
                                   }
-                                  className="text-[11px] p-1 rounded border border-[var(--color-hairline)] bg-[var(--color-paper)]"
+                                  className="text-[11px] p-1 rounded-card border border-line bg-paper"
                                 >
                                   <option value="pendiente">⏳ Pendiente</option>
                                   <option value="con_fuente">📖 Con fuente</option>
@@ -841,7 +841,7 @@ function AdminFichaTecnicaDialog({
                                 <button
                                   type="button"
                                   onClick={() => eliminarEspecificacion(spec.id)}
-                                  className="text-rose-600 hover:text-rose-800 text-[11px] font-medium p-1 cursor-pointer"
+                                  className="text-status-error hover:text-status-error text-[11px] font-medium p-1 cursor-pointer"
                                   aria-label={`Eliminar especificación ${spec.nombre}`}
                                 >
                                   Eliminar
@@ -859,49 +859,49 @@ function AdminFichaTecnicaDialog({
               {/* Pestaña: Variantes */}
               {tab === "variantes" && (
                 <div className="space-y-4">
-                  <div className="p-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] flex flex-wrap items-center gap-3 text-xs">
+                  <div className="p-3 rounded-card border border-line bg-canvas flex flex-wrap items-center gap-3 text-xs">
                     <input
                       type="text"
                       placeholder="Modelo de la variante (ej. A063)"
                       value={nuevoModeloVar}
                       onChange={(e) => setNuevoModeloVar(e.target.value)}
-                      className="p-1.5 rounded border border-[var(--color-hairline)] bg-white text-xs flex-1 min-w-[150px]"
+                      className="p-1.5 rounded-card border border-line bg-paper text-xs flex-1 min-w-[150px]"
                     />
                     <input
                       type="text"
                       placeholder="SKU o MTM"
                       value={nuevoSkuVar}
                       onChange={(e) => setNuevoSkuVar(e.target.value)}
-                      className="p-1.5 rounded border border-[var(--color-hairline)] bg-white text-xs flex-1 min-w-[120px]"
+                      className="p-1.5 rounded-card border border-line bg-paper text-xs flex-1 min-w-[120px]"
                     />
                     <button
                       type="button"
                       onClick={agregarVariante}
-                      className="px-3 py-1.5 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 cursor-pointer text-xs"
+                      className="px-3 py-1.5 rounded-card bg-brand-solid text-on-solid font-medium hover:bg-brand-solid cursor-pointer text-xs"
                     >
                       + Agregar Variante
                     </button>
                   </div>
 
                   {ficha.variantes.length === 0 ? (
-                    <div className="py-6 text-center text-xs text-[var(--color-subtle)]">
+                    <div className="py-6 text-center text-xs text-subtle">
                       No hay variantes declaradas. Se recomienda registrar al menos la variante base del modelo.
                     </div>
                   ) : (
-                    <ul className="divide-y divide-[var(--color-hairline)] border border-[var(--color-hairline)] rounded-lg text-xs">
+                    <ul className="divide-y divide-line border border-line rounded-card text-xs">
                       {ficha.variantes.map((v) => (
-                        <li key={v.id} className="p-3 flex items-center justify-between hover:bg-[var(--color-canvas)]">
+                        <li key={v.id} className="p-3 flex items-center justify-between hover:bg-canvas">
                           <div>
-                            <span className="font-mono text-emerald-700 font-semibold">{v.id}</span>
-                            <span className="ml-2 font-medium text-[var(--color-ink)]">
+                            <span className="font-mono text-ink font-medium">{v.id}</span>
+                            <span className="ml-2 font-medium text-ink">
                               {v.modelo ?? "Sin modelo específico"}
                             </span>
-                            {v.sku && <span className="ml-2 text-[var(--color-subtle)]">(SKU: {v.sku})</span>}
+                            {v.sku && <span className="ml-2 text-subtle">(SKU: {v.sku})</span>}
                           </div>
                           <button
                             type="button"
                             onClick={() => eliminarVariante(v.id)}
-                            className="text-rose-600 hover:text-rose-800 font-medium text-[11px] cursor-pointer"
+                            className="text-status-error hover:text-status-error font-medium text-[11px] cursor-pointer"
                           >
                             Eliminar
                           </button>
@@ -917,21 +917,21 @@ function AdminFichaTecnicaDialog({
                 <div className="space-y-6">
                   {/* Fuentes */}
                   <div className="space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-subtle)]">
+                    <h4 className="text-xs font-medium uppercase tracking-normal text-subtle">
                       Fuentes Documentales ({ficha.fuentes.length})
                     </h4>
-                    <div className="p-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] flex flex-wrap items-center gap-3 text-xs">
+                    <div className="p-3 rounded-card border border-line bg-canvas flex flex-wrap items-center gap-3 text-xs">
                       <input
                         type="text"
                         placeholder="Nombre de la fuente (ej. Fabricante Oficial)"
                         value={nuevoNombreFuente}
                         onChange={(e) => setNuevoNombreFuente(e.target.value)}
-                        className="p-1.5 rounded border border-[var(--color-hairline)] bg-white text-xs flex-1 min-w-[150px]"
+                        className="p-1.5 rounded-card border border-line bg-paper text-xs flex-1 min-w-[150px]"
                       />
                       <select
                         value={nuevoTipoFuente}
                         onChange={(e) => setNuevoTipoFuente(e.target.value as FuenteFichaV3["tipo"])}
-                        className="p-1.5 rounded border border-[var(--color-hairline)] bg-white text-xs"
+                        className="p-1.5 rounded-card border border-line bg-paper text-xs"
                       >
                         <option value="fabricante">Fabricante</option>
                         <option value="organismo">Organismo</option>
@@ -945,24 +945,24 @@ function AdminFichaTecnicaDialog({
                         placeholder="URL de la fuente oficial"
                         value={nuevaUrlFuente}
                         onChange={(e) => setNuevaUrlFuente(e.target.value)}
-                        className="p-1.5 rounded border border-[var(--color-hairline)] bg-white text-xs flex-1 min-w-[150px]"
+                        className="p-1.5 rounded-card border border-line bg-paper text-xs flex-1 min-w-[150px]"
                       />
                       <button
                         type="button"
                         onClick={agregarFuente}
-                        className="px-3 py-1.5 rounded bg-emerald-600 text-white font-semibold hover:bg-emerald-700 cursor-pointer text-xs"
+                        className="px-3 py-1.5 rounded-card bg-brand-solid text-on-solid font-medium hover:bg-brand-solid cursor-pointer text-xs"
                       >
                         + Agregar Fuente
                       </button>
                     </div>
 
-                    <ul className="divide-y divide-[var(--color-hairline)] border border-[var(--color-hairline)] rounded-lg text-xs">
+                    <ul className="divide-y divide-line border border-line rounded-card text-xs">
                       {ficha.fuentes.map((f) => (
-                        <li key={f.id} className="p-3 flex items-center justify-between hover:bg-[var(--color-canvas)]">
+                        <li key={f.id} className="p-3 flex items-center justify-between hover:bg-canvas">
                           <div>
-                            <span className="font-mono text-emerald-700 font-semibold">{f.id}</span>
-                            <span className="ml-2 font-semibold text-[var(--color-ink)]">{f.nombre}</span>
-                            <span className="ml-2 px-1.5 py-0.5 rounded bg-slate-100 text-[10px] uppercase font-mono">
+                            <span className="font-mono text-ink font-medium">{f.id}</span>
+                            <span className="ml-2 font-medium text-ink">{f.nombre}</span>
+                            <span className="ml-2 px-1.5 py-0.5 rounded-card bg-surface-2 text-[10px] uppercase font-mono">
                               {f.tipo}
                             </span>
                             {f.url && (
@@ -970,7 +970,7 @@ function AdminFichaTecnicaDialog({
                                 href={f.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="ml-2 text-blue-600 hover:underline truncate max-w-xs inline-block align-bottom"
+                                className="ml-2 text-brand-blue hover:underline truncate max-w-xs inline-block align-bottom"
                               >
                                 {f.url}
                               </a>
@@ -979,7 +979,7 @@ function AdminFichaTecnicaDialog({
                           <button
                             type="button"
                             onClick={() => eliminarFuente(f.id)}
-                            className="text-rose-600 hover:text-rose-800 font-medium text-[11px] cursor-pointer"
+                            className="text-status-error hover:text-status-error font-medium text-[11px] cursor-pointer"
                           >
                             Eliminar
                           </button>
@@ -990,24 +990,24 @@ function AdminFichaTecnicaDialog({
 
                   {/* Evidencias */}
                   <div className="space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-subtle)]">
+                    <h4 className="text-xs font-medium uppercase tracking-normal text-subtle">
                       Evidencias Registradas ({ficha.evidencias.length})
                     </h4>
                     {ficha.evidencias.length === 0 ? (
-                      <p className="text-xs text-[var(--color-subtle)] italic">
+                      <p className="text-xs text-subtle italic">
                         No hay evidencias vinculadas. Puedes asociar extractos de fuentes oficiales para respaldar especificaciones clave.
                       </p>
                     ) : (
-                      <ul className="divide-y divide-[var(--color-hairline)] border border-[var(--color-hairline)] rounded-lg text-xs">
+                      <ul className="divide-y divide-line border border-line rounded-card text-xs">
                         {ficha.evidencias.map((ev) => (
-                          <li key={ev.id} className="p-3 flex items-start justify-between hover:bg-[var(--color-canvas)]">
+                          <li key={ev.id} className="p-3 flex items-start justify-between hover:bg-canvas">
                             <div>
-                              <span className="font-mono text-cyan-700 font-semibold">{ev.id}</span>
-                              <span className="ml-2 text-[var(--color-subtle)]">Fuente: {ev.fuente_id}</span>
-                              <span className="ml-2 px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[10px]">
+                              <span className="font-mono text-brand-blue font-medium">{ev.id}</span>
+                              <span className="ml-2 text-subtle">Fuente: {ev.fuente_id}</span>
+                              <span className="ml-2 px-1.5 py-0.5 rounded-card bg-surface-2 text-ink text-[10px]">
                                 {ev.postura}
                               </span>
-                              <p className="mt-1 text-xs text-[var(--color-ink)]">
+                              <p className="mt-1 text-xs text-ink">
                                 {ev.extracto ?? ev.localizador ?? "Evidencia sin extracto"}
                               </p>
                             </div>
@@ -1023,21 +1023,21 @@ function AdminFichaTecnicaDialog({
               {tab === "json" && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[var(--color-ink)]">
+                    <span className="text-xs font-medium text-ink">
                       Editor Directo de Payload JSON
                     </span>
                     <button
                       type="button"
                       onClick={aplicarJsonCrudo}
-                      className="px-3 py-1 rounded bg-slate-700 text-white text-xs font-medium hover:bg-slate-800 cursor-pointer"
+                      className="px-3 py-1 rounded-card bg-surface-2 text-ink text-xs font-medium hover:bg-surface-2 cursor-pointer"
                     >
                       Aplicar cambios del JSON
                     </button>
                   </div>
 
                   {!validacionContrato.valido && (
-                    <div className="p-3 rounded-lg bg-rose-50 border border-rose-300 text-xs text-rose-900 space-y-1">
-                      <span className="font-semibold block">Errores de validación del contrato V3:</span>
+                    <div className="p-3 rounded-card bg-paper border border-status-error text-xs text-status-error space-y-1">
+                      <span className="font-medium block">Errores de validación del contrato V3:</span>
                       <ul className="list-disc pl-5 space-y-0.5">
                         {validacionContrato.errores.map((err, i) => (
                           <li key={i}>{err}</li>
@@ -1050,7 +1050,7 @@ function AdminFichaTecnicaDialog({
                     rows={16}
                     value={fichaRawJson}
                     onChange={(e) => setFichaRawJson(e.target.value)}
-                    className="w-full font-mono text-xs p-3 rounded-lg border border-[var(--color-hairline)] bg-slate-900 text-slate-100"
+                    className="w-full font-mono text-xs p-3 rounded-card border border-line bg-surface-2 text-subtle"
                     placeholder="JSON de la ficha técnica..."
                   />
                 </div>
@@ -1060,8 +1060,8 @@ function AdminFichaTecnicaDialog({
         </div>
 
         {/* Pie de modal */}
-        <footer className="flex items-center justify-between px-6 py-3 border-t border-[var(--color-hairline)] bg-[var(--color-canvas)]">
-          <div className="text-xs text-[var(--color-subtle)]">
+        <footer className="flex items-center justify-between px-6 py-3 border-t border-line bg-canvas">
+          <div className="text-xs text-subtle">
             {ficha
               ? "Los cambios en la ficha técnica se guardan independientemente de los datos del producto."
               : "Inicia una plantilla para comenzar a registrar especificaciones V3."}
@@ -1072,7 +1072,7 @@ function AdminFichaTecnicaDialog({
               type="button"
               onClick={onCerrar}
               disabled={guardando}
-              className={`px-4 py-2 rounded-lg border border-[var(--color-hairline)] text-xs font-semibold hover:bg-[var(--color-paper)] transition-colors cursor-pointer ${CLASE_FOCO}`}
+              className={`px-4 py-2 rounded-card border border-line text-xs font-medium hover:bg-paper transition-colors cursor-pointer ${CLASE_FOCO}`}
             >
               Cerrar
             </button>
@@ -1081,7 +1081,7 @@ function AdminFichaTecnicaDialog({
                 type="button"
                 onClick={guardarFicha}
                 disabled={guardando}
-                className={`px-4 py-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition-colors cursor-pointer disabled:opacity-50 ${CLASE_FOCO}`}
+                className={`px-4 py-2 rounded-card bg-brand-solid text-on-solid text-xs font-medium hover:bg-brand-solid transition-colors cursor-pointer disabled:opacity-50 ${CLASE_FOCO}`}
               >
                 {guardando ? "Guardando ficha..." : "Guardar Ficha Técnica"}
               </button>

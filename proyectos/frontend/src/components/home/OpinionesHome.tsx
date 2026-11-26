@@ -65,35 +65,23 @@ export default function OpinionesHome({
   return (
     <section
       aria-labelledby="seccion-opiniones"
-      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
     >
-      <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2
               id="seccion-opiniones"
-              className="flex items-center gap-2 text-xl font-semibold tracking-tight text-[var(--color-ink)] sm:text-2xl"
+              className="flex items-center gap-2 text-[28px] font-medium uppercase leading-none tracking-normal text-ink"
             >
-              <span className="text-[var(--color-brand-blue)]">/</span>{" "}
+              <span className="text-brand-blue">/</span>{" "}
               Opiniones de la comunidad ({resenas.length}).
             </h2>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm text-subtle">
               Comparte tu experiencia, dudas o recomendaciones sobre
               dispositivos con otros usuarios.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onActualizar}
-            disabled={cargando}
-            className="self-start cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3.5 py-2 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
-            title="Actualizar listado de opiniones desde el servidor"
-          >
-            {cargando ? "Actualizando..." : "Actualizar"}
-          </button>
-        </div>
-
-        <div className="mb-6">
+          <div className="flex flex-wrap items-center gap-2">
           <label htmlFor="input-filtro-opiniones" className="sr-only">
             Filtrar opiniones de la comunidad
           </label>
@@ -103,14 +91,24 @@ export default function OpinionesHome({
             value={filtro}
             onChange={(evento) => onCambiarFiltro(evento.target.value)}
             placeholder="Buscar por comentario, autor o producto..."
-            className="w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-4 py-2.5 text-xs text-[var(--color-ink)] transition-colors placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30 sm:max-w-md"
+            className="min-h-10 min-w-0 flex-1 rounded-card border border-hairline bg-paper px-4 py-2.5 text-xs text-ink transition-colors placeholder:text-subtle focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue sm:w-64"
           />
+          <button
+            type="button"
+            onClick={onActualizar}
+            disabled={cargando}
+            className="min-h-10 cursor-pointer rounded-pill border border-ink bg-canvas px-4 py-2 text-xs font-medium text-ink transition-colors hover:border-line hover:text-brand-blue disabled:cursor-not-allowed disabled:opacity-50"
+            title="Actualizar listado de opiniones desde el servidor"
+          >
+            {cargando ? "Actualizando..." : "Actualizar"}
+          </button>
+          </div>
         </div>
 
         {!usuario && (
-          <div className="mb-6 flex flex-col items-center justify-between gap-3 rounded-md border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/10 p-4 text-xs sm:flex-row">
-            <p className="text-[var(--color-ink)]">
-              <span className="font-semibold">
+          <div className="mb-6 flex flex-col items-center justify-between gap-3 rounded-card border border-line bg-surface-2 p-4 text-xs sm:flex-row">
+            <p className="text-ink">
+              <span className="font-medium">
                 ¿Tienes experiencia con algún dispositivo?
               </span>{" "}
               Inicia sesión con tu cuenta para publicar tu opinión.
@@ -118,7 +116,7 @@ export default function OpinionesHome({
             <button
               type="button"
               onClick={onPedirLogin}
-              className="shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+              className="shrink-0 cursor-pointer rounded-card bg-brand-solid px-4 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid"
             >
               Identificarse para opinar
             </button>
@@ -131,7 +129,7 @@ export default function OpinionesHome({
           </label>
           <div className="flex flex-col gap-3">
             {productos.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--color-subtle)]">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-subtle">
                 <label htmlFor="select-producto-comentario" className="font-medium">
                   Dispositivo a reseñar:
                 </label>
@@ -141,7 +139,7 @@ export default function OpinionesHome({
                   onChange={(evento) =>
                     onCambiarProducto(Number(evento.target.value))
                   }
-                  className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-xs text-[var(--color-ink)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30"
+                  className="max-w-full min-w-0 rounded-card border border-hairline bg-canvas px-3 py-1.5 text-xs text-ink transition-colors focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
                 >
                   {productos.map((producto) => (
                     <option key={producto.idProducto} value={producto.idProducto}>
@@ -162,12 +160,12 @@ export default function OpinionesHome({
                     ? `Comentar como ${usuario.nombre}...`
                     : "Inicia sesión para publicar tu opinión aquí..."
                 }
-                className="flex-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-4 py-3 text-sm text-[var(--color-ink)] transition-colors placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/30"
+                className="flex-1 rounded-card border border-hairline bg-canvas px-4 py-3 text-sm text-ink transition-colors placeholder:text-subtle focus:border-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue"
               />
               <button
                 type="submit"
                 disabled={enviando}
-                className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-6 py-3 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-card bg-brand-solid px-6 py-3 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {enviando ? "Publicando..." : "Publicar opinión"}
               </button>
@@ -175,43 +173,43 @@ export default function OpinionesHome({
           </div>
           <AvisoTerminosResena riesgo={riesgoComentario} className="mt-2" />
           {error && (
-            <p className="mt-2 text-xs text-[var(--color-ink)]" role="alert">
+            <p className="mt-2 text-xs text-ink" role="alert">
               ⚠️ {error}
             </p>
           )}
           {aviso && !error && (
-            <p className="mt-2 text-xs text-[var(--color-ink)]" role="status">
+            <p className="mt-2 text-xs text-ink" role="status">
               {aviso}
             </p>
           )}
         </form>
 
         {cargando && resenas.length === 0 ? (
-          <div className="py-8 text-center text-xs text-[var(--color-subtle)]">
+          <div className="py-8 text-center text-xs text-subtle">
             Cargando opiniones de la comunidad...
           </div>
         ) : resenasFiltradas.length > 0 ? (
-          <div className="space-y-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {resenasFiltradas.map((resena) => (
               <div
                 key={resena.idResena}
-                className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 text-xs transition-colors hover:border-[var(--color-brand-blue)]/30"
+                className="rounded-card border border-hairline bg-paper p-5 text-xs transition-colors hover:border-line"
               >
-                <div className="mb-1 flex flex-wrap items-center justify-between gap-2 text-[var(--color-subtle)]">
+                <div className="mb-1 flex flex-wrap items-center justify-between gap-2 text-subtle">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-[var(--color-brand-blue)]">
+                    <span className="font-medium text-brand-blue">
                       @{resena.nombreUsuario || "Usuario"}
                     </span>
                     {resena.puntuacion && (
                       <span
-                        className="text-[11px] text-[var(--color-star)]"
+                        className="text-[11px] text-star"
                         aria-label={`${resena.puntuacion} de 5 estrellas`}
                       >
                         {"★".repeat(resena.puntuacion)}
                       </span>
                     )}
                     {resena.nombreProducto && (
-                      <span className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-2 py-0.5 text-[10px] font-medium text-[var(--color-subtle)]">
+                      <span className="rounded-card border border-hairline bg-paper px-2 py-0.5 text-[10px] font-medium text-subtle">
                         {resena.nombreProducto}
                       </span>
                     )}
@@ -220,10 +218,10 @@ export default function OpinionesHome({
                     {new Date(resena.fechaCreacion).toLocaleDateString("es-CO")}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed text-[var(--color-ink)]">
+                <p className="text-sm leading-relaxed text-ink">
                   {resena.comentario}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-hairline)] pt-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-dotted border-line pt-2">
                   {usuario && resena.idUsuario === usuario.idUsuario ? (
                     <EditarResena
                       resena={resena}
@@ -231,7 +229,7 @@ export default function OpinionesHome({
                       onEliminada={onResenaEliminada}
                     />
                   ) : resenasReportadas.has(resena.idResena) ? (
-                    <span className="text-[11px] text-[var(--color-subtle)]">
+                    <span className="text-[11px] text-subtle">
                       Reporte enviado
                     </span>
                   ) : (
@@ -245,7 +243,7 @@ export default function OpinionesHome({
                         setResenaAReportar(resena.idResena);
                       }}
                       aria-label="Reportar reseña"
-                      className="cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-500"
+                      className="cursor-pointer rounded-card border border-hairline px-3 py-1.5 text-[11px] font-medium text-subtle transition-colors hover:border-status-error hover:text-status-error"
                     >
                       Reportar
                     </button>
@@ -255,7 +253,7 @@ export default function OpinionesHome({
             ))}
           </div>
         ) : (
-          <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center text-xs text-[var(--color-subtle)]">
+          <div className="rounded-card border border-dashed border-hairline bg-canvas p-8 text-center text-xs text-subtle">
             {filtro.trim()
               ? `No se encontraron opiniones que coincidan con "${filtro}".`
               : "Aún no hay opiniones registradas. ¡Sé el primero en compartir tu experiencia!"}

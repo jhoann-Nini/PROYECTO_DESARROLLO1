@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useId, useMemo, useRef } from "react";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
+import { buttonClassName } from "@/components/ui/Button";
 import type {
   UsuarioSesion,
   ProductoResponse,
@@ -1119,21 +1120,21 @@ export default function AdminPanelModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-admin-panel-titulo"
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-ink/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[96dvh] w-full max-w-[90rem] animate-scale-in flex-col overflow-hidden rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
+      <div className="relative flex max-h-[96dvh] w-full max-w-[90rem] animate-scale-in flex-col overflow-hidden rounded-card border border-line bg-paper p-3 text-ink sm:max-h-[92dvh] sm:p-6">
         
         {/* Encabezado accesible */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--color-hairline)] pb-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-dotted border-line pb-4">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--color-brand-solid)]" aria-hidden="true"></span>
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-brand-solid" aria-hidden="true"></span>
             <div className="min-w-0">
-              <h2 id="modal-admin-panel-titulo" className="text-sm font-semibold tracking-[-0.01em] text-[var(--color-ink)]">
-                Panel de Administración <span className="text-[var(--color-brand-blue)]">/</span> TecReview
+              <h2 id="modal-admin-panel-titulo" className="text-sm font-medium uppercase tracking-normal text-ink">
+                Panel de Administración <span className="text-brand-blue">/</span> TecReview
               </h2>
-              <p className="mt-0.5 break-words text-[11px] text-[var(--color-subtle)]">
+              <p className="mt-0.5 break-words text-[11px] text-subtle">
                 Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) • Rol:{" "}
-                <span className="text-[var(--color-brand-blue)] font-semibold">{usuarioSesion?.rol}</span>
+                <span className="text-brand-blue font-medium">{usuarioSesion?.rol}</span>
               </p>
             </div>
           </div>
@@ -1141,7 +1142,7 @@ export default function AdminPanelModal({
             ref={cerrarRef}
             type="button"
             onClick={onClose}
-            className={`shrink-0 text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-hairline)] hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] transition-colors cursor-pointer ${CLASE_FOCO}`}
+            className={buttonClassName("secondary", "shrink-0")}
             aria-label="Cerrar panel de administración"
           >
             ✕ Cerrar
@@ -1150,14 +1151,14 @@ export default function AdminPanelModal({
 
         {/* Mensajes de estado globales */}
         {error && (
-          <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 shrink-0 flex items-center justify-between" role="alert">
+          <div className="mt-3 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error shrink-0 flex items-center justify-between" role="alert">
             <div>
-              <span className="font-bold">Error:</span> {error}
+              <span className="font-medium">Error:</span> {error}
             </div>
             <button
               type="button"
               onClick={() => setError(null)}
-              className="text-red-600 hover:text-red-800 text-xs ml-2 cursor-pointer"
+              className="text-status-error hover:text-status-error text-xs ml-2 cursor-pointer"
               aria-label="Cerrar mensaje de error"
             >
               ✕
@@ -1165,14 +1166,14 @@ export default function AdminPanelModal({
           </div>
         )}
         {mensajeExito && (
-          <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800 shrink-0 flex items-center justify-between" role="status">
+          <div className="mt-3 rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink shrink-0 flex items-center justify-between" role="status">
             <div>
-              <span className="font-bold">Éxito:</span> {mensajeExito}
+              <span className="font-medium">Éxito:</span> {mensajeExito}
             </div>
             <button
               type="button"
               onClick={() => setMensajeExito(null)}
-              className="text-emerald-600 hover:text-emerald-800 text-xs ml-2 cursor-pointer"
+              className="text-ink hover:text-ink text-xs ml-2 cursor-pointer"
               aria-label="Cerrar mensaje de éxito"
             >
               ✕
@@ -1181,7 +1182,7 @@ export default function AdminPanelModal({
         )}
 
         <div className="mt-3 flex min-h-0 flex-1 flex-col gap-3 lg:flex-row">
-        <label className="block shrink-0 text-xs font-semibold text-[var(--color-ink)] lg:hidden">
+        <label className="block shrink-0 text-xs font-medium text-ink lg:hidden">
           Sección de administración
           <select
             value={tabActiva}
@@ -1191,7 +1192,7 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className="mt-2 w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-3 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-brand-solid)]"
+            className={`mt-2 min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
           >
             <option value="productos">Productos</option>
             <option value="categorias">Categorías</option>
@@ -1204,7 +1205,7 @@ export default function AdminPanelModal({
           </select>
         </label>
         {/* Navegación lateral en escritorio, selector compacto en móvil */}
-        <div className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-2 lg:flex" role="tablist" aria-label="Secciones de administración">
+        <div className="hidden w-52 shrink-0 flex-col gap-1 overflow-y-auto rounded-card border border-line bg-canvas p-2 lg:flex" role="tablist" aria-label="Secciones de administración">
           <button
             type="button"
             role="tab"
@@ -1215,10 +1216,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "productos"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             📦 Productos
@@ -1233,10 +1234,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "categorias"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             🏷️ Categorías
@@ -1251,10 +1252,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "marcas"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             🏢 Marcas
@@ -1269,15 +1270,15 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer flex items-center gap-1.5 ${
               tabActiva === "reportes"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             <span>🚩</span> Cola de Reportes
             {totalReportesPendientes > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-red-600 text-[10px] text-white font-bold">
+              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-paper text-[10px] text-status-error font-medium">
                 {totalReportesPendientes}
               </span>
             )}
@@ -1292,10 +1293,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "usuarios"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             👥 Usuarios y roles
@@ -1310,10 +1311,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "establecimientos"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             🏪 Establecimientos
@@ -1328,10 +1329,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "ofertas"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             🏷️ Ofertas por tienda
@@ -1346,10 +1347,10 @@ export default function AdminPanelModal({
               setModoFormularioCat("ninguno");
               setModoFormularioMarca("ninguno");
             }}
-            className={`w-full text-left uppercase tracking-wider px-3.5 py-3 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+            className={`w-full text-left uppercase tracking-normal px-3.5 py-3 text-xs font-medium rounded-card border transition-all cursor-pointer ${
               tabActiva === "terminos"
-                ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] shadow-sm"
-                : "border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand-blue)]"
+                ? "border-line bg-surface-2 text-ink"
+                : "border-transparent bg-transparent text-subtle hover:bg-surface-muted hover:text-ink"
             }`}
           >
             🚫 Palabras de moderación
@@ -1364,13 +1365,13 @@ export default function AdminPanelModal({
           {/* ========================================================= */}
           {tabActiva === "productos" && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[var(--color-hairline)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
                 <div>
-                  <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider">
+                  <h3 className="font-medium text-ink text-xs uppercase tracking-normal">
                     Gestión de Catálogo de Productos
                   </h3>
-                  <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
-                    Total registrados: <span className="text-[var(--color-ink)] font-semibold">{productos.length}</span>
+                  <p className="text-[11px] text-subtle mt-0.5">
+                    Total registrados: <span className="text-ink font-medium">{productos.length}</span>
                   </p>
                 </div>
                 {modoFormulario === "ninguno" && (
@@ -1379,12 +1380,12 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={manejarExportarCsv}
                       disabled={exportandoCsv}
-                      className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] px-3.5 py-1.5 text-xs font-bold text-[var(--color-ink)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className={buttonClassName("secondary", "disabled:opacity-50")}
                       title="Exportar catálogo de productos a CSV"
                     >
                       {exportandoCsv ? (
                         <>
-                          <span className="animate-spin inline-block h-3.5 w-3.5 border-2 border-[var(--color-subtle)] border-t-transparent rounded-full" />
+                          <span className="animate-spin inline-block h-3.5 w-3.5 border-2 border-subtle border-t-transparent rounded-full" />
                           <span>Exportando...</span>
                         </>
                       ) : (
@@ -1397,7 +1398,7 @@ export default function AdminPanelModal({
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                      className={buttonClassName("primary")}
                     >
                       <span>+</span> Nuevo Producto
                     </button>
@@ -1407,10 +1408,10 @@ export default function AdminPanelModal({
 
               {/* Formulario Productos */}
               {modoFormulario !== "ninguno" && (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-[var(--color-hairline)] pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-[var(--color-brand-blue)] flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"></span>
+                <div className="rounded-card border border-line bg-canvas p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-line pb-2">
+                    <h4 className="font-medium text-xs uppercase tracking-normal text-brand-blue flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-brand-solid"></span>
                       {modoFormulario === "crear"
                         ? "Registrar Nuevo Producto"
                         : `Editar Producto: ${productoEditando?.nombre || ""}`}
@@ -1419,7 +1420,7 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={cancelarFormulario}
                       disabled={guardando}
-                      className="text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs cursor-pointer"
+                      className="text-subtle hover:text-ink text-xs cursor-pointer"
                     >
                       ✕ Cancelar
                     </button>
@@ -1428,8 +1429,8 @@ export default function AdminPanelModal({
                   <form onSubmit={guardarProducto} className="space-y-3" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="sm:col-span-2">
-                        <label htmlFor={idNombreInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Nombre del Producto <span className="text-red-500">*</span>
+                        <label htmlFor={idNombreInput} className="block text-[11px] font-medium text-ink mb-1">
+                          Nombre del Producto <span className="text-status-error">*</span>
                         </label>
                         <input
                           id={idNombreInput}
@@ -1439,30 +1440,30 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormNombre(e.target.value)}
                           disabled={guardando}
                           placeholder="Ej: Nothing Phone (2)"
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresForm.nombre
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresForm.nombre && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresForm.nombre}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresForm.nombre}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idCatInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Categoría <span className="text-red-500">*</span>
+                        <label htmlFor={idCatInput} className="block text-[11px] font-medium text-ink mb-1">
+                          Categoría <span className="text-status-error">*</span>
                         </label>
                         <select
                           id={idCatInput}
                           value={formIdCategoria}
                           onChange={(e) => manejarCambioCategoria(e.target.value)}
                           disabled={guardando}
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] focus:outline-none focus:ring-1 transition-colors cursor-pointer ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink focus:outline-none focus:ring-1 transition-colors cursor-pointer ${
                             erroresForm.idCategoria
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         >
                           <option value="">Selecciona una categoría...</option>
@@ -1473,23 +1474,23 @@ export default function AdminPanelModal({
                           ))}
                         </select>
                         {erroresForm.idCategoria && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresForm.idCategoria}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresForm.idCategoria}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idMarcaInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Marca <span className="text-red-500">*</span>
+                        <label htmlFor={idMarcaInput} className="block text-[11px] font-medium text-ink mb-1">
+                          Marca <span className="text-status-error">*</span>
                         </label>
                         <select
                           id={idMarcaInput}
                           value={formIdMarca}
                           onChange={(e) => setFormIdMarca(e.target.value)}
                           disabled={guardando}
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] focus:outline-none focus:ring-1 transition-colors cursor-pointer ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink focus:outline-none focus:ring-1 transition-colors cursor-pointer ${
                             erroresForm.idMarca
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         >
                           <option value="">Selecciona una marca...</option>
@@ -1500,12 +1501,12 @@ export default function AdminPanelModal({
                           ))}
                         </select>
                         {erroresForm.idMarca && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresForm.idMarca}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresForm.idMarca}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idPrecioInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
+                        <label htmlFor={idPrecioInput} className="block text-[11px] font-medium text-ink mb-1">
                           Precio de Referencia (COP)
                         </label>
                         <input
@@ -1517,19 +1518,19 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormPrecioReferencia(e.target.value)}
                           disabled={guardando}
                           placeholder="Ej: 1749000"
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresForm.precioReferencia
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresForm.precioReferencia && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresForm.precioReferencia}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresForm.precioReferencia}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idImgInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
+                        <label htmlFor={idImgInput} className="block text-[11px] font-medium text-ink mb-1">
                           URL de Imagen
                         </label>
                         <input
@@ -1540,19 +1541,19 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormImagen(e.target.value)}
                           disabled={guardando}
                           placeholder="https://images.unsplash.com/..."
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresForm.imagen
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresForm.imagen && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresForm.imagen}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresForm.imagen}</p>
                         )}
                       </div>
 
                       <div className="sm:col-span-2">
-                        <label htmlFor={idDescInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
+                        <label htmlFor={idDescInput} className="block text-[11px] font-medium text-ink mb-1">
                           Descripción
                         </label>
                         <textarea
@@ -1562,23 +1563,23 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormDescripcion(e.target.value)}
                           disabled={guardando}
                           placeholder="Detalles sobre especificaciones, diseño y rendimiento..."
-                          className="w-full rounded-lg bg-[var(--color-paper)] border border-[var(--color-hairline)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-blue)] transition-colors"
+                          className="min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue transition-colors"
                         />
                       </div>
 
                       {/* ========================================================= */}
                       {/* SECCIÓN DE CARACTERÍSTICAS TÉCNICAS DINÁMICAS POR CATEGORÍA */}
                       {/* ========================================================= */}
-                      <div className="sm:col-span-2 pt-3 border-t border-[var(--color-hairline)] space-y-3">
+                      <div className="sm:col-span-2 pt-3 border-t border-line space-y-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div>
-                            <h5 className="text-xs font-bold text-[var(--color-ink)] uppercase tracking-wider flex items-center gap-2">
+                            <h5 className="text-xs font-medium text-ink uppercase tracking-normal flex items-center gap-2">
                               <span>⚙️ Especificaciones Técnicas</span>
-                              <span className="px-2 py-0.5 rounded text-[10px] bg-[var(--color-brand-blue)]/10 text-[var(--color-brand-blue)] border border-[var(--color-brand-blue)]/25">
+                              <span className="px-2 py-0.5 rounded-card text-[10px] bg-brand-blue/10 text-brand-blue border border-brand-blue/25">
                                 {infoCatActual.icono} {infoCatActual.etiqueta}
                               </span>
                             </h5>
-                            <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
+                            <p className="text-[11px] text-subtle mt-0.5">
                               Configura las especificaciones pertinentes para la ficha técnica del producto.
                             </p>
                           </div>
@@ -1588,17 +1589,17 @@ export default function AdminPanelModal({
                         {clavesIncompatiblesDetectadas.length > 0 && (
                           <div
                             data-testid="alerta-cambio-categoria"
-                            className="p-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 space-y-2"
+                            className="p-3 rounded-card border border-surface-border-strong bg-surface-2 text-star space-y-2"
                           >
                             <div className="flex items-start gap-2">
                               <span className="text-sm">⚠️</span>
                               <div>
-                                <p className="font-semibold text-amber-900 text-xs">
+                                <p className="font-medium text-star text-xs">
                                   Cambio de categoría: Se detectaron {clavesIncompatiblesDetectadas.length} campos incompatibles
                                 </p>
-                                <p className="text-[11px] text-amber-800 mt-0.5">
+                                <p className="text-[11px] text-star mt-0.5">
                                   Campos de la categoría anterior con datos:{" "}
-                                  <span className="font-sans font-bold text-amber-900">
+                                  <span className="font-sans font-medium text-star">
                                     {clavesIncompatiblesDetectadas.join(", ")}
                                   </span>
                                   .
@@ -1610,7 +1611,7 @@ export default function AdminPanelModal({
                                 type="button"
                                 data-testid="btn-adaptar-categoria"
                                 onClick={limpiarCaracteristicasIncompatibles}
-                                className="px-2.5 py-1 rounded bg-amber-100 hover:bg-amber-200 border border-amber-300 text-[11px] font-semibold text-amber-900 transition-colors cursor-pointer"
+                                className="px-2.5 py-1 rounded-card bg-surface-2 hover:bg-surface-2 border border-surface-border-strong text-[11px] font-medium text-star transition-colors cursor-pointer"
                               >
                                 Adaptar a {infoCatActual.etiqueta} (Descartar incompatibles)
                               </button>
@@ -1618,7 +1619,7 @@ export default function AdminPanelModal({
                                 type="button"
                                 data-testid="btn-conservar-personalizadas"
                                 onClick={conservarCaracteristicasComoPersonalizadas}
-                                className="px-2.5 py-1 rounded bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] border border-[var(--color-hairline)] text-[11px] font-semibold text-[var(--color-ink)] transition-colors cursor-pointer"
+                                className="px-2.5 py-1 rounded-card bg-canvas hover:bg-line border border-line text-[11px] font-medium text-ink transition-colors cursor-pointer"
                               >
                                 Conservar como personalizadas
                               </button>
@@ -1628,7 +1629,7 @@ export default function AdminPanelModal({
 
                         {/* Error de validación de especificaciones */}
                         {erroresForm.caracteristicas && (
-                          <p className="p-2 rounded bg-red-50 border border-red-200 text-[11px] text-red-600 font-medium">
+                          <p className="p-2 rounded-card bg-paper border border-status-error text-[11px] text-status-error font-medium">
                             {erroresForm.caracteristicas}
                           </p>
                         )}
@@ -1642,7 +1643,7 @@ export default function AdminPanelModal({
                               <div key={campo.clave}>
                                 <label
                                   htmlFor={campoInputId}
-                                  className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1 flex items-center gap-1.5"
+                                  className="block text-[11px] font-medium text-ink mb-1 flex items-center gap-1.5"
                                 >
                                   <span>{campo.icono}</span>
                                   <span>{campo.etiqueta}</span>
@@ -1656,7 +1657,7 @@ export default function AdminPanelModal({
                                   onChange={(e) => actualizarCaracteristica(campo.clave, e.target.value)}
                                   disabled={guardando}
                                   placeholder={campo.placeholder}
-                                  className="w-full rounded-lg bg-[var(--color-paper)] border border-[var(--color-hairline)] px-3 py-1.5 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-blue)] transition-colors"
+                                  className="w-full rounded-card bg-paper border border-line px-3 py-1.5 text-xs text-ink placeholder:text-subtle focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue transition-colors"
                                 />
                               </div>
                             );
@@ -1666,7 +1667,7 @@ export default function AdminPanelModal({
                         {/* Especificaciones personalizadas adicionales */}
                         <div className="pt-2 space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-semibold text-[var(--color-subtle)]">
+                            <span className="text-[11px] font-medium text-subtle">
                               Características Adicionales / Personalizadas
                             </span>
                             <button
@@ -1674,7 +1675,7 @@ export default function AdminPanelModal({
                               data-testid="btn-agregar-spec-personalizada"
                               onClick={agregarCampoPersonalizado}
                               disabled={guardando}
-                              className="text-[11px] text-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]/80 font-semibold cursor-pointer transition-colors"
+                              className="text-[11px] text-brand-blue hover:text-brand-blue/80 font-medium cursor-pointer transition-colors"
                             >
                               + Añadir característica personalizada
                             </button>
@@ -1692,7 +1693,7 @@ export default function AdminPanelModal({
                                   actualizarCampoPersonalizado(cp.id, "clave", e.target.value)
                                 }
                                 disabled={guardando}
-                                className="w-1/3 rounded-lg bg-[var(--color-paper)] border border-[var(--color-hairline)] px-2.5 py-1.5 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-blue)] transition-colors font-sans"
+                                className="w-1/3 rounded-card bg-paper border border-line px-2.5 py-1.5 text-xs text-ink placeholder:text-subtle focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue transition-colors font-sans"
                               />
                               <input
                                 type="text"
@@ -1704,7 +1705,7 @@ export default function AdminPanelModal({
                                   actualizarCampoPersonalizado(cp.id, "valor", e.target.value)
                                 }
                                 disabled={guardando}
-                                className="grow rounded-lg bg-[var(--color-paper)] border border-[var(--color-hairline)] px-2.5 py-1.5 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-blue)] transition-colors"
+                                className="grow rounded-card bg-paper border border-line px-2.5 py-1.5 text-xs text-ink placeholder:text-subtle focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue transition-colors"
                               />
                               <button
                                 type="button"
@@ -1712,7 +1713,7 @@ export default function AdminPanelModal({
                                 onClick={() => eliminarCampoPersonalizado(cp.id)}
                                 disabled={guardando}
                                 title="Eliminar campo"
-                                className="px-2 py-1 rounded text-[var(--color-subtle)] hover:text-red-600 border border-[var(--color-hairline)] hover:border-red-200 transition-colors cursor-pointer text-xs"
+                                className="px-2 py-1 rounded-card text-subtle hover:text-status-error border border-line hover:border-status-error transition-colors cursor-pointer text-xs"
                               >
                                 ✕
                               </button>
@@ -1722,23 +1723,23 @@ export default function AdminPanelModal({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
                       <button
                         type="button"
                         onClick={cancelarFormulario}
                         disabled={guardando}
-                        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] px-3.5 py-1.5 text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-card border border-line bg-canvas hover:bg-line px-3.5 py-1.5 text-xs text-ink uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardando}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-4 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardando ? (
                           <>
-                            <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                            <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                             Guardando...
                           </>
                         ) : modoFormulario === "crear" ? (
@@ -1753,8 +1754,8 @@ export default function AdminPanelModal({
               )}
 
               {!cargando && productos.length > 0 && (
-                <div className="space-y-2 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3">
-                  <label htmlFor={`${baseId}-buscar-productos`} className="block text-xs font-semibold text-[var(--color-ink)]">
+                <div className="space-y-2 rounded-card border border-line bg-paper p-3">
+                  <label htmlFor={`${baseId}-buscar-productos`} className="block text-xs font-medium text-ink">
                     Buscar productos
                   </label>
                   <input
@@ -1767,42 +1768,42 @@ export default function AdminPanelModal({
                       setPaginaProductos(1);
                     }}
                     placeholder="Nombre del producto o marca…"
-                    className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-2.5 text-sm text-[var(--color-ink)] focus-visible:outline-2 focus-visible:outline-[var(--color-brand-solid)]"
+                    className="w-full rounded-card border border-line bg-canvas px-3 py-2.5 text-sm text-ink focus-visible:outline-2 focus-visible:outline-brand-solid"
                   />
-                  <p className="text-[11px] text-[var(--color-subtle)]">
+                  <p className="text-[11px] text-subtle">
                     {productosFiltrados.length} de {productos.length} productos · Los precios de referencia no representan ofertas verificadas.
                   </p>
                 </div>
               )}
               {/* Listado de Productos */}
               {cargando ? (
-                <div className="py-12 text-center text-[var(--color-subtle)] font-sans animate-pulse">
+                <div className="py-12 text-center text-subtle font-sans animate-pulse">
                   Consultando catálogo de productos con el servidor...
                 </div>
               ) : productos.length === 0 ? (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center space-y-3">
-                  <p className="text-[var(--color-subtle)] text-xs">
+                <div className="rounded-card border border-line bg-canvas p-8 text-center space-y-3">
+                  <p className="text-subtle text-xs">
                     No hay productos registrados en el catálogo.
                   </p>
                   {modoFormulario === "ninguno" && (
                     <button
                       type="button"
                       onClick={abrirCrear}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-3.5 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primer Producto
                     </button>
                   )}
                 </div>
               ) : productosFiltrados.length === 0 ? (
-                <div role="status" className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-6 text-center text-sm text-[var(--color-subtle)]">
+                <div role="status" className="rounded-card border border-line bg-canvas p-6 text-center text-sm text-subtle">
                   No hay productos que coincidan con la búsqueda.
                 </div>
               ) : (
                 <>
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] lg:overflow-x-auto">
+                <div className="rounded-card border border-line bg-paper lg:overflow-x-auto">
                   <table className="block w-full text-left text-xs lg:table">
-                    <thead className="hidden border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] lg:table-header-group">
+                    <thead className="hidden border-b border-line bg-canvas text-[10px] uppercase tracking-normal text-subtle lg:table-header-group">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Producto</th>
@@ -1812,16 +1813,16 @@ export default function AdminPanelModal({
                         <th className="py-2.5 px-3 text-center">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody className="grid gap-3 p-2 text-[var(--color-ink)] lg:table-row-group lg:divide-y lg:divide-[var(--color-hairline)] lg:p-0">
+                    <tbody className="grid gap-3 p-2 text-ink lg:table-row-group lg:divide-y lg:divide-line lg:p-0">
                       {productosVisibles.map((prod) => (
-                        <tr key={prod.idProducto} className="block min-w-0 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 transition-colors hover:bg-[var(--color-canvas)] lg:table-row lg:border-0 lg:bg-transparent lg:p-0">
-                          <td className="block py-1 font-sans text-[11px] text-[var(--color-subtle)] lg:table-cell lg:px-3 lg:py-2.5">
+                        <tr key={prod.idProducto} className="block min-w-0 rounded-card border border-line bg-canvas p-3 transition-colors hover:bg-canvas lg:table-row lg:border-0 lg:bg-transparent lg:p-0">
+                          <td className="block py-1 font-sans text-[11px] text-subtle lg:table-cell lg:px-3 lg:py-2.5">
                             #{prod.idProducto}
                           </td>
                           <td className="block min-w-0 py-1 lg:table-cell lg:px-3 lg:py-2.5">
-                            <div className="break-words font-semibold text-[var(--color-ink)]">{prod.nombre}</div>
+                            <div className="break-words font-medium text-ink">{prod.nombre}</div>
                             {prod.descripcion && (
-                              <div className="text-[10px] text-[var(--color-subtle)] truncate max-w-xs">
+                              <div className="text-[10px] text-subtle truncate max-w-xs">
                                 {prod.descripcion}
                               </div>
                             )}
@@ -1829,7 +1830,7 @@ export default function AdminPanelModal({
                               <div className="mt-1">
                                 <span
                                   data-testid={`badge-specs-${prod.idProducto}`}
-                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-sans bg-cyan-50 text-cyan-700 border border-cyan-200"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-card text-[9px] font-sans bg-surface-2 text-brand-blue border border-line"
                                   title={`Especificaciones: ${Object.keys(prod.caracteristicas).join(", ")}`}
                                 >
                                   <span>⚡</span>
@@ -1838,17 +1839,17 @@ export default function AdminPanelModal({
                               </div>
                             )}
                           </td>
-                          <td data-label="Categoría: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
-                            <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
+                          <td data-label="Categoría: " className="block py-1 text-ink before:mr-2 before:text-subtle before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
+                            <span className="px-2 py-0.5 rounded-card border border-line bg-canvas text-[10px]">
                               {getNombreCategoria(prod.idCategoria)}
                             </span>
                           </td>
-                          <td data-label="Marca: " className="block py-1 text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
-                            <span className="px-2 py-0.5 rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px]">
+                          <td data-label="Marca: " className="block py-1 text-ink before:mr-2 before:text-subtle before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:before:content-none">
+                            <span className="px-2 py-0.5 rounded-card border border-line bg-canvas text-[10px]">
                               {getNombreMarca(prod.idMarca)}
                             </span>
                           </td>
-                          <td data-label="Precio ref.: " className="block py-1 font-sans text-[var(--color-ink)] before:mr-2 before:text-[var(--color-subtle)] before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:text-right lg:before:content-none">
+                          <td data-label="Precio ref.: " className="block py-1 font-sans text-ink before:mr-2 before:text-subtle before:content-[attr(data-label)] lg:table-cell lg:px-3 lg:py-2.5 lg:text-right lg:before:content-none">
                             {prod.precioReferencia !== null && prod.precioReferencia !== undefined
                               ? formatearCOP(prod.precioReferencia)
                               : "—"}
@@ -1860,7 +1861,7 @@ export default function AdminPanelModal({
                                 onClick={() => setProductoFichaV3(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Ficha Técnica V3 de ${prod.nombre}`}
-                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded-card text-[10px] font-medium uppercase text-ink hover:text-ink border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Ficha V3
                               </button>
@@ -1869,7 +1870,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditar(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Editar ${prod.nombre}`}
-                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded-card text-[10px] font-medium uppercase text-star hover:text-star border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -1878,7 +1879,7 @@ export default function AdminPanelModal({
                                 onClick={() => setProductoEliminando(prod)}
                                 disabled={guardando || eliminando}
                                 aria-label={`Eliminar ${prod.nombre}`}
-                                className="min-h-10 px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="min-h-10 px-2 py-1 rounded-card text-[10px] font-medium uppercase text-status-error hover:text-status-error border border-status-error hover:bg-paper transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -1889,11 +1890,11 @@ export default function AdminPanelModal({
                     </tbody>
                   </table>
                 </div>
-                <nav aria-label="Paginación de productos" className="flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--color-subtle)]">
+                <nav aria-label="Paginación de productos" className="flex flex-wrap items-center justify-between gap-2 text-xs text-subtle">
                     <span>Página {paginaActualProductos} de {paginasProductos}</span>
                     {paginasProductos > 1 && <div className="flex gap-2">
-                      <button type="button" disabled={paginaActualProductos === 1} onClick={() => setPaginaProductos(paginaActualProductos - 1)} aria-label="Página anterior de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Anterior</button>
-                      <button type="button" disabled={paginaActualProductos === paginasProductos} onClick={() => setPaginaProductos(paginaActualProductos + 1)} aria-label="Siguiente página de productos" className="rounded-lg border border-[var(--color-hairline)] px-3 py-2 disabled:opacity-50">Siguiente</button>
+                      <button type="button" disabled={paginaActualProductos === 1} onClick={() => setPaginaProductos(paginaActualProductos - 1)} aria-label="Página anterior de productos" className="rounded-card border border-line px-3 py-2 disabled:opacity-50">Anterior</button>
+                      <button type="button" disabled={paginaActualProductos === paginasProductos} onClick={() => setPaginaProductos(paginaActualProductos + 1)} aria-label="Siguiente página de productos" className="rounded-card border border-line px-3 py-2 disabled:opacity-50">Siguiente</button>
                     </div>}
                   </nav>
                 </>
@@ -1906,20 +1907,20 @@ export default function AdminPanelModal({
           {/* ========================================================= */}
           {tabActiva === "categorias" && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[var(--color-hairline)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
                 <div>
-                  <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider">
+                  <h3 className="font-medium text-ink text-xs uppercase tracking-normal">
                     Gestión de Categorías
                   </h3>
-                  <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
-                    Total registradas: <span className="text-[var(--color-ink)] font-semibold">{categorias.length}</span>
+                  <p className="text-[11px] text-subtle mt-0.5">
+                    Total registradas: <span className="text-ink font-medium">{categorias.length}</span>
                   </p>
                 </div>
                 {modoFormularioCat === "ninguno" && (
                   <button
                     type="button"
                     onClick={abrirCrearCategoria}
-                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className={buttonClassName("primary")}
                   >
                     <span>+</span> Nueva Categoría
                   </button>
@@ -1928,10 +1929,10 @@ export default function AdminPanelModal({
 
               {/* Formulario Categorías */}
               {modoFormularioCat !== "ninguno" && (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-[var(--color-hairline)] pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-[var(--color-brand-blue)] flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"></span>
+                <div className="rounded-card border border-line bg-canvas p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-line pb-2">
+                    <h4 className="font-medium text-xs uppercase tracking-normal text-brand-blue flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-brand-solid"></span>
                       {modoFormularioCat === "crear"
                         ? "Registrar Nueva Categoría"
                         : `Editar Categoría: ${categoriaEditando?.nombre || ""}`}
@@ -1940,7 +1941,7 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={cancelarFormularioCategoria}
                       disabled={guardandoCat}
-                      className="text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs cursor-pointer"
+                      className="text-subtle hover:text-ink text-xs cursor-pointer"
                     >
                       ✕ Cancelar
                     </button>
@@ -1949,8 +1950,8 @@ export default function AdminPanelModal({
                   <form onSubmit={guardarCategoria} className="space-y-3" noValidate>
                     <div className="space-y-3">
                       <div>
-                        <label htmlFor={idCatNombreInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Nombre de la Categoría <span className="text-red-500">*</span>
+                        <label htmlFor={idCatNombreInput} className="block text-[11px] font-medium text-ink mb-1">
+                          Nombre de la Categoría <span className="text-status-error">*</span>
                         </label>
                         <input
                           id={idCatNombreInput}
@@ -1960,19 +1961,19 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormCatNombre(e.target.value)}
                           disabled={guardandoCat}
                           placeholder="Ej: Smartphones, Laptops, Audio..."
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresFormCat.nombre
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresFormCat.nombre && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresFormCat.nombre}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresFormCat.nombre}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idCatDescInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
+                        <label htmlFor={idCatDescInput} className="block text-[11px] font-medium text-ink mb-1">
                           Descripción
                         </label>
                         <textarea
@@ -1983,35 +1984,35 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormCatDescripcion(e.target.value)}
                           disabled={guardandoCat}
                           placeholder="Descripción de la categoría de dispositivos..."
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresFormCat.descripcion
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresFormCat.descripcion && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresFormCat.descripcion}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresFormCat.descripcion}</p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
                       <button
                         type="button"
                         onClick={cancelarFormularioCategoria}
                         disabled={guardandoCat}
-                        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] px-3.5 py-1.5 text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-card border border-line bg-canvas hover:bg-line px-3.5 py-1.5 text-xs text-ink uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardandoCat}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-4 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoCat ? (
                           <>
-                            <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                            <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                             Guardando...
                           </>
                         ) : modoFormularioCat === "crear" ? (
@@ -2027,28 +2028,28 @@ export default function AdminPanelModal({
 
               {/* Listado de Categorías */}
               {cargando ? (
-                <div className="py-12 text-center text-[var(--color-subtle)] font-sans animate-pulse">
+                <div className="py-12 text-center text-subtle font-sans animate-pulse">
                   Consultando catálogo de categorías con el servidor...
                 </div>
               ) : categorias.length === 0 ? (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center space-y-3">
-                  <p className="text-[var(--color-subtle)] text-xs">
+                <div className="rounded-card border border-line bg-canvas p-8 text-center space-y-3">
+                  <p className="text-subtle text-xs">
                     No hay categorías registradas en el catálogo.
                   </p>
                   {modoFormularioCat === "ninguno" && (
                     <button
                       type="button"
                       onClick={abrirCrearCategoria}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-3.5 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Categoría
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)]">
+                <div className="overflow-x-auto rounded-card border border-line bg-paper">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] border-b border-[var(--color-hairline)]">
+                    <thead className="bg-canvas text-[10px] uppercase tracking-normal text-subtle border-b border-line">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Nombre</th>
@@ -2057,20 +2058,20 @@ export default function AdminPanelModal({
                         <th className="py-2.5 px-3 text-center">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-hairline)] text-[var(--color-ink)]">
+                    <tbody className="divide-y divide-line text-ink">
                       {categorias.map((cat) => (
-                        <tr key={cat.idCategoria} className="hover:bg-[var(--color-canvas)] transition-colors">
-                          <td className="py-2.5 px-3 font-sans text-[11px] text-[var(--color-subtle)]">
+                        <tr key={cat.idCategoria} className="hover:bg-canvas transition-colors">
+                          <td className="py-2.5 px-3 font-sans text-[11px] text-subtle">
                             #{cat.idCategoria}
                           </td>
-                          <td className="py-2.5 px-3 font-semibold text-[var(--color-ink)]">
+                          <td className="py-2.5 px-3 font-medium text-ink">
                             {cat.nombre}
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-subtle)] text-[11px] truncate max-w-sm">
+                          <td className="py-2.5 px-3 text-subtle text-[11px] truncate max-w-sm">
                             {cat.descripcion || "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-sans">
+                            <span className="px-2 py-0.5 rounded-card border border-surface-border-strong bg-surface-2 text-ink text-[10px] font-sans">
                               Activa
                             </span>
                           </td>
@@ -2081,7 +2082,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditarCategoria(cat)}
                                 disabled={guardandoCat || eliminandoCat}
                                 aria-label={`Editar ${cat.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded-card text-[10px] font-medium uppercase text-star hover:text-star border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -2090,7 +2091,7 @@ export default function AdminPanelModal({
                                 onClick={() => setCategoriaEliminando(cat)}
                                 disabled={guardandoCat || eliminandoCat}
                                 aria-label={`Eliminar ${cat.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded-card text-[10px] font-medium uppercase text-status-error hover:text-status-error border border-status-error hover:bg-paper transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -2110,20 +2111,20 @@ export default function AdminPanelModal({
           {/* ========================================================= */}
           {tabActiva === "marcas" && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-[var(--color-hairline)]">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
                 <div>
-                  <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider">
+                  <h3 className="font-medium text-ink text-xs uppercase tracking-normal">
                     Gestión de Marcas
                   </h3>
-                  <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
-                    Total registradas: <span className="text-[var(--color-ink)] font-semibold">{marcas.length}</span>
+                  <p className="text-[11px] text-subtle mt-0.5">
+                    Total registradas: <span className="text-ink font-medium">{marcas.length}</span>
                   </p>
                 </div>
                 {modoFormularioMarca === "ninguno" && (
                   <button
                     type="button"
                     onClick={abrirCrearMarca}
-                    className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                    className={buttonClassName("primary")}
                   >
                     <span>+</span> Nueva Marca
                   </button>
@@ -2132,10 +2133,10 @@ export default function AdminPanelModal({
 
               {/* Formulario Marcas */}
               {modoFormularioMarca !== "ninguno" && (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 space-y-4">
-                  <div className="flex items-center justify-between border-b border-[var(--color-hairline)] pb-2">
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-[var(--color-brand-blue)] flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"></span>
+                <div className="rounded-card border border-line bg-canvas p-4 space-y-4">
+                  <div className="flex items-center justify-between border-b border-line pb-2">
+                    <h4 className="font-medium text-xs uppercase tracking-normal text-brand-blue flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-brand-solid"></span>
                       {modoFormularioMarca === "crear"
                         ? "Registrar Nueva Marca"
                         : `Editar Marca: ${marcaEditando?.nombre || ""}`}
@@ -2144,7 +2145,7 @@ export default function AdminPanelModal({
                       type="button"
                       onClick={cancelarFormularioMarca}
                       disabled={guardandoMarca}
-                      className="text-[var(--color-subtle)] hover:text-[var(--color-ink)] text-xs cursor-pointer"
+                      className="text-subtle hover:text-ink text-xs cursor-pointer"
                     >
                       ✕ Cancelar
                     </button>
@@ -2153,8 +2154,8 @@ export default function AdminPanelModal({
                   <form onSubmit={guardarMarca} className="space-y-3" noValidate>
                     <div className="space-y-3">
                       <div>
-                        <label htmlFor={idMarcaNombreInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
-                          Nombre de la Marca <span className="text-red-500">*</span>
+                        <label htmlFor={idMarcaNombreInput} className="block text-[11px] font-medium text-ink mb-1">
+                          Nombre de la Marca <span className="text-status-error">*</span>
                         </label>
                         <input
                           id={idMarcaNombreInput}
@@ -2164,19 +2165,19 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormMarcaNombre(e.target.value)}
                           disabled={guardandoMarca}
                           placeholder="Ej: Nothing, Apple, Samsung, Xiaomi..."
-                          className={`w-full rounded-lg bg-[var(--color-paper)] border px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:outline-none focus:ring-1 transition-colors ${
+                          className={`min-h-11 w-full rounded-input border-0 border-b bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:outline-none focus:ring-1 transition-colors ${
                             erroresFormMarca.nombre
-                              ? "border-red-300 focus:ring-red-400"
-                              : "border-[var(--color-hairline)] focus:border-[var(--color-brand-blue)] focus:ring-[var(--color-brand-blue)]"
+                              ? "border-status-error focus:ring-status-error"
+                              : "border-line focus:border-brand-blue focus:ring-brand-blue"
                           }`}
                         />
                         {erroresFormMarca.nombre && (
-                          <p className="mt-1 text-[10px] text-red-600">{erroresFormMarca.nombre}</p>
+                          <p className="mt-1 text-[10px] text-status-error">{erroresFormMarca.nombre}</p>
                         )}
                       </div>
 
                       <div>
-                        <label htmlFor={idMarcaDescInput} className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1">
+                        <label htmlFor={idMarcaDescInput} className="block text-[11px] font-medium text-ink mb-1">
                           Descripción
                         </label>
                         <textarea
@@ -2186,28 +2187,28 @@ export default function AdminPanelModal({
                           onChange={(e) => setFormMarcaDescripcion(e.target.value)}
                           disabled={guardandoMarca}
                           placeholder="Información sobre la marca, sede o perfil tecnológico..."
-                          className="w-full rounded-lg bg-[var(--color-paper)] border border-[var(--color-hairline)] px-3 py-2 text-xs text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-blue)] transition-colors"
+                          className="min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-xs text-ink placeholder:text-subtle focus:border-brand-blue focus:outline-none focus:ring-1 focus:ring-brand-blue transition-colors"
                         />
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
                       <button
                         type="button"
                         onClick={cancelarFormularioMarca}
                         disabled={guardandoMarca}
-                        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] px-3.5 py-1.5 text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                        className="rounded-card border border-line bg-canvas hover:bg-line px-3.5 py-1.5 text-xs text-ink uppercase transition-colors cursor-pointer disabled:opacity-50"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
                         disabled={guardandoMarca}
-                        className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                        className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-4 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {guardandoMarca ? (
                           <>
-                            <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                            <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                             Guardando...
                           </>
                         ) : modoFormularioMarca === "crear" ? (
@@ -2223,28 +2224,28 @@ export default function AdminPanelModal({
 
               {/* Listado de Marcas */}
               {cargando ? (
-                <div className="py-12 text-center text-[var(--color-subtle)] font-sans animate-pulse">
+                <div className="py-12 text-center text-subtle font-sans animate-pulse">
                   Consultando catálogo de marcas con el servidor...
                 </div>
               ) : marcas.length === 0 ? (
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center space-y-3">
-                  <p className="text-[var(--color-subtle)] text-xs">
+                <div className="rounded-card border border-line bg-canvas p-8 text-center space-y-3">
+                  <p className="text-subtle text-xs">
                     No hay marcas registradas en el catálogo.
                   </p>
                   {modoFormularioMarca === "ninguno" && (
                     <button
                       type="button"
                       onClick={abrirCrearMarca}
-                      className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-3.5 py-1.5 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer inline-block"
+                      className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-3.5 py-1.5 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer inline-block"
                     >
                       Registrar Primera Marca
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)]">
+                <div className="overflow-x-auto rounded-card border border-line bg-paper">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-[var(--color-canvas)] text-[10px] uppercase tracking-wider text-[var(--color-subtle)] border-b border-[var(--color-hairline)]">
+                    <thead className="bg-canvas text-[10px] uppercase tracking-normal text-subtle border-b border-line">
                       <tr>
                         <th className="py-2.5 px-3">ID</th>
                         <th className="py-2.5 px-3">Nombre</th>
@@ -2253,20 +2254,20 @@ export default function AdminPanelModal({
                         <th className="py-2.5 px-3 text-center">Acciones</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-hairline)] text-[var(--color-ink)]">
+                    <tbody className="divide-y divide-line text-ink">
                       {marcas.map((m) => (
-                        <tr key={m.idMarca} className="hover:bg-[var(--color-canvas)] transition-colors">
-                          <td className="py-2.5 px-3 font-sans text-[11px] text-[var(--color-subtle)]">
+                        <tr key={m.idMarca} className="hover:bg-canvas transition-colors">
+                          <td className="py-2.5 px-3 font-sans text-[11px] text-subtle">
                             #{m.idMarca}
                           </td>
-                          <td className="py-2.5 px-3 font-semibold text-[var(--color-ink)]">
+                          <td className="py-2.5 px-3 font-medium text-ink">
                             {m.nombre}
                           </td>
-                          <td className="py-2.5 px-3 text-[var(--color-subtle)] text-[11px] truncate max-w-sm">
+                          <td className="py-2.5 px-3 text-subtle text-[11px] truncate max-w-sm">
                             {m.descripcion || "—"}
                           </td>
                           <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 text-[10px] font-sans">
+                            <span className="px-2 py-0.5 rounded-card border border-surface-border-strong bg-surface-2 text-ink text-[10px] font-sans">
                               Activa
                             </span>
                           </td>
@@ -2277,7 +2278,7 @@ export default function AdminPanelModal({
                                 onClick={() => abrirEditarMarca(m)}
                                 disabled={guardandoMarca || eliminandoMarca}
                                 aria-label={`Editar ${m.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-amber-600 hover:text-amber-700 border border-amber-200 hover:bg-amber-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded-card text-[10px] font-medium uppercase text-star hover:text-star border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Editar
                               </button>
@@ -2286,7 +2287,7 @@ export default function AdminPanelModal({
                                 onClick={() => setMarcaEliminando(m)}
                                 disabled={guardandoMarca || eliminandoMarca}
                                 aria-label={`Eliminar ${m.nombre}`}
-                                className="px-2 py-1 rounded text-[10px] font-bold uppercase text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                                className="px-2 py-1 rounded-card text-[10px] font-medium uppercase text-status-error hover:text-status-error border border-status-error hover:bg-paper transition-colors cursor-pointer disabled:opacity-50"
                               >
                                 Eliminar
                               </button>
@@ -2307,12 +2308,12 @@ export default function AdminPanelModal({
           {tabActiva === "reportes" && (
             <div className="space-y-4">
               {/* Encabezado y acciones principales */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--color-hairline)]">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-line">
                 <div>
-                  <h3 className="font-bold text-[var(--color-ink)] text-xs uppercase tracking-wider flex items-center gap-2">
+                  <h3 className="font-medium text-ink text-xs uppercase tracking-normal flex items-center gap-2">
                      <span>🚩</span> Cola de reportes de reseñas
                   </h3>
-                  <p className="text-[11px] text-[var(--color-subtle)] mt-0.5">
+                  <p className="text-[11px] text-subtle mt-0.5">
                      Revisión de reseñas reportadas por la comunidad.
                   </p>
                 </div>
@@ -2320,7 +2321,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={cargarReportes}
                   disabled={cargandoReportes}
-                  className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  className="rounded-card border border-line bg-canvas hover:bg-line px-3 py-1.5 text-xs font-medium text-ink transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                   aria-label="Actualizar cola de reportes"
                 >
                   <span className={cargandoReportes ? "animate-spin" : ""}>🔄</span>
@@ -2330,53 +2331,53 @@ export default function AdminPanelModal({
 
               {/* Métricas resumidas */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
-                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
+                <div className="rounded-card border border-line bg-canvas p-3">
+                  <span className="text-[10px] uppercase font-medium text-subtle tracking-normal">
                     Total Reseñas Reportadas
                   </span>
-                  <p className="text-xl font-extrabold text-[var(--color-ink)] mt-1">
+                  <p className="text-xl font-medium text-ink mt-1">
                     {resenasReportadas.length}
                   </p>
                 </div>
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
-                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
+                <div className="rounded-card border border-line bg-canvas p-3">
+                  <span className="text-[10px] uppercase font-medium text-subtle tracking-normal">
                     Reportes Pendientes
                   </span>
-                  <p className="text-xl font-extrabold text-amber-800 dark:text-amber-300 mt-1">
+                  <p className="text-xl font-medium text-star dark:text-star mt-1">
                     {totalReportesPendientes}
                   </p>
                 </div>
-                <div className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
-                  <span className="text-[10px] uppercase font-bold text-[var(--color-subtle)] tracking-wider">
+                <div className="rounded-card border border-line bg-canvas p-3">
+                  <span className="text-[10px] uppercase font-medium text-subtle tracking-normal">
                     Reseñas Ocultas
                   </span>
-                  <p className="text-xl font-extrabold text-red-700 dark:text-red-300 mt-1">
+                  <p className="text-xl font-medium text-status-error dark:text-status-error mt-1">
                     {resenasReportadas.filter((r) => r.ocultaPorReportes || r.ocultaPorModeracion).length}
                   </p>
                 </div>
               </div>
 
               {/* Tarjeta de contexto TEC-127 / S2-72 */}
-              <div className="rounded-xl border border-[var(--color-hairline)] border-l-2 border-l-[var(--color-brand-blue)] bg-[var(--color-canvas)] p-3 flex items-start gap-2 text-[11px] text-[var(--color-ink)] leading-relaxed">
-                <span className="text-base select-none shrink-0 text-[var(--color-brand-blue)]" aria-hidden="true">ℹ</span>
+              <div className="rounded-card border border-line border-l-2 border-l-brand-blue bg-canvas p-3 flex items-start gap-2 text-[11px] text-ink leading-relaxed">
+                <span className="text-base select-none shrink-0 text-brand-blue" aria-hidden="true">ℹ</span>
                 <div>
-                   <strong className="font-bold">Alcance actual:</strong>
+                   <strong className="font-medium">Alcance actual:</strong>
                    {" "}Esta cola contiene únicamente reseñas reportadas. Los reportes de precios y enlaces se gestionan en el panel de moderación, pestaña «Reportes de ofertas». Puedes ocultar o publicar una reseña con justificación y rechazar reportes que ya estén en revisión.
                 </div>
               </div>
 
               {/* Filtros de la cola */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-card border border-line bg-canvas text-xs">
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <label htmlFor="filtro-estado-reporte" className="font-semibold text-[var(--color-subtle)] text-[11px]">
+                    <label htmlFor="filtro-estado-reporte" className="font-medium text-subtle text-[11px]">
                       Estado de Reporte:
                     </label>
                     <select
                       id="filtro-estado-reporte"
                       value={filtroEstadoReporte}
                       onChange={(e) => setFiltroEstadoReporte(e.target.value as EstadoReporte | "TODOS")}
-                      className="px-2.5 py-1 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)]"
+                      className="px-2.5 py-1 rounded-card border border-line bg-paper text-ink text-xs focus:outline-none focus:ring-1 focus:ring-brand-solid"
                     >
                       <option value="TODOS">Todos los estados</option>
                       <option value="PENDIENTE">PENDIENTE</option>
@@ -2391,35 +2392,35 @@ export default function AdminPanelModal({
                       type="checkbox"
                       checked={filtroSoloOcultas}
                       onChange={(e) => setFiltroSoloOcultas(e.target.checked)}
-                      className="rounded border-[var(--color-hairline)] text-[var(--color-brand-solid)] focus:ring-0"
+                      className="rounded-card border-line text-brand-solid focus:ring-0"
                     />
-                    <span className="text-[11px] text-[var(--color-ink)]">
+                    <span className="text-[11px] text-ink">
                       Solo reseñas actualmente ocultas
                     </span>
                   </label>
                 </div>
 
-                <span className="text-[11px] text-[var(--color-subtle)]">
-                  Mostrando <strong className="text-[var(--color-ink)]">{resenasReportadasFiltradas.length}</strong> de {resenasReportadas.length} reseñas
+                <span className="text-[11px] text-subtle">
+                  Mostrando <strong className="text-ink">{resenasReportadasFiltradas.length}</strong> de {resenasReportadas.length} reseñas
                 </span>
               </div>
 
               {/* Estado de Carga */}
               {cargandoReportes && (
-                <div className="py-12 text-center text-xs text-[var(--color-subtle)] flex flex-col items-center justify-center gap-2">
-                  <div className="h-6 w-6 border-2 border-[var(--color-brand-solid)] border-t-transparent rounded-full animate-spin"></div>
+                <div className="py-12 text-center text-xs text-subtle flex flex-col items-center justify-center gap-2">
+                  <div className="h-6 w-6 border-2 border-brand-solid border-t-transparent rounded-full animate-spin"></div>
                   <span>Cargando cola de moderación...</span>
                 </div>
               )}
 
               {/* Estado de Error */}
               {!cargandoReportes && errorReportes && (
-                <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-xs flex items-center justify-between">
+                <div className="p-4 rounded-card border border-status-error bg-paper text-status-error text-xs flex items-center justify-between">
                   <span>{errorReportes}</span>
                   <button
                     type="button"
                     onClick={cargarReportes}
-                    className="font-bold underline cursor-pointer ml-3"
+                    className="font-medium underline cursor-pointer ml-3"
                   >
                     Reintentar
                   </button>
@@ -2428,14 +2429,14 @@ export default function AdminPanelModal({
 
               {/* Lista vacía */}
               {!cargandoReportes && !errorReportes && resenasReportadasFiltradas.length === 0 && (
-                <div className="py-12 text-center rounded-xl border border-dashed border-[var(--color-hairline)] p-8">
+                <div className="py-12 text-center rounded-card border border-dashed border-line p-8">
                   <span className="text-3xl">🎉</span>
-                  <h4 className="font-bold text-sm text-[var(--color-ink)] mt-2">
+                  <h4 className="font-medium text-sm text-ink mt-2">
                     {resenasReportadas.length === 0
                        ? "No hay reseñas reportadas en este momento"
                       : "Ninguna reseña coincide con los filtros aplicados"}
                   </h4>
-                  <p className="text-xs text-[var(--color-subtle)] mt-1 max-w-sm mx-auto">
+                  <p className="text-xs text-subtle mt-1 max-w-sm mx-auto">
                     {resenasReportadas.length === 0
                        ? "La consulta actual no devolvió reseñas reportadas. Esto no confirma que todos los reportes estén resueltos."
                       : "Intenta modificar el filtro de estado o la casilla de reseñas ocultas para ver más resultados."}
@@ -2455,27 +2456,27 @@ export default function AdminPanelModal({
                     return (
                       <div
                         key={resena.idResena}
-                        className={`rounded-xl border transition-all p-4 space-y-3 ${
+                        className={`rounded-card border transition-all p-4 space-y-3 ${
                           estaOculta
-                            ? "border-red-200 bg-red-50/20"
-                            : "border-[var(--color-hairline)] bg-[var(--color-canvas)]"
+                            ? "border-status-error bg-paper"
+                            : "border-line bg-canvas"
                         }`}
                       >
                         {/* Cabecera de la reseña reportada */}
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-xs text-[var(--color-ink)]">
+                              <span className="font-medium text-xs text-ink">
                                 {resena.nombreProducto || `Producto #${resena.idProducto}`}
                               </span>
-                              <span className="text-[10px] text-[var(--color-subtle)]">
+                              <span className="text-[10px] text-subtle">
                                 • ID Reseña #{resena.idResena}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 text-[11px] text-[var(--color-subtle)]">
-                              <span>Autor: <strong className="text-[var(--color-ink)]">{resena.nombreAutor || "Usuario"}</strong></span>
+                            <div className="flex items-center gap-2 text-[11px] text-subtle">
+                              <span>Autor: <strong className="text-ink">{resena.nombreAutor || "Usuario"}</strong></span>
                               {resena.puntuacion != null && (
-                                <span className="text-amber-500 font-semibold">
+                                <span className="text-star font-medium">
                                   ★ {resena.puntuacion}/5
                                 </span>
                               )}
@@ -2486,28 +2487,28 @@ export default function AdminPanelModal({
                           {/* Insignias de visibilidad y estado */}
                           <div className="flex flex-wrap items-center gap-1.5">
                             {resena.ocultaPorModeracion && (
-                              <span className="px-2 py-0.5 rounded-full border border-red-300 bg-red-100 text-red-800 text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full border border-status-error bg-paper text-status-error text-[10px] font-medium">
                                 🛑 Oculta por moderador
                               </span>
                             )}
                             {resena.ocultaPorReportes && !resena.ocultaPorModeracion && (
-                              <span className="px-2 py-0.5 rounded-full border border-amber-300 bg-amber-100 text-amber-800 text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full border border-surface-border-strong bg-surface-2 text-star text-[10px] font-medium">
                                 ⚠️ Oculta por reportes
                               </span>
                             )}
                             {!estaOculta && (
-                              <span className="px-2 py-0.5 rounded-full border border-emerald-300 bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full border border-surface-border-strong bg-surface-2 text-ink text-[10px] font-medium">
                                 ✅ Visible al público
                               </span>
                             )}
-                            <span className="px-2 py-0.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] text-[10px] font-semibold">
+                            <span className="px-2 py-0.5 rounded-full border border-line bg-paper text-ink text-[10px] font-medium">
                               {resena.totalReportes} {resena.totalReportes === 1 ? "reporte" : "reportes"}
                             </span>
                           </div>
                         </div>
 
                         {/* Comentario de la reseña */}
-                        <div className="p-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] text-xs text-[var(--color-ink)] leading-relaxed italic">
+                        <div className="p-3 rounded-card border border-line bg-paper text-xs text-ink leading-relaxed italic">
                           &ldquo;{resena.comentario}&rdquo;
                         </div>
 
@@ -2516,17 +2517,17 @@ export default function AdminPanelModal({
                           <button
                             type="button"
                             onClick={() => toggleReportesExpandidos(resena.idResena)}
-                            className="text-[11px] font-semibold text-[var(--color-brand-blue)] hover:underline flex items-center gap-1 cursor-pointer"
+                            className="text-[11px] font-medium text-brand-blue hover:underline flex items-center gap-1 cursor-pointer"
                             aria-expanded={expandido}
                           >
                             <span>{expandido ? "▼ Ocultar" : "▶ Ver"} motivos de reportes ({resena.reportes?.length || 0})</span>
                           </button>
 
                           {expandido && (
-                            <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] overflow-hidden">
+                            <div className="rounded-card border border-line bg-paper overflow-hidden">
                               <table className="w-full text-[11px] border-collapse">
                                 <thead>
-                                  <tr className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[10px] font-bold text-[var(--color-subtle)] uppercase">
+                                  <tr className="border-b border-line bg-canvas text-[10px] font-medium text-subtle uppercase">
                                     <th className="py-2 px-3 text-left">Motivo</th>
                                     <th className="py-2 px-3 text-left">Detalle / Descripción</th>
                                     <th className="py-2 px-3 text-left">Reportante</th>
@@ -2536,28 +2537,28 @@ export default function AdminPanelModal({
                                 </thead>
                                 <tbody>
                                   {(resena.reportes || []).map((rep) => (
-                                    <tr key={rep.idReporte} className="border-b border-[var(--color-hairline)] last:border-0 hover:bg-[var(--color-canvas)]/50">
-                                      <td className="py-2 px-3 font-semibold text-[var(--color-ink)]">
+                                    <tr key={rep.idReporte} className="border-b border-line last:border-0 hover:bg-canvas/50">
+                                      <td className="py-2 px-3 font-medium text-ink">
                                         {rep.motivo}
                                       </td>
-                                      <td className="py-2 px-3 text-[var(--color-subtle)]">
+                                      <td className="py-2 px-3 text-subtle">
                                         {rep.descripcion || "—"}
                                       </td>
-                                      <td className="py-2 px-3 text-[var(--color-ink)]">
+                                      <td className="py-2 px-3 text-ink">
                                         {rep.nombreReportante || `Usuario #${rep.idUsuarioReportante}`}
                                       </td>
-                                      <td className="py-2 px-3 text-center text-[var(--color-subtle)]">
+                                      <td className="py-2 px-3 text-center text-subtle">
                                         {new Date(rep.fechaCreacion).toLocaleDateString()}
                                       </td>
                                       <td className="py-2 px-3 text-center">
-                                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                        <span className={`px-2 py-0.5 rounded-card text-[9px] font-medium uppercase ${
                                           rep.estado === "PENDIENTE"
-                                            ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                            ? "bg-surface-2 text-star border border-surface-border-strong"
                                             : rep.estado === "ACEPTADO"
-                                            ? "bg-red-100 text-red-800 border border-red-300"
+                                            ? "bg-paper text-status-error border border-status-error"
                                             : rep.estado === "RECHAZADO"
-                                            ? "bg-slate-100 text-slate-700 border border-slate-300"
-                                            : "bg-blue-100 text-blue-800 border border-blue-300"
+                                            ? "bg-surface-2 text-subtle border border-surface-border-strong"
+                                            : "bg-surface-2 text-brand-blue border border-line"
                                         }`}>
                                           {rep.estado}
                                         </span>
@@ -2571,8 +2572,8 @@ export default function AdminPanelModal({
                         </div>
 
                         {/* Barra de acciones de moderación (S2-72) */}
-                        <div className="pt-2 border-t border-[var(--color-hairline)] flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-[10px] text-[var(--color-subtle)]">
+                        <div className="pt-2 border-t border-line flex flex-wrap items-center justify-between gap-2">
+                          <span className="text-[10px] text-subtle">
                             Acciones de Administrador con auditoría
                           </span>
                           <div className="flex flex-wrap items-center gap-2">
@@ -2589,7 +2590,7 @@ export default function AdminPanelModal({
                                   )
                                 }
                                 disabled={ejecutandoAccion}
-                                className="px-2.5 py-1 rounded text-[11px] font-bold text-red-600 hover:text-red-700 border border-red-200 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                                className="px-2.5 py-1 rounded-card text-[11px] font-medium text-status-error hover:text-status-error border border-status-error hover:bg-paper transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
                               >
                                 <span>🛑</span> Ocultar reseña
                               </button>
@@ -2608,7 +2609,7 @@ export default function AdminPanelModal({
                                   )
                                 }
                                 disabled={ejecutandoAccion}
-                                className="px-2.5 py-1 rounded text-[11px] font-bold text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                                className="px-2.5 py-1 rounded-card text-[11px] font-medium text-ink hover:text-ink border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
                               >
                                 <span>✅</span> Publicar / Restaurar
                               </button>
@@ -2627,7 +2628,7 @@ export default function AdminPanelModal({
                                   )
                                 }
                                 disabled={ejecutandoAccion}
-                                className="px-2.5 py-1 rounded text-[11px] font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
+                                className="px-2.5 py-1 rounded-card text-[11px] font-medium text-subtle hover:text-subtle border border-surface-border-strong hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1"
                               >
                                 <span>⚠️</span> Rechazar reportes
                               </button>
@@ -2664,20 +2665,20 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar"
             aria-describedby="desc-confirmar-eliminar"
-            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-200 bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
-              <div className="flex items-center gap-2 text-red-500 mb-3">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-status-error bg-paper p-5 text-ink">
+              <div className="flex items-center gap-2 text-status-error mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar" className="font-bold text-sm uppercase text-[var(--color-ink)]">
+                <h4 id="titulo-confirmar-eliminar" className="font-medium text-sm uppercase text-ink">
                   Confirmar Eliminación de Producto
                 </h4>
               </div>
-              <p id="desc-confirmar-eliminar" className="text-xs text-[var(--color-ink)] mb-2 leading-relaxed">
+              <p id="desc-confirmar-eliminar" className="text-xs text-ink mb-2 leading-relaxed">
                 ¿Estás seguro de que deseas eliminar el producto{" "}
-                <strong className="text-[var(--color-ink)] font-bold">&ldquo;{productoEliminando.nombre}&rdquo;</strong>?
+                <strong className="text-ink font-medium">&ldquo;{productoEliminando.nombre}&rdquo;</strong>?
               </p>
-              <p className="text-[11px] text-[var(--color-subtle)] mb-4">
+              <p className="text-[11px] text-subtle mb-4">
                 El backend ejecutará un borrado lógico (estado inactivo) y retornará HTTP 204 No Content.
               </p>
               <div className="flex items-center justify-end gap-2">
@@ -2685,7 +2686,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setProductoEliminando(null)}
                   disabled={eliminando}
-                  className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className={buttonClassName("secondary", "disabled:opacity-50")}
                 >
                   Cancelar
                 </button>
@@ -2693,11 +2694,11 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionProducto}
                   disabled={eliminando}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className={buttonClassName("danger", "disabled:opacity-50")}
                 >
                   {eliminando ? (
                     <>
-                      <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                      <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                       Eliminando...
                     </>
                   ) : (
@@ -2717,20 +2718,20 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-cat"
             aria-describedby="desc-confirmar-eliminar-cat"
-            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-200 bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
-              <div className="flex items-center gap-2 text-red-500 mb-3">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-status-error bg-paper p-5 text-ink">
+              <div className="flex items-center gap-2 text-status-error mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar-cat" className="font-bold text-sm uppercase text-[var(--color-ink)]">
+                <h4 id="titulo-confirmar-eliminar-cat" className="font-medium text-sm uppercase text-ink">
                   Confirmar Eliminación de Categoría
                 </h4>
               </div>
-              <p id="desc-confirmar-eliminar-cat" className="text-xs text-[var(--color-ink)] mb-2 leading-relaxed">
+              <p id="desc-confirmar-eliminar-cat" className="text-xs text-ink mb-2 leading-relaxed">
                 ¿Estás seguro de que deseas eliminar la categoría{" "}
-                <strong className="text-[var(--color-ink)] font-bold">&ldquo;{categoriaEliminando.nombre}&rdquo;</strong>?
+                <strong className="text-ink font-medium">&ldquo;{categoriaEliminando.nombre}&rdquo;</strong>?
               </p>
-              <p className="text-[11px] text-[var(--color-subtle)] mb-4">
+              <p className="text-[11px] text-subtle mb-4">
                 El backend ejecutará un borrado lógico (estado inactivo) para conservar la integridad referencial de los productos asociados.
               </p>
               <div className="flex items-center justify-end gap-2">
@@ -2738,7 +2739,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setCategoriaEliminando(null)}
                   disabled={eliminandoCat}
-                  className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className={buttonClassName("secondary", "disabled:opacity-50")}
                 >
                   Cancelar
                 </button>
@@ -2746,11 +2747,11 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionCategoria}
                   disabled={eliminandoCat}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className={buttonClassName("danger", "disabled:opacity-50")}
                 >
                   {eliminandoCat ? (
                     <>
-                      <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                      <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                       Eliminando...
                     </>
                   ) : (
@@ -2770,20 +2771,20 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-eliminar-marca"
             aria-describedby="desc-confirmar-eliminar-marca"
-            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md animate-scale-in rounded-card border border-red-200 bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
-              <div className="flex items-center gap-2 text-red-500 mb-3">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-status-error bg-paper p-5 text-ink">
+              <div className="flex items-center gap-2 text-status-error mb-3">
                 <span className="text-lg">⚠️</span>
-                <h4 id="titulo-confirmar-eliminar-marca" className="font-bold text-sm uppercase text-[var(--color-ink)]">
+                <h4 id="titulo-confirmar-eliminar-marca" className="font-medium text-sm uppercase text-ink">
                   Confirmar Eliminación de Marca
                 </h4>
               </div>
-              <p id="desc-confirmar-eliminar-marca" className="text-xs text-[var(--color-ink)] mb-2 leading-relaxed">
+              <p id="desc-confirmar-eliminar-marca" className="text-xs text-ink mb-2 leading-relaxed">
                 ¿Estás seguro de que deseas eliminar la marca{" "}
-                <strong className="text-[var(--color-ink)] font-bold">&ldquo;{marcaEliminando.nombre}&rdquo;</strong>?
+                <strong className="text-ink font-medium">&ldquo;{marcaEliminando.nombre}&rdquo;</strong>?
               </p>
-              <p className="text-[11px] text-[var(--color-subtle)] mb-4">
+              <p className="text-[11px] text-subtle mb-4">
                 El backend ejecutará un borrado lógico (estado inactivo) para conservar la integridad referencial de los productos asociados.
               </p>
               <div className="flex items-center justify-end gap-2">
@@ -2791,7 +2792,7 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={() => setMarcaEliminando(null)}
                   disabled={eliminandoMarca}
-                  className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className={buttonClassName("secondary", "disabled:opacity-50")}
                 >
                   Cancelar
                 </button>
@@ -2799,11 +2800,11 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarEliminacionMarca}
                   disabled={eliminandoMarca}
-                  className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-xs text-white font-bold uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                  className={buttonClassName("danger", "disabled:opacity-50")}
                 >
                   {eliminandoMarca ? (
                     <>
-                      <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                      <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                       Eliminando...
                     </>
                   ) : (
@@ -2823,9 +2824,9 @@ export default function AdminPanelModal({
             aria-modal="true"
             aria-labelledby="titulo-confirmar-moderacion"
             aria-describedby="desc-confirmar-moderacion"
-            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] flex animate-fade-in items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
           >
-            <div className="w-full max-w-md animate-scale-in rounded-card border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] space-y-4">
+            <div className="w-full max-w-md animate-scale-in rounded-card border border-line bg-paper p-5 text-ink space-y-4">
               <div className="flex items-center gap-2">
                 <span className="text-lg">
                   {modalMotivoAccion.accion === "ocultar"
@@ -2834,19 +2835,19 @@ export default function AdminPanelModal({
                     ? "✅"
                     : "⚠️"}
                 </span>
-                <h4 id="titulo-confirmar-moderacion" className="font-bold text-sm uppercase text-[var(--color-ink)]">
+                <h4 id="titulo-confirmar-moderacion" className="font-medium text-sm uppercase text-ink">
                   {modalMotivoAccion.titulo}
                 </h4>
               </div>
 
-              <p id="desc-confirmar-moderacion" className="text-xs text-[var(--color-ink)] leading-relaxed">
+              <p id="desc-confirmar-moderacion" className="text-xs text-ink leading-relaxed">
                 {modalMotivoAccion.descripcion}
               </p>
 
               <div>
                 <label
                   htmlFor="motivo-accion-moderacion"
-                  className="block text-[11px] font-semibold text-[var(--color-ink)] mb-1"
+                  className="block text-[11px] font-medium text-ink mb-1"
                 >
                    Justificación {modalMotivoAccion.accion === "rechazar-reportes" ? "(opcional)" : "(obligatoria)"}:
                 </label>
@@ -2861,12 +2862,12 @@ export default function AdminPanelModal({
                    rows={3}
                    maxLength={2000}
                    aria-invalid={errorMotivoAccion}
-                   className="w-full px-3 py-2 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] text-xs focus:outline-none focus:ring-1 focus:ring-[var(--color-brand-solid)] resize-none"
+                   className={`min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
                  />
-                 {errorMotivoAccion && <p role="alert" className="mt-2 text-xs text-red-600">La justificación obligatoria no puede estar vacía al ocultar o publicar una reseña.</p>}
+                 {errorMotivoAccion && <p role="alert" className="mt-2 text-xs text-status-error">La justificación obligatoria no puede estar vacía al ocultar o publicar una reseña.</p>}
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-hairline)]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-line">
                 <button
                   type="button"
                   onClick={() => {
@@ -2875,7 +2876,7 @@ export default function AdminPanelModal({
                      setErrorMotivoAccion(false);
                   }}
                   disabled={ejecutandoAccion}
-                  className="px-3.5 py-1.5 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] hover:bg-[var(--color-hairline)] text-xs text-[var(--color-ink)] uppercase transition-colors cursor-pointer disabled:opacity-50"
+                  className={buttonClassName("secondary", "disabled:opacity-50")}
                 >
                   Cancelar
                 </button>
@@ -2883,17 +2884,17 @@ export default function AdminPanelModal({
                   type="button"
                   onClick={ejecutarAccionModeracion}
                   disabled={ejecutandoAccion}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold text-white uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm ${
+                  className={`px-3.5 py-1.5 rounded-card text-xs font-medium text-status-error uppercase transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ${
                     modalMotivoAccion.accion === "ocultar"
-                      ? "bg-red-600 hover:bg-red-500"
+                      ? "bg-paper hover:bg-paper"
                       : modalMotivoAccion.accion === "publicar"
-                      ? "bg-emerald-600 hover:bg-emerald-500"
-                      : "bg-slate-700 hover:bg-slate-600"
+                      ? "bg-surface-2 hover:bg-surface-2"
+                      : "bg-surface-2 hover:bg-surface-2"
                   }`}
                 >
                   {ejecutandoAccion ? (
                     <>
-                      <span className="h-2 w-2 rounded-full bg-white animate-ping"></span>
+                      <span className="h-2 w-2 rounded-full bg-status-error animate-ping"></span>
                       Procesando...
                     </>
                   ) : (
@@ -2920,14 +2921,14 @@ export default function AdminPanelModal({
         )}
 
         {/* Pie del modal */}
-        <div className="mt-4 pt-3 border-t border-[var(--color-hairline)] flex items-center justify-between shrink-0">
-          <span className="text-[10px] text-[var(--color-subtle)] font-sans">
+        <div className="mt-4 pt-3 border-t border-line flex items-center justify-between shrink-0">
+          <span className="text-[10px] text-subtle font-sans">
             TecReview // Módulo administrativo verificado
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-[var(--color-brand-solid)] hover:bg-[var(--color-brand-solid)]/90 px-4 py-2 text-xs font-bold text-[var(--color-on-solid)] uppercase tracking-wider transition-colors cursor-pointer"
+            className="rounded-card bg-brand-solid hover:bg-brand-solid/90 px-4 py-2 text-xs font-medium text-on-solid uppercase tracking-normal transition-colors cursor-pointer"
           >
             Cerrar
           </button>

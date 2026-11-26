@@ -9,9 +9,10 @@ import ProductImagePlaceholder from "@/components/ProductImagePlaceholder";
 import AtribucionImagenProducto from "@/components/AtribucionImagenProducto";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
 import RatingStars from "./RatingStars";
 
-export type VarianteTarjetaProducto = "grid" | "lista";
+export type VarianteTarjetaProducto = "grid" | "lista" | "inicio";
 
 interface TarjetaProductoProps {
   producto: ProductoViewModel;
@@ -35,6 +36,7 @@ export default function TarjetaProducto({
   const [errorImagen, setErrorImagen] = useState(false);
 
   const esLista = variante === "lista";
+  const esInicio = variante === "inicio";
   const tieneImagen =
     Boolean(producto.imagen) && producto.imagen !== null && !errorImagen;
   const imagenSinDerivados = obtenerAtribucionImagen(producto.imagen)?.licencia === "CC BY-ND 2.0";
@@ -63,15 +65,19 @@ export default function TarjetaProducto({
       data-variante={variante}
       className={
         esLista
-          ? "group flex gap-4 overflow-hidden rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 shadow-[var(--shadow-paper)] transition-shadow duration-200 hover:shadow-[var(--shadow-paper-hover)]"
-          : "group flex flex-col overflow-hidden rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] shadow-[var(--shadow-paper)] transition-shadow duration-200 hover:shadow-[var(--shadow-paper-hover)]"
+          ? "group flex gap-4 overflow-hidden rounded-card border border-line bg-paper p-3 transition-colors duration-200 hover:border-brand-blue"
+          : esInicio
+            ? "group flex flex-col overflow-hidden rounded-card border border-line bg-paper p-4 transition-colors duration-200 hover:border-brand-blue"
+            : "group flex flex-col overflow-hidden rounded-card border border-line bg-paper transition-colors duration-200 hover:border-brand-blue"
       }
     >
       <div
         className={
           esLista
-            ? "relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-2"
-            : "relative flex h-40 items-center justify-center overflow-hidden border-b border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"
+            ? "relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-card border border-line bg-surface-0 p-2"
+            : esInicio
+              ? "relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-card border border-hairline bg-surface-0 p-4"
+              : "relative flex h-40 items-center justify-center overflow-hidden border-b border-dotted border-line bg-surface-0 p-4"
         }
       >
         <button
@@ -99,11 +105,11 @@ export default function TarjetaProducto({
         </button>
         <AtribucionImagenProducto
           src={producto.imagen}
-          className="absolute bottom-1 left-1 right-1 rounded bg-[var(--color-paper)]/90 px-1 py-0.5"
+          className="absolute bottom-1 left-1 right-1 rounded bg-paper px-1 py-0.5"
         />
 
         {tienePosicion && (
-          <span className="absolute left-2 top-2 rounded-md bg-[var(--color-brand-solid)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-solid)] shadow-[var(--shadow-paper)]">
+          <span className="absolute left-2 top-2 rounded-card bg-brand-solid px-2 py-1 text-[10px] font-medium uppercase tracking-normal text-on-solid ">
             #{posicionRanking} TOP
           </span>
         )}
@@ -121,11 +127,13 @@ export default function TarjetaProducto({
         className={
           esLista
             ? "flex min-w-0 flex-1 flex-col py-1 pr-1"
-            : "flex flex-1 flex-col p-4"
+            : esInicio
+              ? "flex flex-1 flex-col pt-4"
+              : "flex flex-1 flex-col p-4"
         }
       >
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <p className="text-xs font-medium text-[var(--color-subtle)]">
+          <p className="text-xs font-medium text-subtle">
             <span>{producto.marca}</span>
             <span aria-hidden="true"> · </span>
             <span>{producto.categoriaEtiqueta}</span>
@@ -134,18 +142,18 @@ export default function TarjetaProducto({
           {/* Fase 4 (H-04): solo se afirma disponibilidad con ofertas confirmadas por el backend. */}
           {producto.disponibilidadConsultada && (
             <span
-              className={`inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${
-                numeroTiendas > 0
-                  ? "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
-                  : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
-              }`}
+              className={`inline-flex shrink-0 items-center rounded-card px-2 py-0.5 text-[10px] font-medium ${
+ numeroTiendas > 0
+ ? "bg-surface-2 text-ink"
+ : "border border-line bg-paper text-subtle"
+ }`}
             >
               {numeroTiendas > 0 ? "Disponible" : "Sin tiendas registradas"}
             </span>
           )}
         </div>
 
-        <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-[var(--color-ink)]">
+        <h3 className="mt-1 line-clamp-2 text-sm font-medium uppercase leading-snug text-ink">
           {producto.nombre}
         </h3>
 
@@ -162,7 +170,7 @@ export default function TarjetaProducto({
               <li
                 key={spec}
                 title={spec}
-                className="inline-flex max-w-full items-center gap-1 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2 py-1 text-[11px] text-[var(--color-subtle)]"
+                className="inline-flex max-w-full items-center gap-1 rounded-card border border-hairline bg-canvas px-2 py-1 text-[11px] text-subtle"
               >
                 <svg
                   aria-hidden="true"
@@ -181,41 +189,42 @@ export default function TarjetaProducto({
           </ul>
         )}
 
-        <div className="mt-auto flex items-end justify-between gap-3 border-t border-[var(--color-hairline)] pt-3">
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-dotted border-line pt-3">
           <div className="min-w-0">
             {presupuesto === "dentro" && (
-              <span className="mb-1 inline-flex items-center rounded-md bg-[var(--color-positive)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-ink)]">
+              <span className="mb-1 inline-flex items-center rounded-card bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-ink">
                 ✓ En presupuesto
               </span>
             )}
             {presupuesto === "fuera" && (
-              <span className="mb-1 inline-flex items-center rounded-md bg-[var(--color-hairline)] px-2 py-0.5 text-[10px] font-semibold text-[var(--color-subtle)]">
+              <span className="mb-1 inline-flex items-center rounded-card border border-line bg-paper px-2 py-0.5 text-[10px] font-medium text-subtle">
                 Supera presupuesto
               </span>
             )}
             <span
-              className={`block text-base font-semibold ${
-                producto.precioCOP > 0 || mostrarPrecioTiendas
-                  ? "text-[var(--color-ink)]"
-                  : "text-[var(--color-subtle)]"
-              }`}
+              className={`block font-medium uppercase ${esInicio ? "text-lg leading-none" : "text-base"} ${
+ producto.precioCOP > 0 || mostrarPrecioTiendas
+ ? "text-ink"
+ : "text-subtle"
+ }`}
             >
               {precioTexto}
             </span>
             {mostrarPrecioTiendas && (
-              <span className="mt-0.5 block text-[11px] font-medium text-[var(--color-subtle)]">
+              <span className="mt-0.5 block text-[11px] font-medium text-subtle">
                 · {textoCantidadTiendas(numeroTiendas)}
               </span>
             )}
           </div>
 
-          <button
+          <Button
             type="button"
+            variant={esInicio ? "secondary" : "primary"}
             onClick={() => onVerDetalle?.(producto)}
-            className={`shrink-0 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+            className={esInicio ? "min-h-9 shrink-0 px-3 py-1.5 text-[11px]" : "shrink-0 text-xs"}
           >
             Ver detalle
-          </button>
+          </Button>
         </div>
       </div>
     </article>

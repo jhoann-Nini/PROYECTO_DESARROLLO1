@@ -31,6 +31,7 @@ import BotonCompartir from "@/components/detalle/BotonCompartir";
 import BotonFavorito from "@/components/favoritos/BotonFavorito";
 import ReportarOfertaModal, { type OfertaReportable } from "@/components/ReportarOfertaModal";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Button, { buttonClassName } from "@/components/ui/Button";
 
 interface DetalleProductoClienteProps {
   idProducto: number;
@@ -279,10 +280,10 @@ export default function DetalleProductoCliente({
         <div
           role="status"
           aria-busy="true"
-          className="flex flex-col items-center justify-center rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-12 text-center"
+          className="flex flex-col items-center justify-center rounded-card border border-line bg-paper p-12 text-center"
         >
-          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]" />
-          <p className="mt-4 text-sm text-[var(--color-subtle)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-line border-t-brand-blue" />
+          <p className="mt-4 text-sm text-subtle">
             Cargando detalle del producto…
           </p>
         </div>
@@ -293,17 +294,17 @@ export default function DetalleProductoCliente({
   if (noEncontrado) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="rounded-xl border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-10 text-center">
-          <p className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">
+        <div className="rounded-card border border-dashed border-line bg-paper p-10 text-center">
+          <p className="text-2xl font-medium tracking-normal text-ink">
             Producto no encontrado
           </p>
-          <p className="mt-2 text-sm text-[var(--color-subtle)]">
+          <p className="mt-2 text-sm text-subtle">
             El producto solicitado no existe o ya no está disponible en el
             catálogo.
           </p>
           <Link
             href="/productos"
-            className="mt-5 inline-flex rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className={buttonClassName("primary", "mt-5 text-sm")}
           >
             Volver al catálogo
           </Link>
@@ -317,21 +318,21 @@ export default function DetalleProductoCliente({
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-8 text-center"
+          className="rounded-card border border-status-error bg-paper p-8 text-center"
         >
-          <p className="text-lg font-semibold text-red-900">
+          <p className="text-lg font-medium text-status-error">
             No pudimos cargar el producto
           </p>
-          <p className="mt-2 text-sm text-red-800">
+          <p className="mt-2 text-sm text-status-error">
             {error ?? "El producto no tiene datos para mostrar."}
           </p>
-          <button
+          <Button
             type="button"
             onClick={reintentarProducto}
-            className="mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+            className="mt-4 text-sm"
           >
             Reintentar
-          </button>
+          </Button>
         </div>
       </main>
     );
@@ -345,27 +346,27 @@ export default function DetalleProductoCliente({
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav
         aria-label="Migas de pan"
-        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[var(--color-subtle)]"
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-subtle"
       >
-        <Link href="/" className="transition-colors hover:text-[var(--color-brand-blue)]">
+        <Link href="/" className="transition-colors hover:text-brand-blue">
           Inicio
         </Link>
         <span aria-hidden="true">/</span>
         <Link
           href="/productos"
-          className="transition-colors hover:text-[var(--color-brand-blue)]"
+          className="transition-colors hover:text-brand-blue"
         >
           Productos
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="font-medium text-[var(--color-ink)]">
+        <span className="font-medium text-ink">
           {producto.nombre}
         </span>
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-        <div className="overflow-hidden rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]">
-          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-[var(--color-canvas)] p-6">
+        <div className="overflow-hidden rounded-card border border-line bg-paper p-5">
+          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-card bg-surface-0 p-6">
             {producto.imagen && !errorImagen ? (
               <img
                 src={producto.imagen}
@@ -388,25 +389,25 @@ export default function DetalleProductoCliente({
 
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-brand-blue)]">
+            <span className="rounded-card bg-brand-blue/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-normal text-brand-blue">
               {ficha.categoriaEtiqueta}
             </span>
             <span
-              className={`rounded-md px-2.5 py-1 text-[11px] font-semibold ${
+              className={`rounded-card px-2.5 py-1 text-[11px] font-medium ${
                 estadoDisponibilidad.positivo
-                  ? "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
-                  : "bg-[var(--color-hairline)] text-[var(--color-subtle)]"
+                  ? "bg-positive/15 text-ink"
+                  : "border border-line bg-paper text-subtle"
               }`}
             >
               {estadoDisponibilidad.texto}
             </span>
           </div>
 
-          <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[var(--color-ink)] sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-medium uppercase leading-none tracking-normal text-ink sm:text-4xl">
             {producto.nombre}
           </h1>
 
-          <p className="mt-2 text-sm font-medium text-[var(--color-subtle)]">
+          <p className="mt-2 text-sm font-medium text-subtle">
             {ficha.marca}
             <span aria-hidden="true"> · </span>
             {ficha.categoriaEtiqueta}
@@ -421,33 +422,33 @@ export default function DetalleProductoCliente({
             />
           </div>
 
-          <p className="mt-5 text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+          <p className="mt-5 text-xs font-medium uppercase tracking-normal text-subtle">
             Precio de referencia
           </p>
-          <p className="mt-1 text-3xl font-bold tracking-tight text-[var(--color-ink)]">
+          <p className="mt-1 text-3xl font-medium uppercase tracking-normal text-ink">
             {precio}
           </p>
 
           <section
             aria-labelledby="titulo-donde-comprar"
-            className="mt-6 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5"
+            className="mt-6 rounded-card border border-line bg-paper p-5"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <div>
                 <h2
                   id="titulo-donde-comprar"
-                  className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+                  className="text-lg font-medium uppercase tracking-normal text-ink"
                 >
                   Dónde comprar
                 </h2>
                 {hayEnlacesTienda && (
-                  <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-1 text-xs text-subtle">
                     Los enlaces abren la tienda en una pestaña nueva.
                   </p>
                 )}
               </div>
               {tiendas.length > 0 && (
-                <p className="text-xs text-[var(--color-subtle)]">
+                <p className="text-xs text-subtle">
                   {tiendas.length}{" "}
                   {tiendas.length === 1 ? "tienda" : "tiendas"} disponibles
                 </p>
@@ -455,12 +456,12 @@ export default function DetalleProductoCliente({
             </div>
 
             {reporteConfirmado && (
-              <p role="status" className="mt-3 text-sm text-[var(--color-positive)]">
+              <p role="status" className="mt-3 text-sm text-positive">
                 {reporteConfirmado}
               </p>
             )}
             {errorTiendas && (
-              <div role="alert" className="mt-3 text-sm text-red-700">
+              <div role="alert" className="mt-3 text-sm text-status-error">
                 {errorTiendas}{" "}
                 <button type="button" onClick={() => {
                   setErrorTiendas(null);
@@ -470,7 +471,7 @@ export default function DetalleProductoCliente({
               </div>
             )}
             {tiendas.length > 0 ? (
-              <ul className="mt-4 divide-y divide-[var(--color-hairline)]">
+              <ul className="mt-4 divide-y divide-dotted divide-line">
                 {tiendas.map((tienda, indice) => {
                   const idEstablecimiento = tienda.idEstablecimiento;
                   const urlValida =
@@ -484,17 +485,17 @@ export default function DetalleProductoCliente({
                       className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
                     >
                       <div>
-                        <p className="font-semibold text-[var(--color-ink)]">
+                        <p className="font-medium text-ink">
                           {tienda.nombre}{tienda.verificada === true && (
                             <span
                               aria-label={`${tienda.nombre} verificada por TecReview`}
-                              className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800"
+                              className="ml-2 inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 text-xs font-medium text-ink"
                             >
                               <span aria-hidden="true">✓</span> Verificada
                             </span>
                           )}
                         </p>
-                        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+                        <p className="mt-1 text-sm text-subtle">
                           Envío no especificado
                           {formatearFechaPrecio(tienda.fechaActualizacionPrecio) && (
                             <> · Precio actualizado el {formatearFechaPrecio(tienda.fechaActualizacionPrecio)}</>
@@ -502,7 +503,7 @@ export default function DetalleProductoCliente({
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-3">
-                        <p className="font-semibold text-[var(--color-ink)]">
+                        <p className="font-medium text-ink">
                           <span className="sr-only">
                             Precio en {tienda.nombre}:{" "}
                           </span>
@@ -514,7 +515,7 @@ export default function DetalleProductoCliente({
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label={`Ver tienda: ${tienda.nombre} (abre en una pestaña nueva)`}
-                            className="rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)]"
+                            className="rounded-card border border-line px-3 py-2 text-sm font-medium text-brand-blue transition-colors hover:border-brand-blue"
                           >
                             Ver tienda
                           </a>
@@ -530,7 +531,7 @@ export default function DetalleProductoCliente({
                               });
                             }}
                             aria-label={`Reportar precio o enlace de ${producto.nombre} en ${tienda.nombre}`}
-                            className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-medium text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card border border-line px-3 py-2 text-sm font-medium text-brand-blue hover:border-brand-blue ${CLASE_FOCO}`}
                           >Reportar precio o enlace</button>
                       </div>
                     </li>
@@ -538,14 +539,14 @@ export default function DetalleProductoCliente({
                 })}
               </ul>
             ) : (
-              <p className="mt-2 text-sm text-[var(--color-subtle)]">
+              <p className="mt-2 text-sm text-subtle">
                 Aún no hay tiendas con precios publicados para este producto.
               </p>
             )}
           </section>
 
           {producto.descripcion && (
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-subtle)]">
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-subtle">
               {producto.descripcion}
             </p>
           )}
@@ -562,20 +563,20 @@ export default function DetalleProductoCliente({
             <BotonCompartir titulo={producto.nombre} />
           </div>
 
-          <dl className="mt-6 grid gap-3 border-t border-[var(--color-hairline)] pt-4 text-sm sm:grid-cols-2">
+          <dl className="mt-6 grid gap-3 border-t border-dotted border-line pt-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <dt className="text-xs font-medium uppercase tracking-normal text-subtle">
                 Categoría
               </dt>
-              <dd className="mt-1 font-medium text-[var(--color-ink)]">
+              <dd className="mt-1 font-medium text-ink">
                 {producto.nombreCategoria ?? ficha.categoriaEtiqueta}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+              <dt className="text-xs font-medium uppercase tracking-normal text-subtle">
                 Marca
               </dt>
-              <dd className="mt-1 font-medium text-[var(--color-ink)]">
+              <dd className="mt-1 font-medium text-ink">
                 {ficha.marca}
               </dd>
             </div>
@@ -587,7 +588,7 @@ export default function DetalleProductoCliente({
         <div
           role="tablist"
           aria-label="Información del producto"
-          className="flex flex-wrap gap-2 border-b border-[var(--color-hairline)]"
+          className="flex flex-wrap gap-2 border-b border-dotted border-line"
         >
           <button
             type="button"
@@ -596,10 +597,10 @@ export default function DetalleProductoCliente({
             aria-selected={pestana === "especificaciones"}
             aria-controls="panel-especificaciones"
             onClick={() => setPestana("especificaciones")}
-            className={`cursor-pointer rounded-t-md px-4 py-2.5 text-sm font-semibold transition-colors ${
+            className={`min-h-11 cursor-pointer rounded-t-card px-4 py-2.5 text-sm font-medium uppercase transition-colors ${
               pestana === "especificaciones"
-                ? "border-b-2 border-[var(--color-brand-blue)] text-[var(--color-brand-blue)]"
-                : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                ? "border-b-2 border-brand-blue text-brand-blue"
+                : "text-subtle hover:text-ink"
             }`}
           >
             Especificaciones
@@ -611,10 +612,10 @@ export default function DetalleProductoCliente({
             aria-selected={pestana === "opiniones"}
             aria-controls="panel-opiniones"
             onClick={() => setPestana("opiniones")}
-            className={`cursor-pointer rounded-t-md px-4 py-2.5 text-sm font-semibold transition-colors ${
+            className={`min-h-11 cursor-pointer rounded-t-card px-4 py-2.5 text-sm font-medium uppercase transition-colors ${
               pestana === "opiniones"
-                ? "border-b-2 border-[var(--color-brand-blue)] text-[var(--color-brand-blue)]"
-                : "text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                ? "border-b-2 border-brand-blue text-brand-blue"
+                : "text-subtle hover:text-ink"
             }`}
           >
             Opiniones ({resenas.length})

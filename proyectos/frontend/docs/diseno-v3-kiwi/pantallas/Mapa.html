@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Mapa de navegación y flujos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div style="width:1800px;height:1520px;box-sizing:border-box;padding:56px;background:#10140A;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end">
+<div class="col"><p class="lab">Arquitectura</p><h1 style="font-size:40px">Mapa de navegación</h1></div>
+<div style="display:flex;gap:16px;font-size:13px;color:#CFCDB3;align-items:center">
+<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#A5D64C"></span>Navegación principal</span>
+<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;border:2px dashed #E6E3CB"></span>Requiere sesión</span>
+<span style="display:inline-flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:3px;background:#2F4416;border:1px solid #8C7A50"></span>Según rol</span>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:20px;align-items:start">
+<div class="col">
+<p class="lab">Descubrir</p>
+<div class="n" style="background:#A5D64C;color:#10140A;border-color:#A5D64C">Inicio</div>
+<div class="s">Búsqueda + sugerencias</div><div class="s">4 categorías</div><div class="s">Destacados</div><div class="s">Presupuesto → Catálogo</div><div class="s">Rankings ×3</div><div class="s">Ofertas destacadas</div><div class="s">Opiniones comunidad</div>
+<div class="n" style="background:#A5D64C;color:#10140A;border-color:#A5D64C">Catálogo</div>
+<div class="s">Filtros + etiquetas</div><div class="s">Orden · 12 por página</div>
+<div class="n">Categoría ×4</div>
+<div class="s">Celulares · Tablets</div><div class="s">Portátiles · Auriculares</div>
+</div>
+<div class="col">
+<p class="lab">Evaluar</p>
+<div class="n">Detalle de producto</div>
+<div class="s">Resumen + acciones</div><div class="s">Dónde comprar</div><div class="s">Ficha técnica</div><div class="s">Opiniones</div>
+<div class="n" style="background:#A5D64C;color:#10140A;border-color:#A5D64C">Comparador</div>
+<div class="s">Hasta 4 · misma categoría</div><div class="s">Solo diferencias</div><div class="s">Variantes</div><div class="s">En qué destaca cada uno</div><div class="s">Recientes</div>
+</div>
+<div class="col">
+<p class="lab">Comunidad</p>
+<div class="n" style="background:#A5D64C;color:#10140A;border-color:#A5D64C">Reseñas</div>
+<div class="s">Buscar · filtrar · orden</div><div class="s" style="border:1.5px dashed #E6E3CB">Publicar / editar</div><div class="s">Reportar</div>
+<div class="n" style="background:#A5D64C;color:#10140A;border-color:#A5D64C">Blog</div>
+<div class="s">Índice</div><div class="s">Comparar móviles</div><div class="s">Batería y carga</div><div class="s">Portátiles para estudiar</div><div class="s">Auriculares</div>
+</div>
+<div class="col">
+<p class="lab">Cuenta</p>
+<div class="n">Acceso</div>
+<div class="s">Iniciar sesión (+CAPTCHA)</div><div class="s">Registro</div><div class="s">Confirmar correo</div><div class="s">Recuperar contraseña</div><div class="s">Restablecer</div>
+<div class="n" style="border:1.5px dashed #E6E3CB;background:#A5D64C;color:#10140A">Perfil</div>
+<div class="s">Actividad · reseñas</div><div class="s">Moderación · apelar</div><div class="s">Accesos por rol</div>
+<div class="n" style="border:1.5px dashed #E6E3CB;background:#A5D64C;color:#10140A">Favoritos</div>
+<div class="s">Filtrar · ordenar · vaciar</div>
+</div>
+<div class="col">
+<p class="lab">Paneles</p>
+<div class="n" style="background:#2F4416;color:#F4F1DC;border-color:#8C7A50">Administración</div>
+<div class="s">Productos · fichas · CSV</div><div class="s">Categorías</div><div class="s">Marcas</div><div class="s">Cola de reportes</div><div class="s">Usuarios y roles</div><div class="s">Establecimientos</div><div class="s">Ofertas por tienda</div><div class="s">Palabras de moderación</div>
+<div class="n" style="background:#2F4416;color:#F4F1DC;border-color:#8C7A50">Moderación</div>
+<div class="s">4 colas con contador</div>
+<div class="n" style="background:#2F4416;color:#F4F1DC;border-color:#8C7A50">Representante</div>
+<div class="s">Mis establecimientos</div>
+</div>
+<div class="col">
+<p class="lab">Global e interno</p>
+<div class="n">Buscador ⌘K / Ctrl+K</div>
+<div class="n">Tema claro / oscuro</div>
+<div class="n">Diálogos</div>
+<div class="s">Reportar precio o enlace</div><div class="s">Reportar reseña</div><div class="s">Confirmar eliminación</div>
+<div class="n">Avisos (toast)</div>
+<div class="n" style="background:#0A0D06;color:#CFCDB3;border-style:dashed">Explorador API</div>
+<div class="s">Uso interno · prioridad baja</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;border-top:1px dashed #3A4626;padding-top:28px">
+<p class="lab">Flujos principales</p>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 40px">
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">1 · Presupuesto a compra</span><div class="fl"><span class="st">Inicio · presupuesto</span><span class="ar">→</span><span class="st">Catálogo con precio máx.</span><span class="ar">→</span><span class="st">Detalle</span><span class="ar">→</span><span class="st">Dónde comprar</span><span class="ar">→</span><span class="st">Tienda externa</span></div></div>
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">2 · Comparar</span><div class="fl"><span class="st">+ Comparar (tarjeta o detalle)</span><span class="ar">→</span><span class="st">Bandeja 1–4</span><span class="ar">→</span><span class="st">Comparador</span><span class="ar">→</span><span class="st">Solo diferencias</span><span class="ar">→</span><span class="st">Detalle elegido</span></div></div>
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">3 · Publicar opinión</span><div class="fl"><span class="st">Opiniones</span><span class="ar">→</span><span class="st" style="border:1.5px dashed #E6E3CB">Iniciar sesión</span><span class="ar">→</span><span class="st">Formulario + aviso lenguaje</span><span class="ar">→</span><span class="st">Publicada o pendiente</span></div></div>
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">4 · Reportar precio</span><div class="fl"><span class="st">Oferta</span><span class="ar">→</span><span class="st">Diálogo: motivo</span><span class="ar">→</span><span class="st">Enviado</span><span class="ar">→</span><span class="st" style="background:#2F4416;color:#F4F1DC">Cola de ofertas (moderador)</span></div></div>
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">5 · Moderar y apelar</span><div class="fl"><span class="st">Reseña reportada</span><span class="ar">→</span><span class="st" style="background:#2F4416;color:#F4F1DC">Decisión + justificación</span><span class="ar">→</span><span class="st">Perfil del autor</span><span class="ar">→</span><span class="st">Apelación</span><span class="ar">→</span><span class="st" style="background:#2F4416;color:#F4F1DC">Cola apelaciones</span></div></div>
+<div class="col"><span class="d" style="font-size:16px;font-weight:500">6 · Guardar favorito</span><div class="fl"><span class="st">♡ en tarjeta</span><span class="ar">→</span><span class="st" style="border:1.5px dashed #E6E3CB">Sesión si es visitante</span><span class="ar">→</span><span class="st">Guardado (máx. 100)</span><span class="ar">→</span><span class="st">Favoritos</span></div></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1800,"height":1520}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

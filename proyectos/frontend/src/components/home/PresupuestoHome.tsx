@@ -40,29 +40,25 @@ export default function PresupuestoHome({
   }
 
   return (
-    <div className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex h-full flex-col rounded-card border border-hairline bg-paper p-5 sm:p-6 lg:p-7">
+      <div>
         <div className="flex items-center gap-2">
           <span
-            className="h-2 w-2 rounded-full bg-[var(--color-brand-solid)]"
+            className="h-2 w-2 rounded-full bg-brand-solid"
             aria-hidden="true"
           />
-          <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+          <h3 className="text-[11px] font-medium uppercase tracking-normal text-subtle">
             Presupuesto máximo
           </h3>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3.5 py-1.5">
-          <span className="text-[11px] font-medium text-[var(--color-subtle)]">
-            Hasta:
-          </span>
-          <span className="text-sm font-semibold tracking-tight text-[var(--color-brand-blue)]">
-            {formatearCOP(presupuestoMax)}
-          </span>
-        </div>
+        <p className="mt-4 text-xs text-subtle">Hasta:</p>
+        <p className="mt-1 text-[32px] font-medium leading-none tracking-normal text-ink">
+          {formatearCOP(presupuestoMax)}
+        </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="mt-6 space-y-2">
         <input
           type="range"
           min="200000"
@@ -78,20 +74,20 @@ export default function PresupuestoHome({
           onTouchEnd={manejarFinAjuste}
           onKeyUp={manejarFinTeclado}
           aria-label="Ajustar presupuesto máximo en pesos colombianos"
-          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--color-hairline)] accent-[var(--color-brand-blue)]"
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-hairline accent-brand-blue"
         />
-        <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-[var(--color-subtle)]">
+        <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] text-subtle">
           <span>Mínimo: $ 200.000 COP</span>
-          <span className="font-semibold text-[var(--color-ink)]">
+          <span className="font-medium text-ink">
             Límite: {formatearCOP(presupuestoMax)}
           </span>
           <span>Máximo: $ 6.000.000 COP</span>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-hairline)] pt-4">
-        <p className="text-xs text-[var(--color-subtle)]">
-          <span className="font-semibold text-[var(--color-ink)]">
+      <div className="mt-auto border-t border-dashed border-line pt-5">
+        <p className="text-xs text-subtle">
+          <span className="font-medium text-ink">
             {totalEnPresupuesto}
           </span>{" "}
           de {totalProductos} dentro del presupuesto
@@ -101,7 +97,7 @@ export default function PresupuestoHome({
           type="button"
           onClick={() => onConfirmarPresupuesto(presupuestoMax)}
           title="Ver productos de todas las categorías dentro de este presupuesto"
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-ink)]"
+          className="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-pill border border-transparent bg-brand-solid px-4 py-2 text-[11px] font-medium uppercase tracking-normal text-on-solid transition-colors hover:bg-brand-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
           Filtrar por presupuesto
         </button>

@@ -6,6 +6,7 @@ import { MAX_COMPARADOR } from "@/data/comparador";
 import { useComparador } from "@/hooks/useComparador";
 import { obtenerProductos } from "@/services/api";
 import type { Producto } from "@/types/producto";
+import Button, { buttonClassName } from "@/components/ui/Button";
 
 interface BotonComparadorProps {
   idProducto: number;
@@ -77,17 +78,14 @@ export default function BotonComparador({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-3">
-        <button
+        <Button
+          variant={yaSeleccionado ? "secondary" : "primary"}
           type="button"
           onClick={alternar}
           disabled={!hidratado || (!yaSeleccionado && (!validado || categoriaIncompatible || !categoriaValida))}
           aria-describedby={idAviso}
           aria-pressed={yaSeleccionado}
-          className={`cursor-pointer rounded-md px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-            yaSeleccionado
-              ? "border border-[var(--color-brand-blue)] bg-[var(--color-paper)] text-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)]"
-              : "bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] hover:bg-[var(--color-brand-solid)]/90"
-          }`}
+          className="text-sm disabled:opacity-60"
         >
           {!hidratado || (!validado && !errorCatalogo && !yaSeleccionado)
             ? "Cargando comparador…"
@@ -96,22 +94,22 @@ export default function BotonComparador({
               : lleno
                 ? `Comparador lleno (${ids.length}/${MAX_COMPARADOR})`
                 : "Agregar al comparador"}
-        </button>
+        </Button>
 
         <Link
           href="/comparador"
-          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+          className={buttonClassName("secondary", "text-sm")}
         >
           Ver comparador
           {ids.length > 0 && (
-            <span className="rounded-full bg-[var(--color-canvas)] px-2 py-0.5 text-xs font-semibold text-[var(--color-subtle)]">
+            <span className="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium text-subtle">
               {ids.length}
             </span>
           )}
         </Link>
       </div>
 
-      <p id={idAviso} role="status" aria-live="polite" className="min-h-4 text-xs text-[var(--color-subtle)]">
+      <p id={idAviso} role="status" aria-live="polite" className="min-h-4 text-xs text-subtle">
         {errorCatalogo
           ? "No pudimos validar la categoría del comparador. Tu selección se conserva."
           : validado && !yaSeleccionado && categoriaIncompatible
@@ -129,7 +127,7 @@ export default function BotonComparador({
             setErrorCatalogo(false);
             setIntento((valor) => valor + 1);
           }}
-          className="cursor-pointer text-xs font-semibold text-[var(--color-brand-blue)] underline"
+          className="cursor-pointer text-xs font-medium text-brand-blue underline"
         >
           Reintentar comparador
         </button>

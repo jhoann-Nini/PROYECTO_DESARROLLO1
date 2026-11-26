@@ -87,18 +87,18 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
 
   return (
     <div>
-      <p className="text-xs text-[var(--color-subtle)]">
+      <p className="text-xs text-subtle">
         Autores que piden revisar un rechazo o un ocultamiento. Si aceptas, la reseña se publica o se
         restaura y la falta deja de contar para la reincidencia.
       </p>
 
       {mensajeExito && (
-        <p role="status" className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
+        <p role="status" className="mt-3 rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink">
           {mensajeExito}
         </p>
       )}
       {errorAccion && (
-        <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+        <p role="alert" className="mt-3 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error">
           {errorAccion}
         </p>
       )}
@@ -112,7 +112,7 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
             accion={{ etiqueta: "Reintentar", onClick: () => setIntento((valor) => valor + 1) }}
           />
         ) : apelaciones === null ? (
-          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-[var(--color-subtle)]">
+          <p role="status" aria-busy="true" className="py-10 text-center text-sm text-subtle">
             Cargando apelaciones…
           </p>
         ) : apelaciones.length === 0 ? (
@@ -128,46 +128,46 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
               return (
                 <li
                   key={apelacion.idApelacion}
-                  className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+                  className="rounded-card border border-line bg-paper p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                      <h3 className="text-sm font-medium text-ink">
                         {apelacion.nombreProducto ?? `Reseña #${apelacion.idResena}`}
                       </h3>
-                      <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-1 text-xs text-subtle">
                         Por {apelacion.nombreAutor} · apelada el {formatearFecha(apelacion.fechaSolicitud)}
                       </p>
                     </div>
-                    <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+                    <span className="rounded-full bg-surface-2 px-2.5 py-1 text-[11px] font-medium text-star">
                       {ETIQUETA_ACCION[apelacion.accion]} apelado
                     </span>
                   </div>
 
-                  <div className="mt-3 rounded-lg bg-[var(--color-canvas)] p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--color-subtle)]">
+                  <div className="mt-3 rounded-card bg-canvas p-3">
+                    <p className="text-[11px] font-medium uppercase tracking-normal text-subtle">
                       Texto revisado
                     </p>
-                    <p className="mt-1 whitespace-pre-line text-sm text-[var(--color-ink)]">
+                    <p className="mt-1 whitespace-pre-line text-sm text-ink">
                       {apelacion.comentarioRevisado ?? "Sin texto registrado"}
                     </p>
-                    <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-2 text-xs text-subtle">
                       {`Decisión de ${apelacion.nombreModeradorOriginal} el ${formatearFecha(apelacion.fechaDecision)}: ${apelacion.motivoDecision}`}
                     </p>
                   </div>
 
-                  <p className="mt-3 text-sm text-[var(--color-ink)]">
-                    <span className="font-semibold">Motivo del autor: </span>
+                  <p className="mt-3 text-sm text-ink">
+                    <span className="font-medium">Motivo del autor: </span>
                     {apelacion.motivoApelacion}
                   </p>
 
-                  <div className="mt-3 border-t border-[var(--color-hairline)] pt-3">
+                  <div className="mt-3 border-t border-line pt-3">
                     {!apelacion.puedeResolver && (
-                      <p className="mb-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
+                      <p className="mb-2 rounded-card border border-surface-border-strong bg-surface-2 p-2 text-xs text-star">
                         {MENSAJE_CONFLICTO_ORIGINAL}
                       </p>
                     )}
-                    <label htmlFor={idRespuesta} className="block text-xs font-medium text-[var(--color-subtle)]">
+                    <label htmlFor={idRespuesta} className="block text-xs font-medium text-subtle">
                       Respuesta para el autor
                       <textarea
                         id={idRespuesta}
@@ -183,14 +183,14 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
                         maxLength={1000}
                         disabled={!apelacion.puedeResolver}
                         aria-describedby={errorRespuesta === apelacion.idApelacion ? `${idRespuesta}-error` : undefined}
-                        className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] disabled:opacity-60 ${CLASE_FOCO}`}
+                        className={`mt-1 block w-full rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue disabled:opacity-60 ${CLASE_FOCO}`}
                       />
                     </label>
-                    <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                    <p className="mt-1 text-[11px] text-subtle">
                       Opcional si aceptas; obligatoria si rechazas.
                     </p>
                     {errorRespuesta === apelacion.idApelacion && (
-                      <p id={`${idRespuesta}-error`} role="alert" className="mt-1 text-xs text-red-700">
+                      <p id={`${idRespuesta}-error`} role="alert" className="mt-1 text-xs text-status-error">
                         {MENSAJE_RESPUESTA_OBLIGATORIA}
                       </p>
                     )}
@@ -200,7 +200,7 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
                         onClick={() => resolver(apelacion, "aceptar")}
                         disabled={bloqueada}
                         aria-label={`Aceptar la apelación de ${apelacion.nombreAutor}`}
-                        className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className={`cursor-pointer rounded-card bg-brand-solid px-3 py-1.5 text-xs font-medium text-on-solid disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                       >
                         {enCurso === apelacion.idApelacion ? "Guardando…" : "Aceptar"}
                       </button>
@@ -209,7 +209,7 @@ export default function ColaApelaciones({ onCambio }: { onCambio?: () => void } 
                         onClick={() => resolver(apelacion, "rechazar")}
                         disabled={bloqueada}
                         aria-label={`Rechazar la apelación de ${apelacion.nombreAutor}`}
-                        className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-status-error hover:text-status-error disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                       >
                         Rechazar
                       </button>

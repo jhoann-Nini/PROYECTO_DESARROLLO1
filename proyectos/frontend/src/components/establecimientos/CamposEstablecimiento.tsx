@@ -9,9 +9,9 @@ interface CamposEstablecimientoProps {
   onCambiar: (campo: keyof FormularioEstablecimiento, valor: string) => void;
 }
 
-const CLASE_CAMPO = `mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`;
+const CLASE_CAMPO = `mt-1 block min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`;
 
-const CLASE_ETIQUETA = "block text-xs font-medium text-[var(--color-subtle)]";
+const CLASE_ETIQUETA = "block text-xs font-medium text-subtle";
 
 /**
  * Campos editables compartidos por el panel de representante y la

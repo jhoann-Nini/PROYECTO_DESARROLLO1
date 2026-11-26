@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Pantallas móviles de cuenta y roles</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+
+<div style="width:2294px;height:1060px;box-sizing:border-box;padding:56px 60px;background:#1A2010;display:flex;gap:56px;align-items:flex-start">
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Cuenta · Favoritos</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column">
+<div style="padding:18px 16px 12px;background:#171D0F;display:flex;flex-direction:column;gap:12px">
+<h1 style="font-size:24px">Cuenta</h1>
+<div style="display:flex;background:transparent;border:1px solid #3A4626;border-radius:9999px;padding:3px"><span style="flex:1;text-align:center;padding:9px 0;font-size:14px;color:#CFCDB3">Perfil</span><span style="flex:1;text-align:center;padding:9px 0;border-radius:9999px;background:#2F4416;font-size:14px;font-weight:500">Favoritos · 23</span></div>
+</div>
+<div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#CFCDB3">23 de 100 guardados</span><button class="btn bg" style="height:24px;padding:0;font-size:13px;color:#FF8C69">Vaciar</button></div><span style="height:6px;border-radius:3px;background:#3A4626;position:relative;display:block"><span style="position:absolute;left:0;top:0;bottom:0;width:23%;background:#A5D64C;border-radius:3px"></span></span></div>
+<p style="font-size:12px;color:#CFCDB3;line-height:1.4">Guardados en este navegador para tu cuenta. No se sincronizan entre dispositivos.</p>
+<div style="display:flex;gap:6px;overflow:hidden"><span class="chip" style="height:30px;background:#F4F1DC;color:#10140A;border-color:#F4F1DC;flex:none">Todas</span><span class="chip" style="height:30px;flex:none">Celulares 9</span><span class="chip" style="height:30px;flex:none">Portátiles 6</span><span class="chip" style="height:30px;flex:none">Auriculares 5</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#CFCDB3"><span>Ordenado por</span><button class="btn bs" style="height:34px;font-size:13px;padding:0 10px">Recientes ▾</button></div>
+<sc-for list="{{favs}}" as="f" hint-placeholder-count="5">
+<div class="card" style="padding:10px;display:flex;gap:12px;align-items:center">
+<div class="ph" style="width:64px;height:64px;flex:none"><span class="d" style="font-weight:500;color:#8C7A50">{{f.i}}</span></div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500">{{f.n}}</span><span style="font-size:12px;color:#B4B397">{{f.c}}</span><span class="d num" style="font-weight:500;font-size:15px">{{f.p}}</span></div>
+<button class="ico" aria-label="Quitar de favoritos" style="width:44px;height:44px;border-color:#A5D64C"><svg width="18" height="18" viewBox="0 0 24 24" fill="#A5D64C" stroke="#A5D64C" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg></button>
+</div>
+</sc-for>
+</div>
+<nav aria-label="Navegación" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#171D0F;border-top:1px dashed #3A4626;padding:8px 4px 20px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><a href="{{t.h}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;font-size:11px;font-weight:500;color:{{t.c}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="{{t.d}}"/></svg>{{t.n}}</a></sc-for>
+</nav>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Cuenta · Perfil</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column">
+<div style="padding:18px 16px 12px;background:#171D0F;display:flex;flex-direction:column;gap:12px">
+<h1 style="font-size:24px">Cuenta</h1>
+<div style="display:flex;background:transparent;border:1px solid #3A4626;border-radius:9999px;padding:3px"><span style="flex:1;text-align:center;padding:9px 0;border-radius:9999px;background:#2F4416;font-size:14px;font-weight:500">Perfil</span><span style="flex:1;text-align:center;padding:9px 0;font-size:14px;color:#CFCDB3">Favoritos · 23</span></div>
+</div>
+<div style="flex:1;overflow:hidden;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div class="card" style="padding:16px;display:flex;gap:12px;align-items:center"><span style="width:52px;height:52px;border-radius:50%;background:#F4F1DC;color:#10140A;display:flex;align-items:center;justify-content:center;font:500 18px Inter;flex:none">AR</span><div style="display:flex;flex-direction:column;gap:4px"><b style="font-weight:500" style="font-size:16px">Andrés Rojas</b><span style="font-size:12px;color:#CFCDB3">andres.rojas@correo.co</span><span style="display:flex;gap:4px"><span class="tag" style="background:#3A4626;color:#E6E3CB">Usuario</span><span class="tag" style="background:#F4F1DC;color:#10140A">Representante</span></span></div></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<div class="card" style="padding:12px"><span style="font-size:12px;color:#B4B397">Reseñas</span><div class="d num" style="font-size:22px;font-weight:500">12</div></div>
+<div class="card" style="padding:12px"><span style="font-size:12px;color:#B4B397">En moderación</span><div class="d num" style="font-size:22px;font-weight:500">1</div></div>
+</div>
+<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-weight:500" style="font-size:14px">Moderación</b><span class="tag pend">Advertencia 1</span></div><span style="font-size:13px;color:#CFCDB3">Reseña retirada el 12 nov · puedes apelar</span><button class="btn bs" style="height:38px;font-size:13px">Apelar decisión</button></div>
+<div class="card" style="display:flex;flex-direction:column">
+<a href="Resenas.dc.html" style="display:flex;justify-content:space-between;padding:14px;color:#F4F1DC;text-decoration:none;font-size:14px;border-bottom:1px dashed #3A4626">Mis reseñas<span>›</span></a>
+<a href="Representante.dc.html" style="display:flex;justify-content:space-between;padding:14px;color:#F4F1DC;text-decoration:none;font-size:14px;border-bottom:1px dashed #3A4626">Panel de representante<span>›</span></a>
+<a href="Perfil.dc.html" style="display:flex;justify-content:space-between;padding:14px;color:#F4F1DC;text-decoration:none;font-size:14px;border-bottom:1px dashed #3A4626">Cuenta y contraseña<span>›</span></a>
+<a href="Resenas.dc.html" style="display:flex;justify-content:space-between;padding:14px;color:#F4F1DC;text-decoration:none;font-size:14px">Blog y guías<span>›</span></a>
+</div>
+<button class="btn bd">Cerrar sesión</button>
+</div>
+<nav aria-label="Navegación" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#171D0F;border-top:1px dashed #3A4626;padding:8px 4px 20px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><a href="{{t.h}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;font-size:11px;font-weight:500;color:{{t.c}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="{{t.d}}"/></svg>{{t.n}}</a></sc-for>
+</nav>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Administración · móvil</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 16px 14px;background:#F4F1DC;color:#10140A;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span class="d" style="font-size:18px;font-weight:500">Administración</span><button class="ico" aria-label="Más acciones" style="background:#2F4416;border-color:#3A4626"><svg width="18" height="18" viewBox="0 0 24 24" fill="#F4F1DC"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button></div>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B4B397">Área de trabajo<select style="height:44px;border-radius:12px;border:1px solid #3A4626;background:#2F4416;color:#10140A;font:500 15px Inter;padding:0 10px"><option>Productos (80)</option></select></label>
+</div>
+<div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;gap:8px"><span class="inp" style="flex:1;display:flex;align-items:center;color:#B4B397;height:40px">Buscar producto</span><button class="btn bs" style="height:40px;padding:0 12px">CSV ↓</button></div>
+<sc-for list="{{admin}}" as="a" hint-placeholder-count="5">
+<div class="card" style="padding:12px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span><b style="font-weight:500" style="font-size:14px">{{a.n}}</b><br><span style="font-size:12px;color:#B4B397">ID {{a.id}} · {{a.c}}</span></span><button class="btn bg" style="height:36px;padding:0 6px;font-size:13px">Editar</button></div>
+<span style="display:flex;gap:4px"><span class="tag ok">✓ {{a.ok}}</span><span class="tag pend">◷ {{a.pe}}</span><span class="tag na">— {{a.na}}</span></span>
+</div>
+</sc-for>
+</div>
+<button class="btn bp" style="position:absolute;right:16px;bottom:24px;height:52px;border-radius:36px">+ Nuevo producto</button>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Moderación · decisión</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column;position:relative">
+<div style="padding:18px 16px 12px;background:#F4F1DC;color:#10140A;display:flex;flex-direction:column;gap:12px">
+<span class="d" style="font-size:18px;font-weight:500">Moderación</span>
+<div style="display:flex;gap:6px;overflow:hidden"><span class="chip" style="height:32px;flex:none;background:#171D0F;color:#F4F1DC;border-color:#10140A">Reportadas · 12</span><span class="chip" style="height:32px;flex:none;background:#2F4416;color:#F4F1DC;border-color:#3A4626">Automática · 5</span><span class="chip" style="height:32px;flex:none;background:#2F4416;color:#F4F1DC;border-color:#3A4626">Ofertas · 3</span><span class="chip" style="height:32px;flex:none;background:#2F4416;color:#F4F1DC;border-color:#3A4626">Apelaciones · 2</span></div>
+</div>
+<div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+<a href="Moderador.dc.html" style="font-size:13px;text-decoration:none">← Cola</a>
+<span style="font-size:12px;color:#B4B397">Reseña #4821 · Galaxy A35 5G · 4 reportes</span>
+<div class="card" style="padding:12px;font-size:14px;line-height:1.5">“…el que me atendió en la tienda es un <mark style="background:transparent;color:#FF8C69;border-bottom:1px solid #FF8C69;font-weight:500">[término marcado]</mark>, no lo compren.”</div>
+<span style="font-size:13px;color:#CFCDB3">Autor con <span class="tag pend">Advertencia 1</span></span>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:0;background:#171D0F;border-radius:22px 22px 0 0;padding:12px 16px 24px;display:flex;flex-direction:column;gap:10px">
+<div style="width:40px;height:4px;border-radius:2px;background:#3A4626;margin:0 auto"></div>
+<b style="font-weight:500" style="font-size:16px">Tu decisión</b>
+<label style="display:flex;align-items:center;gap:10px;height:46px;padding:0 12px;border:1px solid #3A4626;border-radius:12px;font-size:14px"><input type="radio" name="m" style="accent-color:#A5D64C;width:18px;height:18px">Mantener publicada</label>
+<label style="display:flex;align-items:center;gap:10px;height:46px;padding:0 12px;border:2px solid #A5D64C;background:#1E2812;border-radius:12px;font-size:14px;font-weight:500"><input type="radio" name="m" checked style="accent-color:#A5D64C;width:18px;height:18px">Retirar y advertir</label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Justificación (obligatoria)<textarea style="min-height:70px;border:1px solid #3A4626;border-radius:12px;padding:10px;font:14px Inter">El texto contiene un insulto dirigido a un empleado de la tienda.</textarea></label>
+<button class="btn bp" style="height:50px">Confirmar decisión</button>
+</div>
+</div></div>
+
+<div style="display:flex;flex-direction:column;gap:14px"><span class="lab">Representante · móvil</span>
+<div style="width:390px;height:844px;border-radius:36px;background:#10140A;border:1px solid #3A4626;overflow:hidden;display:flex;flex-direction:column">
+<div style="padding:18px 16px 12px;background:#171D0F;display:flex;flex-direction:column;gap:10px;border-bottom:1px dashed #3A4626">
+<a href="Perfil.dc.html" style="font-size:13px;text-decoration:none">← Cuenta</a>
+<h1 style="font-size:22px">Mis establecimientos</h1>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B4B397">Establecimiento<select class="inp" style="font-weight:500"><option>Tienda A · Bogotá Centro</option><option>Tienda A · Medellín</option></select></label>
+</div>
+<div style="flex:1;overflow:hidden;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Nombre <span style="font-weight:400;font-size:12px;color:#B4B397">Solo administración</span><input class="inp" value="Tienda A · Bogotá Centro" disabled style="background:#3A4626;color:#CFCDB3"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Dirección<input class="inp" value="Cra. 7 # 00-00, local 102"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Teléfono<input class="inp" value="601 000 0000" inputmode="tel"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Sitio web<input class="inp" value="https://tiendaa.example"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">Horario<input class="inp" value="Lun–Sáb 9:00 a. m. – 7:00 p. m."></label>
+</div>
+<div style="padding:12px 16px 24px;background:#171D0F;border-top:1px dashed #3A4626;display:flex;gap:8px"><button class="btn bs" style="flex:1">Descartar</button><button class="btn bp" style="flex:1.4">Guardar cambios</button></div>
+</div></div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2294,"height":1060}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = [
+{ n:'Inicio', h:'Inicio.dc.html', d:'M4 11l8-7 8 7v9H4z' },
+{ n:'Catálogo', h:'Catalogo.dc.html', d:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z' },
+{ n:'Comparar', h:'Comparador.dc.html', d:'M3 4h7v16H3zM14 4h7v16h-7z' },
+{ n:'Comunidad', h:'Resenas.dc.html', d:'M4 5h16v11H9l-5 4z' },
+{ n:'Cuenta', h:'Perfil.dc.html', d:'M12 12a4 4 0 100-8 4 4 0 000 8zM4 21a8 8 0 0116 0' }
+];
+const tabs = T.map(t => ({ ...t, c: t.n==='Cuenta' ? '#A5D64C' : '#B4B397' }));
+const favs = [
+{ i:'S24', n:'Galaxy S24', c:'Celular · hoy', p:'$ 2.999.900' },{ i:'WH5', n:'Sony WH-1000XM5', c:'Auriculares · ayer', p:'$ 1.249.900' },
+{ i:'MBA', n:'MacBook Air 13″ M3', c:'Portátil · 20 nov', p:'$ 5.199.000' },{ i:'S9', n:'Galaxy Tab S9 FE', c:'Tablet · 18 nov', p:'$ 1.599.900' },
+{ i:'P8', n:'Pixel 8', c:'Celular · 15 nov', p:'$ 2.849.000' }
+];
+const admin = [
+{ n:'Galaxy S24', id:1, c:'Celular', ok:17, pe:3, na:2 },{ n:'Pixel 8', id:2, c:'Celular', ok:19, pe:1, na:2 },
+{ n:'iPhone 15 Pro', id:3, c:'Celular', ok:15, pe:0, na:7 },{ n:'IdeaPad Slim 5', id:22, c:'Portátil', ok:18, pe:4, na:1 },
+{ n:'WH-1000XM5', id:61, c:'Auriculares', ok:12, pe:1, na:0 }
+];
+return { tabs, favs, admin };
+}
+}
+</script>
+</body>
+</html>

@@ -328,12 +328,12 @@ describe("AdminPanelModal - CRUD Integral (Fase 3.3)", () => {
       const aviso = screen.getByText("Alcance actual:");
 
       for (const etiqueta of [pendientes, ocultas]) {
-        expect(etiqueta.parentElement?.className).toContain("bg-[var(--color-canvas)]");
-        expect(etiqueta.parentElement?.className).toContain("border-[var(--color-hairline)]");
+        expect(etiqueta.parentElement?.className).toContain("bg-canvas");
+        expect(etiqueta.parentElement?.className).toContain("border-line");
       }
-      expect(aviso.parentElement?.parentElement?.className).toContain("bg-[var(--color-canvas)]");
-      expect(aviso.parentElement?.parentElement?.className).toContain("border-l-[var(--color-brand-blue)]");
-      expect(aviso.parentElement?.parentElement?.className).toContain("text-[var(--color-ink)]");
+      expect(aviso.parentElement?.parentElement?.className).toContain("bg-canvas");
+      expect(aviso.parentElement?.parentElement?.className).toContain("border-l-brand-blue");
+      expect(aviso.parentElement?.parentElement?.className).toContain("text-ink");
     });
 
     it("explica que solo cubre reseñas y no presenta la cola vacía como resuelta", async () => {

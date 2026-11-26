@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
 
 interface BotonCompartirProps {
   titulo: string;
@@ -84,11 +84,12 @@ export default function BotonCompartir({
 
   return (
     <div className="space-y-2">
-      <button
+      <Button
+        variant="secondary"
         type="button"
         onClick={compartir}
         aria-label="Compartir producto"
-        className={`inline-flex cursor-pointer items-center gap-2 rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-4 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+        className="text-sm"
       >
         <svg
           aria-hidden="true"
@@ -105,12 +106,12 @@ export default function BotonCompartir({
           />
         </svg>
         Compartir
-      </button>
+      </Button>
 
       <p
         role="status"
         aria-live="polite"
-        className="min-h-4 text-xs text-[var(--color-subtle)]"
+        className="min-h-4 text-xs text-subtle"
       >
         {aviso}
       </p>

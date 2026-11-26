@@ -36,7 +36,7 @@ export default function ResumenSesion({
       {error && (
         <span
           role="alert"
-          className="inline-flex items-center gap-1.5 rounded-md border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 px-2 py-1 text-[11px] font-medium text-[var(--color-ink)]"
+          className="inline-flex items-center gap-1.5 rounded-card border border-line bg-surface-2 px-2 py-1 text-[11px] font-medium text-ink"
         >
           <span className="sr-only lg:not-sr-only lg:max-w-[16rem] lg:truncate">
             ⚠️ {error}
@@ -48,7 +48,7 @@ export default function ResumenSesion({
             type="button"
             onClick={onReintentar}
             title="Reintentar verificación con el servidor"
-            className="cursor-pointer font-semibold text-[var(--color-brand-blue)] underline hover:no-underline"
+            className="cursor-pointer font-medium text-brand-blue underline hover:no-underline"
           >
             Reintentar
           </button>
@@ -64,10 +64,10 @@ export default function ResumenSesion({
           }}
           aria-label="Panel de administración"
           title="Panel de administración (Rol verificado en servidor)"
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[var(--color-star)]/40 bg-[var(--color-star)]/10 px-2.5 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:bg-[var(--color-star)]/20"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-card border border-line bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-surface-2"
         >
           <span
-            className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-star)]"
+            className="h-1.5 w-1.5 animate-pulse rounded-full bg-star"
             aria-hidden="true"
           />
           <span className="hidden sm:inline">Administración</span>
@@ -78,20 +78,20 @@ export default function ResumenSesion({
       {cargando ? (
         <span
           aria-live="polite"
-          className="animate-pulse px-2 py-1 text-xs text-[var(--color-subtle)]"
+          className="animate-pulse px-2 py-1 text-xs text-subtle"
         >
           Verificando...
         </span>
       ) : usuario ? (
         <div className="flex min-w-0 items-center gap-2">
-          <span className="flex min-w-0 items-center gap-1.5 rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)]">
+          <span className="flex min-w-0 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-2.5 py-1 text-xs font-medium text-ink">
             <span
               className={`h-2 w-2 shrink-0 rounded-full ${colorPunto}`}
               aria-hidden="true"
             />
             <span className="max-w-[8rem] truncate">{usuario.nombre}</span>
             {usuario.rol && (
-              <span className="hidden text-[10px] font-normal text-[var(--color-subtle)] md:inline">
+              <span className="hidden text-[10px] font-normal text-subtle md:inline">
                 • {usuario.rol}
               </span>
             )}
@@ -100,7 +100,7 @@ export default function ResumenSesion({
             type="button"
             onClick={onCerrarSesion}
             title="Cerrar sesión"
-            className="cursor-pointer text-xs text-[var(--color-subtle)] transition-colors hover:text-[var(--color-ink)]"
+            className="cursor-pointer text-xs text-subtle transition-colors hover:text-ink"
           >
             Cerrar sesión
           </button>
@@ -111,7 +111,7 @@ export default function ResumenSesion({
           onClick={onAbrirAuth}
           aria-label="Iniciar sesión"
           title="Iniciar sesión"
-          className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+          className="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-line bg-transparent text-ink transition-colors hover:border-ink"
         >
           <svg
             className="h-5 w-5"

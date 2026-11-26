@@ -20,6 +20,8 @@ import {
 } from "@/data/resenas";
 import { CLASE_FOCO } from "@/components/ui/foco";
 import AvisoTerminosResena from "@/components/ui/AvisoTerminosResena";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import ReportarResenaModal from "@/app/resenas/ReportarResenaModal";
 
 interface OpinionesProductoProps {
@@ -302,15 +304,15 @@ export default function OpinionesProducto({
         <div>
           <h2
             id="titulo-opiniones"
-            className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+            className="text-lg font-medium tracking-normal text-ink"
           >
             Opiniones de la comunidad
           </h2>
-          <p className="mt-1 text-sm text-[var(--color-subtle)]">
+          <p className="mt-1 text-sm text-subtle">
             Experiencias escritas por usuarios registrados sobre este producto.
           </p>
         </div>
-        <p className="text-sm font-medium text-[var(--color-subtle)]">
+        <p className="text-sm font-medium text-subtle">
           {resenasLocales.length}{" "}
           {resenasLocales.length === 1 ? "opinión" : "opiniones"}
         </p>
@@ -318,11 +320,11 @@ export default function OpinionesProducto({
 
       <form
         onSubmit={manejarEnvio}
-        className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+        className="rounded-card border border-line bg-paper p-5 "
       >
         <label
           htmlFor="nueva-opinion"
-          className="block text-sm font-semibold text-[var(--color-ink)]"
+          className="block text-sm font-medium text-ink"
         >
           Escribe tu opinión sobre {nombreProducto}
         </label>
@@ -333,12 +335,12 @@ export default function OpinionesProducto({
           rows={4}
           maxLength={1000}
           placeholder="Cuenta tu experiencia con el producto…"
-          className="mt-2 w-full resize-y rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          className="mt-2 min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-brand-blue"
         />
         <AvisoTerminosResena riesgo={riesgoComentario} className="mt-2" />
 
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs font-medium text-[var(--color-subtle)]">
+          <span className="text-xs font-medium text-subtle">
             Calificación:
           </span>
           <div
@@ -357,14 +359,14 @@ export default function OpinionesProducto({
                   onMouseLeave={() => setHoverPuntuacion(0)}
                   aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
                   aria-pressed={puntuacion === estrella}
-                  className={`cursor-pointer rounded p-0.5 text-base leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
+                  className={`cursor-pointer rounded-card p-0.5 text-base leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
                 >
                   <span
                     aria-hidden="true"
                     className={
                       activa
-                        ? "text-[var(--color-star)]"
-                        : "text-neutral-400 dark:text-neutral-500"
+                        ? "text-star"
+                        : "text-subtle dark:text-subtle"
                     }
                   >
                     {activa ? "★" : "☆"}
@@ -374,36 +376,36 @@ export default function OpinionesProducto({
             })}
           </div>
           {puntuacion && (
-            <span className="text-xs font-semibold text-[var(--color-ink)]">
+            <span className="text-xs font-medium text-ink">
               {puntuacion} / 5
             </span>
           )}
         </div>
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <span className="text-xs text-[var(--color-subtle)]">
+          <span className="text-xs text-subtle">
             {usuario
               ? `Publicarás como ${usuario.nombre}.`
               : "Necesitas iniciar sesión para publicar."}
           </span>
-          <button
+          <Button
             type="submit"
             disabled={enviando}
-            className="cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-sm"
           >
             {enviando ? "Publicando…" : "Publicar opinión"}
-          </button>
+          </Button>
         </div>
 
         {errorEnvio && (
-          <p role="alert" className="mt-3 text-sm text-red-700">
+          <p role="alert" className="mt-3 text-sm text-status-error">
             {errorEnvio}
           </p>
         )}
         {exito && (
           <p
             role="status"
-            className="mt-3 text-sm font-medium text-[var(--color-positive)]"
+            className="mt-3 text-sm font-medium text-positive"
           >
             {exito}
           </p>
@@ -413,37 +415,37 @@ export default function OpinionesProducto({
       <div>
         <label
           htmlFor="filtrar-opiniones"
-          className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]"
+          className="mb-1.5 block text-xs font-medium uppercase tracking-normal text-subtle"
         >
           Filtrar opiniones
         </label>
-        <input
+        <Input
           id="filtrar-opiniones"
           type="search"
           value={filtro}
           onChange={(evento) => setFiltro(evento.target.value)}
           placeholder="Buscar por comentario o autor…"
-          className="w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          className="text-sm"
         />
       </div>
 
       {cargando ? (
-        <p role="status" className="text-sm text-[var(--color-subtle)]">
+        <p role="status" className="text-sm text-subtle">
           Cargando opiniones…
         </p>
       ) : error ? (
         <div
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 p-4"
+          className="rounded-card border border-status-error bg-paper p-4"
         >
-          <p className="text-sm font-semibold text-red-800">
+          <p className="text-sm font-medium text-status-error">
             No pudimos cargar las opiniones
           </p>
-          <p className="mt-1 text-sm text-red-700">{error}</p>
+          <p className="mt-1 text-sm text-status-error">{error}</p>
           <button
             type="button"
             onClick={onReintentar}
-            className="mt-3 cursor-pointer rounded-md border border-red-300 bg-[var(--color-paper)] px-3 py-1.5 text-xs font-semibold text-red-800 transition-colors hover:bg-red-100"
+            className="mt-3 cursor-pointer rounded-card border border-status-error bg-paper px-3 py-1.5 text-xs font-medium text-status-error transition-colors hover:bg-paper"
           >
             Reintentar opiniones
           </button>
@@ -451,7 +453,7 @@ export default function OpinionesProducto({
       ) : resenasFiltradas.length === 0 ? (
         <p
           role="status"
-          className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-center text-sm text-[var(--color-subtle)]"
+          className="rounded-card border border-dashed border-line bg-paper p-6 text-center text-sm text-subtle"
         >
           {resenasLocales.length === 0
             ? "Aún no hay opiniones para este producto."
@@ -469,17 +471,17 @@ export default function OpinionesProducto({
             return (
               <li
                 key={resena.idResena}
-                className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-[var(--shadow-paper)]"
+                className="rounded-card border border-line bg-paper p-4 "
               >
                 {estaEnEdicion ? (
                   <form onSubmit={manejarGuardarEdicion} className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-[var(--color-ink)]">
+                      <span className="text-xs font-medium text-ink">
                         Editando tu opinión
                       </span>
                       <time
                         dateTime={resena.fechaCreacion}
-                        className="text-xs text-[var(--color-subtle)]"
+                        className="text-xs text-subtle"
                       >
                         {formatearFecha(resena.fechaCreacion)}
                       </time>
@@ -499,12 +501,12 @@ export default function OpinionesProducto({
                         rows={4}
                         maxLength={1000}
                         placeholder="Cuenta tu experiencia con el producto…"
-                        className="w-full resize-y rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                        className="min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink placeholder:text-text-muted focus-visible:outline-2 focus-visible:outline-brand-blue"
                       />
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-[var(--color-subtle)]">
+                      <span className="text-xs font-medium text-subtle">
                         Calificación:
                       </span>
                       <div
@@ -527,14 +529,14 @@ export default function OpinionesProducto({
                               onMouseLeave={() => setHoverPuntuacionEdicion(0)}
                               aria-label={`Calificar con ${estrella} ${estrella === 1 ? "estrella" : "estrellas"}`}
                               aria-pressed={puntuacionEdicion === estrella}
-                              className={`cursor-pointer rounded p-0.5 text-base leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
+                              className={`cursor-pointer rounded-card p-0.5 text-base leading-none transition-transform hover:scale-110 ${CLASE_FOCO}`}
                             >
                               <span
                                 aria-hidden="true"
                                 className={
                                   activa
-                                    ? "text-[var(--color-star)]"
-                                    : "text-neutral-400 dark:text-neutral-500"
+                                    ? "text-star"
+                                    : "text-subtle dark:text-subtle"
                                 }
                               >
                                 {activa ? "★" : "☆"}
@@ -544,46 +546,48 @@ export default function OpinionesProducto({
                         })}
                       </div>
                       {puntuacionEdicion && (
-                        <span className="text-xs font-semibold text-[var(--color-ink)]">
+                        <span className="text-xs font-medium text-ink">
                           {puntuacionEdicion} / 5
                         </span>
                       )}
                     </div>
 
                     {errorEdicion && (
-                      <p role="alert" className="text-xs text-red-700">
+                      <p role="alert" className="text-xs text-status-error">
                         {errorEdicion}
                       </p>
                     )}
 
                     <div className="flex items-center justify-end gap-2 pt-1">
-                      <button
+                      <Button
+                        variant="secondary"
                         type="button"
                         onClick={cancelarEdicion}
                         disabled={guardandoEdicion}
-                        className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className="text-xs"
                       >
                         Cancelar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="primary"
                         type="submit"
                         disabled={guardandoEdicion}
-                        className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className="text-xs"
                       >
                         {guardandoEdicion ? "Guardando…" : "Guardar"}
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 ) : (
                   <>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-[var(--color-ink)]">
+                        <p className="text-sm font-medium text-ink">
                           @{resena.nombreUsuario}
                         </p>
                         {resena.puntuacion && (
                           <span
-                            className="flex items-center text-xs text-[var(--color-star)]"
+                            className="flex items-center text-xs text-star"
                             aria-label={`${resena.puntuacion} de 5 estrellas`}
                           >
                             {"★".repeat(resena.puntuacion)}
@@ -592,23 +596,23 @@ export default function OpinionesProducto({
                       </div>
                       <time
                         dateTime={resena.fechaCreacion}
-                        className="text-xs text-[var(--color-subtle)]"
+                        className="text-xs text-subtle"
                       >
                         {formatearFecha(resena.fechaCreacion)}
                       </time>
                     </div>
-                    <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                    <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-ink">
                       {resena.comentario}
                     </p>
 
                     {(puedeEditar || puedeEliminar) && (
-                      <div className="mt-3 flex items-center justify-end gap-2 border-t border-[var(--color-hairline)] pt-2">
+                      <div className="mt-3 flex items-center justify-end gap-2 border-t border-dotted border-line pt-2">
                         {puedeEditar && (
                           <button
                             type="button"
                             onClick={() => iniciarEdicion(resena)}
                             aria-label="Editar reseña"
-                            className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card px-2.5 py-1 text-xs font-medium text-subtle transition-colors hover:bg-canvas hover:text-brand-blue ${CLASE_FOCO}`}
                           >
                             Editar
                           </button>
@@ -618,7 +622,7 @@ export default function OpinionesProducto({
                             type="button"
                             onClick={() => abrirEliminacion(resena.idResena)}
                             aria-label="Eliminar reseña"
-                            className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-medium text-[var(--color-subtle)] transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30 ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card px-2.5 py-1 text-xs font-medium text-subtle transition-colors hover:bg-paper hover:text-status-error dark:hover:bg-paper ${CLASE_FOCO}`}
                           >
                             Eliminar
                           </button>
@@ -629,7 +633,7 @@ export default function OpinionesProducto({
                     {!esAutor && (
                       <div className="mt-2 flex justify-end">
                         {resenasReportadas.has(resena.idResena) ? (
-                          <span className="text-[11px] text-[var(--color-subtle)]">
+                          <span className="text-[11px] text-subtle">
                             Reporte enviado
                           </span>
                         ) : (
@@ -643,7 +647,7 @@ export default function OpinionesProducto({
                               setResenaAReportar(resena.idResena);
                             }}
                             aria-label="Reportar reseña"
-                            className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-subtle)] transition-colors hover:border-red-500/50 hover:text-red-600 ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card border border-line px-2.5 py-1 text-[11px] font-medium text-subtle transition-colors hover:border-status-error hover:text-status-error ${CLASE_FOCO}`}
                           >
                             Reportar
                           </button>
@@ -666,23 +670,23 @@ export default function OpinionesProducto({
             onClick={() => {
               if (!eliminando) setIdResenaAEliminar(null);
             }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-inverse/50 backdrop-blur-sm"
           />
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Confirmar eliminación de reseña"
-            className="relative w-full max-w-md rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+            className="relative w-full max-w-md rounded-card border border-line bg-paper p-5 "
           >
-            <h3 className="text-base font-semibold text-[var(--color-ink)]">
+            <h3 className="text-base font-medium text-ink">
               ¿Deseas eliminar esta opinión?
             </h3>
-            <p className="mt-1 text-sm text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm text-subtle">
               Esta acción no se puede deshacer.
             </p>
 
             {errorEliminacion && (
-              <p role="alert" className="mt-3 text-sm text-red-700">
+              <p role="alert" className="mt-3 text-sm text-status-error">
                 {errorEliminacion}
               </p>
             )}
@@ -692,7 +696,7 @@ export default function OpinionesProducto({
                 type="button"
                 onClick={() => setIdResenaAEliminar(null)}
                 disabled={eliminando}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-sm font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
               >
                 Cancelar
               </button>
@@ -700,7 +704,7 @@ export default function OpinionesProducto({
                 type="button"
                 onClick={() => confirmarEliminacion(idResenaAEliminar)}
                 disabled={eliminando}
-                className={`cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                className={`min-h-11 cursor-pointer rounded-ghost border border-status-error bg-transparent px-5 py-3 text-sm font-medium uppercase text-status-error transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
               >
                 {eliminando ? "Eliminando…" : "Eliminar"}
               </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   crearResena,
@@ -45,10 +45,9 @@ import {
 import { formatearCOP } from "@/data/specsHelper";
 import { useSesionTecReview } from "@/hooks/useSesionTecReview";
 import SiteHeader from "@/components/shell/SiteHeader";
+import BotonBusquedaGlobal from "@/components/shell/BotonBusquedaGlobal";
 import SiteFooter from "@/components/shell/SiteFooter";
 import BottomNav from "@/components/shell/BottomNav";
-import SearchBar from "@/components/SearchBar";
-import SugerenciasBusqueda from "@/components/home/SugerenciasBusqueda";
 import AuthModal from "@/components/AuthModal";
 import ReportarOfertaModal, { type OfertaReportable } from "@/components/ReportarOfertaModal";
 import AdminPanelModal from "@/components/AdminPanelModal";
@@ -140,8 +139,7 @@ export default function Home() {
 
   // Búsqueda y presupuesto
   const [busqueda, setBusqueda] = useState("");
-  const contenedorBusquedaRef = useRef<HTMLDivElement>(null);
-  const [buscadorEnfocado, setBuscadorEnfocado] = useState(false);
+  const [busquedaGlobalAbierta, setBusquedaGlobalAbierta] = useState(false);
   // El presupuesto se expresa en COP y se confirma en el catálogo general.
   const [presupuestoMax, setPresupuestoMax] = useState<number>(4_000_000);
   const confirmarPresupuesto = useCallback((valorCOP: number) => {
@@ -489,14 +487,6 @@ export default function Home() {
     [productosBackend, categoriasApi, marcasApi, resumenOfertas],
   );
 
-  const productosSugeridos = useMemo(
-    () =>
-      vistas
-        .filter((producto) => producto.disponible)
-        .slice(0, 5),
-    [vistas],
-  );
-
   // Productos activos del catálogo. TecReview no tiene un proceso de verificación de productos.
   const totalProductosRegistrados = useMemo(
     () => productosBackend.filter((producto) => producto.estado !== false).length,
@@ -530,23 +520,17 @@ export default function Home() {
     [vistas, filtros],
   );
 
-  // La búsqueda conserva sus resultados; el presupuesto no altera destacados.
-  const hayFiltrosHome = busqueda.trim().length > 0;
-
   const productosDestacados = useMemo(
-    () =>
-      hayFiltrosHome
-        ? productosFiltrados
-        : seleccionarDestacados(productosFiltrados, mejorValorados),
-    [hayFiltrosHome, productosFiltrados, mejorValorados],
+    () => seleccionarDestacados(vistas, mejorValorados),
+    [vistas, mejorValorados],
   );
-  // Fase 4 (H-12): alternativas reales solo cuando la búsqueda no encuentra nada.
+  // Las alternativas pertenecen a la búsqueda global, no a Productos destacados.
   const alternativasBusqueda = useMemo(
     () =>
-      busqueda.trim() && productosDestacados.length === 0
+      busqueda.trim() && productosFiltrados.length === 0
         ? buscarAlternativas(vistas, busqueda)
         : [],
-    [busqueda, productosDestacados, vistas],
+    [busqueda, productosFiltrados, vistas],
   );
 
 
@@ -699,8 +683,15 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="theme-tecreview flex min-h-screen flex-col">
-      <SiteHeader>
+    <div className="theme-tecreview home-kiwi flex min-h-screen flex-col bg-canvas text-ink">
+      <SiteHeader
+        busquedaAbierta={busquedaGlobalAbierta}
+        onBusquedaAbiertaCambiar={setBusquedaGlobalAbierta}
+        busqueda={busqueda}
+        onBusquedaCambiar={setBusqueda}
+        productosBusqueda={errorProductos ? undefined : vistas}
+        cargandoBusqueda={errorProductos ? undefined : cargandoApi}
+      >
         <ResumenSesion
           cargando={cargandoAuth}
           usuario={usuarioSesion}
@@ -717,114 +708,70 @@ export default function Home() {
         />
       </SiteHeader>
 
-      <main className="flex-1 pb-20 md:pb-0">
-        <section className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]">
-          <div className="mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6 lg:px-8 lg:pt-14">
-            <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
-              <div className="flex flex-col gap-6 lg:col-span-7">
+      <main className="mx-auto flex w-full max-w-[1360px] flex-1 flex-col gap-12 px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-6 sm:px-6 lg:px-8 lg:pt-10 md:pb-16">
+        <section className="grid gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(320px,1fr)] lg:items-stretch">
+              <div className="flex min-w-0 flex-col gap-5 rounded-card border border-hairline bg-canvas p-5 sm:p-8 lg:p-10">
                 <div>
-                  <span className="inline-flex items-center gap-2 rounded-md border border-[var(--color-brand-blue)]/20 bg-[var(--color-brand-blue)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-brand-blue)]">
+                  <span className="inline-flex items-center gap-2 text-micro font-medium uppercase tracking-normal text-subtle">
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-[var(--color-brand-solid)]"
+                      className="h-1.5 w-1.5 rounded-full bg-brand-solid"
                       aria-hidden="true"
                     />
                     Catálogo y comparador de tecnología
                   </span>
 
-                  <h1 className="mt-4 max-w-2xl text-3xl font-bold leading-[1.08] tracking-tight text-[var(--color-ink)] sm:text-4xl lg:text-5xl">
+                  <h1 className="mt-5 max-w-2xl text-[27px] font-medium uppercase leading-[1.05] tracking-normal text-ink sm:text-[40px] lg:text-[52px]">
                     Encuentra y compara tu próximo dispositivo.
                   </h1>
 
-                  <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--color-subtle)] sm:text-base">
+                  <p className="mt-4 max-w-xl text-sm font-normal leading-relaxed text-text-body">
                     Consulta fichas técnicas completas, análisis imparciales y
                     precios de referencia en pesos colombianos (COP).
                   </p>
                 </div>
 
                 <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
+                  <p className="mb-2 text-micro font-medium uppercase tracking-normal text-subtle">
                     Buscar dispositivos tecnológicos
                   </p>
-                  <div ref={contenedorBusquedaRef}>
-                    <SearchBar
-                      value={busqueda}
-                      onChange={setBusqueda}
-                      placeholder="Busca por marca o modelo. Ej.: Galaxy S24, iPhone 16"
-                      ariaLabel="Buscar dispositivos por marca o modelo"
-                      onFocus={() => setBuscadorEnfocado(true)}
-                      onBlur={(event) => {
-                        const siguiente = event.relatedTarget as Node | null;
-                        if (
-                          !siguiente ||
-                          !contenedorBusquedaRef.current?.contains(siguiente)
-                        ) {
-                          setBuscadorEnfocado(false);
-                        }
-                      }}
+                  <div className="home-search">
+                    <BotonBusquedaGlobal
+                      variante="inicio"
+                      abierto={busquedaGlobalAbierta}
+                      onAbrir={() => setBusquedaGlobalAbierta(true)}
+                      busqueda={busqueda}
                     />
-                    {buscadorEnfocado && !busqueda.trim() && (
-                      <SugerenciasBusqueda
-                        productos={productosSugeridos}
-                        onSeleccionar={setBusqueda}
-                      />
-                    )}
                   </div>
                   {!cargandoApi && (
                     <EstadoBusquedaHome
                       busqueda={busqueda}
-                      totalResultados={productosDestacados.length}
+                      totalResultados={productosFiltrados.length}
                       hayAlternativas={alternativasBusqueda.length > 0}
+                      onVerResultados={() => setBusquedaGlobalAbierta(true)}
                     />
                   )}
-                  <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-3 text-xs leading-relaxed text-text-secondary">
                     Presupuesto de referencia: hasta{" "}
                     {formatearCOP(presupuestoMax)}. Confirma para ver productos
                     de todas las categorías en el catálogo general.
                   </p>
                 </div>
 
-                <div>
-                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-subtle)]">
-                    Explorar por categoría
-                  </p>
-                  <CategoriasHome onSeleccionarTodos={seleccionarTodos} />
-                </div>
-
-                <PresupuestoHome
-                  presupuestoMax={presupuestoMax}
-                  onCambiarPresupuesto={setPresupuestoMax}
-                  onConfirmarPresupuesto={confirmarPresupuesto}
-                  totalEnPresupuesto={totalEnPresupuesto}
-                  totalProductos={vistas.length}
-                />
               </div>
-
-              <div className="lg:col-span-5">
-                <OfertasHome
-                  ofertas={ofertasFiltradas}
-                  cargando={cargandoOfertas}
-                  error={errorOfertas}
-                  onReintentar={cargarOfertas}
-                  mostrarTodas={mostrarTodasOfertas}
-                  onAlternar={() => setMostrarTodasOfertas((previo) => !previo)}
-                  onVerDetalle={verFichaRanking}
-                  onReportar={(oferta) => {
-                    setReporteConfirmado("");
-                    setOfertaReportando({
-                      idProducto: oferta.idProducto,
-                      idEstablecimiento: oferta.idEstablecimiento,
-                      nombreProducto: oferta.nombre,
-                      nombreEstablecimiento: oferta.nombreEstablecimiento,
-                    });
-                  }}
-                />
-                {reporteConfirmado && (
-                  <p role="status" className="mt-2 text-sm text-[var(--color-positive)]">
-                    {reporteConfirmado}
-                  </p>
-                )}
-              </div>
-            </div>
+          <section aria-label="Explorar por categoría" className="lg:col-span-2 lg:row-start-2 lg:mt-8">
+          <p className="mb-3 text-micro font-medium uppercase tracking-normal text-subtle">
+            Explorar por categoría
+          </p>
+          <CategoriasHome onSeleccionarTodos={seleccionarTodos} />
+          </section>
+          <div className="lg:col-start-2 lg:row-start-1">
+            <PresupuestoHome
+              presupuestoMax={presupuestoMax}
+              onCambiarPresupuesto={setPresupuestoMax}
+              onConfirmarPresupuesto={confirmarPresupuesto}
+              totalEnPresupuesto={totalEnPresupuesto}
+              totalProductos={vistas.length}
+            />
           </div>
         </section>
 
@@ -836,11 +783,10 @@ export default function Home() {
           estadoBackend={estadoBackend}
           error={errorProductos}
           onReintentar={recargarProductosCatalogo}
-          busqueda={busqueda}
           onVerDetalle={abrirDetalle}
-          onLimpiarBusqueda={() => setBusqueda("")}
-          alternativas={alternativasBusqueda}
         />
+
+        <CtaComparador />
 
         <RankingsHome
           mejorValorados={mejorValoradosFiltrados}
@@ -868,6 +814,32 @@ export default function Home() {
           sinComentarios={masComentados.length === 0}
           sinDeseos={masDeseados.length === 0}
         />
+
+        <div>
+          <OfertasHome
+            ofertas={ofertasFiltradas}
+            cargando={cargandoOfertas}
+            error={errorOfertas}
+            onReintentar={cargarOfertas}
+            mostrarTodas={mostrarTodasOfertas}
+            onAlternar={() => setMostrarTodasOfertas((previo) => !previo)}
+            onVerDetalle={verFichaRanking}
+            onReportar={(oferta) => {
+              setReporteConfirmado("");
+              setOfertaReportando({
+                idProducto: oferta.idProducto,
+                idEstablecimiento: oferta.idEstablecimiento,
+                nombreProducto: oferta.nombre,
+                nombreEstablecimiento: oferta.nombreEstablecimiento,
+              });
+            }}
+          />
+          {reporteConfirmado && (
+            <p role="status" className="mt-2 text-sm text-positive">
+              {reporteConfirmado}
+            </p>
+          )}
+        </div>
 
         <OpinionesHome
           usuario={usuarioSesion}
@@ -900,7 +872,6 @@ export default function Home() {
           }
         />
 
-        <CtaComparador />
       </main>
 
       <SiteFooter />

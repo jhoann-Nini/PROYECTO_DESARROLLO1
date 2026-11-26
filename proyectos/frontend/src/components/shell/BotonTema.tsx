@@ -1,22 +1,25 @@
 "use client";
 
 import { useTema } from "@/hooks/useTema";
-import { CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
 
-export default function BotonTema() {
+export default function BotonTema({ compacto = false }: { compacto?: boolean }) {
   const { tema, alternarTema } = useTema();
 
   const etiqueta =
     tema === "oscuro" ? "Cambiar a tema claro" : "Cambiar a tema oscuro";
 
   return (
-    <button
+    <Button
       type="button"
+      variant="secondary"
       onClick={alternarTema}
       aria-label={etiqueta}
       aria-pressed={tema === "oscuro"}
       title={etiqueta}
-      className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+      className={compacto
+        ? "h-10 w-10 shrink-0 border-line p-0! [border-radius:9999px]"
+        : "h-11 w-11 shrink-0 p-0!"}
     >
       <svg
         aria-hidden="true"
@@ -43,6 +46,6 @@ export default function BotonTema() {
       >
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
       </svg>
-    </button>
+    </Button>
   );
 }

@@ -64,19 +64,19 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Navegación principal móvil"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--color-hairline)] bg-[var(--color-paper)]/95 backdrop-blur-md md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-dotted border-line bg-paper pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="mx-auto flex max-w-md items-stretch justify-between px-2">
+      <ul className="mx-auto grid max-w-md grid-cols-5 items-stretch gap-1 px-2 py-2">
         {ITEMS.map((item) => (
-          <li key={item.etiqueta} className="flex-1">
+          <li key={item.etiqueta} className="min-w-0">
             {item.href ? (
               <Link
                 href={item.href}
                 aria-current={rutaActual === item.href ? "page" : undefined}
-                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${CLASE_FOCO} ${
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-card px-1 py-2 text-center text-micro font-medium uppercase tracking-normal [overflow-wrap:anywhere] transition-colors ${CLASE_FOCO} ${
                   rutaActual === item.href
-                    ? "text-[var(--color-brand-blue)]"
-                    : "text-[var(--color-subtle)]"
+                    ? "bg-surface-2 text-ink"
+                    : "text-subtle hover:bg-surface-muted hover:text-ink"
                 }`}
               >
                 <svg
@@ -95,7 +95,7 @@ export default function BottomNav() {
               <span
                 aria-disabled="true"
                 title="Próximamente"
-                className="flex cursor-not-allowed flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-[var(--color-subtle)]/50"
+                className="flex cursor-not-allowed flex-col items-center gap-1 py-2.5 text-micro font-medium uppercase tracking-normal text-subtle"
               >
                 <svg
                   aria-hidden="true"

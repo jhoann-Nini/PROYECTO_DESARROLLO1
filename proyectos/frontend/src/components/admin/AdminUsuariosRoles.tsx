@@ -304,7 +304,7 @@ export default function AdminUsuariosRoles() {
       <p
         role="status"
         aria-busy="true"
-        className="py-10 text-center text-sm text-[var(--color-subtle)]"
+        className="py-10 text-center text-sm text-subtle"
       >
         Cargando usuarios y roles…
       </p>
@@ -327,7 +327,7 @@ export default function AdminUsuariosRoles() {
 
   return (
     <div className="space-y-4">
-      <p className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
+      <p className="rounded-card border border-line bg-canvas p-3 text-xs text-subtle">
         El backend no expone todavía el listado de representaciones activas por
         cuenta. Tampoco está disponible la lectura del historial de auditoría;
         esta vista solo muestra los roles activos confirmados.
@@ -338,7 +338,7 @@ export default function AdminUsuariosRoles() {
       <form onSubmit={buscar} className="flex flex-wrap items-end gap-3">
         <label
           htmlFor="admin-buscar-correo"
-          className="text-xs font-medium text-[var(--color-subtle)]"
+          className="text-xs font-medium text-subtle"
         >
           Buscar por correo
           <input
@@ -347,13 +347,13 @@ export default function AdminUsuariosRoles() {
             value={correoBusqueda}
             onChange={(evento) => setCorreoBusqueda(evento.target.value)}
             placeholder="usuario@ejemplo.com"
-            className={`mt-1 block rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+            className={`mt-1 block rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
           />
         </label>
         <button
           type="submit"
           disabled={cargandoUsuarios}
-          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+          className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-brand-blue hover:text-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
         >
           {cargandoUsuarios ? "Buscando…" : "Buscar"}
         </button>
@@ -362,7 +362,7 @@ export default function AdminUsuariosRoles() {
       {errorUsuarios && (
         <p
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+          className="rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
         >
           {errorUsuarios}
         </p>
@@ -371,7 +371,7 @@ export default function AdminUsuariosRoles() {
       {mensajeExito && (
         <p
           role="status"
-          className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"
+          className="rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink"
         >
           {mensajeExito}
         </p>
@@ -380,14 +380,14 @@ export default function AdminUsuariosRoles() {
       {errorAccion && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+          className="flex items-start justify-between gap-2 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
         >
           <p>{errorAccion}</p>
           <button
             type="button"
             onClick={() => setErrorAccion(null)}
             aria-label="Cerrar mensaje de error"
-            className={`cursor-pointer rounded px-1 text-red-600 hover:text-red-800 ${CLASE_FOCO}`}
+            className={`cursor-pointer rounded-card px-1 text-status-error hover:text-status-error ${CLASE_FOCO}`}
           >
             ✕
           </button>
@@ -402,7 +402,7 @@ export default function AdminUsuariosRoles() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
           <section aria-label="Cuentas registradas">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+            <h3 className="text-xs font-medium uppercase tracking-normal text-subtle">
               Cuentas
             </h3>
             <ul className="mt-2 space-y-2">
@@ -411,22 +411,22 @@ export default function AdminUsuariosRoles() {
                 return (
                   <li
                     key={usuario.idUsuario}
-                    className={`rounded-lg border p-3 ${
+                    className={`rounded-card border p-3 ${
                       activo
-                        ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/5"
-                        : "border-[var(--color-hairline)]"
+                        ? "border-brand-blue bg-brand-blue/5"
+                        : "border-line"
                     }`}
                   >
-                    <p className="text-sm font-semibold text-[var(--color-ink)]">
+                    <p className="text-sm font-medium text-ink">
                       {usuario.nombre}
                     </p>
-                    <p className="mt-0.5 break-all text-xs text-[var(--color-subtle)]">
+                    <p className="mt-0.5 break-all text-xs text-subtle">
                       {usuario.correo}
                     </p>
-                    <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-1 text-xs text-subtle">
                       {usuario.rol || "Sin rol principal"}
                     </p>
-                    <p className="text-xs text-[var(--color-subtle)]">
+                    <p className="text-xs text-subtle">
                       {usuario.activo ? "Cuenta activa" : "Cuenta suspendida"}
                     </p>
                     <button
@@ -438,7 +438,7 @@ export default function AdminUsuariosRoles() {
                         setMensajeExito(null);
                       }}
                       aria-label={`Gestionar ${usuario.nombre}`}
-                      className={`mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-2 cursor-pointer rounded-card border border-line px-2.5 py-1 text-xs font-medium text-ink transition-colors hover:border-brand-blue hover:text-brand-blue ${CLASE_FOCO}`}
                     >
                       Gestionar
                     </button>
@@ -452,15 +452,15 @@ export default function AdminUsuariosRoles() {
             {seleccionado ? (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                  <h3 className="text-sm font-medium text-ink">
                     Gestionar {seleccionado.nombre}
                   </h3>
-                  <p className="text-xs text-[var(--color-subtle)]">
+                  <p className="text-xs text-subtle">
                     {seleccionado.correo} · Registro:{" "}
                     {formatearFecha(seleccionado.fechaRegistro)}
                   </p>
                   {seleccionado.activo === false && (
-                    <p className="mt-1 rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
+                    <p className="mt-1 rounded-card border border-surface-border-strong bg-surface-2 p-2 text-xs text-star">
                       La cuenta está inactiva. El backend rechazará las
                       asignaciones hasta que sea reactivada por un
                       administrador.
@@ -468,12 +468,12 @@ export default function AdminUsuariosRoles() {
                   )}
                 </div>
 
-                <div className="rounded-lg border border-[var(--color-hairline)] p-3">
-                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                <div className="rounded-card border border-line p-3">
+                  <p className="text-xs font-medium text-ink">
                     Roles activos:
                   </p>
                   {(seleccionado.roles ?? []).length === 0 ? (
-                    <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                    <p className="mt-1 text-xs text-subtle">
                       Sin roles activos.
                     </p>
                   ) : (
@@ -483,7 +483,7 @@ export default function AdminUsuariosRoles() {
                           key={nombreRol}
                           className="flex flex-wrap items-center justify-between gap-2"
                         >
-                          <span className="rounded-full bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--color-brand-blue)]">
+                          <span className="rounded-full bg-brand-blue/10 px-2.5 py-1 text-[11px] font-medium text-brand-blue">
                             {nombreRol}
                           </span>
                           <button
@@ -491,7 +491,7 @@ export default function AdminUsuariosRoles() {
                             onClick={() => revocarRol(nombreRol)}
                             disabled={operacionEnCurso}
                             aria-label={`Revocar rol ${nombreRol}`}
-                            className={`cursor-pointer rounded-md border border-red-200 px-2.5 py-1 text-[11px] font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card border border-status-error px-2.5 py-1 text-[11px] font-medium text-status-error transition-colors hover:border-status-error hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                           >
                             Revocar
                           </button>
@@ -501,13 +501,13 @@ export default function AdminUsuariosRoles() {
                   )}
                 </div>
 
-                <div className="rounded-lg border border-[var(--color-hairline)] p-3">
-                  <p className="mb-3 text-xs text-[var(--color-subtle)]">
+                <div className="rounded-card border border-line p-3">
+                  <p className="mb-3 text-xs text-subtle">
                     El historial y las representaciones activas todavía no se pueden consultar desde esta API. Las asignaciones y revocaciones se confirman con la respuesta del backend.
                   </p>
                   <label
                     htmlFor="admin-rol-asignar"
-                    className="block text-xs font-medium text-[var(--color-subtle)]"
+                    className="block text-xs font-medium text-subtle"
                   >
                     Rol a asignar
                     <select
@@ -516,7 +516,7 @@ export default function AdminUsuariosRoles() {
                       onChange={(evento) =>
                         setRolSeleccionado(evento.target.value)
                       }
-                      className={`mt-1 block w-full cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block w-full cursor-pointer rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                     >
                       {rolesDisponibles.length === 0 ? (
                         <option value="">Sin roles disponibles</option>
@@ -532,7 +532,7 @@ export default function AdminUsuariosRoles() {
 
                   <label
                     htmlFor="admin-motivo"
-                    className="mt-3 block text-xs font-medium text-[var(--color-subtle)]"
+                    className="mt-3 block text-xs font-medium text-subtle"
                   >
                     Motivo (opcional)
                     <input
@@ -542,7 +542,7 @@ export default function AdminUsuariosRoles() {
                       onChange={(evento) => setMotivo(evento.target.value)}
                       maxLength={500}
                       placeholder="Motivo de la asignación o revocación"
-                      className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block w-full rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                     />
                   </label>
 
@@ -550,23 +550,23 @@ export default function AdminUsuariosRoles() {
                     type="button"
                     onClick={asignarRol}
                     disabled={operacionEnCurso || !rolSeleccionadoEfectivo}
-                    className={`mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                    className={`mt-3 cursor-pointer rounded-card bg-brand-solid px-3 py-1.5 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                   >
                     Asignar rol
                   </button>
                 </div>
 
-                <div className="rounded-lg border border-[var(--color-hairline)] p-3">
-                  <p className="text-xs font-semibold text-[var(--color-ink)]">
+                <div className="rounded-card border border-line p-3">
+                  <p className="text-xs font-medium text-ink">
                     Estado de la cuenta: {seleccionado.activo ? "activa" : "suspendida"}
                   </p>
-                  <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                  <p className="mt-1 text-[11px] text-subtle">
                     Una cuenta suspendida no puede publicar reseñas, reportar ni moderar.
                     Para suspender a un administrador, primero retira su rol.
                   </p>
                   <label
                     htmlFor="admin-motivo-estado"
-                    className="mt-3 block text-xs font-medium text-[var(--color-subtle)]"
+                    className="mt-3 block text-xs font-medium text-subtle"
                   >
                     Motivo (obligatorio)
                     <input
@@ -576,27 +576,27 @@ export default function AdminUsuariosRoles() {
                       onChange={(evento) => setMotivoEstado(evento.target.value)}
                       maxLength={2000}
                       placeholder={seleccionado.activo ? "Por qué se suspende la cuenta" : "Por qué se reactiva la cuenta"}
-                      className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block w-full rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                     />
                   </label>
                   <button
                     type="button"
                     onClick={cambiarEstado}
                     disabled={operacionEnCurso}
-                    className={`mt-3 cursor-pointer rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                    className={`mt-3 cursor-pointer rounded-card border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                       seleccionado.activo
-                        ? "border-red-200 text-red-700 hover:border-red-400 hover:bg-red-50"
-                        : "border-[var(--color-hairline)] text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)]"
+                        ? "border-status-error text-status-error hover:border-status-error hover:bg-paper"
+                        : "border-line text-brand-blue hover:border-brand-blue"
                     } ${CLASE_FOCO}`}
                   >
                     {seleccionado.activo ? "Suspender cuenta" : "Reactivar cuenta"}
                   </button>
                 </div>
 
-                <div className="rounded-lg border border-[var(--color-hairline)] p-3">
+                <div className="rounded-card border border-line p-3">
                   <label
                     htmlFor="admin-establecimiento"
-                    className="block text-xs font-medium text-[var(--color-subtle)]"
+                    className="block text-xs font-medium text-subtle"
                   >
                     Establecimiento
                     <select
@@ -605,7 +605,7 @@ export default function AdminUsuariosRoles() {
                       onChange={(evento) =>
                         setEstablecimientoSeleccionado(evento.target.value)
                       }
-                      className={`mt-1 block w-full cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block w-full cursor-pointer rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
                     >
                       <option value="">Selecciona un establecimiento</option>
                       {establecimientos.map((establecimiento) => (
@@ -626,7 +626,7 @@ export default function AdminUsuariosRoles() {
                       disabled={
                         operacionEnCurso || !establecimientoSeleccionado
                       }
-                      className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-brand-blue transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                     >
                       Asignar representación
                     </button>
@@ -636,13 +636,13 @@ export default function AdminUsuariosRoles() {
                       disabled={
                         operacionEnCurso || !establecimientoSeleccionado
                       }
-                      className={`cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card border border-status-error px-3 py-1.5 text-xs font-medium text-status-error transition-colors hover:border-status-error hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                     >
                       Revocar representación
                     </button>
                   </div>
 
-                  <p className="mt-2 text-[11px] text-[var(--color-subtle)]">
+                  <p className="mt-2 text-[11px] text-subtle">
                     La revocación se envía al backend para el establecimiento
                     seleccionado. Si la cuenta no tenía esa representación
                     activa, el backend responderá con el error correspondiente.
@@ -650,7 +650,7 @@ export default function AdminUsuariosRoles() {
                 </div>
               </div>
             ) : (
-              <p className="rounded-lg border border-dashed border-[var(--color-hairline)] p-6 text-center text-sm text-[var(--color-subtle)]">
+              <p className="rounded-card border border-dashed border-line p-6 text-center text-sm text-subtle">
                 Selecciona una cuenta para gestionar sus roles y
                 representaciones.
               </p>

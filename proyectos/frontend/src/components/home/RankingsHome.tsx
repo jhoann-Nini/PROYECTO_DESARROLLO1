@@ -61,24 +61,23 @@ function ColumnaRanking({
   children,
 }: ColumnaRankingProps) {
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)] sm:p-6">
+    <div className="flex flex-col justify-between rounded-card border border-hairline bg-paper p-5">
       <div className="flex flex-1 flex-col">
-        <div className="mb-6 border-b border-[var(--color-hairline)] pb-4">
+        <div className="mb-3 border-b border-dashed border-line pb-3">
           <div className="flex items-start justify-between gap-3">
-            <h3 className="flex min-w-0 items-center gap-2 text-lg font-semibold tracking-tight text-[var(--color-ink)] sm:text-xl">
-              <span className="text-[var(--color-brand-blue)]">/</span> {titulo}
+            <h3 className="flex min-w-0 items-center gap-2 text-[17px] font-medium uppercase leading-tight tracking-normal text-ink">
+              <span className="text-brand-blue">/</span> {titulo}
             </h3>
-            <span className="shrink-0 pt-1 text-[11px] font-medium text-[var(--color-subtle)]">
+            <span className="shrink-0 pt-0.5 text-[11px] font-medium text-subtle">
               ({cantidad} dispositivos)
             </span>
           </div>
-          <p className="mt-1 text-xs text-[var(--color-subtle)]">
+          <p className="mt-1 text-[11px] text-subtle">
             {"//"} {subtitulo}
           </p>
-          <div className="mt-3 h-0.5 w-12 rounded-full bg-[var(--color-brand-blue)]/70" />
         </div>
 
-        <div className="flex-1 space-y-3.5">
+        <div className="flex-1 space-y-0">
           {cargando ? (
             <div
               className="flex flex-col items-center justify-center py-12 text-center"
@@ -86,24 +85,24 @@ function ColumnaRanking({
               aria-busy="true"
             >
               <div
-                className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-hairline)] border-t-[var(--color-brand-blue)]"
+                className="h-8 w-8 animate-spin rounded-full border-2 border-hairline border-t-brand-blue"
                 aria-hidden="true"
               />
-              <p className="mt-3 text-xs text-[var(--color-subtle)]">
+              <p className="mt-3 text-xs text-subtle">
                 {mensajeCargando}
               </p>
             </div>
           ) : error ? (
             <div
               role="alert"
-              className="rounded-md border border-[var(--color-star)]/30 bg-[var(--color-star)]/10 p-6 text-center text-xs"
+              className="rounded-card border border-line bg-surface-2 p-6 text-center text-xs"
             >
-              <p className="font-medium text-[var(--color-ink)]">⚠️ {error}</p>
+              <p className="font-medium text-ink">⚠️ {error}</p>
               <button
                 type="button"
                 onClick={onReintentar}
                 aria-label={etiquetaReintento}
-                className="mt-3 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-2 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                className="mt-3 cursor-pointer rounded-card bg-brand-solid px-3.5 py-2 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid"
               >
                 {etiquetaReintento}
               </button>
@@ -117,7 +116,7 @@ function ColumnaRanking({
       </div>
 
       {pie && (
-        <div className="mt-6 border-t border-[var(--color-hairline)] pt-4 text-center">
+        <div className="mt-4 border-t border-dashed border-line pt-3 text-center">
           {pie}
         </div>
       )}
@@ -138,7 +137,7 @@ function BotonListaCompleta({
     <button
       type="button"
       onClick={onAlternar}
-      className="w-full cursor-pointer rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-2.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-brand-blue)]"
+      className="w-full cursor-pointer rounded-card border border-hairline bg-canvas py-2.5 text-xs font-medium text-ink transition-colors hover:border-line hover:text-brand-blue"
     >
       {mostrarTodos
         ? "Ocultar listado"
@@ -176,23 +175,20 @@ export default function RankingsHome({
   const vacioDeseos = sinDeseos ?? masDeseados.length === 0;
 
   return (
-    <section
-      aria-labelledby="seccion-rankings"
-      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8"
-    >
+    <section aria-labelledby="seccion-rankings">
       <div className="mb-6">
         <h2
           id="seccion-rankings"
-          className="text-xl font-semibold tracking-tight text-[var(--color-ink)] sm:text-2xl"
+          className="text-[28px] font-medium uppercase leading-none tracking-normal text-ink"
         >
           Rankings de la comunidad.
         </h2>
-        <p className="mt-1 text-sm text-[var(--color-subtle)]">
+        <p className="mt-2 text-sm text-subtle">
           Los dispositivos que más puntuación, conversación e interés generan.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         <ColumnaRanking
           titulo="Mejor valorados."
           subtitulo="Puntuación real de usuarios registrados"
@@ -203,7 +199,7 @@ export default function RankingsHome({
           onReintentar={onReintentarMejorValorados}
           etiquetaReintento="Reintentar valoraciones"
           vacio={
-            <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center text-sm text-[var(--color-subtle)]">
+            <div className="rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
               {vacioValoraciones
                 ? "Aún no hay productos con valoraciones registradas en el catálogo."
                 : "No se encontraron dispositivos con este filtro."}
@@ -249,7 +245,7 @@ export default function RankingsHome({
           onReintentar={onReintentarMasComentados}
           etiquetaReintento="Reintentar comentarios"
           vacio={
-            <div className="rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center text-sm text-[var(--color-subtle)]">
+            <div className="rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
               {vacioComentarios
                 ? "Aún no hay reseñas registradas para los productos en la plataforma."
                 : "No se encontraron dispositivos con este filtro."}
@@ -294,8 +290,8 @@ export default function RankingsHome({
           onReintentar={onReintentarMasDeseados}
           etiquetaReintento="Reintentar deseos"
           vacio={
-            <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-[var(--color-hairline)] bg-[var(--color-canvas)] p-8 text-center text-sm text-[var(--color-subtle)]">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)]">
+            <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-hairline bg-canvas p-6 text-center text-xs text-subtle">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-paper text-subtle">
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -311,12 +307,12 @@ export default function RankingsHome({
                   />
                 </svg>
               </div>
-              <p className="mb-1 text-xs font-semibold text-[var(--color-ink)]">
+              <p className="mb-1 text-xs font-medium text-ink">
                 {vacioDeseos
                   ? "Sin favoritos vinculados a una cuenta"
                   : "No se encontraron dispositivos con este filtro"}
               </p>
-              <p className="max-w-xs text-xs leading-relaxed text-[var(--color-subtle)]">
+              <p className="max-w-xs text-xs leading-relaxed text-subtle">
                 {vacioDeseos
                   ? "Los favoritos de este navegador son locales y no alimentan este ranking. La sincronización entre dispositivos aún no está habilitada."
                   : "Prueba con otro término de búsqueda."}

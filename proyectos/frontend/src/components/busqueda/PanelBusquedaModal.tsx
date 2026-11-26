@@ -2,6 +2,8 @@
 "use client";
 
 import Link from "next/link";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import {
   useEffect,
   useMemo,
@@ -54,6 +56,8 @@ export interface PanelBusquedaModalProps {
    */
   productos?: ProductoViewModel[];
   cargando?: boolean;
+  busqueda?: string;
+  onBusquedaCambiar?: (busqueda: string) => void;
   onSeleccionarProducto?: (producto: ProductoViewModel) => void;
 }
 
@@ -90,7 +94,7 @@ function FilaResultado({
 
   const contenido = (
     <>
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)]">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-line bg-surface-0">
         {tieneImagen ? (
           <img
             src={producto.imagen!}
@@ -111,15 +115,15 @@ function FilaResultado({
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-[var(--color-ink)]">
+        <span className="block truncate text-base font-medium uppercase tracking-normal text-ink">
           {producto.nombre}
         </span>
-        <span className="mt-0.5 block truncate text-xs text-[var(--color-subtle)]">
+        <span className="mt-0.5 block truncate text-xs text-subtle">
           {producto.marca} · {producto.categoriaEtiqueta}
         </span>
       </span>
 
-      <span className="shrink-0 text-xs font-semibold text-[var(--color-ink)]">
+      <span className="shrink-0 text-label font-medium uppercase tracking-normal text-ink">
         {producto.precioFormateado}
       </span>
     </>
@@ -133,7 +137,7 @@ function FilaResultado({
           onSeleccionar?.(producto);
           onCerrar();
         }}
-        className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+        className="group flex min-h-11 items-center gap-3 rounded-card border-b border-dotted border-line px-3 py-2.5 transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
       >
         {contenido}
       </Link>
@@ -155,10 +159,10 @@ function FilaResultado({
           onCerrar();
         }
       }}
-      className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
+      className={`group flex min-h-11 items-center gap-3 rounded-card border-b border-dotted border-line px-3 py-2.5 transition-colors ${
         onSeleccionar
-          ? "cursor-pointer hover:bg-[var(--color-canvas)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
-          : "opacity-80"
+          ? "cursor-pointer hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          : "text-text-secondary"
       }`}
     >
       {contenido}
@@ -171,9 +175,13 @@ export default function PanelBusquedaModal({
   onCerrar,
   productos,
   cargando,
+  busqueda: busquedaControlada,
+  onBusquedaCambiar,
   onSeleccionarProducto,
 }: PanelBusquedaModalProps) {
-  const [busqueda, setBusqueda] = useState("");
+  const [busquedaInterna, setBusquedaInterna] = useState("");
+  const busqueda = busquedaControlada ?? busquedaInterna;
+  const setBusqueda = onBusquedaCambiar ?? setBusquedaInterna;
   const [categoria, setCategoria] = useState<FiltroCategoria>("todos");
   const [productosInternos, setProductosInternos] = useState<ProductoViewModel[]>(
     [],
@@ -325,7 +333,7 @@ export default function PanelBusquedaModal({
         data-testid="backdrop-busqueda"
         aria-hidden="true"
         onClick={onCerrar}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-inverse/60 backdrop-blur-sm"
       />
 
       <div
@@ -335,30 +343,31 @@ export default function PanelBusquedaModal({
         aria-labelledby="titulo-busqueda-modal"
         tabIndex={-1}
         onKeyDown={manejarTeclaPanel}
-        className="relative z-10 flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-2xl"
+        className="relative z-10 flex max-h-[85dvh] w-full max-w-2xl flex-col overflow-hidden rounded-card border border-hairline bg-paper text-ink"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[var(--color-hairline)] p-5">
+        <div className="flex items-start justify-between gap-4 border-b border-dotted border-line p-card-padding">
           <div>
             <h2
               id="titulo-busqueda-modal"
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-heading-sm font-medium uppercase tracking-normal text-ink"
             >
               Buscar dispositivos
             </h2>
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 text-xs text-subtle">
               Busca por marca o modelo.
             </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <kbd className="hidden rounded border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2 py-1 text-[10px] font-semibold text-[var(--color-subtle)] sm:inline">
+            <kbd className="hidden rounded-card border border-line bg-canvas px-2 py-1 font-sans text-micro font-medium uppercase tracking-normal text-subtle sm:inline">
               Esc para cerrar
             </kbd>
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={onCerrar}
               aria-label="Cerrar búsqueda"
-              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+              className="h-11 w-11 shrink-0 p-0!"
             >
               <svg
                 className="h-4 w-4"
@@ -372,14 +381,14 @@ export default function PanelBusquedaModal({
               >
                 <path d="M18 6 6 18M6 6l12 12" />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 
-        <div className="border-b border-[var(--color-hairline)] p-5">
+        <div className="border-b border-dotted border-line p-card-padding">
           <div className="relative">
             <svg
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-subtle)]"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-subtle"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -392,14 +401,14 @@ export default function PanelBusquedaModal({
               <path d="m21 21-4.35-4.35" />
             </svg>
 
-            <input
+            <Input
               ref={inputRef}
               type="search"
               value={busqueda}
               onChange={(evento) => setBusqueda(evento.target.value)}
               placeholder="Busca por marca o modelo. Ej.: Galaxy S24, iPhone 16"
               aria-label="Buscar dispositivos por marca o modelo"
-              className="sin-x-nativa w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-3 pl-10 pr-11 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-subtle)] transition-colors focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]/40"
+              className="sin-x-nativa pl-10 pr-12"
             />
 
             {busqueda ? (
@@ -410,7 +419,7 @@ export default function PanelBusquedaModal({
                   inputRef.current?.focus();
                 }}
                 aria-label="Limpiar búsqueda"
-                className="absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-paper)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+                className="absolute right-0 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-subtle transition-colors hover:bg-paper hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -441,10 +450,10 @@ export default function PanelBusquedaModal({
                   type="button"
                   aria-pressed={activa}
                   onClick={() => setCategoria(opcion.valor)}
-                  className={`cursor-pointer rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)] ${
+                  className={`min-h-11 cursor-pointer rounded-full border px-3.5 py-2 text-label font-medium uppercase tracking-normal transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)] ${
                     activa
-                      ? "border-[var(--color-brand-solid)] bg-[var(--color-brand-solid)] text-[var(--color-on-solid)]"
-                      : "border-[var(--color-hairline)] bg-[var(--color-paper)] text-[var(--color-subtle)] hover:border-[var(--color-brand-blue)]/40 hover:text-[var(--color-ink)]"
+                      ? "border-ink bg-ink text-canvas"
+                      : "border-hairline bg-paper text-subtle hover:border-brand-blue hover:text-ink"
                   }`}
                 >
                   {opcion.etiqueta}
@@ -468,14 +477,14 @@ export default function PanelBusquedaModal({
               {[0, 1, 2, 3].map((indice) => (
                 <li
                   key={indice}
-                  className="flex animate-pulse items-center gap-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3"
+                  className="flex animate-pulse items-center gap-3 rounded-lg border border-hairline bg-paper p-3"
                 >
-                  <div className="h-12 w-12 shrink-0 rounded-md bg-[var(--color-hairline)]" />
+                  <div className="h-12 w-12 shrink-0 rounded-md bg-hairline" />
                   <div className="min-w-0 flex-1 space-y-2">
-                    <div className="h-4 w-3/4 rounded bg-[var(--color-hairline)]" />
-                    <div className="h-3 w-1/2 rounded bg-[var(--color-hairline)]" />
+                    <div className="h-4 w-3/4 rounded-full bg-hairline" />
+                    <div className="h-3 w-1/2 rounded-full bg-hairline" />
                   </div>
-                  <div className="h-3 w-20 shrink-0 rounded bg-[var(--color-hairline)]" />
+                  <div className="h-3 w-20 shrink-0 rounded-full bg-hairline" />
                 </li>
               ))}
             </ul>
@@ -495,25 +504,25 @@ export default function PanelBusquedaModal({
             <div className="px-4 py-10 text-center">
               {busquedaGenerica ? (
                 <>
-                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                  <p className="text-base font-medium uppercase tracking-normal text-ink">
                     {MENSAJE_BUSQUEDA_GENERICA}
                   </p>
-                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-subtle">
                     {ayudaBusquedaGenerica(busqueda)}
                   </p>
                 </>
               ) : busqueda.trim() ? (
                 <>
-                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                  <p className="text-base font-medium uppercase tracking-normal text-ink">
                     {mensajeNoEnCatalogo(busqueda)}
                   </p>
-                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-subtle">
                     {AYUDA_NO_EN_CATALOGO} Prueba con menos palabras, revisa la escritura o
                     cambia la categoría.
                   </p>
                   {alternativas.length > 0 && (
                     <div className="mt-4 text-left">
-                      <p className="px-1 text-xs font-semibold text-[var(--color-ink)]">
+                      <p className="px-1 text-label font-medium uppercase tracking-normal text-ink">
                         {TITULO_ALTERNATIVAS}
                       </p>
                       <ul className="mt-1 space-y-1" aria-label={TITULO_ALTERNATIVAS}>
@@ -532,10 +541,10 @@ export default function PanelBusquedaModal({
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                  <p className="text-base font-medium uppercase tracking-normal text-ink">
                     No se encontraron productos.
                   </p>
-                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-[var(--color-subtle)]">
+                  <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-subtle">
                     Prueba con otro término o cambia la categoría seleccionada.
                   </p>
                 </>
@@ -544,7 +553,7 @@ export default function PanelBusquedaModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-[var(--color-hairline)] px-5 py-3 text-[11px] text-[var(--color-subtle)]">
+        <div className="flex items-center justify-between gap-3 border-t border-dotted border-line px-5 py-3 text-micro text-subtle">
           <span>Selecciona un resultado para abrir su ficha.</span>
           <span>
             {estaCargando

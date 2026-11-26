@@ -18,9 +18,9 @@ export default function Pagination({
   return (
     <nav
       aria-label="Paginación del catálogo"
-      className="flex flex-col items-center justify-between gap-3 border-t border-[var(--color-hairline)] pt-4 sm:flex-row"
+      className="flex flex-col items-center justify-between gap-3 border-t border-dotted border-line pt-4 sm:flex-row"
     >
-      <p className="text-xs text-[var(--color-subtle)]">
+      <p className="text-xs text-subtle">
         Página {pagina} de {totalPaginas} · {total}{" "}
         {total === 1 ? "producto" : "productos"}
       </p>
@@ -30,7 +30,7 @@ export default function Pagination({
           type="button"
           onClick={() => onCambiar(pagina - 1)}
           disabled={pagina <= 1}
-          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
+          className={`cursor-pointer rounded-card border border-hairline bg-paper px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:text-subtle ${CLASE_FOCO}`}
         >
           Anterior
         </button>
@@ -38,7 +38,7 @@ export default function Pagination({
           type="button"
           onClick={() => onCambiar(pagina + 1)}
           disabled={pagina >= totalPaginas}
-          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-xs font-medium text-[var(--color-ink)] transition-colors hover:bg-[var(--color-canvas)] disabled:cursor-not-allowed disabled:text-[var(--color-subtle)]/50 ${CLASE_FOCO}`}
+          className={`cursor-pointer rounded-card border border-hairline bg-paper px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:text-subtle ${CLASE_FOCO}`}
         >
           Siguiente
         </button>

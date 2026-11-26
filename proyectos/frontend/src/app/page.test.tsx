@@ -88,6 +88,47 @@ describe("Página principal / (Home)", () => {
     localStorage.clear();
   });
 
+  function abrirBusquedaGlobal() {
+    const buscadorInicio = document.querySelector<HTMLElement>(".home-search");
+    expect(buscadorInicio).not.toBeNull();
+    fireEvent.click(within(buscadorInicio!).getByRole("button", { name: /Abrir búsqueda/i }));
+    return within(screen.getByRole("dialog", { name: "Buscar dispositivos" })).getByRole("searchbox", {
+      name: /Buscar dispositivos por marca o modelo/i,
+    });
+  }
+
+  it("sitúa el buscador global en Inicio y conserva Ctrl+K y el retorno del foco", async () => {
+    mockObtenerProductos.mockResolvedValueOnce([]);
+    render(<Home />);
+
+    const encabezado = screen.getByRole("banner");
+    const lupaEncabezado = within(encabezado).getByRole("button", { name: /Abrir búsqueda/i });
+    const buscadorInicio = document.querySelector<HTMLElement>(".home-search");
+    expect(buscadorInicio).not.toBeNull();
+    const abrir = within(buscadorInicio!).getByRole("button", { name: /Abrir búsqueda/i });
+    expect(lupaEncabezado.querySelector("svg")).not.toBeNull();
+    expect(lupaEncabezado.textContent).toBe("");
+    expect(lupaEncabezado.nextElementSibling?.getAttribute("aria-label")).toMatch(/Cambiar.*tema/i);
+    expect(screen.queryByRole("searchbox", { name: /Buscar dispositivos por marca o modelo/i })).toBeNull();
+
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    expect(await screen.findByRole("dialog", { name: "Buscar dispositivos" })).toBeDefined();
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Buscar dispositivos" })).toBeNull());
+
+    abrir.focus();
+    fireEvent.click(abrir);
+    expect(screen.getByRole("dialog", { name: "Buscar dispositivos" })).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar búsqueda" }));
+    await waitFor(() => expect(document.activeElement).toBe(abrir));
+
+    lupaEncabezado.focus();
+    fireEvent.click(lupaEncabezado);
+    expect(screen.getByRole("dialog", { name: "Buscar dispositivos" })).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Cerrar búsqueda" }));
+    await waitFor(() => expect(document.activeElement).toBe(lupaEncabezado));
+  });
+
   describe("1. Carga inicial", () => {
     it("debe mostrar el indicador de carga y el estado inicial 'Servidor no disponible' mientras la consulta está en curso", () => {
       mockObtenerProductos.mockImplementation(() => new Promise(() => {}));
@@ -1272,13 +1313,13 @@ describe("Página principal / (Home)", () => {
       });
 
       fireEvent.change(screen.getByRole("slider"), { target: { value: "200000" } });
-      const destacados = screen.getByRole("region", { name: "Destacados para ti." });
+      const destacados = screen.getByRole("region", { name: "Productos destacados." });
       expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
       expect(within(destacados).queryByText(/Supera presupuesto|En presupuesto|Presupuesto aplicado/)).toBeNull();
     });
 
-    it("3. La búsqueda de 'Samsung Galaxy Tab S10 Ultra' permite localizar ese producto aunque su precio supere el presupuesto", async () => {
+    it("3. La búsqueda localiza el producto en el modal sin cambiar los destacados", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1289,16 +1330,16 @@ describe("Página principal / (Home)", () => {
       });
 
       // Escribir en el buscador
-      const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/i,
-      });
+      const inputBusqueda = abrirBusquedaGlobal();
       fireEvent.change(inputBusqueda, {
         target: { value: "Samsung Galaxy Tab S10 Ultra" },
       });
 
-      // Debe encontrarse y mostrarse
-      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
-      expect(screen.queryByText("Samsung Galaxy Buds FE")).toBeNull();
+      // El resultado está en el buscador y la selección de Inicio permanece estable.
+      expect(within(screen.getByRole("dialog")).getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      const destacados = screen.getByRole("region", { name: "Productos destacados." });
+      expect(within(destacados).getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(within(destacados).getByText("Samsung Galaxy Buds FE")).toBeDefined();
     });
 
     it("4. La búsqueda de 'Samsung Galaxy Tab S10+' muestra una coincidencia si existe, o mensaje de búsqueda sin resultados si no existe", async () => {
@@ -1311,24 +1352,21 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
       });
 
-      const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/i,
-      });
+      const inputBusqueda = abrirBusquedaGlobal();
 
       // 4a. Coincidencia existente
       fireEvent.change(inputBusqueda, {
         target: { value: "Samsung Galaxy Tab S10+" },
       });
-      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      expect(within(screen.getByRole("dialog")).getByText("Samsung Galaxy Tab S10+")).toBeDefined();
 
       // 4b. Modelo inexistente
       fireEvent.change(inputBusqueda, {
         target: { value: "Modelo Inexistente XYZ 999" },
       });
-      expect(
-        screen.getByText(/^«Modelo Inexistente XYZ 999» no está en nuestro catálogo\.$/)
-      ).toBeDefined();
-      expect(screen.getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
+      expect(within(screen.getByRole("dialog")).getByText(/^«Modelo Inexistente XYZ 999» no está en nuestro catálogo\.$/)).toBeDefined();
+      expect(within(screen.getByRole("dialog")).getByRole("button", { name: /Limpiar búsqueda/i })).toBeDefined();
+      expect(within(screen.getByRole("region", { name: "Productos destacados." })).getByText("Samsung Galaxy Tab S10+")).toBeDefined();
 
       // El aviso también aparece junto a la barra, sin tener que bajar a «Destacados».
       const estado = screen.getByRole("status", { name: "Resultado de la búsqueda" });
@@ -1336,16 +1374,21 @@ describe("Página principal / (Home)", () => {
 
       fireEvent.change(inputBusqueda, { target: { value: "Samsung Galaxy Tab S10+" } });
       expect(screen.getByRole("status", { name: "Resultado de la búsqueda" }).textContent).toMatch(/Encontramos 1 producto\./);
-      expect(within(screen.getByRole("status", { name: "Resultado de la búsqueda" })).getByRole("button", { name: "Ver resultados" })).toBeDefined();
+      fireEvent.click(screen.getByRole("button", { name: "Cerrar búsqueda" }));
+      fireEvent.click(within(screen.getByRole("status", { name: "Resultado de la búsqueda" })).getByRole("button", { name: "Ver resultados" }));
+      expect(within(screen.getByRole("dialog")).getByText("Samsung Galaxy Tab S10+")).toBeDefined();
 
-      fireEvent.change(inputBusqueda, { target: { value: "audífonos" } });
+      const inputReabierto = within(screen.getByRole("dialog")).getByRole("searchbox", {
+        name: /Buscar dispositivos por marca o modelo/i,
+      });
+      fireEvent.change(inputReabierto, { target: { value: "audífonos" } });
       expect(screen.getByRole("status", { name: "Resultado de la búsqueda" }).textContent).toMatch(/Escribe la marca o el modelo del dispositivo/);
 
-      fireEvent.change(inputBusqueda, { target: { value: "" } });
+      fireEvent.change(inputReabierto, { target: { value: "" } });
       expect(screen.queryByRole("status", { name: "Resultado de la búsqueda" })).toBeNull();
     });
 
-    it("5. El contador de productos totales y el contador de resultados filtrados no se confunden", async () => {
+    it("5. El contador de destacados se mantiene mientras la búsqueda informa sus resultados", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1358,20 +1401,19 @@ describe("Página principal / (Home)", () => {
       });
 
       // Filtrar por texto
-      const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/i,
-      });
+      const inputBusqueda = abrirBusquedaGlobal();
       fireEvent.change(inputBusqueda, {
         target: { value: "Buds" },
       });
 
-      // El total de productos registrados en el catálogo sigue siendo 3, pero mostrados es 1
+      // Destacados conserva sus tres tarjetas; el buscador informa una coincidencia.
       expect(
-        screen.getByText(/3 productos registrados en el catálogo • 1 mostrado/i)
+        screen.getByText(/3 productos registrados en el catálogo • 3 mostrados/i)
       ).toBeDefined();
+      expect(screen.getByRole("status", { name: "Resultado de la búsqueda" }).textContent).toMatch(/Encontramos 1 producto\./);
     });
 
-    it("6. Los filtros de búsqueda y presupuesto funcionan sin alterar los datos originales", async () => {
+    it("6. Buscar y limpiar la consulta no modifica los productos destacados", async () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
 
       render(<Home />);
@@ -1381,22 +1423,22 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
       });
 
-      const inputBusqueda = screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/i,
-      });
+      const inputBusqueda = abrirBusquedaGlobal();
 
-      // Aplicar filtro de búsqueda
+      // El modal filtra sus resultados sin alterar las tarjetas de Inicio.
       fireEvent.change(inputBusqueda, { target: { value: "Ultra" } });
-      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
-      expect(screen.queryByText("Samsung Galaxy Buds FE")).toBeNull();
+      const destacados = screen.getByRole("region", { name: "Productos destacados." });
+      expect(within(destacados).getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(within(destacados).getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      expect(within(screen.getByRole("dialog")).queryByText("Samsung Galaxy Buds FE")).toBeNull();
 
       // Limpiar filtro de búsqueda
       fireEvent.change(inputBusqueda, { target: { value: "" } });
 
       // Todos los productos originales vuelven a estar visibles sin alteraciones
-      expect(screen.getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
-      expect(screen.getByText("Samsung Galaxy Buds FE")).toBeDefined();
-      expect(screen.getByText("Samsung Galaxy Tab S10+")).toBeDefined();
+      expect(within(destacados).getByText("Samsung Galaxy Tab S10 Ultra")).toBeDefined();
+      expect(within(destacados).getByText("Samsung Galaxy Buds FE")).toBeDefined();
+      expect(within(destacados).getByText("Samsung Galaxy Tab S10+")).toBeDefined();
     });
 
     it("7. Confirmar el presupuesto abre el catálogo general sin filtrar destacados", async () => {
@@ -1476,12 +1518,10 @@ describe("Página principal / (Home)", () => {
       mockObtenerProductos.mockResolvedValueOnce(catalogoProductosPrueba);
       render(<Home />);
       await screen.findByText("Samsung Galaxy Buds FE");
-      fireEvent.change(screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/,
-      }), { target: { value: "Buds" } });
+      fireEvent.change(abrirBusquedaGlobal(), { target: { value: "Buds" } });
       fireEvent.click(screen.getByRole("button", { name: "Filtrar por presupuesto" }));
       expect(mockPush).toHaveBeenCalledWith("/productos?precioMax=4000000");
-      expect((screen.getByRole("searchbox", {
+      expect((within(screen.getByRole("dialog")).getByRole("searchbox", {
         name: /Buscar dispositivos por marca o modelo/,
       }) as HTMLInputElement).value).toBe("Buds");
     });
@@ -1499,7 +1539,7 @@ describe("Página principal / (Home)", () => {
     });
   });
 
-  describe("11. Sugerencias de búsqueda con productos reales", () => {
+  describe("11. Búsqueda global en Inicio con productos reales", () => {
     const productoReal: Producto = {
       idProducto: 501,
       nombre: "Laptop Profesional 4K HDR",
@@ -1513,13 +1553,7 @@ describe("Página principal / (Home)", () => {
       estado: true,
     };
 
-    function buscarCajaBusqueda() {
-      return screen.getByRole("searchbox", {
-        name: /Buscar dispositivos por marca o modelo/i,
-      });
-    }
-
-    it("muestra sugerencias con productos del backend sin ranking, notas ni ventas inventadas", async () => {
+    it("muestra los productos reales en el modal global sin ranking, notas ni ventas inventadas", async () => {
       mockObtenerProductos.mockResolvedValueOnce([productoReal]);
 
       render(<Home />);
@@ -1528,23 +1562,19 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Servidor conectado")).toBeDefined();
       });
 
-      fireEvent.focus(buscarCajaBusqueda());
+      abrirBusquedaGlobal();
 
-      const sugerencias = await screen.findByRole("region", {
-        name: /Sugerencias del catálogo/i,
-      });
-
-      expect(
-        within(sugerencias).getByText("Laptop Profesional 4K HDR"),
-      ).toBeDefined();
-      expect(within(sugerencias).queryByText(/Nota/i)).toBeNull();
-      expect(within(sugerencias).queryByText(/^#\d+/)).toBeNull();
-      expect(within(sugerencias).queryByText(/vendido/i)).toBeNull();
+      const dialogo = screen.getByRole("dialog", { name: "Buscar dispositivos" });
+      expect(within(dialogo).getByText("Laptop Profesional 4K HDR")).toBeDefined();
+      expect(within(dialogo).queryByText(/Nota/i)).toBeNull();
+      expect(within(dialogo).queryByText(/^#\d+/)).toBeNull();
+      expect(within(dialogo).queryByText(/vendido/i)).toBeNull();
+      expect(mockObtenerProductos).toHaveBeenCalledTimes(1);
       expect(screen.queryByText("Más vendidos")).toBeNull();
       expect(screen.queryByText("Redmi Note 13 Pro+ 5G")).toBeNull();
     });
 
-    it("no muestra sugerencias ficticias cuando el backend no devuelve productos", async () => {
+    it("no muestra resultados ficticios cuando el backend no devuelve productos", async () => {
       mockObtenerProductos.mockResolvedValueOnce([]);
 
       render(<Home />);
@@ -1555,18 +1585,29 @@ describe("Página principal / (Home)", () => {
         ).toBeNull();
       });
 
-      fireEvent.focus(buscarCajaBusqueda());
+      abrirBusquedaGlobal();
 
-      expect(
-        screen.queryByRole("region", {
-          name: /Sugerencias del catálogo/i,
-        }),
-      ).toBeNull();
+      const dialogo = screen.getByRole("dialog", { name: "Buscar dispositivos" });
+      expect(within(dialogo).queryByText("Laptop Profesional 4K HDR")).toBeNull();
       expect(screen.queryByText("Más vendidos")).toBeNull();
       expect(screen.queryByText("Redmi Note 13 Pro+ 5G")).toBeNull();
     });
 
-    it("al elegir una sugerencia aplica el nombre real del producto a la búsqueda", async () => {
+    it("vuelve a consultar el catálogo global si falla la carga inicial de Inicio", async () => {
+      mockObtenerProductos
+        .mockRejectedValueOnce(new Error("Catálogo temporalmente no disponible"))
+        .mockResolvedValueOnce([productoReal]);
+
+      render(<Home />);
+      await screen.findByText("Catálogo temporalmente no disponible");
+      abrirBusquedaGlobal();
+
+      const dialogo = screen.getByRole("dialog", { name: "Buscar dispositivos" });
+      expect(await within(dialogo).findByText("Laptop Profesional 4K HDR")).toBeDefined();
+      expect(mockObtenerProductos).toHaveBeenCalledTimes(2);
+    });
+
+    it("al buscar en el modal global conserva la consulta de Inicio y permite abrir la ficha real", async () => {
       mockObtenerProductos.mockResolvedValueOnce([productoReal]);
 
       render(<Home />);
@@ -1575,25 +1616,16 @@ describe("Página principal / (Home)", () => {
         expect(screen.getByText("Servidor conectado")).toBeDefined();
       });
 
-      const buscador = buscarCajaBusqueda() as HTMLInputElement;
-      fireEvent.focus(buscador);
-
-      const sugerencias = await screen.findByRole("region", {
-        name: /Sugerencias del catálogo/i,
-      });
-
-      fireEvent.click(
-        within(sugerencias).getByRole("button", {
-          name: /Buscar Laptop Profesional 4K HDR/i,
-        }),
-      );
-
+      const buscador = abrirBusquedaGlobal() as HTMLInputElement;
+      fireEvent.change(buscador, { target: { value: "Laptop Profesional 4K HDR" } });
       expect(buscador.value).toBe("Laptop Profesional 4K HDR");
-      expect(
-        screen.queryByRole("region", {
-          name: /Sugerencias del catálogo/i,
-        }),
-      ).toBeNull();
+
+      const dialogo = screen.getByRole("dialog", { name: "Buscar dispositivos" });
+      const ficha = within(dialogo).getByRole("link", { name: /Laptop Profesional 4K HDR/i });
+      expect(ficha.getAttribute("href")).toBe("/productos/501");
+      fireEvent.click(ficha);
+      expect(screen.queryByRole("dialog", { name: "Buscar dispositivos" })).toBeNull();
+      expect(within(document.querySelector<HTMLElement>(".home-search")!).getByRole("button", { name: /Abrir búsqueda/i }).textContent).toContain("Laptop Profesional 4K HDR");
     });
   });
 });

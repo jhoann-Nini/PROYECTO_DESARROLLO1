@@ -20,6 +20,8 @@ import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomati
 import ColaReportesOfertas from "@/components/moderacion/ColaReportesOfertas";
 import ColaApelaciones from "@/components/moderacion/ColaApelaciones";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
+import Tag from "@/components/ui/Tag";
 import ContadorPendientes from "@/components/moderacion/ContadorPendientes";
 import { useResumenPendientesModeracion } from "@/hooks/useResumenPendientesModeracion";
 
@@ -268,18 +270,18 @@ export default function PanelModeracionModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby={tituloId}
-       className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
+       className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-ink/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-       <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[var(--color-hairline)] pb-4">
+       <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-card border border-line bg-paper p-3 text-ink sm:max-h-[92dvh] sm:p-6">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-dotted border-line pb-4">
            <div className="min-w-0">
             <h2
               id={tituloId}
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-lg font-medium uppercase tracking-normal text-ink"
             >
               Moderación de reseñas
             </h2>
-             <p className="mt-1 break-words text-xs text-[var(--color-subtle)]">
+             <p className="mt-1 break-words text-xs text-subtle">
               Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) · Rol:{" "}
               {usuarioSesion?.rol}
             </p>
@@ -289,7 +291,7 @@ export default function PanelModeracionModal({
             type="button"
             onClick={cerrarPanel}
             aria-label="Cerrar panel de moderación"
-            className={`cursor-pointer rounded-lg border border-[var(--color-hairline)] px-2.5 py-1.5 text-xs text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] ${CLASE_FOCO}`}
+            className={`min-h-11 cursor-pointer rounded-ghost border border-ink px-4 text-label font-medium uppercase text-ink transition-colors hover:bg-surface-muted ${CLASE_FOCO}`}
           >
             ✕ Cerrar
           </button>
@@ -297,7 +299,7 @@ export default function PanelModeracionModal({
         <div
           role="tablist"
           aria-label="Colas de moderación"
-          className="mt-3 flex shrink-0 gap-1 border-b border-[var(--color-hairline)]"
+          className="mt-3 flex shrink-0 flex-wrap gap-1 border-b border-dotted border-line"
         >
           {([
             { id: "reportes", etiqueta: "Reseñas reportadas", pendientes: resumen?.reportesResenas },
@@ -313,10 +315,10 @@ export default function PanelModeracionModal({
               aria-selected={pestana === opcion.id}
               aria-controls={`${tituloId}-panel-${opcion.id}`}
               onClick={() => setPestana(opcion.id)}
-              className={`-mb-px cursor-pointer border-b-2 px-3 py-2 text-xs font-semibold transition-colors ${
+              className={`min-h-11 cursor-pointer rounded-full border px-3 py-2 text-xs font-medium uppercase transition-colors ${
                 pestana === opcion.id
-                  ? "border-[var(--color-brand-blue)] text-[var(--color-ink)]"
-                  : "border-transparent text-[var(--color-subtle)] hover:text-[var(--color-ink)]"
+                  ? "border-line bg-surface-2 text-ink"
+                  : "border-transparent text-subtle hover:bg-surface-muted hover:text-ink"
               } ${CLASE_FOCO}`}
             >
               {opcion.etiqueta}
@@ -359,23 +361,23 @@ export default function PanelModeracionModal({
           aria-labelledby={`${tituloId}-tab-reportes`}
           className="flex min-h-0 flex-col"
         >
-        <p className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 text-xs text-[var(--color-subtle)]">
+        <p className="mt-3 rounded-card border border-line bg-canvas p-3 text-xs text-subtle">
           Esta cola incluye solo reseñas reportadas. Los reportes de precios y enlaces están en la pestaña «Reportes de ofertas».
         </p>
 
         <div
           role="group"
           aria-label="Filtros de moderación"
-          className="mt-4 flex flex-wrap items-end gap-4 border-b border-[var(--color-hairline)] pb-3"
+          className="mt-4 flex flex-wrap items-end gap-4 border-b border-line pb-3"
         >
-          <label className="text-xs font-medium text-[var(--color-subtle)]">
+          <label className="text-xs font-medium text-subtle">
             Estado del reporte
             <select
               value={filtroEstado}
               onChange={(evento) =>
                 setFiltroEstado(evento.target.value as EstadoReporte | "")
               }
-              className={`mt-1 block cursor-pointer rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              className={`mt-1 block cursor-pointer rounded-card border border-line bg-paper px-3 py-1.5 text-sm text-ink focus:border-brand-blue ${CLASE_FOCO}`}
             >
               {OPCIONES_ESTADO.map((opcion) => (
                 <option key={opcion.etiqueta} value={opcion.valor}>
@@ -385,12 +387,12 @@ export default function PanelModeracionModal({
             </select>
           </label>
 
-          <label className="flex cursor-pointer items-center gap-2 pb-1 text-xs text-[var(--color-ink)]">
+          <label className="flex cursor-pointer items-center gap-2 pb-1 text-xs text-ink">
             <input
               type="checkbox"
               checked={soloOcultas}
               onChange={(evento) => setSoloOcultas(evento.target.checked)}
-              className={`h-4 w-4 accent-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+              className={`h-4 w-4 accent-brand-blue ${CLASE_FOCO}`}
             />
             Solo reseñas ocultas
           </label>
@@ -399,7 +401,7 @@ export default function PanelModeracionModal({
         {mensajeExito && (
           <p
             role="status"
-            className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"
+              className="mt-3 rounded-card border border-line bg-surface-2 p-3 text-xs text-ink"
           >
             {mensajeExito}
           </p>
@@ -408,14 +410,14 @@ export default function PanelModeracionModal({
         {errorAccion && (
           <div
             role="alert"
-            className="mt-3 flex items-start justify-between gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+            className="mt-3 flex items-start justify-between gap-2 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
           >
             <p>{errorAccion}</p>
             <button
               type="button"
               onClick={() => setErrorAccion(null)}
               aria-label="Cerrar mensaje de error"
-              className={`cursor-pointer rounded px-1 text-red-600 hover:text-red-800 ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card px-1 text-status-error hover:text-status-error ${CLASE_FOCO}`}
             >
               ✕
             </button>
@@ -427,7 +429,7 @@ export default function PanelModeracionModal({
             <p
               role="status"
               aria-busy="true"
-              className="py-10 text-center text-sm text-[var(--color-subtle)]"
+              className="py-10 text-center text-sm text-subtle"
             >
               Cargando reseñas reportadas…
             </p>
@@ -453,56 +455,48 @@ export default function PanelModeracionModal({
               {resenasActuales.map((resena) => (
                 <li
                   key={resena.idResena}
-                  className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+                  className="rounded-card border border-line bg-paper p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                      <h3 className="text-sm font-medium uppercase text-ink">
                         <Link
                           href={`/productos/${resena.idProducto}`}
-                          className={`text-[var(--color-brand-blue)] hover:underline ${CLASE_FOCO}`}
+                          className={`text-brand-blue hover:underline ${CLASE_FOCO}`}
                         >
                           {resena.nombreProducto}
                         </Link>
                       </h3>
-                      <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-1 text-xs text-subtle">
                         Por {resena.nombreAutor} ·{" "}
                         {formatearFecha(resena.fechaCreacion)}
                         {typeof resena.puntuacion === "number" &&
                           ` · ${resena.puntuacion}/5`}
                       </p>
                     </div>
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                        resena.ocultaPorModeracion
-                          ? "bg-amber-100 text-amber-800"
-                          : resena.ocultaPorReportes
-                            ? "bg-red-100 text-red-800"
-                            : "bg-[var(--color-positive)]/15 text-[var(--color-ink)]"
-                      }`}
-                    >
+                    <Tag variant={resena.ocultaPorModeracion ? "pending" : resena.ocultaPorReportes ? "danger" : "verified"}>
                       {resena.ocultaPorModeracion
                         ? "Oculta por moderación"
                         : resena.ocultaPorReportes
                           ? "Oculta por reportes"
                           : "Visible"}
-                    </span>
+                    </Tag>
                   </div>
 
-                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[var(--color-ink)]">
+                  <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-text-body">
                     {resena.comentario}
                   </p>
 
-                  <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-2 text-xs text-subtle">
                     {resena.totalReportes}{" "}
                     {resena.totalReportes === 1 ? "reporte" : "reportes"} ·{" "}
                     {resena.reportesPendientes} pendientes
                   </p>
 
                   {resena.reportes.length > 0 && (
-                    <details className="mt-3 rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3">
+                    <details className="mt-3 rounded-card border border-line bg-canvas p-3">
                       <summary
-                        className={`cursor-pointer text-xs font-semibold text-[var(--color-ink)] ${CLASE_FOCO}`}
+                        className={`cursor-pointer text-xs font-medium text-ink ${CLASE_FOCO}`}
                       >
                         Ver reportes ({resena.reportes.length})
                       </summary>
@@ -510,18 +504,18 @@ export default function PanelModeracionModal({
                         {resena.reportes.map((reporte) => (
                           <li
                             key={reporte.idReporte}
-                            className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] p-2.5 text-xs"
+                            className="rounded-card border border-line bg-paper p-2.5 text-xs"
                           >
-                            <p className="font-semibold text-[var(--color-ink)]">
+                            <p className="font-medium text-ink">
                               {etiquetaMotivo(reporte.motivo)} ·{" "}
                               {etiquetaEstado(reporte.estado)}
                             </p>
-                            <p className="mt-0.5 text-[var(--color-subtle)]">
+                            <p className="mt-0.5 text-subtle">
                               Reportado por {reporte.nombreReportante} ·{" "}
                               {formatearFecha(reporte.fechaCreacion)}
                             </p>
                             {reporte.descripcion && (
-                              <p className="mt-1 text-[var(--color-ink)]">
+                              <p className="mt-1 text-ink">
                                 {reporte.descripcion}
                               </p>
                             )}
@@ -531,10 +525,10 @@ export default function PanelModeracionModal({
                     </details>
                   )}
 
-                  <div className="mt-3 border-t border-[var(--color-hairline)] pt-3">
+                  <div className="mt-3 border-t border-dotted border-line pt-3">
                     <label
                       htmlFor={`justificacion-${resena.idResena}`}
-                      className="block text-xs font-medium text-[var(--color-subtle)]"
+                      className="block text-xs font-medium text-subtle"
                     >
                       Justificación
                       <textarea
@@ -555,10 +549,10 @@ export default function PanelModeracionModal({
                         }}
                         rows={2}
                         maxLength={2000}
-                        className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                        className={`mt-1 block min-h-24 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
                       />
                     </label>
-                    <p className="mt-1 text-[11px] text-[var(--color-subtle)]">
+                    <p className="mt-1 text-[11px] text-subtle">
                       Obligatoria para ocultar o publicar; opcional para
                       rechazar reportes.
                     </p>
@@ -566,7 +560,7 @@ export default function PanelModeracionModal({
                     {errorJustificacion === resena.idResena && (
                       <p
                         role="alert"
-                        className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700"
+                        className="mt-2 rounded-card border border-status-error bg-paper p-2 text-xs text-status-error"
                       >
                         {MENSAJE_JUSTIFICACION_OBLIGATORIA}
                       </p>
@@ -574,32 +568,35 @@ export default function PanelModeracionModal({
 
                     <div className="mt-2 flex flex-wrap gap-2">
                       {resena.ocultaPorModeracion ? (
-                        <button
+                        <Button
+                          variant="secondary"
                           type="button"
                           onClick={() => ejecutarAccion(resena, "publicar")}
                           disabled={accionEnCurso !== null}
                           aria-label={`Publicar reseña de ${resena.nombreAutor}`}
-                          className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                          className="disabled:opacity-50"
                         >
                           {accionActual(resena.idResena, "publicar")
                             ? "Publicando…"
                             : "Publicar reseña"}
-                        </button>
+                        </Button>
                       ) : (
-                        <button
+                        <Button
+                          variant="danger"
                           type="button"
                           onClick={() => ejecutarAccion(resena, "ocultar")}
                           disabled={accionEnCurso !== null}
                           aria-label={`Ocultar reseña de ${resena.nombreAutor}`}
-                          className={`cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                          className="disabled:opacity-50"
                         >
                           {accionActual(resena.idResena, "ocultar")
                             ? "Ocultando…"
                             : "Ocultar reseña"}
-                        </button>
+                        </Button>
                       )}
 
-                      <button
+                      <Button
+                        variant="secondary"
                         type="button"
                         onClick={() =>
                           ejecutarAccion(resena, "rechazar-reportes")
@@ -609,12 +606,12 @@ export default function PanelModeracionModal({
                           !puedeRechazarReportes(resena)
                         }
                         aria-label={`Rechazar reportes de ${resena.nombreAutor}`}
-                        className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                        className="disabled:opacity-50"
                       >
                         {accionActual(resena.idResena, "rechazar-reportes")
                           ? "Rechazando…"
                           : "Rechazar reportes"}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </li>

@@ -207,7 +207,7 @@ export default function AdminEstablecimientos() {
       <p
         role="status"
         aria-busy="true"
-        className="py-10 text-center text-sm text-[var(--color-subtle)]"
+        className="py-10 text-center text-sm text-subtle"
       >
         Cargando establecimientos…
       </p>
@@ -232,10 +232,10 @@ export default function AdminEstablecimientos() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+          <h3 className="text-xs font-medium uppercase tracking-normal text-subtle">
             Establecimientos activos
           </h3>
-          <p className="mt-1 text-xs text-[var(--color-subtle)]">
+          <p className="mt-1 text-xs text-subtle">
             El catálogo público solo devuelve establecimientos activos. Las
             operaciones de escritura requieren rol Administrador.
           </p>
@@ -243,7 +243,7 @@ export default function AdminEstablecimientos() {
         <button
           type="button"
           onClick={abrirCrear}
-          className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 ${CLASE_FOCO}`}
+          className={`cursor-pointer rounded-card bg-brand-solid px-3.5 py-1.5 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 ${CLASE_FOCO}`}
         >
           Nuevo establecimiento
         </button>
@@ -252,7 +252,7 @@ export default function AdminEstablecimientos() {
       {mensajeExito && (
         <p
           role="status"
-          className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"
+          className="rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink"
         >
           {mensajeExito}
         </p>
@@ -261,14 +261,14 @@ export default function AdminEstablecimientos() {
       {errorAccion && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+          className="flex items-start justify-between gap-2 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
         >
           <p>{errorAccion}</p>
           <button
             type="button"
             onClick={() => setErrorAccion(null)}
             aria-label="Cerrar mensaje de error"
-            className={`cursor-pointer rounded px-1 text-red-600 hover:text-red-800 ${CLASE_FOCO}`}
+            className={`cursor-pointer rounded-card px-1 text-status-error hover:text-status-error ${CLASE_FOCO}`}
           >
             ✕
           </button>
@@ -278,7 +278,7 @@ export default function AdminEstablecimientos() {
       {erroresValidacion.length > 0 && (
         <div
           role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+          className="rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
         >
           <ul className="space-y-1">
             {erroresValidacion.map((error) => (
@@ -292,9 +292,9 @@ export default function AdminEstablecimientos() {
         <form
           onSubmit={guardar}
           noValidate
-          className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"
+          className="rounded-card border border-line bg-canvas p-4"
         >
-          <h4 className="text-sm font-semibold text-[var(--color-ink)]">
+          <h4 className="text-sm font-medium text-ink">
             {modo === "crear"
               ? "Nuevo establecimiento"
               : `Editar ${editando?.nombre ?? "establecimiento"}`}
@@ -310,7 +310,7 @@ export default function AdminEstablecimientos() {
             <button
               type="submit"
               disabled={guardando}
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card bg-brand-solid px-3.5 py-1.5 text-xs font-medium text-on-solid transition-colors hover:bg-brand-solid/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
             >
               {guardando
                 ? "Guardando…"
@@ -322,7 +322,7 @@ export default function AdminEstablecimientos() {
               type="button"
               onClick={cerrarFormulario}
               disabled={guardando}
-              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card border border-line px-3.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
             >
               Cancelar
             </button>
@@ -339,17 +339,17 @@ export default function AdminEstablecimientos() {
         <div className="lg:overflow-x-auto">
           <table className="block w-full text-left text-xs lg:table">
             <thead className="hidden lg:table-header-group">
-              <tr className="border-b border-[var(--color-hairline)] text-[var(--color-subtle)]">
-                <th scope="col" className="px-2 py-2 font-semibold">
+              <tr className="border-b border-line text-subtle">
+                <th scope="col" className="px-2 py-2 font-medium">
                   Establecimiento
                 </th>
-                <th scope="col" className="px-2 py-2 font-semibold">
+                <th scope="col" className="px-2 py-2 font-medium">
                   Contacto
                 </th>
-                <th scope="col" className="px-2 py-2 font-semibold">
+                <th scope="col" className="px-2 py-2 font-medium">
                   Ubicación
                 </th>
-                <th scope="col" className="px-2 py-2 font-semibold">
+                <th scope="col" className="px-2 py-2 font-medium">
                   Acciones
                 </th>
               </tr>
@@ -359,23 +359,23 @@ export default function AdminEstablecimientos() {
                 <tr
                   key={establecimiento.idEstablecimiento}
                   data-testid={`establecimiento-card-${establecimiento.idEstablecimiento}`}
-                  className="block min-w-0 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3 lg:table-row lg:rounded-none lg:border-0 lg:border-b lg:bg-transparent lg:p-0 lg:last:border-0"
+                  className="block min-w-0 rounded-card border border-line bg-canvas p-3 lg:table-row lg:rounded-none lg:border-0 lg:border-b lg:bg-transparent lg:p-0 lg:last:border-0"
                 >
                   <td className="block py-1 lg:table-cell lg:px-2 lg:py-3">
-                    <p className="break-words font-semibold text-[var(--color-ink)]">
+                    <p className="break-words font-medium text-ink">
                       {establecimiento.nombre}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-[var(--color-subtle)]">
+                    <p className="mt-0.5 text-[11px] text-subtle">
                       {establecimiento.descripcion || "Sin descripción"}
                     </p>
                   </td>
-                  <td className="block py-1 text-[var(--color-subtle)] lg:table-cell lg:px-2 lg:py-3">
+                  <td className="block py-1 text-subtle lg:table-cell lg:px-2 lg:py-3">
                     <p>{establecimiento.correo || "Sin correo"}</p>
                     <p className="mt-0.5">
                       {establecimiento.telefono || "Sin teléfono"}
                     </p>
                   </td>
-                  <td className="block py-1 text-[var(--color-subtle)] lg:table-cell lg:px-2 lg:py-3">
+                  <td className="block py-1 text-subtle lg:table-cell lg:px-2 lg:py-3">
                     <p>{establecimiento.direccion || "Sin dirección"}</p>
                     <p className="mt-0.5">
                       {establecimiento.latitud !== null &&
@@ -390,7 +390,7 @@ export default function AdminEstablecimientos() {
                         type="button"
                         onClick={() => abrirEditar(establecimiento)}
                         aria-label={`Editar ${establecimiento.nombre}`}
-                        className={`min-h-10 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                        className={`min-h-10 cursor-pointer rounded-card border border-line px-2.5 py-1 text-[11px] font-medium text-ink transition-colors hover:border-brand-blue hover:text-brand-blue ${CLASE_FOCO}`}
                       >
                         Editar
                       </button>
@@ -400,7 +400,7 @@ export default function AdminEstablecimientos() {
                           setEstablecimientoEliminando(establecimiento)
                         }
                         aria-label={`Desactivar ${establecimiento.nombre}`}
-                        className={`min-h-10 cursor-pointer rounded-md border border-red-200 px-2.5 py-1 text-[11px] font-semibold text-red-700 transition-colors hover:border-red-400 hover:bg-red-50 ${CLASE_FOCO}`}
+                        className={`min-h-10 cursor-pointer rounded-card border border-status-error px-2.5 py-1 text-[11px] font-medium text-status-error transition-colors hover:border-status-error hover:bg-paper ${CLASE_FOCO}`}
                       >
                         Desactivar
                       </button>
@@ -418,16 +418,16 @@ export default function AdminEstablecimientos() {
           role="alertdialog"
           aria-modal="true"
           aria-labelledby={`${idBase}-titulo-desactivar`}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-[var(--color-inverse)]/45 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/45 p-4 backdrop-blur-sm"
         >
-          <div className="w-full max-w-md rounded-xl border border-red-200 bg-[var(--color-paper)] p-5 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)]">
+          <div className="w-full max-w-md rounded-card border border-status-error bg-paper p-5 text-ink">
             <h4
               id={`${idBase}-titulo-desactivar`}
-              className="text-sm font-semibold text-[var(--color-ink)]"
+              className="text-sm font-medium text-ink"
             >
               Confirmar desactivación
             </h4>
-            <p className="mt-2 text-xs leading-relaxed text-[var(--color-ink)]">
+            <p className="mt-2 text-xs leading-relaxed text-ink">
               ¿Deseas desactivar{" "}
               <strong>{establecimientoEliminando.nombre}</strong>? Dejará de
               aparecer en el catálogo público; el backend conservará el
@@ -438,7 +438,7 @@ export default function AdminEstablecimientos() {
                 type="button"
                 onClick={() => setEstablecimientoEliminando(null)}
                 disabled={eliminando}
-                className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                className={`cursor-pointer rounded-card border border-line px-3.5 py-1.5 text-xs font-medium text-ink transition-colors hover:border-brand-blue disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
               >
                 Cancelar
               </button>
@@ -446,7 +446,7 @@ export default function AdminEstablecimientos() {
                 type="button"
                 onClick={confirmarDesactivacion}
                 disabled={eliminando}
-                className={`cursor-pointer rounded-md bg-red-600 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                className={`cursor-pointer rounded-card bg-paper px-3.5 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
               >
                 {eliminando ? "Desactivando…" : "Desactivar establecimiento"}
               </button>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { buttonClassName } from "@/components/ui/Button";
 import {
   ARTICULOS_BLOG,
   calcularMinutosLectura,
@@ -53,16 +54,16 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <nav
         aria-label="Migas de pan"
-        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-[var(--color-subtle)]"
+        className="mb-6 flex flex-wrap items-center gap-2 text-xs text-subtle"
       >
         <Link
           href="/blog"
-          className="transition-colors hover:text-[var(--color-brand-blue)]"
+          className="transition-colors hover:text-brand-blue"
         >
           Blog
         </Link>
         <span aria-hidden="true">/</span>
-        <span className="font-medium text-[var(--color-ink)]">
+        <span className="font-medium text-ink">
           {articulo.categoriaEtiqueta}
         </span>
       </nav>
@@ -70,45 +71,45 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
         <article>
           <header>
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em]">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-medium uppercase tracking-normal">
               <Link
                 href={`/categorias/${articulo.categoriaSlug}`}
-                className="rounded-full bg-[var(--color-brand-blue)]/10 px-2.5 py-1 text-[var(--color-brand-blue)] transition-colors hover:bg-[var(--color-brand-blue)]/15"
+                className="rounded-full bg-brand-blue/10 px-2.5 py-1 text-brand-blue transition-colors hover:bg-brand-blue/15"
               >
                 {articulo.categoriaEtiqueta}
               </Link>
-              <span className="text-[var(--color-subtle)]">
+              <span className="text-subtle">
                 {calcularMinutosLectura(articulo)} min de lectura
               </span>
             </div>
 
-            <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-[var(--color-ink)] sm:text-4xl">
+            <h1 className="mt-4 max-w-3xl text-3xl font-medium uppercase leading-tight tracking-normal text-ink sm:text-4xl">
               {articulo.titulo}
             </h1>
 
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--color-subtle)]">
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-subtle">
               {articulo.extracto}
             </p>
 
-            <p className="mt-4 text-xs text-[var(--color-subtle)]">
+            <p className="mt-4 text-xs text-subtle">
               Publicado el {formatearFecha(articulo.fecha)} · Contenido
               editorial de TecReview
             </p>
           </header>
 
-          <aside className="mt-6 rounded-lg border border-[var(--color-brand-blue)]/25 bg-[var(--color-brand-blue)]/5 p-4">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-brand-blue)]">
+          <aside className="mt-6 rounded-card border border-line bg-paper p-4">
+            <h2 className="text-xs font-medium uppercase tracking-normal text-brand-blue">
               Puntos clave
             </h2>
             <ul className="mt-2 space-y-2">
               {articulo.puntosClave.map((punto) => (
                 <li
                   key={punto}
-                  className="flex gap-2 text-sm leading-relaxed text-[var(--color-ink)]"
+                  className="flex gap-2 text-sm leading-relaxed text-ink"
                 >
                   <span
                     aria-hidden="true"
-                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-brand-solid)]"
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-solid"
                   />
                   {punto}
                 </li>
@@ -119,14 +120,14 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
           <div className="mt-8 space-y-8">
             {articulo.secciones.map((seccion) => (
               <section key={seccion.titulo}>
-                <h2 className="text-xl font-semibold tracking-tight text-[var(--color-ink)]">
+                <h2 className="text-xl font-medium uppercase tracking-normal text-ink">
                   {seccion.titulo}
                 </h2>
                 <div className="mt-3 space-y-3">
                   {seccion.parrafos.map((parrafo) => (
                     <p
                       key={parrafo}
-                      className="text-sm leading-7 text-[var(--color-ink)]"
+                      className="text-sm leading-7 text-text-body"
                     >
                       {parrafo}
                     </p>
@@ -136,30 +137,30 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
             ))}
           </div>
 
-          <footer className="mt-10 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5">
-            <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+          <footer className="mt-10 rounded-card border border-line bg-paper p-5">
+            <h2 className="text-sm font-medium uppercase text-ink">
               Continúa en el catálogo
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-[var(--color-subtle)]">
+            <p className="mt-1 text-sm leading-relaxed text-subtle">
               Revisa especificaciones, precio de referencia y disponibilidad de
               los productos registrados.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
               <Link
                 href={`/categorias/${articulo.categoriaSlug}`}
-                className="rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90"
+                className={buttonClassName("primary", "text-sm")}
               >
                 Ver {articulo.categoriaEtiqueta}
               </Link>
               <Link
                 href="/comparador"
-                className="rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                className={buttonClassName("secondary", "text-sm")}
               >
                 Abrir comparador
               </Link>
               <Link
                 href="/resenas"
-                className="rounded-md border border-[var(--color-hairline)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)]"
+                className={buttonClassName("secondary", "text-sm")}
               >
                 Ver reseñas de la comunidad
               </Link>
@@ -168,8 +169,8 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
         </article>
 
         <aside className="space-y-4">
-          <section className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5">
-            <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+          <section className="rounded-card border border-line bg-paper p-5">
+            <h2 className="text-sm font-medium uppercase text-ink">
               Más guías
             </h2>
             <ul className="mt-3 space-y-3">
@@ -177,12 +178,12 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
                 <li key={item.slug}>
                   <Link
                     href={`/blog/${item.slug}`}
-                    className="block rounded-md p-1 transition-colors hover:bg-[var(--color-canvas)]"
+                    className="block rounded-card p-1 transition-colors hover:bg-canvas"
                   >
-                    <span className="text-sm font-semibold leading-snug text-[var(--color-ink)]">
+                    <span className="text-sm font-medium uppercase leading-snug text-ink">
                       {item.titulo}
                     </span>
-                    <span className="mt-1 block text-xs text-[var(--color-subtle)]">
+                    <span className="mt-1 block text-xs text-subtle">
                       {item.categoriaEtiqueta} ·{" "}
                       {calcularMinutosLectura(item)} min
                     </span>
@@ -192,11 +193,11 @@ export default async function ArticuloBlogPage({ params }: ArticuloPageProps) {
             </ul>
           </section>
 
-          <section className="rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-5">
-            <h2 className="text-sm font-semibold text-[var(--color-ink)]">
+          <section className="rounded-card border border-line bg-canvas p-5">
+            <h2 className="text-sm font-medium uppercase text-ink">
               Sobre estas guías
             </h2>
-            <p className="mt-2 text-xs leading-relaxed text-[var(--color-subtle)]">
+            <p className="mt-2 text-xs leading-relaxed text-subtle">
               El contenido editorial explica conceptos y criterios. No sustituye
               la ficha del fabricante ni declara un ganador entre productos.
             </p>

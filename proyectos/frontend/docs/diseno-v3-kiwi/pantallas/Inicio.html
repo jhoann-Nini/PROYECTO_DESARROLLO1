@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Inicio (escritorio)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+<header style="background:#171D0F;border-bottom:1px dashed #3A4626">
+<div style="max-width:1360px;margin:0 auto;padding:12px 32px;min-height:44px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+<a href="Inicio.dc.html" class="d" style="font-size:22px;font-weight:500;color:#F4F1DC;text-decoration:none">Tec<span style="color:#A5D64C">Review</span></a>
+<nav aria-label="Principal" style="display:flex;gap:2px;flex-wrap:wrap">
+<a class="nl" href="Inicio.dc.html" style="background:#2F4416;color:#A5D64C">Inicio</a><a class="nl" href="Catalogo.dc.html">Catálogo</a><a class="nl" href="Comparador.dc.html">Comparador</a><a class="nl" href="Resenas.dc.html">Reseñas</a><a class="nl" href="Resenas.dc.html">Blog</a>
+</nav>
+<button style="flex:1;min-width:220px;max-width:380px;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid #3A4626;border-radius:12px;background:#10140A;color:#B4B397;font:14px Inter;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Buscar marca o modelo<kbd style="margin-left:auto;font:500 11px Inter;border:1px solid #3A4626;border-radius:5px;padding:2px 6px;background:#171D0F">⌘K</kbd></button>
+<div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+<button class="ico" aria-label="Cambiar a tema oscuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></button>
+<a class="nl" href="Favoritos.dc.html" style="display:inline-flex;gap:6px;align-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>Favoritos</a>
+<a class="btn bs" href="Perfil.dc.html" style="height:40px">Ingresar</a>
+</div>
+</div>
+</header>
+
+<main style="max-width:1360px;margin:0 auto;padding:40px 32px 64px;display:flex;flex-direction:column;gap:48px">
+
+<section style="display:flex;flex-wrap:wrap;gap:24px;align-items:stretch">
+<div class="card" style="flex:999 1 560px;padding:40px;display:flex;flex-direction:column;gap:22px;background:#10140A;border-color:#3A4626;color:#F4F1DC">
+<p class="lab" style="color:#B4B397">Celulares · tablets · portátiles · auriculares</p>
+<h1 style="font-size:52px;line-height:1.05;font-weight:500;max-width:640px">Busca, compara y decide con datos verificables.</h1>
+<form style="display:flex;gap:0;background:#171D0F;border-radius:14px;padding:6px;max-width:720px;flex-wrap:wrap" role="search">
+<label style="flex:1;min-width:240px;display:flex;align-items:center;gap:10px;padding:0 12px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span style="position:absolute;left:-9999px">Buscar dispositivo</span><input placeholder="Marca o modelo, p. ej. Galaxy A55" style="border:0;outline:0;flex:1;height:48px;font-size:16px;color:#F4F1DC"></label>
+<label style="display:flex;align-items:center;border-left:1px dashed #3A4626;padding:0 8px"><span style="position:absolute;left:-9999px">Categoría</span><select style="border:0;height:48px;font-size:14px;color:#F4F1DC;background:none"><option>Todas las categorías</option><option>Celulares</option></select></label>
+<button class="btn bp" style="height:48px">Buscar</button>
+</form>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:#B4B397">Sugerencias:</span><a class="chip" href="Catalogo.dc.html" style="background:transparent;border-color:#8C7A50;color:#F4F1DC">iPhone 15</a><a class="chip" href="Catalogo.dc.html" style="background:transparent;border-color:#8C7A50;color:#F4F1DC">Portátil para estudiar</a><a class="chip" href="Catalogo.dc.html" style="background:transparent;border-color:#8C7A50;color:#F4F1DC">Auriculares con cancelación</a><a class="chip" href="Catalogo.dc.html" style="background:transparent;border-color:#8C7A50;color:#F4F1DC">Tablet para dibujar</a></div>
+</div>
+<div class="card" style="flex:1 1 340px;padding:28px;display:flex;flex-direction:column;gap:18px">
+<p class="lab">Tu presupuesto</p>
+<h2 style="font-size:24px">¿Hasta cuánto quieres gastar?</h2>
+<div class="d num" style="font-size:40px;font-weight:500">$ 2.500.000</div>
+<label style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:#CFCDB3"><span style="position:absolute;left:-9999px">Precio máximo</span>
+<span style="position:relative;height:24px;display:block"><span style="position:absolute;left:0;right:0;top:10px;height:4px;border-radius:2px;background:#3A4626"></span><span style="position:absolute;left:0;width:42%;top:10px;height:4px;border-radius:2px;background:#A5D64C"></span><span style="position:absolute;left:calc(42% - 11px);top:1px;width:22px;height:22px;border-radius:50%;background:#171D0F;border:2px solid #A5D64C;"></span></span>
+<span style="display:flex;justify-content:space-between" class="num"><span>$ 300.000</span><span>$ 6.000.000+</span></span></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">$ 1.000.000</span><span class="chip" style="background:#2F4416;border-color:#A5D64C;color:#A5D64C">$ 2.500.000</span><span class="chip">$ 4.000.000</span></div>
+<a class="btn bp" href="Catalogo.dc.html" style="margin-top:auto">Ver catálogo hasta $ 2.500.000 →</a>
+</div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+<a href="Catalogo.dc.html" class="card" style="padding:20px;display:flex;align-items:center;gap:16px;text-decoration:none;color:#F4F1DC"><span class="ph" style="width:64px;height:64px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A5D64C" stroke-width="1.6" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span class="d" style="font-size:18px;font-weight:500">Celulares</span><span style="font-size:13px;color:#B4B397">Ver categoría →</span></span></a>
+<a href="Catalogo.dc.html" class="card" style="padding:20px;display:flex;align-items:center;gap:16px;text-decoration:none;color:#F4F1DC"><span class="ph" style="width:64px;height:64px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A5D64C" stroke-width="1.6" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M11 18h2"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span class="d" style="font-size:18px;font-weight:500">Tablets</span><span style="font-size:13px;color:#B4B397">Ver categoría →</span></span></a>
+<a href="Catalogo.dc.html" class="card" style="padding:20px;display:flex;align-items:center;gap:16px;text-decoration:none;color:#F4F1DC"><span class="ph" style="width:64px;height:64px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A5D64C" stroke-width="1.6" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span class="d" style="font-size:18px;font-weight:500">Portátiles</span><span style="font-size:13px;color:#B4B397">Ver categoría →</span></span></a>
+<a href="Catalogo.dc.html" class="card" style="padding:20px;display:flex;align-items:center;gap:16px;text-decoration:none;color:#F4F1DC"><span class="ph" style="width:64px;height:64px"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#A5D64C" stroke-width="1.6" aria-hidden="true"><path d="M4 15v-3a8 8 0 0116 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></span><span style="display:flex;flex-direction:column;gap:2px"><span class="d" style="font-size:18px;font-weight:500">Auriculares</span><span style="font-size:13px;color:#B4B397">Ver categoría →</span></span></a>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px"><h2 style="font-size:28px">Destacados</h2><a href="Catalogo.dc.html" style="font-weight:500;font-size:14px">Ver catálogo completo →</a></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+<sc-for list="{{products}}" as="p" hint-placeholder-count="4">
+<article class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+<a href="Detalle.dc.html" class="ph" style="aspect-ratio:4/3;text-decoration:none"><span class="d" style="font-size:28px;font-weight:500;color:#8C7A50">{{p.init}}</span><button class="ico" aria-label="Guardar en favoritos" style="position:absolute;top:10px;right:10px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg></button></a>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:#B4B397">{{p.brand}} · {{p.cat}}</span><a href="Detalle.dc.html" class="d" style="font-size:18px;font-weight:500;color:#F4F1DC;text-decoration:none">{{p.name}}</a></div>
+<div style="display:flex;align-items:center;gap:6px;font-size:13px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#E6C34A" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="num" style="font-weight:500">{{p.rating}}</span><span style="color:#B4B397">({{p.n}})</span><span class="tag" style="margin-left:auto;color:#F4F1DC;background:#2F4416">● Disponible</span></div>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:auto"><span style="display:flex;flex-direction:column"><span style="font-size:12px;color:#B4B397">Desde</span><span class="d num" style="font-size:22px;font-weight:500">{{p.price}}</span></span><button class="btn bs" style="height:36px;padding:0 12px;font-size:13px">+ Comparar</button></div>
+</article>
+</sc-for>
+</div>
+</section>
+
+<section class="card" style="padding:28px 32px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;background:#2F4416;border-color:#8C7A50">
+<div style="display:flex;gap:10px" aria-hidden="true"><span class="ph" style="width:72px;height:96px;background:#171D0F;border:1px solid #8C7A50"><span class="d" style="font-weight:500;color:#8C7A50">S24</span></span><span class="ph" style="width:72px;height:96px;background:#171D0F;border:1px solid #8C7A50"><span class="d" style="font-weight:500;color:#8C7A50">P8</span></span><span class="ph" style="width:72px;height:96px;background:transparent;border:2px dashed #A5D64C;color:#A5D64C;font-size:28px">+</span></div>
+<div style="flex:1;min-width:280px;display:flex;flex-direction:column;gap:6px"><h2 style="font-size:26px">Comparador: hasta 4 equipos, fila por fila</h2><p style="color:#CFCDB3;font-size:15px">Ve solo las diferencias, elige variantes y descubre en qué destaca cada uno. Sin ganador absoluto: tú decides qué importa.</p></div>
+<a class="btn bp" href="Comparador.dc.html">Abrir comparador</a>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:20px">
+<h2 style="font-size:28px">Rankings</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+<sc-for list="{{rankings}}" as="r" hint-placeholder-count="3">
+<div class="card" style="padding:22px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="font-size:18px">{{r.title}}</h3><span style="font-size:12px;color:#B4B397">{{r.metric}}</span></div>
+<sc-for list="{{r.items}}" as="i" hint-placeholder-count="5">
+<a href="Detalle.dc.html" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px dashed #3A4626;text-decoration:none;color:#F4F1DC"><span class="d num" style="width:22px;font-size:18px;font-weight:500;color:#A5D64C">{{i.pos}}</span><span style="flex:1;font-size:14px;font-weight:500">{{i.name}}</span><span class="num" style="font-size:13px;color:#CFCDB3">{{i.val}}</span></a>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px"><h2 style="font-size:28px">Ofertas destacadas</h2><span style="font-size:13px;color:#B4B397">Precios en COP con IVA, según cada tienda</span></div>
+<div class="card" style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;min-width:860px;font-size:14px">
+<thead><tr style="text-align:left;color:#B4B397;font-size:12px;text-transform:uppercase;letter-spacing:.05em"><th style="padding:14px 20px;font-weight:500">Producto</th><th style="padding:14px 12px;font-weight:500">Tienda</th><th style="padding:14px 12px;font-weight:500;text-align:right">Precio</th><th style="padding:14px 12px;font-weight:500">Descuento</th><th style="padding:14px 12px;font-weight:500">Actualizado</th><th style="padding:14px 20px"></th></tr></thead>
+<tbody>
+<sc-for list="{{offers}}" as="o" hint-placeholder-count="4">
+<tr style="border-top:1px dashed #3A4626">
+<td style="padding:14px 20px"><a href="Detalle.dc.html" style="color:#F4F1DC;font-weight:500;text-decoration:none">{{o.name}}</a></td>
+<td style="padding:14px 12px;color:#CFCDB3">{{o.store}} <sc-if value="{{o.ver}}" hint-placeholder-val="{{true}}"><span class="tag" style="color:#F4F1DC;background:#2F4416;margin-left:6px">✓ Verificada</span></sc-if></td>
+<td style="padding:14px 12px;text-align:right"><span class="d num" style="font-size:17px;font-weight:500">{{o.price}}</span><br><span class="num" style="font-size:12px;color:#B4B397;text-decoration:line-through">{{o.before}}</span></td>
+<td style="padding:14px 12px"><span class="tag" style="background:#F4F1DC;color:#10140A">{{o.off}}</span></td>
+<td style="padding:14px 12px;color:#B4B397;font-size:13px">{{o.upd}}</td>
+<td style="padding:14px 20px;text-align:right;white-space:nowrap"><a class="btn bs" href="Detalle.dc.html" style="height:36px;font-size:13px;padding:0 12px">Ir a la tienda ↗</a> <button class="btn bg" style="height:36px;font-size:13px;padding:0 10px;color:#CFCDB3">Reportar</button></td>
+</tr>
+</sc-for>
+</tbody></table>
+</div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+<h2 style="font-size:28px">Opiniones de la comunidad</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<label style="display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid #3A4626;border-radius:12px;background:#171D0F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span style="position:absolute;left:-9999px">Buscar opiniones</span><input placeholder="Buscar por producto" style="border:0;outline:0;font-size:14px;width:180px"></label>
+<button class="btn bs" style="height:40px" aria-label="Actualizar opiniones"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7M20 4v7h-7"/></svg>Actualizar</button>
+<a class="btn bp" href="Perfil.dc.html" style="height:40px">Publicar opinión</a>
+</div></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+<sc-for list="{{reviews}}" as="v" hint-placeholder-count="3">
+<article class="card" style="padding:22px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:#2F4416;color:#A5D64C;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:14px">{{v.ini}}</span><span style="display:flex;flex-direction:column"><span style="font-weight:500;font-size:14px">{{v.user}}</span><span style="font-size:12px;color:#B4B397">{{v.date}}</span></span><span class="num" style="margin-left:auto;font-size:13px;font-weight:500;color:#E6E3CB">★ {{v.stars}}/5</span></div>
+<a href="Detalle.dc.html" style="font-size:13px;font-weight:500">{{v.product}}</a>
+<p style="font-size:14px;line-height:1.55;color:#E6E3CB">{{v.text}}</p>
+</article>
+</sc-for>
+</div>
+<p style="font-size:13px;color:#B4B397">Para publicar necesitas iniciar sesión. Las opiniones pueden pasar por moderación antes de mostrarse.</p>
+</section>
+</main>
+<footer style="border-top:1px dashed #3A4626;background:#171D0F"><div style="max-width:1360px;margin:0 auto;padding:24px 32px;display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:#B4B397"><span class="d" style="font-weight:500;color:#F4F1DC">TecReview</span><span>Precios en pesos colombianos (COP)</span><a href="Resenas.dc.html">Blog y guías</a><span style="margin-left:auto">Colombia</span></div></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+renderVals() {
+const products = [
+{ init:'S24', brand:'Samsung', cat:'Celular', name:'Galaxy S24 128 GB', rating:'4,6', n:212, price:'$ 3.299.900' },
+{ init:'P8', brand:'Google', cat:'Celular', name:'Pixel 8', rating:'4,5', n:98, price:'$ 2.849.000' },
+{ init:'MBA', brand:'Apple', cat:'Portátil', name:'MacBook Air 13″ M3', rating:'4,8', n:156, price:'$ 5.199.000' },
+{ init:'WH5', brand:'Sony', cat:'Auriculares', name:'WH-1000XM5', rating:'4,7', n:301, price:'$ 1.389.900' }
+];
+const rankings = [
+{ title:'Mejor valorados', metric:'Valoración media', items:[{pos:1,name:'MacBook Air 13″ M3',val:'4,8'},{pos:2,name:'Sony WH-1000XM5',val:'4,7'},{pos:3,name:'Galaxy S24',val:'4,6'},{pos:4,name:'iPad Air 11″',val:'4,6'},{pos:5,name:'Pixel 8',val:'4,5'}] },
+{ title:'Más deseados', metric:'En favoritos', items:[{pos:1,name:'iPhone 15',val:'1.204'},{pos:2,name:'Galaxy S24',val:'980'},{pos:3,name:'Redmi Note 13 Pro',val:'812'},{pos:4,name:'AirPods Pro 2',val:'640'},{pos:5,name:'Lenovo IdeaPad Slim 5',val:'512'}] },
+{ title:'Más comentados', metric:'Reseñas', items:[{pos:1,name:'Sony WH-1000XM5',val:'301'},{pos:2,name:'Galaxy S24',val:'212'},{pos:3,name:'MacBook Air 13″ M3',val:'156'},{pos:4,name:'Galaxy Tab S9 FE',val:'134'},{pos:5,name:'Pixel 8',val:'98'}] }
+];
+const offers = [
+{ name:'Galaxy S24 128 GB', store:'Tienda A', ver:true, price:'$ 2.999.900', before:'$ 3.599.900', off:'−17%', upd:'Hace 2 h' },
+{ name:'Sony WH-1000XM5', store:'Tienda B', ver:true, price:'$ 1.249.900', before:'$ 1.589.900', off:'−21%', upd:'Hace 5 h' },
+{ name:'Lenovo IdeaPad Slim 5', store:'Tienda C', ver:false, price:'$ 2.699.000', before:'$ 3.199.000', off:'−16%', upd:'Ayer' },
+{ name:'Galaxy Tab S9 FE', store:'Tienda A', ver:true, price:'$ 1.599.900', before:'$ 1.899.900', off:'−16%', upd:'Hace 1 día' }
+];
+const reviews = [
+{ ini:'LM', user:'Laura M.', date:'22 nov 2026', stars:5, product:'Sony WH-1000XM5', text:'La cancelación de ruido funciona muy bien en el bus. Después de seis horas siguen cómodos.' },
+{ ini:'JC', user:'Julián C.', date:'21 nov 2026', stars:4, product:'Pixel 8', text:'Las fotos de noche son lo mejor. La batería me alcanza para el día, sin sobrar mucho.' },
+{ ini:'DP', user:'Daniela P.', date:'20 nov 2026', stars:4, product:'MacBook Air 13″ M3', text:'Ideal para la universidad: liviano y silencioso. Me hubiera gustado un puerto más.' }
+];
+return { products, rankings, offers, reviews };
+}
+}
+</script>
+</body>
+</html>

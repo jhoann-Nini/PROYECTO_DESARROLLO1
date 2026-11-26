@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Perfil (escritorio)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+<header style="background:#171D0F;border-bottom:1px dashed #3A4626">
+<div style="max-width:1360px;margin:0 auto;padding:12px 32px;min-height:44px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+<a href="Inicio.dc.html" class="d" style="font-size:22px;font-weight:500;color:#F4F1DC;text-decoration:none">Tec<span style="color:#A5D64C">Review</span></a>
+<nav aria-label="Principal" style="display:flex;gap:2px;flex-wrap:wrap"><a class="nl" href="Inicio.dc.html">Inicio</a><a class="nl" href="Catalogo.dc.html">Catálogo</a><a class="nl" href="Comparador.dc.html">Comparador</a><a class="nl" href="Resenas.dc.html">Reseñas</a><a class="nl" href="Resenas.dc.html">Blog</a></nav>
+<button style="flex:1;min-width:220px;max-width:380px;height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid #3A4626;border-radius:12px;background:#10140A;color:#B4B397;font:14px Inter;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Buscar marca o modelo<kbd style="margin-left:auto;font:500 11px Inter;border:1px solid #3A4626;border-radius:5px;padding:2px 6px;background:#171D0F">⌘K</kbd></button>
+<div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+<button class="ico" aria-label="Cambiar a tema oscuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></button>
+<a class="nl" href="Favoritos.dc.html" style="display:inline-flex;gap:6px;align-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>Favoritos</a>
+<a class="nl" href="Perfil.dc.html" style="display:inline-flex;gap:8px;align-items:center;background:#2F4416;color:#A5D64C"><span style="width:28px;height:28px;border-radius:50%;background:#F4F1DC;color:#10140A;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:500">AR</span>Andrés</a>
+</div></div></header>
+<main style="max-width:1360px;margin:0 auto;padding:28px 32px 64px;display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+<nav aria-label="Perfil" class="card" style="flex:1 1 240px;max-width:260px;padding:12px;display:flex;flex-direction:column;gap:2px">
+<a class="nl" href="Perfil.dc.html" style="background:#2F4416;color:#A5D64C;font-weight:500">Resumen</a>
+<a class="nl" href="Perfil.dc.html">Mis reseñas</a>
+<a class="nl" href="Perfil.dc.html">Moderación y apelaciones</a>
+<a class="nl" href="Favoritos.dc.html">Favoritos</a>
+<a class="nl" href="Perfil.dc.html">Cuenta y contraseña</a>
+<div style="border-top:1px dashed #3A4626;margin:8px 0;padding-top:8px" class="lab">Accesos de tu rol</div>
+<a class="nl" href="Representante.dc.html" style="display:flex;justify-content:space-between">Panel de representante <span>→</span></a>
+<div style="border-top:1px dashed #3A4626;margin:8px 0"></div>
+<button class="nl" style="border:0;background:none;text-align:left;cursor:pointer;color:#FF8C69;font:500 14px Inter">Cerrar sesión</button>
+</nav>
+
+<div style="flex:999 1 640px;min-width:0;display:flex;flex-direction:column;gap:20px">
+<section class="card" style="padding:24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+<span style="width:72px;height:72px;border-radius:50%;background:#F4F1DC;color:#10140A;display:flex;align-items:center;justify-content:center;font:500 24px Inter">AR</span>
+<div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:6px"><h1 style="font-size:28px">Andrés Rojas</h1><span style="font-size:14px;color:#CFCDB3">andres.rojas@correo.co <span class="tag ok" style="margin-left:6px">✓ Correo confirmado</span></span><span style="font-size:13px;color:#B4B397">Miembro desde marzo de 2026</span></div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="lab">Roles</span><div style="display:flex;gap:6px"><span class="tag" style="background:#3A4626;color:#E6E3CB">Usuario</span><span class="tag" style="background:#F4F1DC;color:#10140A">Representante</span></div></div>
+</section>
+
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#B4B397">Reseñas publicadas</span><span class="d num" style="font-size:30px;font-weight:500">12</span></div>
+<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#B4B397">Pendientes de moderación</span><span class="d num" style="font-size:30px;font-weight:500">1</span></div>
+<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#B4B397">Puntuaciones dadas</span><span class="d num" style="font-size:30px;font-weight:500">18</span></div>
+<div class="card" style="padding:18px;display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#B4B397">Favoritos</span><span class="d num" style="font-size:30px;font-weight:500">23</span></div>
+</section>
+
+<section class="card" style="padding:24px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px"><h2 style="font-size:22px">Moderación de tu cuenta</h2><span class="tag pend">◷ Estado de reincidencia: advertencia 1</span></div>
+<div style="display:flex;gap:6px" aria-label="Nivel 1 de 3">
+<span style="flex:1;height:8px;border-radius:4px;background:#E6C34A"></span><span style="flex:1;height:8px;border-radius:4px;background:#3A4626"></span><span style="flex:1;height:8px;border-radius:4px;background:#3A4626"></span></div>
+<p style="font-size:14px;color:#CFCDB3;line-height:1.5">Una nueva infracción confirmada podría limitar temporalmente la publicación de reseñas. Las advertencias se muestran con su motivo y puedes apelar cuando la decisión lo permita.</p>
+<div style="display:flex;flex-direction:column">
+<div style="display:flex;gap:16px;align-items:center;padding:14px 0;border-top:1px dashed #3A4626;flex-wrap:wrap"><span class="tag err">Reseña retirada</span><span style="flex:1;min-width:220px;font-size:14px"><b style="font-weight:500">Galaxy A35 5G</b> · Lenguaje ofensivo hacia otra persona usuaria</span><span style="font-size:13px;color:#B4B397">12 nov 2026</span><span class="tag" style="background:#2F4416;color:#A5D64C">Apelación en redacción</span></div>
+<div style="display:flex;gap:16px;align-items:center;padding:14px 0;border-top:1px dashed #3A4626;flex-wrap:wrap"><span class="tag ok">Reporte desestimado</span><span style="flex:1;min-width:220px;font-size:14px"><b style="font-weight:500">Pixel 8</b> · Tu reseña fue reportada y se mantuvo publicada</span><span style="font-size:13px;color:#B4B397">2 nov 2026</span><span style="font-size:13px;color:#B4B397">Sin acciones</span></div>
+<div style="display:flex;gap:16px;align-items:center;padding:14px 0;border-top:1px dashed #3A4626;flex-wrap:wrap"><span class="tag err">Reseña retirada</span><span style="flex:1;min-width:220px;font-size:14px"><b style="font-weight:500">Redmi 13C</b> · Contenido promocional</span><span style="font-size:13px;color:#B4B397">10 sep 2026</span><span style="font-size:13px;color:#B4B397">Plazo de apelación vencido</span></div>
+</div>
+<form style="border:1px solid #8C7A50;background:#1E2812;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<h3 style="font-size:16px">Apelar decisión del 12 nov 2026</h3>
+<p style="font-size:13px;color:#CFCDB3">Motivo indicado por moderación: “El texto incluye un insulto dirigido a otra persona usuaria”.</p>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500">¿Por qué crees que la decisión debe revisarse?
+<textarea style="min-height:90px;border:1px solid #3A4626;border-radius:12px;padding:12px;font:14px/1.5 Inter;background:#171D0F" placeholder="Explica el contexto con respeto. Mínimo 30 caracteres."></textarea></label>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><span style="font-size:12px;color:#B4B397">Puedes apelar una vez por decisión. Un moderador distinto la revisará.</span><div style="display:flex;gap:8px"><button type="button" class="btn bs">Cancelar</button><button type="button" class="btn bp">Enviar apelación</button></div></div>
+</form>
+</section>
+
+<section class="card" style="padding:24px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h2 style="font-size:22px">Mis reseñas recientes</h2><a href="Resenas.dc.html" style="font-size:14px;font-weight:500">Ver todas →</a></div>
+<div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px dashed #3A4626;flex-wrap:wrap"><a href="Detalle.dc.html" style="font-weight:500;font-size:14px;flex:1;min-width:200px">Lenovo IdeaPad Slim 5</a><span class="tag pend">◷ Pendiente</span><span style="font-size:13px;color:#B4B397">Hoy</span><button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Editar</button><button class="btn bd" style="height:34px;font-size:13px;padding:0 12px">Eliminar</button></div>
+<div style="display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px dashed #3A4626;flex-wrap:wrap"><a href="Detalle.dc.html" style="font-weight:500;font-size:14px;flex:1;min-width:200px">Galaxy S24</a><span class="tag ok">Publicada · ★ 4/5</span><span style="font-size:13px;color:#B4B397">19 nov</span><button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Editar</button><button class="btn bd" style="height:34px;font-size:13px;padding:0 12px">Eliminar</button></div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1350}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

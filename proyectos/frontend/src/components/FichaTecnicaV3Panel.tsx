@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { DatosFichaTecnicaV3, EspecificacionFichaV3 } from "@/types/fichaTecnicaV3";
 import { formatearValorFichaV3, type EstadoFichaTecnicaProducto } from "@/data/fichaTecnicaProducto";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Tag from "@/components/ui/Tag";
 
 const CATEGORIAS: Record<DatosFichaTecnicaV3["categoria"], string> = {
   celulares: "Celulares",
@@ -126,74 +127,74 @@ function describirComparabilidad(dato: EspecificacionFichaV3, ficha: DatosFichaT
 function BadgeVerificacion({ estado }: { estado: EspecificacionFichaV3["verificacion"]["estado"] }) {
   if (estado === "con_fuente") {
     return (
-      <span
+      <Tag
+        variant="neutral"
         title="Información respaldada por fuente documental"
-        className="inline-flex items-center gap-1 rounded-full border border-sky-400/30 bg-sky-500/10 px-2 py-0.5 text-[11px] font-medium text-sky-400 dark:border-sky-400/30 dark:bg-sky-500/10 dark:text-sky-300"
       >
-        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-brand-blue"></span>
         Con fuente
-      </span>
+      </Tag>
     );
   }
   if (estado === "verificado") {
     return (
-      <span
+      <Tag
+        variant="verified"
         title="Dato verificado según ficha"
-        className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400 dark:border-emerald-400/30 dark:bg-emerald-500/10 dark:text-emerald-300"
       >
-        <span aria-hidden="true" className="font-bold">✓</span>
+        <span aria-hidden="true" className="font-medium">✓</span>
         Verificado según ficha
-      </span>
+      </Tag>
     );
   }
   if (estado === "requiere_revision") {
     return (
-      <span
+      <Tag
+        variant="pending"
         title="Requiere revisión técnica"
-        className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-400 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-300"
       >
         <span aria-hidden="true">⚠</span>
         Requiere revisión
-      </span>
+      </Tag>
     );
   }
   return (
-    <span
+    <Tag
+      variant="pending"
       title="Pendiente de verificación"
-      className="inline-flex items-center gap-1 rounded-full border border-zinc-500/30 bg-zinc-500/10 px-2 py-0.5 text-[11px] font-medium text-zinc-400 dark:border-zinc-500/30 dark:bg-zinc-500/10 dark:text-zinc-300"
     >
       <span aria-hidden="true">○</span>
       Pendiente de verificación
-    </span>
+    </Tag>
   );
 }
 
 function BadgeEstadoDato({ estado }: { estado: EspecificacionFichaV3["estado_dato"] }) {
   if (estado === "conocido") {
     return (
-      <span className="inline-flex items-center rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-subtle)]">
+      <Tag variant="neutral">
         Conocido
-      </span>
+      </Tag>
     );
   }
   if (estado === "desconocido") {
     return (
-      <span className="inline-flex items-center rounded-full border border-zinc-500/30 bg-zinc-500/10 px-2 py-0.5 text-[11px] font-medium text-zinc-400 dark:text-zinc-300">
+      <Tag variant="missing">
         Desconocido
-      </span>
+      </Tag>
     );
   }
   if (estado === "no_publicado") {
     return (
-      <span className="inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-400 dark:text-amber-300">
+      <Tag variant="pending">
         No publicado
-      </span>
+      </Tag>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-[11px] font-medium text-purple-400 dark:text-purple-300">
+    <Tag variant="missing">
       No aplica
-    </span>
+    </Tag>
   );
 }
 
@@ -229,11 +230,11 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
       : null;
 
   return (
-    <article className="flex flex-col justify-between rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-sm transition hover:border-[var(--color-subtle)]/40">
+    <article className="flex flex-col justify-between rounded-card border border-line bg-paper p-4  transition hover:border-subtle/40">
       <div>
         {/* Cabecera de la tarjeta: Título con prioridad visual y etiquetas secundarias */}
-        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--color-hairline)]/60 pb-2.5">
-          <h4 className="text-sm font-semibold tracking-tight text-[var(--color-ink)]">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-dotted border-line/60 pb-2.5">
+          <h4 className="text-sm font-medium tracking-normal text-ink">
             {dato.nombre}
           </h4>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -246,17 +247,17 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
         <div className="mt-2.5">
           {valor !== null ? (
             <div className="flex flex-wrap items-baseline gap-2">
-              <span className="text-base font-bold tracking-tight text-[var(--color-ink)] sm:text-lg">
+              <span className="text-base font-medium tracking-normal text-ink sm:text-lg">
                 {valor}
               </span>
               {dato.normalizacion.estado === "no_segura" && (
-                <span className="text-xs text-[var(--color-subtle)]">
+                <span className="text-xs text-subtle">
                   Valor original · normalización no segura
                 </span>
               )}
             </div>
           ) : (
-            <p className="text-sm italic text-[var(--color-subtle)]">
+            <p className="text-sm italic text-subtle">
               {dato.estado_dato === "no_aplica"
                 ? "Esta característica no aplica."
                 : dato.estado_dato === "no_publicado"
@@ -266,13 +267,13 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
           )}
 
           {dato.justificacion_estado && (
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 text-xs text-subtle">
               Justificación: {dato.justificacion_estado}
             </p>
           )}
 
           {dato.normalizacion.estado === "no_segura" && dato.normalizacion.motivo && (
-            <p className="mt-1 text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 text-xs text-subtle">
               No se normalizó: {dato.normalizacion.motivo}
             </p>
           )}
@@ -282,10 +283,10 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
         {dato.revision_conflicto.estado !== "sin_conflicto" && (
           <div
             role="status"
-            className={`mt-3 rounded-md p-2.5 text-xs ${
+            className={`mt-3 rounded-card p-2.5 text-xs ${
               dato.revision_conflicto.estado === "conflicto_pendiente"
-                ? "border border-amber-500/40 bg-amber-500/10 text-amber-300 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300"
-                : "border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-subtle)]"
+                ? "border border-surface-border-strong bg-paper text-text-secondary dark:border-surface-border-strong dark:bg-paper dark:text-text-secondary"
+                : "border border-line bg-canvas text-subtle"
             }`}
           >
             {dato.revision_conflicto.estado === "conflicto_pendiente"
@@ -295,13 +296,13 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
         )}
 
         {dato.verificacion.estado === "requiere_revision" && dato.verificacion.motivo_revision && (
-          <p className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-300 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+          <p className="mt-2 rounded-card border border-surface-border-strong bg-paper p-2 text-xs text-text-secondary dark:border-surface-border-strong dark:bg-paper dark:text-text-secondary">
             Motivo de revisión: {dato.verificacion.motivo_revision}
           </p>
         )}
 
         {dato.verificacion.estado === "verificado" && (
-          <p className="mt-2 text-xs text-[var(--color-subtle)]">
+          <p className="mt-2 text-xs text-subtle">
             Estado declarado en la ficha
             {dato.verificacion.verificado_en ? ` · fecha ${dato.verificacion.verificado_en}` : ""}
             {dato.verificacion.verificado_por ? ` · responsable ${dato.verificacion.verificado_por}` : ""}
@@ -311,8 +312,8 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
         )}
 
         {/* Bloque diferenciado de Comparabilidad */}
-        <div className="mt-3 flex items-start gap-1.5 rounded-md border border-[var(--color-hairline)]/70 bg-[var(--color-canvas)]/50 px-2.5 py-1.5 text-xs text-[var(--color-subtle)]">
-          <span className="shrink-0 font-medium text-[var(--color-ink)]">
+        <div className="mt-3 flex items-start gap-1.5 rounded-card border border-line/70 bg-canvas/50 px-2.5 py-1.5 text-xs text-subtle">
+          <span className="shrink-0 font-medium text-ink">
             Comparabilidad:
           </span>
           <span className="leading-snug">{describirComparabilidad(dato, ficha)}</span>
@@ -322,8 +323,8 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
       {/* Evidencias y Trazabilidad */}
       <div className="mt-3">
         {evidenciaVisible.length > 0 && (
-          <div className="border-t border-[var(--color-hairline)]/80 pt-2.5">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-subtle)]">
+          <div className="border-t border-dotted border-line/80 pt-2.5">
+            <span className="text-[11px] font-medium uppercase tracking-normal text-subtle">
               Fuentes y evidencias ({evidenciaVisible.length})
             </span>
             <ul className="mt-2 space-y-2 text-xs">
@@ -339,28 +340,28 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
                 return (
                   <li
                     key={id}
-                    className="rounded-md border border-[var(--color-hairline)] bg-[var(--color-canvas)]/40 p-2.5 text-[var(--color-subtle)]"
+                    className="rounded-card border border-line bg-canvas/40 p-2.5 text-subtle"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-1.5">
-                      <span className="font-semibold text-[var(--color-ink)]">
+                      <span className="font-medium text-ink">
                         {fuente.nombre}
                       </span>
                       {fuente.consultada_en && (
-                        <span className="text-[11px] text-[var(--color-subtle)]">
+                        <span className="text-[11px] text-subtle">
                           consultada {fuente.consultada_en}
                         </span>
                       )}
                     </div>
 
                     {evidencia.localizador && (
-                      <p className="mt-1 text-xs text-[var(--color-ink)]">
-                        <span className="text-[var(--color-subtle)]">Localizador:</span>{" "}
+                      <p className="mt-1 text-xs text-ink">
+                        <span className="text-subtle">Localizador:</span>{" "}
                         {evidencia.localizador}
                       </p>
                     )}
 
                     {evidencia.extracto && (
-                      <blockquote className="mt-1.5 rounded border-l-2 border-[var(--color-brand-blue)] bg-[var(--color-paper)] p-2 italic text-[var(--color-ink)]">
+                      <blockquote className="mt-1.5 rounded-card border-l-2 border-brand-blue bg-paper p-2 italic text-ink">
                         “{evidencia.extracto}”
                       </blockquote>
                     )}
@@ -368,28 +369,28 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
                     <div className="mt-2 flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px]">
                       <span>
                         Alcance:{" "}
-                        <strong className="font-medium text-[var(--color-ink)]">
+                        <strong className="font-medium text-ink">
                           {alcance}
                         </strong>
                       </span>
                       <div className="flex items-center gap-2.5">
                         {evidencia.postura === "contradice" ? (
-                          <span className="font-medium text-amber-400">
+                          <span className="font-medium text-text-secondary">
                             Evidencia contradice · no respalda el dato
                           </span>
                         ) : evidencia.postura === "respalda" ? (
-                          <span className="font-medium text-emerald-400">
+                          <span className="font-medium text-positive">
                             Evidencia respalda este dato
                           </span>
                         ) : (
-                          <span className="font-medium text-[var(--color-subtle)]">
+                          <span className="font-medium text-subtle">
                             Evidencia contextual
                           </span>
                         )}
 
                         {href && (
                           <a
-                            className={`inline-flex items-center gap-1 font-medium text-[var(--color-brand-blue)] underline underline-offset-2 hover:opacity-80 ${CLASE_FOCO}`}
+                            className={`inline-flex items-center gap-1 font-medium text-brand-blue underline underline-offset-2 hover:opacity-80 ${CLASE_FOCO}`}
                             href={href}
                             target="_blank"
                             rel="noreferrer"
@@ -410,7 +411,7 @@ function Especificacion({ dato, ficha }: { dato: EspecificacionFichaV3; ficha: D
         )}
 
         {dato.evidencia_ids.length > evidenciaVisible.length && (
-          <p role="status" className="mt-2 text-xs text-amber-400">
+          <p role="status" className="mt-2 text-xs text-text-secondary">
             Se omitió evidencia cuyo alcance o fuente no es compatible con esta especificación.
           </p>
         )}
@@ -423,15 +424,15 @@ function FichaTecnicaV3Invalida({ errores }: { errores: string[] }) {
   return (
     <section
       role="alert"
-      className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
+      className="rounded-card border border-status-error bg-paper p-4 text-sm text-status-error dark:border-status-error dark:bg-paper dark:text-status-error"
     >
-      <h3 className="font-semibold text-red-200">No se pudo interpretar la ficha técnica V3</h3>
+      <h3 className="font-medium text-status-error">No se pudo interpretar la ficha técnica V3</h3>
       <ul className="mt-2 list-disc space-y-1 pl-5">
         {errores.map((error, index) => (
           <li key={`${index}-${error}`}>{error}</li>
         ))}
       </ul>
-      <p className="mt-2 text-xs text-[var(--color-subtle)]">
+      <p className="mt-2 text-xs text-subtle">
         El contenido original se conservó y no se utilizó como ficha V1/V2.
       </p>
     </section>
@@ -485,22 +486,22 @@ function FichaTecnicaV3Valida({
   return (
     <section aria-label="Ficha técnica versión 3" className="space-y-6">
       {/* Cabecera del Panel V3 */}
-      <header className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-hairline)] pb-3">
+      <header className="rounded-card border border-line bg-paper p-4 ">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-dotted border-line pb-3">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-brand-blue)]">
+            <span className="text-[11px] font-medium uppercase tracking-normal text-brand-blue">
               Ficha técnica V3 · {CATEGORIAS[ficha.categoria]}
             </span>
-            <h3 className="mt-0.5 text-base font-bold text-[var(--color-ink)]">
+            <h3 className="mt-0.5 text-base font-medium text-ink">
               Especificaciones técnicas
             </h3>
           </div>
-          <span className="rounded-full border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--color-subtle)]">
+          <span className="rounded-full border border-line bg-canvas px-2.5 py-0.5 text-[11px] font-medium text-subtle">
             Esquema V3
           </span>
         </div>
 
-        <p className="mt-2.5 text-xs leading-relaxed text-[var(--color-subtle)]">
+        <p className="mt-2.5 text-xs leading-relaxed text-subtle">
           Los estados y responsables mostrados son datos declarados en la ficha; esta interfaz no verifica autorizaciones.
         </p>
 
@@ -509,7 +510,7 @@ function FichaTecnicaV3Valida({
           <div className="mt-3.5">
             <label
               htmlFor="selector-variante-v3"
-              className="block text-xs font-semibold uppercase tracking-wider text-[var(--color-ink)]"
+              className="block text-xs font-medium uppercase tracking-normal text-ink"
             >
               Variante
             </label>
@@ -517,18 +518,18 @@ function FichaTecnicaV3Valida({
               <select
                 id="selector-variante-v3"
                 aria-label="Variante"
-                className={`block w-full appearance-none rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-2.5 pl-3 pr-9 text-sm font-medium text-[var(--color-ink)] shadow-sm transition hover:border-[var(--color-brand-blue)]/50 focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                className={`block min-h-11 w-full appearance-none rounded-input border-0 border-b border-ink bg-transparent py-3 pl-0 pr-9 text-sm font-medium text-ink focus-visible:outline-2 focus-visible:outline-brand-blue ${CLASE_FOCO}`}
                 value={variante?.id ?? ""}
                 onChange={(event) => setVarianteId(event.target.value)}
               >
-                <option value="" className="bg-[var(--color-paper)] text-[var(--color-ink)]">
+                <option value="" className="bg-paper text-ink">
                   Elige una variante para consultar sus especificaciones
                 </option>
                 {variantesUnicas.map((item) => (
                   <option
                     key={item.id}
                     value={item.id}
-                    className="bg-[var(--color-paper)] text-[var(--color-ink)]"
+                    className="bg-paper text-ink"
                   >
                     {formatearEtiquetaVariante(item, variantesUnicas)}
                   </option>
@@ -536,7 +537,7 @@ function FichaTecnicaV3Valida({
               </select>
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--color-subtle)]"
+                className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-subtle"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -546,8 +547,8 @@ function FichaTecnicaV3Valida({
           </div>
         ) : (
           variante && (
-            <div className="mt-3 rounded-md bg-[var(--color-canvas)]/60 p-2.5 text-xs text-[var(--color-ink)]">
-              <span className="font-semibold text-[var(--color-subtle)]">Variante única:</span>{" "}
+            <div className="mt-3 rounded-card bg-canvas/60 p-2.5 text-xs text-ink">
+              <span className="font-medium text-subtle">Variante única:</span>{" "}
               <span className="font-medium">{formatearEtiquetaVariante(variante, [variante])}</span>
             </div>
           )
@@ -558,9 +559,9 @@ function FichaTecnicaV3Valida({
       {ficha.variantes.length > 1 && !variante && (
         <div
           role="status"
-          className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)]/50 p-3.5 text-sm text-[var(--color-subtle)]"
+          className="rounded-card border border-dashed border-line bg-paper/50 p-3.5 text-sm text-subtle"
         >
-          <span className="font-medium text-[var(--color-ink)]">
+          <span className="font-medium text-ink">
             Elige una variante para consultar sus especificaciones.
           </span>{" "}
           Los datos comunes permanecen visibles.
@@ -571,7 +572,7 @@ function FichaTecnicaV3Valida({
       {estado.advertenciaCategoria && (
         <div
           role="alert"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3.5 text-sm text-amber-300 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300"
+          className="rounded-card border border-surface-border-strong bg-paper p-3.5 text-sm text-text-secondary dark:border-surface-border-strong dark:bg-paper dark:text-text-secondary"
         >
           {estado.advertenciaCategoria}
         </div>
@@ -581,19 +582,19 @@ function FichaTecnicaV3Valida({
       {visibles.length === 0 ? (
         <div
           role="status"
-          className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)] p-6 text-center text-sm text-[var(--color-subtle)]"
+          className="rounded-card border border-dashed border-line bg-paper p-6 text-center text-sm text-subtle"
         >
           No hay especificaciones registradas para esta categoría y variante.
         </div>
       ) : (
         [...grupos].map(([grupo, items]) => (
           <section key={grupo} className="space-y-3">
-            <div className="flex items-center gap-2 border-b border-[var(--color-hairline)] pb-2 pt-1">
-              <span className="h-2 w-2 rounded-full bg-[var(--color-brand-blue)]" aria-hidden="true" />
-              <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-ink)]">
+            <div className="flex items-center gap-2 border-b border-dotted border-line pb-2 pt-1">
+              <span className="h-2 w-2 rounded-full bg-brand-blue" aria-hidden="true" />
+              <h3 className="text-sm font-medium uppercase tracking-normal text-ink">
                 {grupo}
               </h3>
-              <span className="text-xs font-normal text-[var(--color-subtle)]">
+              <span className="text-xs font-normal text-subtle">
                 ({items.length} {items.length === 1 ? "especificación" : "especificaciones"})
               </span>
             </div>
@@ -610,9 +611,9 @@ function FichaTecnicaV3Valida({
       {benchmarksEsperanVariante && (
         <div
           role="status"
-          className="rounded-lg border border-dashed border-[var(--color-hairline)] bg-[var(--color-paper)]/50 p-3.5 text-sm text-[var(--color-subtle)]"
+          className="rounded-card border border-dashed border-line bg-paper/50 p-3.5 text-sm text-subtle"
         >
-          <span className="font-medium text-[var(--color-ink)]">
+          <span className="font-medium text-ink">
             Elige una variante para consultar sus benchmarks.
           </span>{" "}
           El contrato V3 asocia cada benchmark a una variante concreta y no define benchmarks comunes.
@@ -621,12 +622,12 @@ function FichaTecnicaV3Valida({
 
       {benchmarks.length > 0 && (
         <section className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-[var(--color-hairline)] pb-2 pt-1">
-            <span className="h-2 w-2 rounded-full bg-[var(--color-brand-blue)]" aria-hidden="true" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--color-ink)]">
+          <div className="flex items-center gap-2 border-b border-dotted border-line pb-2 pt-1">
+            <span className="h-2 w-2 rounded-full bg-brand-blue" aria-hidden="true" />
+            <h3 className="text-sm font-medium uppercase tracking-normal text-ink">
               Benchmarks
             </h3>
-            <span className="text-xs font-normal text-[var(--color-subtle)]">
+            <span className="text-xs font-normal text-subtle">
               ({benchmarks.length})
             </span>
           </div>
@@ -645,11 +646,11 @@ function FichaTecnicaV3Valida({
               return (
                 <article
                   key={item.id}
-                  className="flex flex-col justify-between rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4 shadow-sm"
+                  className="flex flex-col justify-between rounded-card border border-line bg-paper p-4 "
                 >
                   <div>
-                    <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--color-hairline)]/60 pb-2">
-                      <h4 className="text-base font-semibold text-[var(--color-ink)]">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-dotted border-line/60 pb-2">
+                      <h4 className="text-base font-medium text-ink">
                         {item.nombre_prueba}
                         {item.version ? ` · ${item.version}` : ""}
                       </h4>
@@ -658,10 +659,10 @@ function FichaTecnicaV3Valida({
 
                     <div className="mt-2.5">
                       <p
-                        className={`text-base font-bold ${
+                        className={`text-base font-medium ${
                           conflictoPendiente
-                            ? "text-amber-400"
-                            : "text-[var(--color-ink)]"
+                            ? "text-text-secondary"
+                            : "text-ink"
                         }`}
                       >
                         {conflictoPendiente
@@ -669,7 +670,7 @@ function FichaTecnicaV3Valida({
                           : "Resultado: "}
                         {item.resultado.valor} {item.resultado.unidad}
                       </p>
-                      <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-1 text-xs text-subtle">
                         {[
                           item.plataforma,
                           item.modo_ejecucion,
@@ -679,8 +680,8 @@ function FichaTecnicaV3Valida({
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
-                      <p className="mt-1 text-xs text-[var(--color-ink)]">
-                        <span className="text-[var(--color-subtle)]">Variante:</span>{" "}
+                      <p className="mt-1 text-xs text-ink">
+                        <span className="text-subtle">Variante:</span>{" "}
                         {formatearEtiquetaVariante(
                           variante ?? {
                             id: item.variante_id,
@@ -695,14 +696,14 @@ function FichaTecnicaV3Valida({
                     </div>
 
                     {fuente && (!fuente.variante_id || fuente.variante_id === item.variante_id) ? (
-                      <p className="mt-2 text-xs text-[var(--color-ink)]">
+                      <p className="mt-2 text-xs text-ink">
                         Fuente: {fuente.nombre}
                         {fuente.consultada_en ? ` · consultada ${fuente.consultada_en}` : ""}
                         {fuente.url && /^https?:\/\//i.test(fuente.url) && (
                           <>
                             {" "}·{" "}
                             <a
-                              className={`font-medium text-[var(--color-brand-blue)] underline ${CLASE_FOCO}`}
+                              className={`font-medium text-brand-blue underline ${CLASE_FOCO}`}
                               href={fuente.url}
                               target="_blank"
                               rel="noreferrer"
@@ -713,20 +714,20 @@ function FichaTecnicaV3Valida({
                         )}
                       </p>
                     ) : (
-                      <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-2 text-xs text-subtle">
                         Fuente no disponible para esta variante.
                       </p>
                     )}
 
                     {evidenciaCompatible && evidencia ? (
-                      <div className="mt-2.5 rounded border-l-2 border-[var(--color-brand-blue)] bg-[var(--color-canvas)]/40 p-2 text-xs text-[var(--color-subtle)]">
+                      <div className="mt-2.5 rounded-card border-l-2 border-brand-blue bg-canvas/40 p-2 text-xs text-subtle">
                         <p>
                           {evidencia.postura === "contradice" ? (
-                            <span className="font-medium text-amber-400">
+                            <span className="font-medium text-text-secondary">
                               Evidencia contradice · no respalda el resultado
                             </span>
                           ) : (
-                            <span className="font-medium text-emerald-400">
+                            <span className="font-medium text-positive">
                               Evidencia respalda este resultado
                             </span>
                           )}
@@ -736,14 +737,14 @@ function FichaTecnicaV3Valida({
                             : ""}
                         </p>
                         {evidencia.localizador && (
-                          <p className="mt-1 text-[var(--color-ink)]">{evidencia.localizador}</p>
+                          <p className="mt-1 text-ink">{evidencia.localizador}</p>
                         )}
                         {evidencia.extracto && (
-                          <p className="mt-1 italic text-[var(--color-ink)]">“{evidencia.extracto}”</p>
+                          <p className="mt-1 italic text-ink">“{evidencia.extracto}”</p>
                         )}
                       </div>
                     ) : (
-                      <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-2 text-xs text-subtle">
                         No hay evidencia compatible disponible para este benchmark.
                       </p>
                     )}
@@ -751,20 +752,20 @@ function FichaTecnicaV3Valida({
                     {conflictoPendiente && (
                       <div
                         role="alert"
-                        className="mt-2.5 rounded-md border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs text-amber-300 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300"
+                        className="mt-2.5 rounded-card border border-surface-border-strong bg-paper p-2.5 text-xs text-text-secondary dark:border-surface-border-strong dark:bg-paper dark:text-text-secondary"
                       >
                         Conflicto pendiente: no trates este resultado como confirmado.
                       </div>
                     )}
 
                     {item.revision_conflicto.estado === "conflicto_resuelto" && (
-                      <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-2 text-xs text-subtle">
                         Conflicto resuelto: {item.revision_conflicto.resolucion}
                       </p>
                     )}
 
                     {item.verificacion.estado === "verificado" && (
-                      <p className="mt-2 text-xs text-[var(--color-subtle)]">
+                      <p className="mt-2 text-xs text-subtle">
                         Estado declarado en la ficha: verificado
                         {item.verificacion.verificado_en ? ` · ${item.verificacion.verificado_en}` : ""}
                         {item.verificacion.verificado_por ? ` · ${item.verificacion.verificado_por}` : ""}
@@ -777,13 +778,13 @@ function FichaTecnicaV3Valida({
 
                     {item.verificacion.estado === "requiere_revision" &&
                       item.verificacion.motivo_revision && (
-                        <p className="mt-2 text-xs text-amber-400">
+                        <p className="mt-2 text-xs text-text-secondary">
                           Motivo de revisión: {item.verificacion.motivo_revision}
                         </p>
                       )}
                   </div>
 
-                  <p className="mt-3 border-t border-[var(--color-hairline)]/60 pt-2 text-xs text-[var(--color-subtle)]">
+                  <p className="mt-3 border-t border-dotted border-line/60 pt-2 text-xs text-subtle">
                     No se compara automáticamente: el contrato V3 no define reglas de comparabilidad para benchmarks.
                   </p>
                 </article>

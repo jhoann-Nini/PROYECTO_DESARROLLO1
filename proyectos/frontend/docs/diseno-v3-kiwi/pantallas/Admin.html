@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>TecReview KIWI · Panel de administración</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;font-feature-settings:"ss01" on;color:#F4F1DC;background:#10140A}
+h1,h2,h3,.d{font-family:Inter,system-ui,sans-serif;margin:0;font-weight:500;letter-spacing:0;text-transform:uppercase}
+h1,h2{line-height:.9}p{margin:0}.num{font-variant-numeric:tabular-nums}
+.card{background:#171D0F;border:1px solid #3A4626;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:36px;font:500 12px Inter,sans-serif;text-transform:uppercase;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bp{background:#A5D64C;color:#10140A}.bs{background:transparent;color:#F4F1DC;border-color:#F4F1DC;border-radius:22.5px}.bg{background:transparent;color:#F4F1DC;text-decoration:underline;text-underline-offset:4px;padding:0 6px}.bd{background:transparent;color:#FF8C69;border-color:#FF8C69;border-radius:22.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:9999px;font:500 11px Inter,sans-serif;text-transform:uppercase;border:1px solid #3A4626;background:transparent;color:#F4F1DC;text-decoration:none}
+.lab{font-size:11px;font-weight:500;letter-spacing:0;text-transform:uppercase;color:#B4B397}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:9999px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.ok{color:#F4F1DC;background:#2F4416}.pend{color:#F4F1DC;background:transparent;border:1px solid #8C7A50}.na{color:#B4B397;background:transparent;border:1px dashed #8C7A50}.err{color:#FF8C69;background:transparent;border:1px solid #FF8C69}
+.nl{padding:8px 12px;border-radius:9999px;color:#F4F1DC;text-decoration:none;font-weight:500;font-size:12px;text-transform:uppercase}
+.ph{background:#0A0D06;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ico{width:40px;height:40px;border-radius:9999px;border:1px solid #3A4626;background:transparent;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#F4F1DC}
+.inp{height:44px;border:0;border-bottom:1px solid #F4F1DC;border-radius:0;padding:0 2px;font:15px Inter;background:transparent;color:#F4F1DC;box-sizing:border-box}
+.sr{position:absolute;left:-9999px}input,select,textarea{color:#F4F1DC;background:transparent}option{background:#10140A}
+.col{display:flex;flex-direction:column;gap:10px}.n{background:#171D0F;border:1px solid #3A4626;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:500;text-transform:uppercase}.s{border:1px dashed #3A4626;border-radius:12px;padding:7px 10px;font-size:13px;color:#CFCDB3;margin-left:16px}
+.st{border:1px solid #3A4626;border-radius:9999px;padding:9px 14px;font-size:11px;font-weight:500;text-transform:uppercase;white-space:nowrap}.ar{color:#A5D64C;font-weight:500;font-size:16px}.fl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+a{color:#A5D64C;text-underline-offset:3px}a:hover{color:#CFCDB3}
+</style>
+</helmet>
+<div>
+
+<div style="display:flex;flex-wrap:wrap;min-height:1500px">
+<aside style="flex:1 1 248px;max-width:260px;background:#10140A;color:#F4F1DC;border-right:1px dashed #3A4626;padding:20px 14px;display:flex;flex-direction:column;gap:4px">
+<a href="Inicio.dc.html" class="d" style="font-size:20px;font-weight:500;color:#10140A;text-decoration:none;padding:4px 10px 4px">Tec<span style="color:#A5D64C">Review</span></a>
+<span style="font-size:12px;color:#B4B397;padding:0 10px 16px">Administración</span>
+<sc-for list="{{areas}}" as="a" hint-placeholder-count="8">
+<a href="Admin.dc.html" style="display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:12px;text-decoration:none;font-size:14px;color:{{a.fg}};background:{{a.bg}};font-weight:{{a.fw}}">{{a.name}}<sc-if value="{{a.count}}" hint-placeholder-val="{{false}}"><span class="num" style="background:#E6C34A;color:#10140A;font-size:11px;font-weight:500;padding:1px 7px;border-radius:999px">{{a.count}}</span></sc-if></a>
+</sc-for>
+<div style="margin-top:auto;border-top:1px dashed #3A4626;padding:14px 10px 0;font-size:13px;color:#B4B397">Sesión: admin@tecreview.co</div>
+</aside>
+
+<main style="flex:999 1 720px;min-width:0;padding:28px 32px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px">
+<div style="display:flex;flex-direction:column;gap:4px"><span class="lab">Administración · 1 de 8 áreas</span><h1 style="font-size:32px">Productos</h1></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn bs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Exportar catálogo CSV</button><button class="btn bp">+ Nuevo producto</button></div>
+</div>
+
+<div class="card" style="padding:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+<label style="flex:1;min-width:220px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid #3A4626;border-radius:12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="sr">Buscar productos</span><input placeholder="Buscar por nombre, marca o ID" style="border:0;outline:0;flex:1;font-size:14px"></label>
+<select class="inp" aria-label="Categoría" style="height:40px"><option>Todas las categorías</option></select>
+<select class="inp" aria-label="Estado de ficha" style="height:40px"><option>Ficha: con pendientes</option></select>
+<span class="num" style="font-size:13px;color:#B4B397;margin-left:auto">80 productos · 14 con datos pendientes</span>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<div class="card" style="flex:999 1 560px;min-width:0;overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;min-width:720px;font-size:14px">
+<thead><tr style="text-align:left;color:#B4B397;font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:#141A0C"><th style="padding:12px 16px;font-weight:500">ID</th><th style="padding:12px;font-weight:500">Producto</th><th style="padding:12px;font-weight:500">Categoría</th><th style="padding:12px;font-weight:500;text-align:right">Precio ref.</th><th style="padding:12px;font-weight:500">Ficha técnica</th><th style="padding:12px 16px"></th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<tr style="border-top:1px dashed #3A4626;background:{{r.bg}}">
+<td class="num" style="padding:12px 16px;color:#B4B397">{{r.id}}</td>
+<td style="padding:12px"><b style="font-weight:500">{{r.name}}</b><br><span style="font-size:12px;color:#B4B397">{{r.brand}}</span></td>
+<td style="padding:12px;color:#CFCDB3">{{r.cat}}</td>
+<td class="num" style="padding:12px;text-align:right">{{r.price}}</td>
+<td style="padding:12px"><span style="display:flex;gap:4px;flex-wrap:wrap"><span class="tag ok">✓ {{r.ok}}</span><span class="tag pend">◷ {{r.pe}}</span><span class="tag na">— {{r.na}}</span></span></td>
+<td style="padding:12px 16px;text-align:right;white-space:nowrap"><button class="btn bg" style="height:32px;padding:0 8px;font-size:13px">Editar</button><button class="btn bg" style="height:32px;padding:0 8px;font-size:13px;color:#FF8C69">Eliminar</button></td>
+</tr>
+</sc-for>
+</tbody></table>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1px dashed #3A4626;font-size:13px;color:#B4B397"><span class="num">1–8 de 80</span><span style="display:flex;gap:6px"><button class="btn bs" style="height:32px;font-size:13px;padding:0 10px">Anterior</button><button class="btn bs" style="height:32px;font-size:13px;padding:0 10px">Siguiente</button></span></div>
+</div>
+
+<aside class="card" style="flex:1 1 340px;max-width:400px;padding:20px;display:flex;flex-direction:column;gap:14px;border-color:#A5D64C;">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="display:flex;flex-direction:column;gap:2px"><span class="lab">Ficha técnica · ID 1</span><h2 style="font-size:20px">Galaxy S24</h2></div><button class="ico" aria-label="Cerrar panel" style="width:32px;height:32px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CFCDB3" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<div style="display:flex;gap:6px"><span class="chip" style="background:#F4F1DC;color:#10140A;border-color:#F4F1DC;height:28px">Batería y carga</span><span class="chip" style="height:28px">Pantalla</span><span class="chip" style="height:28px">Cámara</span></div>
+<div style="border:1px solid #3A4626;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-weight:500" style="font-size:14px">Carga con cable</b><span class="tag pend">◷ Pendiente</span></div>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B4B397">Valor<input class="inp" value="25 W" style="height:38px"></label>
+<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B4B397">Fuente<input class="inp" value="Ficha del fabricante (URL)" style="height:38px"></label>
+<div style="display:flex;gap:8px"><button class="btn bp" style="height:36px;font-size:13px;flex:1">✓ Marcar verificado</button><button class="btn bs" style="height:36px;font-size:13px">Guardar</button></div>
+</div>
+<div style="border:1px dashed #8C7A50;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-weight:500" style="font-size:14px">Cargador incluido</b><span class="tag na">— Sin dato</span></div>
+<button class="btn bg" style="height:32px;font-size:13px;padding:0;justify-content:flex-start">+ Registrar valor y fuente</button>
+</div>
+<p style="font-size:12px;color:#B4B397">Historial: verificado por admin@tecreview.co · 12 nov 2026</p>
+</aside>
+</div>
+
+<section class="card" style="padding:20px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h2 style="font-size:20px">Usuarios y roles <span style="font-size:13px;color:#B4B397;font-family:Inter;font-weight:400">· vista rápida</span></h2><a href="Admin.dc.html" style="font-size:14px;font-weight:500">Abrir área →</a></div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;min-width:720px;font-size:14px">
+<tbody>
+<tr style="border-top:1px dashed #3A4626"><td style="padding:12px 0"><b style="font-weight:500">Andrés Rojas</b><br><span style="font-size:12px;color:#B4B397">andres.rojas@correo.co</span></td><td style="padding:12px"><span class="tag" style="background:#3A4626;color:#E6E3CB">Usuario</span> <span class="tag" style="background:#F4F1DC;color:#10140A">Representante · Tienda A</span></td><td style="padding:12px"><span class="tag ok">Activa</span></td><td style="padding:12px 0;text-align:right;white-space:nowrap"><button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Roles y representaciones</button> <button class="btn bd" style="height:34px;font-size:13px;padding:0 12px">Suspender</button></td></tr>
+<tr style="border-top:1px dashed #3A4626"><td style="padding:12px 0"><b style="font-weight:500">Camila Ortiz</b><br><span style="font-size:12px;color:#B4B397">camila.o@correo.co</span></td><td style="padding:12px"><span class="tag" style="background:#3A4626;color:#E6E3CB">Usuario</span> <span class="tag" style="background:#2F4416;color:#A5D64C">Moderadora</span></td><td style="padding:12px"><span class="tag ok">Activa</span></td><td style="padding:12px 0;text-align:right;white-space:nowrap"><button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Roles y representaciones</button> <button class="btn bd" style="height:34px;font-size:13px;padding:0 12px">Suspender</button></td></tr>
+<tr style="border-top:1px dashed #3A4626"><td style="padding:12px 0"><b style="font-weight:500">usuario_2291</b><br><span style="font-size:12px;color:#B4B397">u2291@correo.co</span></td><td style="padding:12px"><span class="tag" style="background:#3A4626;color:#E6E3CB">Usuario</span></td><td style="padding:12px"><span class="tag err">Suspendida · 20 nov</span></td><td style="padding:12px 0;text-align:right;white-space:nowrap"><button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Roles y representaciones</button> <button class="btn bs" style="height:34px;font-size:13px;padding:0 12px">Reactivar</button></td></tr>
+</tbody></table></div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const names = [['Productos',0],['Categorías',0],['Marcas',0],['Cola de reportes',7],['Usuarios y roles',0],['Establecimientos',0],['Ofertas por tienda',0],['Palabras de moderación',0]];
+const areas = names.map((n,i) => ({ name:n[0], count:n[1] || false, bg: i===0 ? '#2F4416' : 'transparent', fg: i===0 ? '#2F4416' : '#CFCDB3', fw: i===0 ? 600 : 500 }));
+const rows = [
+[1,'Galaxy S24','Samsung','Celular','$ 3.599.900',17,3,2],[2,'Pixel 8','Google','Celular','$ 3.099.000',19,1,2],[3,'iPhone 15 Pro','Apple','Celular','$ 4.999.000',15,0,7],
+[4,'Galaxy A55 5G','Samsung','Celular','$ 1.899.900',20,2,0],[21,'MacBook Air 13″ M3','Apple','Portátil','$ 5.499.000',22,0,1],[22,'IdeaPad Slim 5','Lenovo','Portátil','$ 3.199.000',18,4,1],
+[41,'Galaxy Tab S9 FE','Samsung','Tablet','$ 1.899.900',16,2,3],[61,'WH-1000XM5','Sony','Auriculares','$ 1.589.900',12,1,0]
+].map((r,i) => ({ id:r[0], name:r[1], brand:r[2], cat:r[3], price:r[4], ok:r[5], pe:r[6], na:r[7], bg: i===0 ? '#1E2812' : 'transparent' }));
+return { areas, rows };
+}
+}
+</script>
+</body>
+</html>

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ApiError, crearApelacion, obtenerMisDecisiones } from "@/services/api";
 import type { DecisionApelable, EstadoApelacion } from "@/types/moderacion";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
+import Tag from "@/components/ui/Tag";
 
 const FORMATO_FECHA = new Intl.DateTimeFormat("es-CO", {
   day: "numeric",
@@ -92,10 +94,10 @@ export default function DecisionesModeracion({ idUsuario }: { idUsuario: number 
 
   return (
     <section aria-labelledby="titulo-decisiones-moderacion" className="mt-4">
-      <h2 id="titulo-decisiones-moderacion" className="text-sm font-semibold text-[var(--color-ink)]">
+      <h2 id="titulo-decisiones-moderacion" className="text-sm font-medium uppercase text-ink">
         Decisiones de moderación
       </h2>
-      <p className="mt-1 text-xs text-[var(--color-subtle)]">
+      <p className="mt-1 text-xs text-subtle">
         Decisiones de los últimos 90 días sobre tus reseñas. Si crees que alguna fue un error, puedes
         apelarla durante 15 días; la revisará otra persona.
       </p>
@@ -105,52 +107,53 @@ export default function DecisionesModeracion({ idUsuario }: { idUsuario: number 
           return (
             <li
               key={decision.idAuditoria}
-              className="rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3"
+              className="rounded-card border border-line bg-paper p-3"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--color-ink)]">
+                  <p className="text-sm font-medium uppercase text-ink">
                     {decision.nombreProducto ?? `Reseña #${decision.idResena}`}
                   </p>
-                  <p className="text-xs text-[var(--color-subtle)]">
+                  <p className="text-xs text-subtle">
                     {`${ETIQUETA_ACCION[decision.accion]} el ${formatear(decision.fechaDecision)}: ${decision.motivoDecision}`}
                   </p>
                 </div>
                 {decision.apelacion && (
-                  <span className="rounded-full bg-[var(--color-canvas)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-ink)]">
+                  <Tag variant={decision.apelacion.estado === "PENDIENTE" ? "pending" : "neutral"}>
                     {ETIQUETA_ESTADO[decision.apelacion.estado]}
-                  </span>
+                  </Tag>
                 )}
               </div>
               {decision.comentarioRevisado && (
-                <p className="mt-2 whitespace-pre-line rounded-md bg-[var(--color-canvas)] p-2 text-xs text-[var(--color-ink)]">
+                <p className="mt-2 whitespace-pre-line rounded-card bg-canvas p-2 text-xs text-text-body">
                   {decision.comentarioRevisado}
                 </p>
               )}
               {decision.apelacion?.respuesta && (
-                <p className="mt-2 text-xs text-[var(--color-ink)]">
-                  <span className="font-semibold">Respuesta de moderación: </span>
+                <p className="mt-2 text-xs text-ink">
+                  <span className="font-medium">Respuesta de moderación: </span>
                   {decision.apelacion.respuesta}
                 </p>
               )}
 
               {decision.apelable && abierta !== decision.idAuditoria && (
-                <button
+                <Button
+                  variant="secondary"
                   type="button"
                   onClick={() => abrir(decision)}
                   aria-label={`Apelar la decisión sobre ${decision.nombreProducto ?? `la reseña #${decision.idResena}`}`}
-                  className={`mt-2 cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className="mt-2"
                 >
                   Apelar
-                </button>
+                </Button>
               )}
 
               {abierta === decision.idAuditoria && (
                 <div className="mt-2 space-y-2">
-                  <p className="text-xs text-[var(--color-subtle)]">
+                  <p className="text-xs text-subtle">
                     {`Puedes apelar hasta el ${formatear(decision.plazoHasta)}. Explica por qué crees que la decisión fue un error.`}
                   </p>
-                  <label htmlFor={idMotivo} className="block text-xs font-medium text-[var(--color-subtle)]">
+                  <label htmlFor={idMotivo} className="block text-xs font-medium text-subtle">
                     Motivo de la apelación
                     <textarea
                       id={idMotivo}
@@ -162,35 +165,35 @@ export default function DecisionesModeracion({ idUsuario }: { idUsuario: number 
                       rows={3}
                       maxLength={1000}
                       aria-describedby={errorMotivo ? `${idMotivo}-error` : undefined}
-                      className={`mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-1.5 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                      className={`mt-1 block min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
                     />
                   </label>
                   {errorMotivo && (
-                    <p id={`${idMotivo}-error`} role="alert" className="text-xs text-red-700">
+                    <p id={`${idMotivo}-error`} role="alert" className="text-xs text-status-error">
                       {MENSAJE_MOTIVO_OBLIGATORIO}
                     </p>
                   )}
                   {errorEnvio && (
-                    <p role="alert" className="text-xs text-red-700">
+                    <p role="alert" className="text-xs text-status-error">
                       {errorEnvio}
                     </p>
                   )}
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      variant="primary"
                       type="button"
                       onClick={() => enviar(decision)}
                       disabled={enviando}
-                      className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-1.5 text-xs font-semibold text-[var(--color-on-solid)] disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
                     >
                       {enviando ? "Enviando…" : "Enviar apelación"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="secondary"
                       type="button"
                       onClick={() => setAbierta(null)}
-                      className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] ${CLASE_FOCO}`}
                     >
                       Cancelar
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}

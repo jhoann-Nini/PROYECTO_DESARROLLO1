@@ -52,13 +52,13 @@ export default function RatingStars({
       >
         <path d="M10 2.5l2.35 4.76 5.25.76-3.8 3.7.9 5.23L10 14.48l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76L10 2.5z" />
       </svg>
-      <span className="text-xs font-semibold text-[var(--color-ink)]">
+      <span className="text-xs font-medium text-ink">
         {textoValor}
       </span>
-      <span aria-hidden="true" className="text-xs text-[var(--color-subtle)]">
+      <span aria-hidden="true" className="text-xs text-subtle">
         ·
       </span>
-      <span className="text-xs text-[var(--color-subtle)]">{textoCantidad}</span>
+      <span className="text-xs text-subtle">{textoCantidad}</span>
     </span>
   );
 }

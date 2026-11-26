@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
 import { ApiError, crearReporteOferta } from "@/services/api";
 import type { CrearReporteOfertaRequest } from "@/types/reporteOferta";
 
@@ -115,29 +116,29 @@ export default function ReportarOfertaModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div aria-hidden="true" className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => {
+      <div aria-hidden="true" className="absolute inset-0 bg-ink/50" onClick={() => {
         if (!enviandoRef.current) onCerrar();
       }} />
       <div
         ref={dialogoRef} role="dialog" aria-modal="true" aria-labelledby={tituloId}
         onKeyDown={manejarTab} tabIndex={-1}
-        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-5 shadow-[var(--shadow-paper)]"
+        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-card border border-line bg-paper p-5"
       >
         <div className="flex items-start justify-between gap-3">
-          <h2 id={tituloId} className="text-lg font-semibold text-[var(--color-ink)]">Reportar precio o enlace</h2>
+          <h2 id={tituloId} className="text-lg font-medium uppercase text-ink">Reportar precio o enlace</h2>
           <button type="button" aria-label="Cerrar" disabled={enviando} onClick={onCerrar}
-            className={`cursor-pointer rounded-md px-2 py-1 text-[var(--color-ink)] hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
+            className={`min-h-11 min-w-11 cursor-pointer rounded-full text-ink hover:bg-surface-muted ${CLASE_FOCO}`}
           >×</button>
         </div>
-        <p className="mt-2 text-sm text-[var(--color-subtle)]">
+        <p className="mt-2 text-sm text-subtle">
           Oferta de {oferta.nombreProducto} en {oferta.nombreEstablecimiento}.
         </p>
         <form onSubmit={enviarReporte} noValidate className="mt-4 space-y-4">
           <div>
-            <label htmlFor={`${tituloId}-motivo`} className="block text-sm font-medium text-[var(--color-ink)]">Motivo</label>
+            <label htmlFor={`${tituloId}-motivo`} className="block text-sm font-medium text-ink">Motivo</label>
             <select id={`${tituloId}-motivo`} ref={motivoRef} value={motivo} required
               onChange={(evento) => { setMotivo(evento.target.value as typeof motivo); setError(""); }}
-              className={`mt-1 w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] ${CLASE_FOCO}`}
+              className={`mt-1 min-h-11 w-full rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
             >
               <option value="">Selecciona un motivo</option>
               <option value="precio_incorrecto">Precio incorrecto</option>
@@ -145,26 +146,24 @@ export default function ReportarOfertaModal({
             </select>
           </div>
           <div>
-            <label htmlFor={descripcionId} className="block text-sm font-medium text-[var(--color-ink)]">Descripción (opcional)</label>
+            <label htmlFor={descripcionId} className="block text-sm font-medium text-ink">Descripción (opcional)</label>
             <textarea id={descripcionId} value={descripcion} maxLength={2000} rows={4}
               onChange={(evento) => setDescripcion(evento.target.value)}
-              className={`mt-1 w-full resize-y rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] ${CLASE_FOCO}`}
+              className={`mt-1 min-h-24 w-full resize-y rounded-input border-0 border-b border-ink bg-transparent px-0 py-3 text-sm text-ink ${CLASE_FOCO}`}
             />
-            <p className="text-right text-xs text-[var(--color-subtle)]" aria-live="polite">{descripcion.length}/2000</p>
+            <p className="text-right text-xs text-subtle" aria-live="polite">{descripcion.length}/2000</p>
           </div>
-          {error && <div role="alert" className="text-sm text-red-700">
+          {error && <div role="alert" className="text-sm text-status-error">
             <p>{error}</p>
             {sinSesion && <button type="button" onClick={onPedirLogin}
-              className={`mt-2 cursor-pointer font-semibold text-[var(--color-brand-blue)] underline ${CLASE_FOCO}`}
+              className={`mt-2 cursor-pointer font-medium text-brand-blue underline ${CLASE_FOCO}`}
             >Iniciar sesión</button>}
           </div>}
           <div className="flex flex-wrap justify-end gap-2">
-            <button type="button" disabled={enviando} onClick={onCerrar}
-              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-2 text-sm font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas)] ${CLASE_FOCO}`}
-            >Cancelar</button>
-            <button type="submit" disabled={enviando}
-              className={`cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-3 py-2 text-sm font-semibold text-[var(--color-on-solid)] ${CLASE_FOCO}`}
-            >{enviando ? "Enviando…" : "Enviar reporte"}</button>
+            <Button variant="secondary" type="button" disabled={enviando} onClick={onCerrar}
+            >Cancelar</Button>
+            <Button variant="primary" type="submit" disabled={enviando}
+            >{enviando ? "Enviando…" : "Enviar reporte"}</Button>
           </div>
         </form>
       </div>

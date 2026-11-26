@@ -1,5 +1,38 @@
 # TecReview — Especificación de rediseño
 
+> Kiwi V3, fase 10 (Modales): cambios y validación en
+> [kiwi-fase-10.md](kiwi-fase-10.md). La siguiente fase es la revisión final.
+
+> Kiwi V3, fase 9 (Favoritos y perfil): cambios y validación en
+> [kiwi-fase-9.md](kiwi-fase-9.md). La siguiente fase son los modales.
+
+> Kiwi V3, fase 8 (Reseñas y blog): cambios y validación en
+> [kiwi-fase-8.md](kiwi-fase-8.md). La siguiente fase es Favoritos y perfil.
+
+> Kiwi V3, fase 7 (Comparador): cambios y validación en
+> [kiwi-fase-7.md](kiwi-fase-7.md). La siguiente fase es Reseñas y blog.
+
+> Kiwi V3, fase 6 (Detalle de producto): cambios y validación en
+> [kiwi-fase-6.md](kiwi-fase-6.md). La siguiente fase es Comparador.
+
+> Kiwi V3, fase 5 (Catálogo y categorías): cambios y validación en
+> [kiwi-fase-5.md](kiwi-fase-5.md). La siguiente fase es Detalle de producto.
+
+> Kiwi V3, fase 4 (Inicio): cambios y validación en
+> [kiwi-fase-4.md](kiwi-fase-4.md). La siguiente fase es Catálogo y categorías.
+
+> Actualización 2026-11-24: la **fase 1 de Kiwi V3** sustituye los tokens
+> visuales globales descritos abajo. La equivalencia, el alcance y las pruebas
+> están en [kiwi-fase-1.md](kiwi-fase-1.md). Las secciones visuales anteriores
+> se conservan como historial; las siguientes fases todavía no se han aplicado.
+
+> Fase 2: componentes base Kiwi e integración de la acción de `EstadoVacio`,
+> documentados en [kiwi-fase-2.md](kiwi-fase-2.md). Las fases de pantallas
+> siguen pendientes.
+
+> Fase 3: shell y búsqueda global adaptados a Kiwi; alcance y validación en
+> [kiwi-fase-3.md](kiwi-fase-3.md). El rediseño de Inicio comienza en la fase 4.
+
 **Estado:** Bloques A–P completados; la tarjeta de producto y las calificaciones
 se unificaron en el Bloque K (TEC-62/TEC-69), los filtros del catálogo con
 cajón móvil, precios manuales, buscador de marcas y ordenamiento en el Bloque L
@@ -1387,5 +1420,38 @@ al producto. Se mantienen las APIs, permisos y operaciones CRUD existentes.
 No se añadió selección masiva, contador ficticio de reportes ni verificación
 de precios inexistente. El control Ficha V3 que ya existía conserva su
 comportamiento real y no se interpreta como estado verificado del boceto.
+
+### Kiwi V3 · revisión final
+
+La auditoría final del rediseño visual y sus resultados de contraste, pruebas y
+compilación se documentan en `docs/kiwi-fase-11.md`.
+
+### Búsqueda global en Inicio
+
+El activador principal del buscador global se muestra en el bloque principal de
+Inicio, en el espacio del campo de búsqueda anterior. En esa ruta el encabezado
+muestra además una lupa compacta junto al control de tema; en las demás páginas
+muestra el activador de búsqueda. Todos usan `PanelBusquedaModal` y conservan
+Ctrl/Cmd+K, Escape y el retorno del foco.
+
+El encabezado dispone marca, navegación, búsqueda y acciones en una sola fila.
+Entre los anchos de tableta y escritorio la navegación puede desplazarse
+horizontalmente dentro de esa fila para conservar todas las rutas. En pantallas
+móviles se mantiene `BottomNav`.
+
+Inicio entrega al modal el catálogo ya cargado, de modo que la búsqueda global
+cubre todas las categorías. El aviso junto al activador muestra la cantidad de
+coincidencias y reabre el modal para verlas. Si falla la carga de Inicio, el
+modal puede volver a consultar el catálogo por sí mismo, como lo hace en las
+demás rutas.
+
+### Productos destacados en Inicio
+
+La sección se llama «Productos destacados» porque todavía no usa preferencias
+personales. La búsqueda y el presupuesto no modifican sus tarjetas. La
+selección prioriza el ranking real de mejor valorados y completa hasta seis
+productos con el catálogo disponible. Primero procura mostrar como máximo dos
+productos por marca y categoría; si faltan alternativas, relaja ese límite para
+aprovechar los cupos. La búsqueda y sus alternativas permanecen en el modal.
 
 

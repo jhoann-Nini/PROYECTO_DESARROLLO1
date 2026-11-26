@@ -1,6 +1,8 @@
 "use client";
 
 import type { FocusEvent } from "react";
+import Input from "@/components/ui/Input";
+import { CLASE_FOCO } from "@/components/ui/foco";
 
 interface SearchBarProps {
   value?: string;
@@ -23,7 +25,7 @@ export default function SearchBar({
     <div className="relative flex items-center w-full">
       {/* Icono decorativo de búsqueda */}
       <div
-        className="pointer-events-none absolute left-4 flex items-center justify-center text-[var(--color-subtle)]"
+        className="pointer-events-none absolute left-4 flex items-center justify-center text-subtle"
         aria-hidden="true"
       >
         <svg
@@ -42,7 +44,7 @@ export default function SearchBar({
       </div>
 
       {/* Campo de búsqueda con accesibilidad y foco visible */}
-      <input
+      <Input
         type="search"
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
@@ -50,7 +52,7 @@ export default function SearchBar({
         aria-label={ariaLabel}
         onFocus={onFocus}
         onBlur={onBlur}
-        className="sin-x-nativa w-full rounded-lg border border-[var(--color-hairline)] bg-[var(--color-paper)] py-3.5 pl-11 pr-12 text-sm text-[var(--color-ink)] shadow-[var(--shadow-paper)] transition-colors placeholder:text-[var(--color-subtle)] hover:border-[var(--color-subtle)]/40 focus:border-[var(--color-brand-blue)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+        className="sin-x-nativa pl-11 pr-12"
       />
 
       {/* Botón para limpiar búsqueda con etiqueta accesible */}
@@ -59,7 +61,7 @@ export default function SearchBar({
           type="button"
           onClick={() => onChange?.("")}
           aria-label="Borrar texto de búsqueda"
-          className="absolute right-3.5 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-[var(--color-subtle)] transition-colors hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand-blue)]"
+          className={`absolute right-0 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface-muted hover:text-ink ${CLASE_FOCO}`}
         >
           <svg
             className="h-4 w-4"

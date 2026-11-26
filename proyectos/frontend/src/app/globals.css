@@ -3,76 +3,91 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-doto: var(--font-sans);
 
-  /* Escala de radios coherente: controles 12px, tarjetas y modales 16px */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 0.875rem;
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.25rem;
-  --radius-card: 1rem;
-  --radius-control: 0.75rem;
+  /* Kiwi V3: escala tipográfica; Inter ya se carga con next/font. */
+  --text-display: 51px;
+  --text-display--line-height: 0.9;
+  --text-heading: 41px;
+  --text-heading--line-height: 0.9;
+  --text-heading-sm: 24px;
+  --text-heading-sm--line-height: 1.09;
+  --text-sub: 18px;
+  --text-body-lg: 29px;
+  --text-body-lg--line-height: 1.26;
+  --text-base: 15px;
+  --text-label: 12px;
+  --text-micro: 11px;
 
-  /* Superficies y Fondos */
-  --color-surface-base: #f8fafc;
-  --color-surface-card: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-surface-border: #e2e8f0;
-  --color-surface-border-strong: #cbd5e1;
+  /* Vocabulario Kiwi: 36 / 22.5 / 12 / 9999 / 0 px.
+     Los nombres heredados de contenedores se conservan con radio de 12 px. */
+  --radius-sm: 12px;
+  --radius-md: 12px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
+  --radius-3xl: 12px;
+  --radius-card: 12px;
+  --radius-control: 12px;
+  --radius-pill: 36px;
+  --radius-ghost: 22.5px;
+  --radius-full: 9999px;
+  --radius-input: 0;
+  --spacing-gap: 18px;
+  --spacing-card-padding: 24px;
 
-  /* Superficies del tema oscuro (se conserva la paleta original) */
-  --color-surface-0: #090714;
-  --color-surface-1: #0f172a;
-  --color-surface-2: #141d33;
-  --color-line: #1e293b;
-  --color-line-soft: #172033;
-  --shadow-soft: 0 24px 60px -38px rgba(2, 6, 23, 0.95);
+  /* Tema claro. Se reutilizan los roles existentes, incluidos los legacy.
+     Equivalencias completas: docs/kiwi-fase-1.md. */
+  --color-surface-base: #F6F3DF;
+  --color-surface-card: #FCFAEE;
+  --color-surface-muted: #ECE8CC;
+  --color-surface-border: #CFCBA9;
+  --color-surface-border-strong: #8C7A50;
+  --color-surface-0: #ECE8CC;
+  --color-surface-1: #FCFAEE;
+  --color-surface-2: #E2E8C6;
+  --color-line: #CFCBA9;
+  --color-line-soft: #CFCBA9;
 
-  /* Jerarquía Tipográfica y Contraste (WCAG 2.1 AA) */
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #64748b;
+  --color-text-primary: #10140A;
+  --color-text-body: #1E2410;
+  --color-text-secondary: #454A2E;
+  --color-text-muted: #5C5F42;
 
-  /* Acentos de Acción y Enfoque */
-  --color-brand-primary: #3f6212;
-  --color-brand-hover: #365314;
-  --color-brand-light: #f7fee7;
-  --color-brand-focus: #4d7c0f;
+  --color-brand-primary: #3D6614;
+  --color-brand-hover: #2F4416;
+  --color-brand-light: #ECE8CC;
+  --color-brand-focus: #3D6614;
+  --color-brand-blue: #3D6614;
+  /* DISENO.md distingue el relleno principal claro del acento de enlaces. */
+  --color-brand-solid: #2F4416;
+  --color-on-solid: #F6F3DF;
 
-  /* Estados Semánticos Accesibles */
-  --color-status-success: #15803d;
-  --color-status-success-bg: #f0fdf4;
-  --color-status-error: #b91c1c;
-  --color-status-error-bg: #fef2f2;
+  --color-status-success: #3D6614;
+  --color-status-success-bg: #E2E8C6;
+  --color-status-error: #B3361B;
+  /* El coral se reserva para texto/contorno; el fondo usa una superficie. */
+  --color-status-error-bg: #FCFAEE;
+  --color-positive: #3D6614;
+  --color-on-positive: #F6F3DF;
+  /* El dorado existente sirve para valoraciones y descuentos. */
+  --color-star: #6B5200;
 
-  /* TecReview — tokens oficiales del tema claro */
-  /* Acento interactivo: texto, bordes, focos y chips. En oscuro se aclara
-     para conservar el contraste AA sobre las superficies oscuras. */
-  --color-brand-blue: #4d7c0f;
-  /* Kiwi sólido de botones y acciones: en ambos temas usa texto oscuro
-     (--color-on-solid) porque el blanco no alcanza contraste AA. */
-  --color-brand-solid: #a3e635;
-  /* Texto sobre el kiwi sólido: fijo para conservar AA en ambos temas. */
-  --color-on-solid: #18181b;
-  /* Superficie inversa fija: overlays de modales y bloques con texto blanco.
-     No se redefine en oscuro para no invertir el contraste. */
-  --color-inverse: #18181b;
-  /* Texto sobre el verde positivo: fijo para conservar AA en ambos temas. */
-  --color-on-positive: #18181b;
-  --color-ink: #18181b;
-  --color-canvas: #f5f5f4;
-  --color-hairline: #e4e4e7;
-  --color-positive: #10b981;
-  --color-star: #f59e0b;
-  --color-paper: #ffffff;
-  /* #6E6E77 mantiene AA (4.63:1) sobre el lienzo #F5F5F4; #71717A se quedaba
-     en 4.43:1 y no alcanzaba el mínimo para texto normal. */
-  --color-subtle: #6e6e77;
-  --shadow-paper: 0 1px 2px rgba(24, 24, 27, 0.06), 0 8px 24px -12px rgba(24, 24, 27, 0.12);
-  --shadow-paper-hover: 0 2px 4px rgba(24, 24, 27, 0.08), 0 16px 32px -16px rgba(24, 24, 27, 0.18);
+  --color-ink: #10140A;
+  --color-canvas: #F6F3DF;
+  --color-hairline: #CFCBA9;
+  --color-paper: #FCFAEE;
+  --color-subtle: #5C5F42;
+  /* Overlay fijo: conserva el lienzo oscuro incluso en el tema claro. */
+  --color-inverse: #10140A;
+
+  /* Sin sombra visible. La sombra transparente mantiene válida la lista
+     que Tailwind compone con los anillos de foco ("none" la invalidaría).
+     Sus clases se retirarán al restilizar cada componente. */
+  --shadow-soft: 0 0 transparent;
+  --shadow-paper: 0 0 transparent;
+  --shadow-paper-hover: 0 0 transparent;
 }
 
 * {
@@ -92,6 +107,9 @@ body {
   background-color: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  font-feature-settings: "ss01" on;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -107,20 +125,92 @@ body {
    hidratación y la mantiene el toggle persistente. */
 html.dark {
   color-scheme: dark;
-  --color-canvas: #0a0a0a;
-  --color-paper: #161616;
-  --color-ink: #f4f4f5;
-  --color-subtle: #a1a1aa;
-  --color-hairline: #262626;
-  --color-brand-blue: #a3e635;
-  --color-brand-solid: #a3e635;
-  --color-on-solid: #0a0a0a;
-  --shadow-paper: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px -12px rgba(0, 0, 0, 0.7);
-  --shadow-paper-hover: 0 2px 4px rgba(0, 0, 0, 0.55), 0 16px 32px -16px rgba(0, 0, 0, 0.8);
+  --color-surface-base: #10140A;
+  --color-surface-card: #171D0F;
+  --color-surface-muted: #1E2812;
+  --color-surface-border: #3A4626;
+  --color-surface-border-strong: #8C7A50;
+  --color-surface-0: #0A0D06;
+  --color-surface-1: #171D0F;
+  --color-surface-2: #2F4416;
+  --color-line: #3A4626;
+  --color-line-soft: #3A4626;
+
+  --color-text-primary: #F4F1DC;
+  --color-text-body: #E6E3CB;
+  --color-text-secondary: #CFCDB3;
+  --color-text-muted: #B4B397;
+
+  --color-brand-primary: #A5D64C;
+  --color-brand-hover: #A5D64C;
+  --color-brand-light: #1E2812;
+  --color-brand-focus: #A5D64C;
+  --color-brand-blue: #A5D64C;
+  --color-brand-solid: #A5D64C;
+  --color-on-solid: #10140A;
+
+  --color-status-success: #A5D64C;
+  --color-status-success-bg: #2F4416;
+  --color-status-error: #FF8C69;
+  --color-status-error-bg: #171D0F;
+  --color-positive: #A5D64C;
+  --color-on-positive: #10140A;
+  --color-star: #E6C34A;
+
+  --color-canvas: #10140A;
+  --color-paper: #171D0F;
+  --color-ink: #F4F1DC;
+  --color-subtle: #B4B397;
+  --color-hairline: #3A4626;
 }
 
 html.dark .theme-tecreview {
   color-scheme: dark;
+}
+
+/* Ajustes de composición exclusivos de Inicio Kiwi V3. */
+.home-kiwi .home-search input {
+  min-height: 48px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+}
+
+.home-kiwi footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px max(24px, calc((100vw - 1296px) / 2));
+  border-top-style: dashed;
+  text-align: left;
+}
+
+.home-kiwi footer p {
+  margin-top: 0;
+}
+
+@media (max-width: 767px) {
+  .home-kiwi footer {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    text-align: center;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] {
+    border-top-style: dashed;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] a {
+    border-radius: 0;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: none;
+  }
+  .home-kiwi nav[aria-label="Navegación principal móvil"] a[aria-current="page"] {
+    color: var(--color-brand-blue);
+  }
 }
 
 img,
@@ -172,7 +262,7 @@ p {
 .font-doto {
   font-family: var(--font-sans);
   font-variation-settings: normal;
-  letter-spacing: .015em;
+  letter-spacing: normal;
 }
 
 :focus-visible {
@@ -196,7 +286,7 @@ p {
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-subtle);
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -218,7 +308,7 @@ textarea {
 
 button:not(:disabled),
 a {
-  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-property: color, background-color, border-color, transform;
   transition-duration: 180ms;
 }
 

@@ -18,6 +18,8 @@ import {
 import EstadoVacio from "@/components/ui/EstadoVacio";
 import CamposEstablecimiento from "@/components/establecimientos/CamposEstablecimiento";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
+import Button from "@/components/ui/Button";
+import Tag from "@/components/ui/Tag";
 
 interface PanelRepresentanteModalProps {
   isOpen: boolean;
@@ -197,18 +199,18 @@ export default function PanelRepresentanteModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby={tituloId}
-      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-[var(--color-inverse)]/45 p-2 sm:p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex animate-fade-in items-center justify-center bg-ink/45 p-2 sm:p-4 backdrop-blur-sm"
     >
-      <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-3 text-[var(--color-ink)] shadow-[var(--shadow-paper-hover)] sm:max-h-[92dvh] sm:p-6">
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[var(--color-hairline)] pb-4">
+      <div className="relative flex max-h-[96dvh] w-full max-w-5xl animate-scale-in flex-col rounded-card border border-line bg-paper p-3 text-ink sm:max-h-[92dvh] sm:p-6">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-dotted border-line pb-4">
           <div className="min-w-0">
             <h2
               id={tituloId}
-              className="text-lg font-semibold tracking-tight text-[var(--color-ink)]"
+              className="text-lg font-medium uppercase tracking-normal text-ink"
             >
               Panel de representante
             </h2>
-            <p className="mt-1 break-words text-xs text-[var(--color-subtle)]">
+            <p className="mt-1 break-words text-xs text-subtle">
               Sesión: {usuarioSesion?.nombre} ({usuarioSesion?.email}) · Rol:{" "}
               {usuarioSesion?.rol}
             </p>
@@ -218,13 +220,13 @@ export default function PanelRepresentanteModal({
             type="button"
             onClick={cerrarPanel}
             aria-label="Cerrar panel de representante"
-            className={`cursor-pointer rounded-lg border border-[var(--color-hairline)] px-2.5 py-1.5 text-xs text-[var(--color-subtle)] transition-colors hover:border-[var(--color-brand-blue)] hover:bg-[var(--color-canvas)] hover:text-[var(--color-ink)] ${CLASE_FOCO}`}
+            className={`min-h-11 cursor-pointer rounded-ghost border border-ink px-4 text-label font-medium uppercase text-ink transition-colors hover:bg-surface-muted ${CLASE_FOCO}`}
           >
             ✕ Cerrar
           </button>
         </div>
 
-        <p className="mt-3 text-xs text-[var(--color-subtle)]">
+        <p className="mt-3 text-xs text-subtle">
           Consulta y actualiza los datos básicos de los establecimientos dentro
           de tu alcance autorizado. El backend valida la asignación vigente en
           cada operación.
@@ -233,7 +235,7 @@ export default function PanelRepresentanteModal({
         {mensajeExito && (
           <p
             role="status"
-            className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800"
+            className="mt-3 rounded-card border border-line bg-surface-2 p-3 text-xs text-ink"
           >
             {mensajeExito}
           </p>
@@ -242,14 +244,14 @@ export default function PanelRepresentanteModal({
         {errorGuardado && (
           <div
             role="alert"
-            className="mt-3 flex items-start justify-between gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+            className="mt-3 flex items-start justify-between gap-2 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
           >
             <p>{errorGuardado}</p>
             <button
               type="button"
               onClick={() => setErrorGuardado(null)}
               aria-label="Cerrar mensaje de error"
-              className={`cursor-pointer rounded px-1 text-red-600 hover:text-red-800 ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card px-1 text-status-error hover:text-status-error ${CLASE_FOCO}`}
             >
               ✕
             </button>
@@ -259,7 +261,7 @@ export default function PanelRepresentanteModal({
         {erroresValidacion.length > 0 && (
           <div
             role="alert"
-            className="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700"
+            className="mt-3 rounded-card border border-status-error bg-paper p-3 text-xs text-status-error"
           >
             <ul className="space-y-1">
               {erroresValidacion.map((error) => (
@@ -274,7 +276,7 @@ export default function PanelRepresentanteModal({
             <p
               role="status"
               aria-busy="true"
-              className="py-10 text-center text-sm text-[var(--color-subtle)]"
+              className="py-10 text-center text-sm text-subtle"
             >
               Cargando establecimientos asignados…
             </p>
@@ -296,7 +298,7 @@ export default function PanelRepresentanteModal({
           ) : (
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
               <section aria-label="Establecimientos asignados">
-                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                <h3 className="text-xs font-medium uppercase tracking-normal text-subtle">
                   Establecimientos
                 </h3>
                 <ul className="mt-2 space-y-2">
@@ -306,29 +308,29 @@ export default function PanelRepresentanteModal({
                     return (
                       <li
                         key={establecimiento.idEstablecimiento}
-                        className={`rounded-lg border p-3 ${
+                        className={`rounded-card border p-3 ${
                           activo
-                            ? "border-[var(--color-brand-blue)] bg-[var(--color-brand-blue)]/5"
-                            : "border-[var(--color-hairline)]"
+                            ? "border-brand-blue bg-surface-muted"
+                            : "border-line"
                         }`}
                       >
-                        <p className="text-sm font-semibold text-[var(--color-ink)]">
+                        <p className="text-sm font-medium uppercase text-ink">
                           {establecimiento.nombre}
                         </p>
-                        <p className="mt-0.5 text-xs text-[var(--color-subtle)]">
+                        <p className="mt-0.5 text-xs text-subtle">
                           {establecimiento.direccion || "Dirección no registrada"}
                         </p>
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-[var(--color-positive)]/15 px-2 py-0.5 text-[10px] font-semibold text-[var(--color-ink)]">
+                          <Tag variant="verified">
                             Activo
-                          </span>
+                          </Tag>
                           <button
                             type="button"
                             onClick={() =>
                               seleccionarEstablecimiento(establecimiento)
                             }
                             aria-label={`Editar ${establecimiento.nombre}`}
-                            className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-2.5 py-1 text-xs font-semibold text-[var(--color-ink)] transition-colors hover:border-[var(--color-brand-blue)] hover:text-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                            className={`cursor-pointer rounded-card border border-line px-2.5 py-1 text-xs font-medium text-ink transition-colors hover:border-brand-blue hover:text-brand-blue ${CLASE_FOCO}`}
                           >
                             Editar
                           </button>
@@ -342,7 +344,7 @@ export default function PanelRepresentanteModal({
               <section aria-label="Datos del establecimiento">
                 {seleccionado && formulario ? (
                   <form onSubmit={guardar} noValidate>
-                    <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-subtle)]">
+                    <h3 className="text-xs font-medium uppercase tracking-normal text-subtle">
                       Editar {seleccionado.nombre}
                     </h3>
 
@@ -354,16 +356,17 @@ export default function PanelRepresentanteModal({
                       />
                     </div>
 
-                    <button
+                    <Button
+                      variant="primary"
                       type="submit"
                       disabled={guardando}
-                      className={`mt-4 cursor-pointer rounded-md bg-[var(--color-brand-solid)] px-4 py-2 text-sm font-semibold text-[var(--color-on-solid)] transition-colors hover:bg-[var(--color-brand-solid)]/90 disabled:cursor-not-allowed disabled:opacity-50 ${CLASE_FOCO}`}
+                      className="mt-4 disabled:opacity-50"
                     >
                       {guardando ? "Guardando…" : "Guardar cambios"}
-                    </button>
+                    </Button>
                   </form>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-[var(--color-hairline)] p-6 text-center text-sm text-[var(--color-subtle)]">
+                  <p className="rounded-card border border-dashed border-line p-6 text-center text-sm text-subtle">
                     Selecciona un establecimiento de la lista para editar sus
                     datos.
                   </p>

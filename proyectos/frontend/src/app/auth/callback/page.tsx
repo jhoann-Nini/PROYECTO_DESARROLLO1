@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { buttonClassName } from "@/components/ui/Button";
 
 function CallbackContenido() {
   const router = useRouter();
@@ -143,33 +144,33 @@ function CallbackContenido() {
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
-      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <div className="w-full max-w-md rounded-card border border-line bg-paper p-8 text-ink">
         {estado === "procesando" && (
           <div className="space-y-4">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-cyan-100 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 text-brand-blue">
               <svg className="h-7 w-7 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Confirmando cuenta</h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{mensaje}</p>
+            <h1 className="text-xl font-medium uppercase text-ink">Confirmando cuenta</h1>
+            <p className="text-sm text-subtle">{mensaje}</p>
           </div>
         )}
 
         {estado === "exito" && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-surface-2 text-brand-blue">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">¡Confirmación Exitosa!</h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{mensaje}</p>
+            <h1 className="text-xl font-medium uppercase text-ink">¡Confirmación Exitosa!</h1>
+            <p className="text-sm text-subtle">{mensaje}</p>
             <div className="pt-2">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-xl bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-cyan-500"
+                className={buttonClassName("primary")}
               >
                 Ir a la página principal
               </Link>
@@ -179,17 +180,17 @@ function CallbackContenido() {
 
         {estado === "error" && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-status-error bg-paper text-status-error">
               <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Error de Confirmación</h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400">{mensaje}</p>
+            <h1 className="text-xl font-medium uppercase text-ink">Error de Confirmación</h1>
+            <p className="text-sm text-subtle">{mensaje}</p>
             <div className="pt-2">
               <Link
                 href="/"
-                className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700"
+                className={buttonClassName("secondary")}
               >
                 Volver al inicio
               </Link>
@@ -207,8 +208,8 @@ export default function AuthCallbackPage() {
       fallback={
         <div className="flex min-h-[60vh] items-center justify-center p-6 text-center">
           <div className="space-y-3">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
-            <p className="text-sm text-slate-500 dark:text-slate-400">Cargando verificación...</p>
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-brand-blue border-t-transparent" />
+            <p className="text-sm text-subtle">Cargando verificación...</p>
           </div>
         </div>
       }

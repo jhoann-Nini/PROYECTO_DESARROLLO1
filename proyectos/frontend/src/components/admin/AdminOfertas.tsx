@@ -180,15 +180,15 @@ export default function AdminOfertas() {
     }
   }
 
-  const claseCampo = `mt-1 block w-full rounded-md border border-[var(--color-hairline)] bg-[var(--color-paper)] px-3 py-2 text-sm text-[var(--color-ink)] focus:border-[var(--color-brand-blue)] disabled:opacity-60 ${CLASE_FOCO}`;
+  const claseCampo = `mt-1 block w-full rounded-card border border-line bg-paper px-3 py-2 text-sm text-ink focus:border-brand-blue disabled:opacity-60 ${CLASE_FOCO}`;
 
   return (
     <section aria-labelledby={`${idBase}-titulo`} className="space-y-4">
       <div>
-        <h3 id={`${idBase}-titulo`} className="text-base font-semibold text-[var(--color-ink)]">
+        <h3 id={`${idBase}-titulo`} className="text-base font-medium text-ink">
           Ofertas por tienda
         </h3>
-        <p className="mt-1 text-xs text-[var(--color-subtle)]">
+        <p className="mt-1 text-xs text-subtle">
           Precio, disponibilidad y enlace de cada producto en cada tienda. Es la información que ve el
           público en «Dónde comprar». Registra solo datos comprobados en la tienda; la fecha de
           actualización la fija el servidor.
@@ -196,12 +196,12 @@ export default function AdminOfertas() {
       </div>
 
       {mensajeExito && (
-        <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
+        <p role="status" className="rounded-card border border-surface-border-strong bg-surface-2 p-3 text-xs text-ink">
           {mensajeExito}
         </p>
       )}
       {errorAccion && (
-        <p role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+        <p role="alert" className="rounded-card border border-status-error bg-paper p-3 text-xs text-status-error">
           {errorAccion}
         </p>
       )}
@@ -210,9 +210,9 @@ export default function AdminOfertas() {
         onSubmit={guardar}
         noValidate
         aria-label={editando ? "Editar oferta" : "Nueva oferta"}
-        className="grid grid-cols-1 gap-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4 sm:grid-cols-2"
+        className="grid grid-cols-1 gap-3 rounded-card border border-line bg-canvas p-4 sm:grid-cols-2"
       >
-        <label className="text-xs font-medium text-[var(--color-subtle)]">
+        <label className="text-xs font-medium text-subtle">
           Producto
           <select
             value={formulario.idProducto}
@@ -226,7 +226,7 @@ export default function AdminOfertas() {
             ))}
           </select>
         </label>
-        <label className="text-xs font-medium text-[var(--color-subtle)]">
+        <label className="text-xs font-medium text-subtle">
           Tienda
           <select
             value={formulario.idEstablecimiento}
@@ -240,7 +240,7 @@ export default function AdminOfertas() {
             ))}
           </select>
         </label>
-        <label className="text-xs font-medium text-[var(--color-subtle)]">
+        <label className="text-xs font-medium text-subtle">
           Precio (COP)
           <input
             type="number"
@@ -252,7 +252,7 @@ export default function AdminOfertas() {
             className={claseCampo}
           />
         </label>
-        <label className="text-xs font-medium text-[var(--color-subtle)]">
+        <label className="text-xs font-medium text-subtle">
           Enlace de la oferta (opcional)
           <input
             type="url"
@@ -263,7 +263,7 @@ export default function AdminOfertas() {
             className={claseCampo}
           />
         </label>
-        <label className="flex items-center gap-2 text-xs font-medium text-[var(--color-ink)] sm:col-span-2">
+        <label className="flex items-center gap-2 text-xs font-medium text-ink sm:col-span-2">
           <input
             type="checkbox"
             checked={formulario.disponibilidad}
@@ -274,7 +274,7 @@ export default function AdminOfertas() {
         </label>
 
         {errores.length > 0 && (
-          <ul role="alert" className="list-disc space-y-1 rounded-md border border-red-200 bg-red-50 p-3 pl-6 text-xs text-red-700 sm:col-span-2">
+          <ul role="alert" className="list-disc space-y-1 rounded-card border border-status-error bg-paper p-3 pl-6 text-xs text-status-error sm:col-span-2">
             {errores.map((error) => <li key={error}>{error}</li>)}
           </ul>
         )}
@@ -283,7 +283,7 @@ export default function AdminOfertas() {
           <button
             type="submit"
             disabled={guardando}
-            className={`cursor-pointer rounded-md bg-[var(--color-brand-blue)] px-4 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
+            className={`cursor-pointer rounded-card bg-brand-solid px-4 py-2 text-xs font-medium text-on-solid disabled:cursor-not-allowed disabled:opacity-60 ${CLASE_FOCO}`}
           >
             {guardando ? "Guardando…" : editando ? "Guardar cambios" : "Guardar oferta"}
           </button>
@@ -291,7 +291,7 @@ export default function AdminOfertas() {
             <button
               type="button"
               onClick={cancelarEdicion}
-              className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-4 py-2 text-xs font-semibold text-[var(--color-subtle)] ${CLASE_FOCO}`}
+              className={`cursor-pointer rounded-card border border-line px-4 py-2 text-xs font-medium text-subtle ${CLASE_FOCO}`}
             >
               Cancelar
             </button>
@@ -307,7 +307,7 @@ export default function AdminOfertas() {
           accion={{ etiqueta: "Reintentar", onClick: () => setIntento((v) => v + 1) }}
         />
       ) : ofertas === null ? (
-        <p role="status" aria-busy="true" className="py-6 text-center text-sm text-[var(--color-subtle)]">
+        <p role="status" aria-busy="true" className="py-6 text-center text-sm text-subtle">
           Cargando ofertas…
         </p>
       ) : ofertas.length === 0 ? (
@@ -320,18 +320,18 @@ export default function AdminOfertas() {
           {ofertas.map((oferta) => (
             <li
               key={clave(oferta)}
-              className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-paper)] p-4"
+              className="flex flex-wrap items-start justify-between gap-3 rounded-card border border-line bg-paper p-4"
             >
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[var(--color-ink)]">
+                <p className="text-sm font-medium text-ink">
                   {oferta.nombreProducto} · {oferta.nombreEstablecimiento}
                   {oferta.establecimientoVerificado && (
-                    <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                    <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-ink">
                       Tienda verificada
                     </span>
                   )}
                 </p>
-                <p className="mt-1 text-xs text-[var(--color-subtle)]">
+                <p className="mt-1 text-xs text-subtle">
                   {oferta.precio !== null ? formatoPrecio.format(oferta.precio) : "Sin precio"}
                   {" · "}
                   {oferta.disponibilidad ? "Disponible" : "No disponible"}
@@ -340,10 +340,10 @@ export default function AdminOfertas() {
                   {formatearFecha(oferta.fechaActualizacionPrecio)}
                 </p>
                 {oferta.urlOferta && (
-                  <p className="mt-1 truncate text-xs text-[var(--color-brand-blue)]">{oferta.urlOferta}</p>
+                  <p className="mt-1 truncate text-xs text-brand-blue">{oferta.urlOferta}</p>
                 )}
                 {oferta.reportesAbiertos > 0 && (
-                  <p className="mt-1 text-xs font-medium text-amber-800">
+                  <p className="mt-1 text-xs font-medium text-star">
                     {oferta.reportesAbiertos} {oferta.reportesAbiertos === 1 ? "reporte abierto" : "reportes abiertos"} en moderación
                   </p>
                 )}
@@ -353,7 +353,7 @@ export default function AdminOfertas() {
                   type="button"
                   onClick={() => editar(oferta)}
                   aria-label={`Editar oferta de ${oferta.nombreProducto} en ${oferta.nombreEstablecimiento}`}
-                  className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-brand-blue)] hover:border-[var(--color-brand-blue)] ${CLASE_FOCO}`}
+                  className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-brand-blue hover:border-brand-blue ${CLASE_FOCO}`}
                 >
                   Editar
                 </button>
@@ -363,14 +363,14 @@ export default function AdminOfertas() {
                       type="button"
                       onClick={() => eliminar(oferta)}
                       disabled={eliminandoClave !== null}
-                      className={`cursor-pointer rounded-md bg-red-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60 ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card bg-paper px-3 py-1.5 text-xs font-medium text-ink disabled:opacity-60 ${CLASE_FOCO}`}
                     >
                       {eliminandoClave === clave(oferta) ? "Eliminando…" : "Confirmar eliminación"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setConfirmandoClave(null)}
-                      className={`cursor-pointer rounded-md border border-[var(--color-hairline)] px-3 py-1.5 text-xs font-semibold text-[var(--color-subtle)] ${CLASE_FOCO}`}
+                      className={`cursor-pointer rounded-card border border-line px-3 py-1.5 text-xs font-medium text-subtle ${CLASE_FOCO}`}
                     >
                       Cancelar
                     </button>
@@ -380,7 +380,7 @@ export default function AdminOfertas() {
                     type="button"
                     onClick={() => setConfirmandoClave(clave(oferta))}
                     aria-label={`Eliminar oferta de ${oferta.nombreProducto} en ${oferta.nombreEstablecimiento}`}
-                    className={`cursor-pointer rounded-md border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:border-red-400 hover:bg-red-50 ${CLASE_FOCO}`}
+                    className={`cursor-pointer rounded-card border border-status-error px-3 py-1.5 text-xs font-medium text-status-error hover:border-status-error hover:bg-paper ${CLASE_FOCO}`}
                   >
                     Eliminar
                   </button>

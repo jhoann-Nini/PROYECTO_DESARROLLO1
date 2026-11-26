@@ -9,6 +9,7 @@ import OfertasHome from "./OfertasHome";
 import DestacadosHome, {
   type DestacadosHomeProps,
 } from "./DestacadosHome";
+import EstadoBusquedaHome from "./EstadoBusquedaHome";
 import RankingsHome from "./RankingsHome";
 import OpinionesHome from "./OpinionesHome";
 import CtaComparador from "./CtaComparador";
@@ -173,9 +174,7 @@ function propsDestacados(
     totalMostrados: 0,
     cargando: false,
     estadoBackend: "online",
-    busqueda: "",
     onVerDetalle: vi.fn(),
-    onLimpiarBusqueda: vi.fn(),
     ...overrides,
   };
 }
@@ -477,46 +476,6 @@ describe("DestacadosHome", () => {
     ).toBeNull();
   });
 
-  it("muestra el estado vacío de búsqueda y permite limpiarla", () => {
-    const onLimpiarBusqueda = vi.fn();
-    render(
-      <DestacadosHome
-        {...propsDestacados({ busqueda: "pixel", onLimpiarBusqueda })}
-      />,
-    );
-
-    // Fase 4 (H-12): aclara que se trata del catálogo de TecReview, no del mercado.
-    expect(
-      screen.getByText(/«pixel» no está en nuestro catálogo\./),
-    ).toBeDefined();
-    expect(screen.getByText(/Puede existir en el mercado, pero aún no lo tenemos/)).toBeDefined();
-    expect(screen.queryByText("Productos parecidos en nuestro catálogo")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Limpiar búsqueda" }));
-    expect(onLimpiarBusqueda).toHaveBeenCalledTimes(1);
-  });
-
-  it("pide marca o nombre del dispositivo si la búsqueda es solo genérica", () => {
-    render(<DestacadosHome {...propsDestacados({ busqueda: "Teléfono" })} />);
-
-    expect(screen.getByText("Escribe la marca o el modelo del dispositivo.")).toBeDefined();
-    expect(screen.getByText(/«Teléfono» es muy general/)).toBeDefined();
-    expect(screen.queryByText(/no está en nuestro catálogo/)).toBeNull();
-  });
-
-  it("ofrece productos registrados similares y abre su detalle", () => {
-    const onVerDetalle = vi.fn();
-    const alternativa = crearVista({ idProducto: 7, nombre: "Pixel 8", marca: "Google" });
-    render(
-      <DestacadosHome
-        {...propsDestacados({ busqueda: "pixel 10", onVerDetalle, alternativas: [alternativa] })}
-      />,
-    );
-
-    const lista = screen.getByRole("list", { name: "Productos parecidos en nuestro catálogo" });
-    fireEvent.click(within(lista).getByRole("button", { name: /Pixel 8/ }));
-    expect(onVerDetalle).toHaveBeenCalledWith(alternativa);
-  });
-
   it("muestra un vacío general sin mezclar el presupuesto", () => {
     render(<DestacadosHome {...propsDestacados()} />);
 
@@ -528,7 +487,7 @@ describe("DestacadosHome", () => {
     render(<DestacadosHome {...propsDestacados()} />);
 
     const seccion = screen.getByRole("region", {
-      name: "Destacados para ti.",
+      name: "Productos destacados.",
     });
     expect(seccion.getAttribute("id")).toBe("seccion-destacados");
     expect(seccion.className).toContain("scroll-mt-16");
@@ -544,6 +503,38 @@ describe("DestacadosHome", () => {
     );
 
     expect(screen.getByText("Servidor no disponible")).toBeDefined();
+  });
+});
+
+describe("EstadoBusquedaHome", () => {
+  it("abre el buscador global para consultar productos parecidos", () => {
+    const onVerResultados = vi.fn();
+    render(
+      <EstadoBusquedaHome
+        busqueda="pixel 10"
+        totalResultados={0}
+        hayAlternativas
+        onVerResultados={onVerResultados}
+      />,
+    );
+
+    expect(screen.getByText(/«pixel 10» no está en nuestro catálogo/)).toBeDefined();
+    fireEvent.click(screen.getByRole("button", { name: "Ver productos parecidos" }));
+    expect(onVerResultados).toHaveBeenCalledTimes(1);
+  });
+
+  it("pide marca o modelo cuando la búsqueda es genérica", () => {
+    render(
+      <EstadoBusquedaHome
+        busqueda="Teléfono"
+        totalResultados={0}
+        hayAlternativas={false}
+        onVerResultados={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText(/Escribe la marca o el modelo del dispositivo/)).toBeDefined();
+    expect(screen.queryByRole("button", { name: /Ver resultados|Ver productos parecidos/ })).toBeNull();
   });
 });
 

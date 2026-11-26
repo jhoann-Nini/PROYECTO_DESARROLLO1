@@ -55,6 +55,7 @@ export default function ColaComunidad({ onCambio }: { onCambio: () => void }) {
 function ColaRevision({ onCambio }: { onCambio: () => void }) {
   const [elementos, setElementos] = useState<ElementoRevisionComunidad[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
 
   useEffect(() => {
@@ -82,9 +83,14 @@ function ColaRevision({ onCambio }: { onCambio: () => void }) {
     );
   }
   if (elementos === null) return <p role="status" aria-busy="true" className="text-xs text-[var(--color-subtle)]">Cargando…</p>;
-  if (elementos.length === 0) return <p className="text-xs text-[var(--color-subtle)]">No hay contenido de la comunidad en revisión.</p>;
+  const avisoVisible = aviso && <p role="status" className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">{aviso}</p>;
+  if (elementos.length === 0) {
+    return <>{avisoVisible}<p className="text-xs text-[var(--color-subtle)]">No hay contenido de la comunidad en revisión.</p></>;
+  }
 
   return (
+    <>
+    {avisoVisible}
     <ul className="space-y-3">
       {elementos.map((e) => (
         <li key={`${e.tipo}-${e.id}`}>
@@ -94,16 +100,21 @@ function ColaRevision({ onCambio }: { onCambio: () => void }) {
               setElementos((previos) => (previos ?? []).filter((x) => !(x.tipo === e.tipo && x.id === e.id)));
               onCambio();
             }}
-            onDesactualizado={() => setIntento((v) => v + 1)}
+            onDesactualizado={(mensaje) => {
+              setAviso(mensaje);
+              setIntento((v) => v + 1);
+              onCambio();
+            }}
           />
         </li>
       ))}
     </ul>
+    </>
   );
 }
 
 function TarjetaRevision({ elemento, onResuelto, onDesactualizado }: {
-  elemento: ElementoRevisionComunidad; onResuelto: () => void; onDesactualizado: () => void;
+  elemento: ElementoRevisionComunidad; onResuelto: () => void; onDesactualizado: (mensaje: string) => void;
 }) {
   const [motivo, setMotivo] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -121,7 +132,7 @@ function TarjetaRevision({ elemento, onResuelto, onDesactualizado }: {
       await decidirModeracionComunidad(rutaDe(elemento.tipo), elemento.id, decision, motivo.trim());
       onResuelto();
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) onDesactualizado();
+      if (err instanceof ApiError && err.status === 409) onDesactualizado(err.message);
       else setError(mensajeError(err, "No fue posible registrar la decisión."));
     } finally {
       setEnviando(false);
@@ -156,6 +167,7 @@ function TarjetaRevision({ elemento, onResuelto, onDesactualizado }: {
 function ColaReportes({ onCambio }: { onCambio: () => void }) {
   const [reportes, setReportes] = useState<ReporteModeracionComunidad[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
 
   useEffect(() => {
@@ -183,9 +195,14 @@ function ColaReportes({ onCambio }: { onCambio: () => void }) {
     );
   }
   if (reportes === null) return <p role="status" aria-busy="true" className="text-xs text-[var(--color-subtle)]">Cargando…</p>;
-  if (reportes.length === 0) return <p className="text-xs text-[var(--color-subtle)]">No hay reportes abiertos de la comunidad.</p>;
+  const avisoVisible = aviso && <p role="status" className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">{aviso}</p>;
+  if (reportes.length === 0) {
+    return <>{avisoVisible}<p className="text-xs text-[var(--color-subtle)]">No hay reportes abiertos de la comunidad.</p></>;
+  }
 
   return (
+    <>
+    {avisoVisible}
     <ul className="space-y-3">
       {reportes.map((r) => (
         <li key={r.idReporte}>
@@ -195,19 +212,26 @@ function ColaReportes({ onCambio }: { onCambio: () => void }) {
               setReportes((previos) => (previos ?? []).filter((x) => x.idReporte !== r.idReporte));
               onCambio();
             }}
-            onDesactualizado={() => setIntento((v) => v + 1)}
+            onDesactualizado={(mensaje) => {
+              setAviso(mensaje);
+              setIntento((v) => v + 1);
+              onCambio();
+            }}
           />
         </li>
       ))}
     </ul>
+    </>
   );
 }
 
 function TarjetaReporte({ reporte, onResuelto, onDesactualizado }: {
-  reporte: ReporteModeracionComunidad; onResuelto: () => void; onDesactualizado: () => void;
+  reporte: ReporteModeracionComunidad; onResuelto: () => void; onDesactualizado: (mensaje: string) => void;
 }) {
   const [justificacion, setJustificacion] = useState("");
   const [accion, setAccion] = useState<AccionAlAceptarReporte>("NINGUNA");
+  const [motivo, setMotivo] = useState("");
+  const [confirmaEliminar, setConfirmaEliminar] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const id = `reporte-${reporte.idReporte}`;
@@ -217,14 +241,20 @@ function TarjetaReporte({ reporte, onResuelto, onDesactualizado }: {
       setError("Escribe la justificación.");
       return;
     }
+    if (resolucion === "aceptar" && accion === "ELIMINAR" && !confirmaEliminar) {
+      setError("Confirma que la eliminación no se puede deshacer.");
+      return;
+    }
     setEnviando(true);
     setError(null);
     try {
-      await resolverReporteComunidad(reporte.idReporte, resolucion,
-        resolucion === "aceptar" ? { justificacion: justificacion.trim(), accion } : { justificacion: justificacion.trim() });
+      const datos = resolucion === "rechazar"
+        ? { justificacion: justificacion.trim() }
+        : { justificacion: justificacion.trim(), accion, ...(accion !== "NINGUNA" && motivo.trim() ? { motivo: motivo.trim() } : {}) };
+      await resolverReporteComunidad(reporte.idReporte, resolucion, datos);
       onResuelto();
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) onDesactualizado();
+      if (err instanceof ApiError && err.status === 409) onDesactualizado(err.message);
       else setError(mensajeError(err, "No fue posible resolver el reporte."));
     } finally {
       setEnviando(false);
@@ -255,10 +285,23 @@ function TarjetaReporte({ reporte, onResuelto, onDesactualizado }: {
         Al aceptar
         <select id={`${id}-accion`} value={accion} onChange={(e) => setAccion(e.target.value as AccionAlAceptarReporte)} className={CLASE_CAMPO}>
           <option value="NINGUNA">No cambiar el contenido</option>
-          <option value="OCULTAR">Ocultar el contenido</option>
-          <option value="ELIMINAR">Eliminar el contenido (no se puede deshacer)</option>
+          <option value="OCULTAR" disabled={reporte.ocultaPorModeracion || reporte.eliminada}>Ocultar el contenido</option>
+          <option value="ELIMINAR" disabled={reporte.eliminada}>Eliminar el contenido (no se puede deshacer)</option>
         </select>
       </label>
+      {accion !== "NINGUNA" && (
+        <label htmlFor={`${id}-motivo`} className="mt-2 block text-xs font-medium text-[var(--color-subtle)]">
+          Motivo para el autor (hasta 500 caracteres; si lo dejas vacío, se usa la justificación)
+          <textarea id={`${id}-motivo`} rows={2} maxLength={500} value={motivo}
+            onChange={(e) => setMotivo(e.target.value)} className={CLASE_CAMPO} />
+        </label>
+      )}
+      {accion === "ELIMINAR" && (
+        <label className="mt-2 flex items-center gap-2 text-xs text-[var(--color-ink)]">
+          <input type="checkbox" checked={confirmaEliminar} onChange={(e) => setConfirmaEliminar(e.target.checked)} />
+          Confirmo que la eliminación no se puede deshacer
+        </label>
+      )}
       {error && <p role="alert" className={`mt-2 ${CLASE_ALERTA}`}>{error}</p>}
       <div className="mt-2 flex gap-2">
         <button type="button" disabled={enviando} onClick={() => resolver("aceptar")} className={CLASE_BOTON}>Aceptar reporte</button>

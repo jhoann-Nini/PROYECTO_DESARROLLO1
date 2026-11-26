@@ -152,7 +152,7 @@ public class ModeracionComunidadService {
     boolean valida = switch (accion) {
       case APROBAR, RECHAZAR -> estado == EstadoModeracion.PENDIENTE && !eliminada;
       case OCULTAR -> !oculta && !eliminada;
-      case RESTAURAR -> oculta;
+      case RESTAURAR -> oculta && !eliminada;
       case ELIMINAR_MODERADOR -> !eliminada;
       case CERRAR, REABRIR -> false; // Fase 4.
     };
@@ -164,6 +164,7 @@ public class ModeracionComunidadService {
     try {
       auditoriaRepository.saveAndFlush(new ModeracionComunidadAuditoria(p, r, moderador, accion, motivo, revisado));
     } catch (DataAccessException ex) {
+      if (!esRechazoDeTrigger(ex)) throw ex;
       throw new ConflictException("Otra decisión cambió el contenido mientras tanto. Recarga la cola.");
     }
 
@@ -248,7 +249,9 @@ public class ModeracionComunidadService {
     }
     mover(reporte, moderador, destino, justificacion);
     if (accion != null) {
-      String motivo = request.motivo() == null || request.motivo().isBlank() ? justificacion : request.motivo();
+      // Sin motivo propio se usa la justificación, recortada al máximo de la auditoría (500).
+      String motivo = request.motivo() == null || request.motivo().isBlank()
+        ? recortar(justificacion, MOTIVO_MAX) : request.motivo();
       aplicar(moderador, reporte.getPublicacion(), reporte.getRespuesta(), accion,
         texto(motivo, MOTIVO_MAX, "El motivo"));
     }
@@ -271,6 +274,7 @@ public class ModeracionComunidadService {
     try {
       historialRepository.saveAndFlush(new ReporteComunidadHistorial(reporte, moderador, nuevo, justificacion));
     } catch (DataAccessException ex) {
+      if (!esRechazoDeTrigger(ex)) throw ex;
       throw new ConflictException("Otra persona resolvió el reporte mientras tanto. Recarga la cola.");
     }
     reporte.setEstado(nuevo);
@@ -332,6 +336,20 @@ public class ModeracionComunidadService {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Se requiere rol de moderación.");
     }
     return usuario;
+  }
+
+  /**
+   * Un RAISE EXCEPTION de los triggers de la 030 llega con SQLSTATE P0001.
+   * Otros errores (pool agotado, lock_timeout) no son un conflicto y se relanzan.
+   */
+  static boolean esRechazoDeTrigger(DataAccessException ex) {
+    Throwable causa = ex.getMostSpecificCause();
+    return causa instanceof java.sql.SQLException sql && "P0001".equals(sql.getSQLState());
+  }
+
+  private static String recortar(String texto, int maximo) {
+    return texto.codePointCount(0, texto.length()) <= maximo
+      ? texto : texto.substring(0, texto.offsetByCodePoints(0, maximo));
   }
 
   private static String texto(String valor, int maximo, String campo) {

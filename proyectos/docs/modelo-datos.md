@@ -704,7 +704,8 @@ A la fecha de esta actualizaci贸n, el repositorio contiene las migraciones 001鈥
   - Triggers diferidos en `publicacion_comunidad` y `respuesta_comunidad`:
     - salir de PENDIENTE, ocultar o restaurar, la eliminaci贸n por un moderador y cerrar o reabrir exigen su auditor铆a en la misma transacci贸n;
     - lo eliminado no vuelve;
-    - lo RECHAZADO solo vuelve a PENDIENTE, cuando el autor lo edita.
+    - volver a PENDIENTE solo ocurre como edici贸n del autor (cambia `fecha_edicion`), desde cualquier estado; lo RECHAZADA no se publica directamente;
+    - `oculta_por_reportes` se recalcula siempre con el conteo real de reportes no rechazados.
   - `reporte_comunidad`:
     - destino exclusivo y `tipo_contenido`;
     - `motivo` (spam, lenguaje-ofensivo, acoso, falso u otro) y `descripcion`, obligatoria con `otro`;

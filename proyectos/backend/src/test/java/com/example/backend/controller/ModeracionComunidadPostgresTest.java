@@ -160,6 +160,18 @@ class ModeracionComunidadPostgresTest extends ComunidadIntegrationTestBase {
   }
 
   @Test
+  void reportarContenidoEliminadoMientrasTanto404() throws Exception {
+    publicacionRepository.findById(publicacion.getIdPublicacion()).orElseThrow();  // en caché, sin eliminar
+    entityManager.createNativeQuery("UPDATE publicacion_comunidad SET eliminada = TRUE, fecha_eliminacion = now(),"
+        + " eliminada_por = id_autor WHERE id_publicacion = :id")
+      .setParameter("id", publicacion.getIdPublicacion()).executeUpdate();
+
+    mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/reportes")
+        .with(como(otro)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"spam\"}"))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
   void laFechaDelReporteEsLaGuardada() throws Exception {
     String cuerpo = mockMvc.perform(post("/api/comunidad/publicaciones/" + publicacion.getIdPublicacion() + "/reportes")
         .with(como(otro)).contentType(MediaType.APPLICATION_JSON).content("{\"motivo\":\"spam\"}"))

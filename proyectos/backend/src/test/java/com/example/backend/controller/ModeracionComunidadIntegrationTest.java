@@ -237,6 +237,38 @@ class ModeracionComunidadIntegrationTest extends ComunidadIntegrationTestBase {
   }
 
   @Test
+  void aceptarConJustificacionLargaYOcultar() throws Exception {
+    long idReporte = reportar(otro, publicada);
+    String larga = "Es publicidad reiterada. ".repeat(30);
+
+    resolver(moderador, idReporte, "aceptar", "{\"justificacion\":" + json(larga) + ",\"accion\":\"OCULTAR\"}")
+      .andExpect(status().isOk());
+
+    if (!publicacionRepository.findById(publicada.getIdPublicacion()).orElseThrow().isOcultaPorModeracion()) {
+      throw new AssertionError("No se ocultó con una justificación de más de 500 caracteres");
+    }
+  }
+
+  @Test
+  void restaurarContenidoEliminado409SinCulparAOtraDecision() throws Exception {
+    decidir(moderador, "publicaciones", publicada.getIdPublicacion(), "ocultar", "Incumple").andExpect(status().isOk());
+    decidir(moderador, "publicaciones", publicada.getIdPublicacion(), "eliminar", "Spam").andExpect(status().isOk());
+
+    decidir(moderador, "publicaciones", publicada.getIdPublicacion(), "restaurar", "Revisado")
+      .andExpect(status().isConflict())
+      .andExpect(jsonPath("$.message").value("La acción no corresponde al estado actual del contenido."));
+  }
+
+  @Test
+  void moderadorSuspendidoNoVeLoPendienteEnLecturasPublicas() throws Exception {
+    moderador.setEstado(false);
+    usuarioRepository.save(moderador);
+
+    mockMvc.perform(get("/api/comunidad/publicaciones/" + pendiente.getIdPublicacion()).with(como(moderador)))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
   void aceptarSinAccionNoOculta() throws Exception {
     long idReporte = reportar(otro, publicada);
 

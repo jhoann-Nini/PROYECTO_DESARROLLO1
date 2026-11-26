@@ -31,7 +31,10 @@ public class PermisosComunidad {
     if (jwt == null || jwt.getSubject() == null) {
       return null;
     }
-    return usuarioRepository.findBySupabaseUid(jwt.getSubject()).orElse(null);
+    // Una cuenta suspendida lee como anónima: sin privilegios de autor ni de moderación.
+    return usuarioRepository.findBySupabaseUid(jwt.getSubject())
+      .filter(u -> Boolean.TRUE.equals(u.getEstado()))
+      .orElse(null);
   }
 
   public boolean esModerador(Usuario usuario) {

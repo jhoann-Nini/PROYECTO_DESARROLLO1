@@ -7,11 +7,12 @@ import com.example.backend.entity.ReporteComunidad;
 import com.example.backend.entity.RespuestaComunidad;
 import com.example.backend.entity.Usuario;
 import com.example.backend.exception.ConflictException;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.repository.ReporteComunidadRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.Set;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -88,11 +89,18 @@ public class ReporteComunidadService {
       entityManager.refresh(guardado);  // la fecha de creación la fija el trigger de la 030
       return new ReporteComunidadResponse(guardado.getIdReporte(), guardado.getEstado().name(),
         guardado.getMotivo(), guardado.getFechaCreacion());
-    } catch (DataIntegrityViolationException ex) {
+    } catch (DataAccessException ex) {
       // Dos peticiones simultáneas del mismo usuario: el índice único parcial descarta la segunda.
       String mensaje = String.valueOf(ex.getMostSpecificCause().getMessage()).toLowerCase();
       if (mensaje.contains("uq_reporte_comunidad_abierto")) {
         throw new ConflictException(MENSAJE_DUPLICADO);
+      }
+      // Cambios entre la lectura y el INSERT que detecta el trigger de la 030.
+      if (mensaje.contains("contenido eliminado") || mensaje.contains("no existe el contenido reportado")) {
+        throw new ResourceNotFoundException("El contenido ya no está disponible.");
+      }
+      if (mensaje.contains("inactiva o suspendida")) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario inactivo o suspendido.");
       }
       throw ex;
     }

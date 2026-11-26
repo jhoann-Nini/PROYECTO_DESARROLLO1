@@ -80,7 +80,7 @@ Migraciones en `proyectos/backend/src/main/resources/db/migration/` (copia en `p
 
 - **Filtro:** `service/ModeracionComunidad.java` usa el mismo `AnalizadorContenido`. Con riesgo MEDIO
   o ALTO, o un autor en revisión previa, el contenido queda `PENDIENTE`; al editarlo, lo `PENDIENTE` o
-  `RECHAZADO` vuelve a `PENDIENTE`.
+  `RECHAZADA` vuelve a `PENDIENTE` (en la base, volver a PENDIENTE solo se admite como edición: cambia `fecha_edicion`).
 - **Reportes:**
   - Endpoints: `POST /api/comunidad/{publicaciones|respuestas}/{id}/reportes`, en `ReporteComunidadService`.
   - Tabla `reporte_comunidad`, con destino exclusivo y un reporte abierto por usuario y contenido.

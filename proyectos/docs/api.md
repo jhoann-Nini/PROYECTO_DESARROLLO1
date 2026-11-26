@@ -1992,13 +1992,13 @@ Cuerpo: `{ "motivo": "…" }`, de 1 a 500 caracteres.
   - restaurar, si está oculto por moderación;
   - eliminar, que no se puede deshacer.
 - **Respuesta `200`:** `{ tipo, id, estadoModeracion, ocultaPorModeracion, ocultaPorReportes, eliminada }`.
-- **Errores:** `400` sin motivo; `404`; `409` acción que no corresponde al estado actual.
+- **Errores:** `400` sin motivo; `403` contenido propio; `404`; `409` acción que no corresponde al estado actual u otra decisión simultánea.
 
 ### `GET /{publicaciones|respuestas}/{id}/historial`
 Decisiones sobre el contenido, de la más reciente a la más antigua: `accion`, `motivo`, `contenidoRevisado`, `moderador` y `fechaEvento`.
 
 ### `GET /reportes?estado=`
-Por defecto, los abiertos (PENDIENTE y EN_REVISION). Cada reporte lleva:
+Por defecto, los abiertos (PENDIENTE y EN_REVISION). `estado` va en mayúsculas (`ACEPTADO`); otro valor da `400`. Cada reporte lleva:
 - el contenido reportado: `tipo`, `idContenido`, `idPublicacion`, `titulo` y `contenido`;
 - `autorContenido`, `reportante`, `motivo` y `descripcion`;
 - `estado` y `reportesActivos` (los no rechazados del mismo contenido);
@@ -2006,10 +2006,10 @@ Por defecto, los abiertos (PENDIENTE y EN_REVISION). Cada reporte lleva:
 
 ### `PUT /reportes/{id}/en-revision`, `PUT /reportes/{id}/rechazar` y `PUT /reportes/{id}/aceptar`
 - **Cuerpo:** `{ "justificacion": "…" }`, de 1 a 2000 caracteres.
-- **Al aceptar**, además: `"accion": "NINGUNA" | "OCULTAR" | "ELIMINAR"` y un `"motivo"` opcional (si falta, se usa la justificación). Con `OCULTAR` o `ELIMINAR`, la decisión sobre el contenido se audita en la misma transacción.
+- **Al aceptar**, además: `"accion": "NINGUNA" | "OCULTAR" | "ELIMINAR"` y un `"motivo"` opcional, de hasta 500 caracteres. Si falta, se usan los primeros 500 caracteres de la justificación. Con `OCULTAR` o `ELIMINAR`, la decisión sobre el contenido se audita en la misma transacción.
 - **Desde PENDIENTE:** aceptar o rechazar pasa primero por EN_REVISION, y cada paso queda en `reporte_comunidad_historial`.
 - **Respuesta `200`:** `{ idReporte, estado }`.
-- **Errores:** `400`; `403`; `404`; `409` si el reporte ya está resuelto.
+- **Errores:** `400`; `403` (reporte propio o sobre contenido propio); `404`; `409` si el reporte ya está resuelto, otra persona lo resolvió a la vez o la acción no corresponde al estado del contenido.
 
 ### Contador del panel
 `GET /api/moderacion/pendientes/resumen` suma `comunidadRevision` (contenido PENDIENTE) y `comunidadReportes` (reportes abiertos) al `total`.

@@ -9,5 +9,7 @@ public record ResumenPendientesModeracionResponse(
         long reportesResenas,
         long reportesOfertas,
         long apelaciones,
+        long comunidadRevision,
+        long comunidadReportes,
         long total
 ) {}

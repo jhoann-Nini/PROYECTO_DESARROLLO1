@@ -58,6 +58,15 @@ public interface PublicacionComunidadRepository extends JpaRepository<Publicacio
     + " WHERE p.idPublicacion = :id AND p.fechaUltimaActividad < :fecha")
   int registrarActividad(@Param("id") long id, @Param("fecha") LocalDateTime fecha);
 
+  /** Cola de revisión: lo retenido por el filtro y no eliminado. */
+  @Query("SELECT p FROM PublicacionComunidad p WHERE p.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE"
+    + " AND p.eliminada = false ORDER BY p.fechaCreacion ASC")
+  List<PublicacionComunidad> pendientesDeRevision();
+
+  @Query("SELECT COUNT(p) FROM PublicacionComunidad p WHERE p.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE"
+    + " AND p.eliminada = false")
+  long contarPendientesDeRevision();
+
   /** Cuota (RN-14): cuenta también las eliminadas. */
   @Query("SELECT COUNT(p) FROM PublicacionComunidad p WHERE p.autor.idUsuario = :idAutor AND p.fechaCreacion >= :desde")
   long contarDelAutorDesde(@Param("idAutor") long idAutor, @Param("desde") LocalDateTime desde);

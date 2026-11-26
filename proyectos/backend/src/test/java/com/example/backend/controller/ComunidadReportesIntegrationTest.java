@@ -83,10 +83,13 @@ class ComunidadReportesIntegrationTest extends ComunidadIntegrationTestBase {
 
   @Test
   void trasRechazadoPuedeVolverAReportar201() throws Exception {
-    reportar(otro, "publicaciones", publicacion.getIdPublicacion(), "spam", null).andExpect(status().isCreated());
-    ReporteComunidad previo = reporteRepository.findAll().get(0);
-    previo.setEstado(EstadoReporte.RECHAZADO);
-    reporteRepository.saveAndFlush(previo);
+    String creado = reportar(otro, "publicaciones", publicacion.getIdPublicacion(), "spam", null)
+      .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+    long idPrevio = ((Number) com.jayway.jsonpath.JsonPath.read(creado, "$.idReporte")).longValue();
+    mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+        .put("/api/moderacion/comunidad/reportes/" + idPrevio + "/rechazar").with(como(moderador))
+        .contentType(MediaType.APPLICATION_JSON).content("{\"justificacion\":\"No incumple\"}"))
+      .andExpect(status().isOk());
 
     reportar(otro, "publicaciones", publicacion.getIdPublicacion(), "acoso", null).andExpect(status().isCreated());
   }
@@ -148,26 +151,20 @@ class ComunidadReportesIntegrationTest extends ComunidadIntegrationTestBase {
 
   @Test
   void elReporteOnceEnUnaHora429() throws Exception {
-    Resena resena = new Resena();
-    resena.setProducto(producto);
-    resena.setUsuario(autor);
-    resena.setComentario("Reseña reportada muchas veces");
-    resena.setPuntuacion(3);
-    resena.setEstado(true);
-    resena = resenaRepository.saveAndFlush(resena);
+    // Nueve reportes de reseñas (una reseña distinta cada vez: un usuario reporta
+    // cada reseña una sola vez) más uno de la comunidad llenan el límite compartido.
     for (int i = 0; i < LimiteReportesService.MAX_REPORTES_POR_HORA - 1; i++) {
-      ReporteResena r = new ReporteResena();
-      r.setResena(resena);
-      r.setUsuario(usuario("Reportante " + i, rol("Usuario registrado")));
-      r.setMotivo("spam");
-      reporteResenaRepository.save(r);
-    }
-    for (int i = 0; i < LimiteReportesService.MAX_REPORTES_POR_HORA - 1; i++) {
+      Resena resena = new Resena();
+      resena.setProducto(producto(true));
+      resena.setUsuario(autor);
+      resena.setComentario("Reseña reportada " + i);
+      resena.setPuntuacion(3);
+      resena.setEstado(true);
+      resena = resenaRepository.saveAndFlush(resena);
       ReporteResena r = new ReporteResena();
       r.setResena(resena);
       r.setUsuario(otro);
       r.setMotivo("spam");
-      r.setEstado(i == 0 ? EstadoReporte.PENDIENTE : EstadoReporte.RECHAZADO);
       reporteResenaRepository.save(r);
     }
     reporteResenaRepository.flush();

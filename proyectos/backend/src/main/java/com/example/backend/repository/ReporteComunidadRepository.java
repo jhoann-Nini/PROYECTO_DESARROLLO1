@@ -27,6 +27,8 @@ public interface ReporteComunidadRepository extends JpaRepository<ReporteComunid
 
   List<ReporteComunidad> findByEstadoInOrderByFechaCreacionAsc(Collection<EstadoReporte> estados);
 
+  long countByEstadoIn(Collection<EstadoReporte> estados);
+
   /** Reportes no rechazados de una publicación: los que cuentan para el umbral de 3. */
   @Query("SELECT COUNT(r) FROM ReporteComunidad r WHERE r.publicacion.idPublicacion = :id"
     + " AND r.estado <> com.example.backend.entity.EstadoReporte.RECHAZADO")

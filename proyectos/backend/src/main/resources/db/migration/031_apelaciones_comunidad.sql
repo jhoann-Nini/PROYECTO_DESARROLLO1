@@ -23,6 +23,22 @@
 -- no se deshace (030): aceptar su apelacion solo anula la falta.
 -- La reincidencia deja de contar las decisiones con apelacion ACEPTADA.
 --
+-- Limites conocidos (los garantiza el backend):
+--   - La base no comprueba que la decision siga vigente (un OCULTAR ya
+--     restaurado, un RECHAZAR que ya no es el ultimo). Aceptar una de esas
+--     solo anula la falta: no puede publicar nada (punto 4).
+--   - La base no sabe quien firma el APROBAR de la reversion: el backend lo
+--     firma con quien resuelve la apelacion.
+--   - El orden por id_auditoria del ultimo RECHAZAR (punto 3) depende de que
+--     el backend bloquee el contenido antes de insertar la auditoria; por SQL
+--     directo (solo roles de confianza) se puede pedir un id antes del bloqueo.
+--   - El plazo compara now() con fecha_evento (reloj de la JVM): ambas deben
+--     usar la misma zona horaria (igual que en la 026).
+--
+-- NO reaplicar la 030 despues de la 031: devolveria las dos funciones a su
+-- version anterior y quitaria en silencio la reversion de rechazos. El
+-- script de verificacion comprueba que siguen siendo las de la 031.
+--
 -- Seguridad: RLS sin politicas; REVOKE a anon, authenticated y PUBLIC;
 -- funciones con search_path = pg_catalog.
 --
@@ -98,23 +114,40 @@ DECLARE
     v_autor BIGINT;
     v_eliminada BOOLEAN;
     v_eliminada_por BIGINT;
+    v_id_publicacion BIGINT;
+    v_id_respuesta BIGINT;
 BEGIN
     IF NEW.estado <> 'PENDIENTE' OR NEW.id_moderador IS NOT NULL OR NEW.respuesta IS NOT NULL
        OR NEW.fecha_resolucion IS NOT NULL OR NEW.id_transaccion_resolucion IS NOT NULL THEN
         RAISE EXCEPTION 'Una apelacion nueva empieza en PENDIENTE y sin resolver.';
     END IF;
 
-    SELECT a.accion, a.fecha_evento,
-           coalesce(p.id_autor, r.id_autor),
-           coalesce(p.eliminada, r.eliminada),
-           coalesce(p.eliminada_por, r.eliminada_por)
-      INTO v_accion, v_fecha, v_autor, v_eliminada, v_eliminada_por
+    SELECT a.accion, a.fecha_evento, a.id_publicacion, a.id_respuesta
+      INTO v_accion, v_fecha, v_id_publicacion, v_id_respuesta
       FROM public.moderacion_comunidad_auditoria a
-      LEFT JOIN public.publicacion_comunidad p ON p.id_publicacion = a.id_publicacion
-      LEFT JOIN public.respuesta_comunidad r ON r.id_respuesta = a.id_respuesta
      WHERE a.id_auditoria = NEW.id_auditoria;
     IF NOT FOUND THEN
         RAISE EXCEPTION 'No existe la decision apelada.';
+    END IF;
+    -- Orden de bloqueo: usuario y despues contenido, como al crear contenido
+    -- (029: el limite de cuota bloquea el usuario y el trigger el contenido).
+    -- Sin esto, apelar y responder en el propio hilo a la vez se interbloquean.
+    PERFORM 1 FROM public.usuario u WHERE u.id_usuario = NEW.id_autor FOR KEY SHARE;
+    -- FOR SHARE: espera a una eliminacion en curso del autor y ve su
+    -- resultado. Aqui basta FOR SHARE (la 029 evita FOR SHARE en reportes por
+    -- la subida de bloqueo): esta transaccion no actualiza el contenido despues.
+    IF v_id_publicacion IS NOT NULL THEN
+        SELECT p.id_autor, p.eliminada, p.eliminada_por
+          INTO v_autor, v_eliminada, v_eliminada_por
+          FROM public.publicacion_comunidad p
+         WHERE p.id_publicacion = v_id_publicacion
+           FOR SHARE;
+    ELSE
+        SELECT r.id_autor, r.eliminada, r.eliminada_por
+          INTO v_autor, v_eliminada, v_eliminada_por
+          FROM public.respuesta_comunidad r
+         WHERE r.id_respuesta = v_id_respuesta
+           FOR SHARE;
     END IF;
     IF v_accion NOT IN ('RECHAZAR', 'OCULTAR', 'ELIMINAR_MODERADOR') THEN
         RAISE EXCEPTION 'Solo se apelan decisiones RECHAZAR, OCULTAR o ELIMINAR_MODERADOR.';
@@ -195,6 +228,10 @@ CREATE TRIGGER trg_proteger_truncate_apelacion_comunidad
 
 -- ---------- 3. Revertir un rechazo con la apelacion aceptada ----------
 -- ¿Se acepto, en esta transaccion, la apelacion de la ULTIMA RECHAZAR del contenido?
+-- La ULTIMA se decide por id_auditoria, no por fecha_evento (la pone el reloj
+-- de la JVM). Es correcto porque el backend bloquea el contenido (FOR UPDATE)
+-- antes de insertar la auditoria (IDENTITY): un RECHAZAR posterior, que exige
+-- el contenido de nuevo PENDIENTE, siempre obtiene un id mayor.
 CREATE OR REPLACE FUNCTION public.fn_apelacion_comunidad_revierte_rechazo(p_id_publicacion BIGINT, p_id_respuesta BIGINT)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -215,8 +252,7 @@ AS $$
                 WHERE b.accion = 'RECHAZAR'
                   AND b.id_publicacion IS NOT DISTINCT FROM p_id_publicacion
                   AND b.id_respuesta IS NOT DISTINCT FROM p_id_respuesta
-                  AND (b.fecha_evento > a.fecha_evento
-                       OR (b.fecha_evento = a.fecha_evento AND b.id_auditoria > a.id_auditoria)))
+                  AND b.id_auditoria > a.id_auditoria)
     );
 $$;
 

@@ -6,6 +6,7 @@ import { LIMITES_COMUNIDAD, type RespuestaComunidad } from "@/types/comunidad";
 import BotonMeGusta from "./BotonMeGusta";
 import ContenidoNoVisible from "./ContenidoNoVisible";
 import FormularioRespuesta from "./FormularioRespuesta";
+import ReportarContenidoModal from "./ReportarContenidoModal";
 import TextoPlano from "./TextoPlano";
 import { CLASE_ALERTA, CLASE_BOTON, CLASE_CAMPO } from "./estilos";
 import { esSinSesion, formatearFecha, mensajeError } from "./errores";
@@ -29,6 +30,8 @@ export default function RespuestaItem({
   const [texto, setTexto] = useState(respuesta.contenido ?? "");
   const [confirmando, setConfirmando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reportando, setReportando] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
   const visible = respuesta.estadoVisible === "VISIBLE";
 
   function manejar(err: unknown, generico: string) {
@@ -77,6 +80,11 @@ export default function RespuestaItem({
           {respuesta.estadoModeracion === "PENDIENTE" && " · En revisión: solo tú y los moderadores la ven"}
         </p>
       )}
+      {visible && respuesta.estadoModeracion === "RECHAZADA" && (
+        <p className="mt-1 rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
+          Esta respuesta fue rechazada por moderación: solo tú y los moderadores pueden verla.
+        </p>
+      )}
       {respuesta.enRespuestaA && (
         <p className="mt-1 text-xs text-[var(--color-subtle)]">{`En respuesta a @${respuesta.enRespuestaA}`}</p>
       )}
@@ -122,6 +130,17 @@ export default function RespuestaItem({
               Responder
             </button>
           )}
+          {!respuesta.esAutor && (
+            <button
+              type="button"
+              onClick={() => (autenticado ? setReportando(true) : onRequiereSesion())}
+              aria-label={`Reportar la respuesta de ${respuesta.autor}`}
+              className={CLASE_BOTON}
+            >
+              Reportar
+            </button>
+          )}
+          {aviso && <span role="status" className="text-xs text-emerald-700">{aviso}</span>}
           {respuesta.esAutor && (
             <>
               <button type="button" onClick={() => { setTexto(respuesta.contenido ?? ""); setEditando(true); }} className={CLASE_BOTON}>
@@ -139,6 +158,16 @@ export default function RespuestaItem({
             </>
           )}
         </div>
+      )}
+
+      {reportando && (
+        <ReportarContenidoModal
+          tipo="respuestas"
+          id={respuesta.idRespuesta}
+          onCerrar={() => setReportando(false)}
+          onPedirLogin={() => { setReportando(false); onRequiereSesion(); }}
+          onReportado={() => { setReportando(false); setAviso("Gracias, un moderador lo revisará."); }}
+        />
       )}
 
       {respondiendo && (

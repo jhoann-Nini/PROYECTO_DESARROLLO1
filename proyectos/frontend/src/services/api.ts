@@ -40,6 +40,11 @@ import type { RolAdmin, UsuarioAdmin,
   TerminoModeracion,
 } from "@/types/administracion";
 import type {
+  AccionAlAceptarReporte,
+  DecisionModeracionComunidad,
+  ElementoRevisionComunidad,
+  MotivoReporteComunidad,
+  ReporteModeracionComunidad,
   MeGusta,
   OrdenComunidad,
   Pagina,
@@ -1493,4 +1498,50 @@ export async function darMeGustaComunidad(tipo: ContenidoReaccionable, id: numbe
 
 export async function retirarMeGustaComunidad(tipo: ContenidoReaccionable, id: number): Promise<MeGusta> {
   return apiFetchAutenticado<MeGusta>(`/api/comunidad/${tipo}/${id}/me-gusta`, { method: "DELETE" });
+}
+
+// ---------- Comunidad (fase 2): reportes y moderación ----------
+
+export async function reportarContenidoComunidad(
+  tipo: ContenidoReaccionable,
+  id: number,
+  motivo: MotivoReporteComunidad,
+  descripcion: string | null,
+): Promise<{ idReporte: number; estado: string }> {
+  return apiFetchAutenticado<{ idReporte: number; estado: string }>(`/api/comunidad/${tipo}/${id}/reportes`, {
+    method: "POST",
+    body: JSON.stringify({ motivo, descripcion }),
+  });
+}
+
+export async function obtenerColaRevisionComunidad(): Promise<ElementoRevisionComunidad[]> {
+  return apiFetchAutenticado<ElementoRevisionComunidad[]>("/api/moderacion/comunidad/en-revision", { method: "GET" });
+}
+
+export async function decidirModeracionComunidad(
+  tipo: ContenidoReaccionable,
+  id: number,
+  decision: DecisionModeracionComunidad,
+  motivo: string,
+): Promise<unknown> {
+  return apiFetchAutenticado<unknown>(`/api/moderacion/comunidad/${tipo}/${id}/${decision}`, {
+    method: "PUT",
+    body: JSON.stringify({ motivo }),
+  });
+}
+
+export async function obtenerReportesComunidad(estado?: string): Promise<ReporteModeracionComunidad[]> {
+  const query = estado ? `?estado=${encodeURIComponent(estado)}` : "";
+  return apiFetchAutenticado<ReporteModeracionComunidad[]>(`/api/moderacion/comunidad/reportes${query}`, { method: "GET" });
+}
+
+export async function resolverReporteComunidad(
+  idReporte: number,
+  resolucion: "aceptar" | "rechazar",
+  datos: { justificacion: string; accion?: AccionAlAceptarReporte; motivo?: string },
+): Promise<{ idReporte: number; estado: string }> {
+  return apiFetchAutenticado<{ idReporte: number; estado: string }>(
+    `/api/moderacion/comunidad/reportes/${idReporte}/${resolucion}`,
+    { method: "PUT", body: JSON.stringify(datos) },
+  );
 }

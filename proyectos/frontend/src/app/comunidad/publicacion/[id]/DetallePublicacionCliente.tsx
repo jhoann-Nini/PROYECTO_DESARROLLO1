@@ -8,6 +8,7 @@ import EstadoVacio from "@/components/ui/EstadoVacio";
 import BotonMeGusta from "@/components/comunidad/BotonMeGusta";
 import FormularioRespuesta from "@/components/comunidad/FormularioRespuesta";
 import HiloRespuestas from "@/components/comunidad/HiloRespuestas";
+import ReportarContenidoModal from "@/components/comunidad/ReportarContenidoModal";
 import TextoPlano from "@/components/comunidad/TextoPlano";
 import { CLASE_ALERTA, CLASE_BOTON, CLASE_CAMPO } from "@/components/comunidad/estilos";
 import { esSinSesion, formatearFecha, mensajeError } from "@/components/comunidad/errores";
@@ -35,6 +36,8 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
   const [confirmando, setConfirmando] = useState(false);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
   const [nuevas, setNuevas] = useState<RespuestaComunidad[]>([]);
+  const [reportando, setReportando] = useState(false);
+  const [avisoReporte, setAvisoReporte] = useState<string | null>(null);
   const idSesion = usuario?.id ?? null;
 
   useEffect(() => {
@@ -153,7 +156,7 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
             )}
             {publicacion.estadoModeracion === "RECHAZADA" && (
               <p className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-700">
-                Esta publicación fue rechazada por moderación y solo tú puedes verla.
+                Esta publicación fue rechazada por moderación: solo tú y los moderadores pueden verla.
               </p>
             )}
             <TextoPlano texto={publicacion.contenido} />
@@ -173,6 +176,13 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
               autenticado={usuario !== null}
               onRequiereSesion={() => setModalAuth(true)}
             />
+            {!publicacion.esAutor && (
+              <button type="button" className={CLASE_BOTON}
+                onClick={() => (usuario ? setReportando(true) : setModalAuth(true))}>
+                Reportar
+              </button>
+            )}
+            {avisoReporte && <span role="status" className="text-xs text-emerald-700">{avisoReporte}</span>}
             {publicacion.esAutor && (
               <>
                 <button type="button" className={CLASE_BOTON}
@@ -198,6 +208,8 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
         <h2 id="titulo-respuestas" className="text-lg font-semibold text-[var(--color-ink)]">Respuestas</h2>
         {publicacion.cerrada ? (
           <p className="text-sm text-[var(--color-subtle)]">Esta publicación está cerrada y no admite respuestas nuevas.</p>
+        ) : publicacion.productoActivo === false ? (
+          <p className="text-sm text-[var(--color-subtle)]">El producto está desactivado y la conversación no admite respuestas nuevas.</p>
         ) : usuario ? (
           <FormularioRespuesta
             idPublicacion={idPublicacion}
@@ -214,12 +226,21 @@ export default function DetallePublicacionCliente({ idPublicacion }: { idPublica
           idPublicacion={idPublicacion}
           padre={null}
           nivel={0}
-          puedeResponder={!publicacion.cerrada}
+          puedeResponder={!publicacion.cerrada && publicacion.productoActivo !== false}
           autenticado={usuario !== null}
           onRequiereSesion={() => setModalAuth(true)}
           nuevas={nuevas}
         />
       </section>
+      {reportando && (
+        <ReportarContenidoModal
+          tipo="publicaciones"
+          id={publicacion.idPublicacion}
+          onCerrar={() => setReportando(false)}
+          onPedirLogin={() => { setReportando(false); setModalAuth(true); }}
+          onReportado={() => { setReportando(false); setAvisoReporte("Gracias, un moderador lo revisará."); }}
+        />
+      )}
       {modal}
     </main>
   );

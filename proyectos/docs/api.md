@@ -1959,3 +1959,57 @@ Las mismas reglas que las publicaciones: solo el autor, `409` si está oculta po
   - `401`;
   - `403` cuenta suspendida;
   - `404` si el contenido no existe, está eliminado o no es visible.
+
+## 34.4 Reportes de la comunidad (fase 2, migración 030)
+
+### `POST /api/comunidad/publicaciones/{id}/reportes` y `POST /api/comunidad/respuestas/{id}/reportes`
+Cuerpo: `{ "motivo": "spam" | "lenguaje-ofensivo" | "acoso" | "falso" | "otro", "descripcion": "…" | null }`. La descripción es obligatoria con `otro` y tiene hasta 500 caracteres.
+- **Respuesta `201`:** `{ idReporte, estado: "PENDIENTE", motivo, fechaCreacion }`.
+- **Errores:**
+  - `400` motivo desconocido u `otro` sin descripción;
+  - `401`;
+  - `403` contenido propio, cuenta suspendida o bloqueo por reincidencia;
+  - `404` contenido inexistente, eliminado o no visible;
+  - `409` ya hay un reporte abierto (PENDIENTE o EN_REVISION) del mismo usuario sobre ese contenido;
+  - `429` límite de 10 reportes por hora, compartido con los reportes de reseñas y de ofertas.
+- **Ocultamiento automático:** con **3 reportes no rechazados**, el contenido se oculta solo (`oculta_por_reportes`). Si un rechazo los deja en menos de 3, vuelve a verse. Aceptar un reporte no lo restaura.
+
+## 34.5 Moderación de la comunidad (fase 2)
+
+Todo bajo `/api/moderacion/comunidad`, solo para Moderador o Administrador con cuenta activa (`403` en otro caso). Nadie modera su propio contenido ni resuelve un reporte que creó o que afecta a su contenido (`403`). Cada decisión queda en `moderacion_comunidad_auditoria` con el motivo y el texto revisado, y no se puede modificar.
+
+### `GET /en-revision`
+Contenido retenido por el filtro (PENDIENTE y no eliminado): publicaciones y respuestas, primero el riesgo ALTO y después lo más antiguo. Cada elemento lleva:
+- `tipo` (`PUBLICACION` o `RESPUESTA`), `id`, `idPublicacion` y `titulo` (el de su publicación, en las respuestas);
+- `contenido`, `autor` y `fechaCreacion`;
+- `riesgo` y `motivos`, calculados al leer.
+
+### `PUT /{publicaciones|respuestas}/{id}/{aprobar|rechazar|ocultar|restaurar|eliminar}`
+Cuerpo: `{ "motivo": "…" }`, de 1 a 500 caracteres.
+- **Acciones:**
+  - aprobar o rechazar, solo sobre lo PENDIENTE;
+  - ocultar, si no está oculto;
+  - restaurar, si está oculto por moderación;
+  - eliminar, que no se puede deshacer.
+- **Respuesta `200`:** `{ tipo, id, estadoModeracion, ocultaPorModeracion, ocultaPorReportes, eliminada }`.
+- **Errores:** `400` sin motivo; `403` contenido propio; `404`; `409` acción que no corresponde al estado actual u otra decisión simultánea.
+
+### `GET /{publicaciones|respuestas}/{id}/historial`
+Decisiones sobre el contenido, de la más reciente a la más antigua: `accion`, `motivo`, `contenidoRevisado`, `moderador` y `fechaEvento`.
+
+### `GET /reportes?estado=`
+Por defecto, los abiertos (PENDIENTE y EN_REVISION). `estado` va en mayúsculas (`ACEPTADO`); otro valor da `400`. Cada reporte lleva:
+- el contenido reportado: `tipo`, `idContenido`, `idPublicacion`, `titulo` y `contenido`;
+- `autorContenido`, `reportante`, `motivo` y `descripcion`;
+- `estado` y `reportesActivos` (los no rechazados del mismo contenido);
+- `ocultaPorReportes`, `ocultaPorModeracion` y `eliminada`.
+
+### `PUT /reportes/{id}/en-revision`, `PUT /reportes/{id}/rechazar` y `PUT /reportes/{id}/aceptar`
+- **Cuerpo:** `{ "justificacion": "…" }`, de 1 a 2000 caracteres.
+- **Al aceptar**, además: `"accion": "NINGUNA" | "OCULTAR" | "ELIMINAR"` y un `"motivo"` opcional, de hasta 500 caracteres. Si falta, se usan los primeros 500 caracteres de la justificación. Con `OCULTAR` o `ELIMINAR`, la decisión sobre el contenido se audita en la misma transacción.
+- **Desde PENDIENTE:** aceptar o rechazar pasa primero por EN_REVISION, y cada paso queda en `reporte_comunidad_historial`.
+- **Respuesta `200`:** `{ idReporte, estado }`.
+- **Errores:** `400`; `403` (reporte propio o sobre contenido propio); `404`; `409` si el reporte ya está resuelto, otra persona lo resolvió a la vez o la acción no corresponde al estado del contenido.
+
+### Contador del panel
+`GET /api/moderacion/pendientes/resumen` suma `comunidadRevision` (contenido PENDIENTE) y `comunidadReportes` (reportes abiertos) al `total`.

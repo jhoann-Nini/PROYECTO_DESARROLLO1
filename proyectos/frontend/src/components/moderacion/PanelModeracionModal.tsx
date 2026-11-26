@@ -19,6 +19,7 @@ import EstadoVacio from "@/components/ui/EstadoVacio";
 import ColaRevisionAutomatica from "@/components/moderacion/ColaRevisionAutomatica";
 import ColaReportesOfertas from "@/components/moderacion/ColaReportesOfertas";
 import ColaApelaciones from "@/components/moderacion/ColaApelaciones";
+import ColaComunidad from "@/components/moderacion/ColaComunidad";
 import { atraparTabulacion, CLASE_FOCO } from "@/components/ui/foco";
 import Button from "@/components/ui/Button";
 import Tag from "@/components/ui/Tag";
@@ -32,7 +33,7 @@ interface PanelModeracionModalProps {
 }
 
 type AccionModeracion = "ocultar" | "publicar" | "rechazar-reportes";
-type PestanaModeracion = "reportes" | "revision" | "ofertas" | "apelaciones";
+type PestanaModeracion = "reportes" | "revision" | "ofertas" | "apelaciones" | "comunidad";
 
 function puedeRechazarReportes(resena: ResenaReportadaResponse): boolean {
   return (
@@ -306,6 +307,11 @@ export default function PanelModeracionModal({
             { id: "revision", etiqueta: "Revisión automática", pendientes: resumen?.revisionAutomatica },
             { id: "ofertas", etiqueta: "Reportes de ofertas", pendientes: resumen?.reportesOfertas },
             { id: "apelaciones", etiqueta: "Apelaciones", pendientes: resumen?.apelaciones },
+            {
+              id: "comunidad",
+              etiqueta: "Comunidad",
+              pendientes: resumen ? (resumen.comunidadRevision ?? 0) + (resumen.comunidadReportes ?? 0) : undefined,
+            },
           ] as const).map((opcion) => (
             <button
               key={opcion.id}
@@ -327,7 +333,16 @@ export default function PanelModeracionModal({
           ))}
         </div>
 
-        {pestana === "apelaciones" ? (
+        {pestana === "comunidad" ? (
+          <div
+            role="tabpanel"
+            id={`${tituloId}-panel-comunidad`}
+            aria-labelledby={`${tituloId}-tab-comunidad`}
+            className="overflow-y-auto pr-1"
+          >
+            <ColaComunidad onCambio={recargarResumen} />
+          </div>
+        ) : pestana === "apelaciones" ? (
           <div
             role="tabpanel"
             id={`${tituloId}-panel-apelaciones`}

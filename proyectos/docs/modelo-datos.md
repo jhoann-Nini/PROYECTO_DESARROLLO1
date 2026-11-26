@@ -691,6 +691,30 @@ A la fecha de esta actualización, el repositorio contiene las migraciones 001�
     - impiden cambiar id, madre, citada, publicación, autor, profundidad y fecha de creación (la base de las cuotas).
   - Trigger de `publicacion_comunidad`: impide cambiar id, autor, tipo, producto y fecha de creación.
   - Los conteos se calculan con consultas; no hay columnas acumuladas. Verificación: `docs/sql/tests/029_verificacion_comunidad.sql`.
+- Moderación y reportes de la comunidad (migración 030):
+  - `moderacion_comunidad_auditoria`: decisiones de moderación, de solo inserción.
+    - Columnas:
+      - destino exclusivo: `id_publicacion` o `id_respuesta`, y `tipo_contenido`, columna generada;
+      - `id_moderador`;
+      - `accion`: APROBAR, RECHAZAR, OCULTAR, RESTAURAR, ELIMINAR_MODERADOR, CERRAR o REABRIR;
+      - `motivo` (de 1 a 500 caracteres) y `contenido_revisado`;
+      - `id_transaccion` y `fecha_evento`.
+    - Al insertar, los triggers exigen rol activo, que el moderador no sea el autor y una acción coherente con el estado.
+    - Al confirmar, exigen que el estado final del contenido coincida con la acción.
+  - Triggers diferidos en `publicacion_comunidad` y `respuesta_comunidad`:
+    - salir de PENDIENTE, ocultar o restaurar, la eliminación por un moderador y cerrar o reabrir exigen su auditoría en la misma transacción;
+    - lo eliminado no vuelve;
+    - volver a PENDIENTE solo ocurre como edición del autor (cambia `fecha_edicion`), desde cualquier estado; lo RECHAZADA no se publica directamente;
+    - `oculta_por_reportes` se recalcula siempre con el conteo real de reportes no rechazados.
+  - `reporte_comunidad`:
+    - destino exclusivo y `tipo_contenido`;
+    - `motivo` (spam, lenguaje-ofensivo, acoso, falso u otro) y `descripcion`, obligatoria con `otro`;
+    - `estado`, `fecha_creacion` y `fecha_actualizacion`.
+
+    Índices únicos parciales: un reporte abierto por usuario y contenido. Nadie reporta lo suyo ni lo eliminado. Las transiciones son PENDIENTE → EN_REVISION → ACEPTADO o RECHAZADO, y no se borra.
+  - `reporte_comunidad_historial`: de solo inserción; cada cambio de estado de un reporte exige su evento. Quien resuelve no puede ser quien reportó ni el autor del contenido.
+  - Ocultamiento por reportes: con 3 o más reportes no rechazados, `oculta_por_reportes = true`; con menos, false (mismo umbral que las reseñas).
+  - Verificación: `docs/sql/tests/030_verificacion_moderacion_comunidad.sql`.
 
 ## 25.1 Modelo conceptual frente al esquema implementado
 

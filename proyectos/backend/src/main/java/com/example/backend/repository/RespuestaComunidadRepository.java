@@ -40,6 +40,15 @@ public interface RespuestaComunidadRepository extends JpaRepository<RespuestaCom
     + " WHERE r.padre.idRespuesta IN :ids GROUP BY r.padre.idRespuesta")
   List<Object[]> contarHijasPorRespuesta(@Param("ids") Collection<Long> ids);
 
+  /** Cola de revisión: lo retenido por el filtro y no eliminado. */
+  @Query("SELECT r FROM RespuestaComunidad r WHERE r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE"
+    + " AND r.eliminada = false ORDER BY r.fechaCreacion ASC")
+  List<RespuestaComunidad> pendientesDeRevision();
+
+  @Query("SELECT COUNT(r) FROM RespuestaComunidad r WHERE r.estadoModeracion = com.example.backend.entity.EstadoModeracion.PENDIENTE"
+    + " AND r.eliminada = false")
+  long contarPendientesDeRevision();
+
   /** Cuota (RN-14): cuenta también las eliminadas. */
   @Query("SELECT COUNT(r) FROM RespuestaComunidad r WHERE r.autor.idUsuario = :idAutor AND r.fechaCreacion >= :desde")
   long contarDelAutorDesde(@Param("idAutor") long idAutor, @Param("desde") LocalDateTime desde);

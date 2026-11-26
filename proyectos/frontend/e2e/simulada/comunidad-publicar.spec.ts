@@ -13,7 +13,7 @@ function detalle(extra: Partial<PublicacionDetalle> = {}): PublicacionDetalle {
     idPublicacion: 101, tipo: "GENERAL", idProducto: null, nombreProducto: null,
     titulo: "¿Qué portátil compro?", contenido: "Busco 16 GB de RAM.", autor: "Ana",
     fechaCreacion: "2026-11-25T10:00:00", fechaEdicion: null, fechaUltimaActividad: "2026-11-25T10:00:00",
-    respuestas: 0, meGusta: 0, meGustaPropio: false, esAutor: true, estadoModeracion: "PUBLICADA", cerrada: false,
+    respuestas: 0, meGusta: 0, meGustaPropio: false, esAutor: true, estadoModeracion: "PUBLICADA", cerrada: false, productoActivo: null,
     ...extra,
   };
 }

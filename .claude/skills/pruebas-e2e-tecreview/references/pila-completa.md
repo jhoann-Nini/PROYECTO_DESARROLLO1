@@ -62,3 +62,25 @@ Recorridos donde importa lo que la capa A no ve:
 - cuotas reales.
 
 Pocos y críticos: son lentos.
+
+## Implementación de referencia (fase 2 de la comunidad)
+
+Ya existe y funciona; úsala como base para recorridos nuevos:
+- **`playwright.config.ts`:** con `E2E_PILA=1` levanta el backend (`./mvnw spring-boot:run` con los `-D`, `cwd: "../backend"`, espera a `/api/health`) y el frontend en el puerto 3101. Variables opcionales:
+  - `E2E_PG_URL`: por defecto `jdbc:postgresql://127.0.0.1:55433/postgres`;
+  - `E2E_PG_PASSWORD`;
+  - `E2E_PG_CONTENEDOR`: por defecto `tecreview-pg030-pruebas`.
+- **`e2e/pila-completa/preparar.ts`** (`globalSetup`):
+  - siembra los roles;
+  - sirve el JWKS en `127.0.0.1:54399` durante toda la corrida;
+  - firma los tokens en `e2e/.auth/tokens.json`;
+  - exporta `sql(…)`, que usa `docker exec … psql`.
+- **`e2e/pila-completa/usuarios.ts`:** usuarios con UUID y correo nuevos en cada corrida, para que el historial de una corrida (cuotas, reincidencia) no afecte a la siguiente.
+- **`e2e/pila-completa/moderacion-reportes.spec.ts`:**
+  - aprovisiona a cada usuario con `GET /api/usuarios/me` y da el rol de moderación por SQL (`usuario_rol` no tiene triggers);
+  - usa un contexto de navegador por persona;
+  - antes de afirmar una ausencia, espera a que la lista haya cargado (el encabezado con el total).
+
+**Orden de arranque:** Playwright levanta `webServer` **antes** de `globalSetup`. El backend arranca sin el JWKS y no pasa nada, porque lo pide al validar el primer token, durante las pruebas.
+
+**Base limpia:** recrear el contenedor con el esquema volcado y, después, aplicar la 029 y las migraciones siguientes. El volcado se hace con `--no-privileges`, así que los `REVOKE` solo llegan reaplicando las migraciones.

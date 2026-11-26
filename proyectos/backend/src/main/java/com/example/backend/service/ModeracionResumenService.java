@@ -30,13 +30,16 @@ public class ModeracionResumenService {
     private final ReporteOfertaRepository reporteOfertaRepository;
     private final UsuarioService usuarioService;
     private final ApelacionRepository apelacionRepository;
+    private final ModeracionComunidadService moderacionComunidadService;
 
     public ModeracionResumenService(
             ResenaRepository resenaRepository,
             ReporteResenaRepository reporteResenaRepository,
             ReporteOfertaRepository reporteOfertaRepository,
             UsuarioService usuarioService,
-            ApelacionRepository apelacionRepository) {
+            ApelacionRepository apelacionRepository,
+            ModeracionComunidadService moderacionComunidadService) {
+        this.moderacionComunidadService = moderacionComunidadService;
         this.apelacionRepository = apelacionRepository;
         this.resenaRepository = resenaRepository;
         this.reporteResenaRepository = reporteResenaRepository;
@@ -52,8 +55,11 @@ public class ModeracionResumenService {
         long reportesResenas = reporteResenaRepository.countByEstadoIn(ESTADOS_ABIERTOS);
         long reportesOfertas = reporteOfertaRepository.countByEstadoIn(ESTADOS_ABIERTOS);
         long apelaciones = apelacionRepository.countByEstado(EstadoApelacion.PENDIENTE);
+        long comunidadRevision = moderacionComunidadService.contarEnRevision();
+        long comunidadReportes = moderacionComunidadService.contarReportesAbiertos();
         return new ResumenPendientesModeracionResponse(revision, reportesResenas, reportesOfertas, apelaciones,
-                revision + reportesResenas + reportesOfertas + apelaciones);
+                comunidadRevision, comunidadReportes,
+                revision + reportesResenas + reportesOfertas + apelaciones + comunidadRevision + comunidadReportes);
     }
 
     private static void validarPermisoModeracion(Usuario usuario) {

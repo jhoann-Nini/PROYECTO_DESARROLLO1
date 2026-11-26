@@ -28,3 +28,22 @@
 - **`404`:** «Esta publicación no existe o ya no está disponible».
 
 Los límites de texto (`LIMITES_COMUNIDAD`) coinciden con el backend: título de 5 a 150 caracteres, publicación hasta 5000 y respuesta hasta 3000.
+
+## Fase 2: reportar y moderar
+
+- **Reportar** (`ReportarContenidoModal`): botón «Reportar» en las publicaciones y respuestas ajenas.
+  - Sin sesión abre el inicio de sesión.
+  - Motivo; descripción obligatoria con «Otro».
+  - El `409` («ya lo reportaste») y el `429` muestran el mensaje del servidor.
+  - Diálogo con foco atrapado; Escape cierra.
+- **Pestaña «Comunidad»** del panel de moderación (`ColaComunidad`), con el contador de pendientes:
+  - **En revisión:** lo retenido por el filtro, con el riesgo y los motivos; aprobar o rechazar exige un motivo.
+  - **Reportes:** contenido, reportante, motivo y reportes activos; aceptar (sin cambios, ocultar o eliminar) o rechazar, con justificación.
+  - Un `409` recarga la cola.
+- **Avisos al autor:**
+  - lo rechazado («solo tú y los moderadores pueden verla»);
+  - lo que está en revisión;
+  - con el producto desactivado, la conversación no admite respuestas.
+- **E2E:**
+  - `e2e/simulada/comunidad-reportar.spec.ts` y `moderacion-comunidad.spec.ts`;
+  - `e2e/pila-completa/moderacion-reportes.spec.ts` (`npm run test:e2e:pila`).

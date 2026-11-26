@@ -138,6 +138,7 @@ Reglas de la capa A:
 
 Lee `references/pila-completa.md`: PostgreSQL local con el esquema de producción, servidor JWKS
 local, backend con `-D` y frontend apuntando a ambos. Nunca contra Supabase, Render o Vercel.
+Ya está implementada (`npm run test:e2e:pila`): parte de `e2e/pila-completa/`.
 
 ## Esperas
 

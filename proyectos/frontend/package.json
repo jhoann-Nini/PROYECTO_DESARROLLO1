@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:e2e": "playwright test --project=simulada"
+    "test:e2e": "playwright test --project=simulada",
+    "test:e2e:pila": "E2E_PILA=1 playwright test --project=pila-completa"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

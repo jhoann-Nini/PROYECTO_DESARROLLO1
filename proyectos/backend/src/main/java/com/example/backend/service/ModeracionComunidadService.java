@@ -134,12 +134,34 @@ public class ModeracionComunidadService {
   }
 
   /**
-   * Aplica una decisión sobre una publicación o una respuesta (solo una no
-   * nula). Comprueba lo mismo que el trigger de la 030 y guarda la auditoría
-   * antes del cambio.
+   * Revierte una decisión al aceptar su apelación (fase 3, 031): APROBAR para
+   * un rechazo y RESTAURAR para un ocultamiento. Debe llamarse en la misma
+   * transacción en que se aceptó la apelación y después de guardarla: el
+   * trigger de la 031 solo admite APROBAR sobre RECHAZADA en ese caso. Firma
+   * quien resuelve la apelación.
    */
+  @Transactional
+  public void revertirPorApelacion(Usuario moderador, PublicacionComunidad p, RespuestaComunidad r,
+      AccionModeracionComunidad accion) {
+    if (accion != AccionModeracionComunidad.APROBAR && accion != AccionModeracionComunidad.RESTAURAR) {
+      throw new IllegalArgumentException("Una apelación solo se revierte con APROBAR o RESTAURAR: " + accion);
+    }
+    aplicar(moderador, p, r, accion, ApelacionComunidadService.MOTIVO_REVERSION, true);
+  }
+
   private void aplicar(Usuario moderador, PublicacionComunidad p, RespuestaComunidad r,
       AccionModeracionComunidad accion, String motivo) {
+    aplicar(moderador, p, r, accion, motivo, false);
+  }
+
+  /**
+   * Aplica una decisión sobre una publicación o una respuesta (solo una no
+   * nula). Comprueba lo mismo que el trigger de la 030 y guarda la auditoría
+   * antes del cambio. {@code porApelacion} admite APROBAR sobre RECHAZADA
+   * (031); el trigger exige además la apelación aceptada en esta transacción.
+   */
+  private void aplicar(Usuario moderador, PublicacionComunidad p, RespuestaComunidad r,
+      AccionModeracionComunidad accion, String motivo, boolean porApelacion) {
     // Releer con bloqueo: si otra decisión llegó antes, se valida contra su resultado (409, no 500).
     entityManager.refresh(p != null ? p : r, LockModeType.PESSIMISTIC_WRITE);
     Usuario autor = p != null ? p.getAutor() : r.getAutor();
@@ -150,7 +172,9 @@ public class ModeracionComunidadService {
     boolean oculta = p != null ? p.isOcultaPorModeracion() : r.isOcultaPorModeracion();
     boolean eliminada = p != null ? p.isEliminada() : r.isEliminada();
     boolean valida = switch (accion) {
-      case APROBAR, RECHAZAR -> estado == EstadoModeracion.PENDIENTE && !eliminada;
+      case APROBAR -> !eliminada && (estado == EstadoModeracion.PENDIENTE
+        || (porApelacion && estado == EstadoModeracion.RECHAZADA));
+      case RECHAZAR -> estado == EstadoModeracion.PENDIENTE && !eliminada;
       case OCULTAR -> !oculta && !eliminada;
       case RESTAURAR -> oculta && !eliminada;
       case ELIMINAR_MODERADOR -> !eliminada;

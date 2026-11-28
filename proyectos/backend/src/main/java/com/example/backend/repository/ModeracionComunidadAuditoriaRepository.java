@@ -1,7 +1,9 @@
 package com.example.backend.repository;
 
+import com.example.backend.entity.AccionModeracionComunidad;
 import com.example.backend.entity.ModeracionComunidadAuditoria;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,6 +40,29 @@ public interface ModeracionComunidadAuditoriaRepository extends JpaRepository<Mo
     + " WHERE (p.autor.idUsuario = :idUsuario OR r.autor.idUsuario = :idUsuario)"
     + " AND a.fechaEvento >= :desde AND " + FALTA + " ORDER BY a.fechaEvento DESC")
   List<LocalDateTime> findFechasFaltasDelAutorDesde(@Param("idUsuario") Long idUsuario, @Param("desde") LocalDateTime desde);
+
+  /**
+   * Decisiones de {@code acciones} sobre contenido del autor desde {@code desde},
+   * con el contenido y su hilo cargados, de la más reciente a la más antigua.
+   */
+  @Query("SELECT a FROM ModeracionComunidadAuditoria a LEFT JOIN FETCH a.publicacion p"
+    + " LEFT JOIN FETCH a.respuesta r LEFT JOIN FETCH r.publicacion"
+    + " WHERE (p.autor.idUsuario = :idUsuario OR r.autor.idUsuario = :idUsuario)"
+    + " AND a.accion IN :acciones AND a.fechaEvento >= :desde ORDER BY a.idAuditoria DESC")
+  List<ModeracionComunidadAuditoria> findDecisionesDelAutorDesde(@Param("idUsuario") Long idUsuario,
+      @Param("acciones") Collection<AccionModeracionComunidad> acciones, @Param("desde") LocalDateTime desde);
+
+  /** Id de la decisión más reciente de {@code acciones} sobre la publicación (por id, como la 031). */
+  @Query("SELECT MAX(a.idAuditoria) FROM ModeracionComunidadAuditoria a"
+    + " WHERE a.publicacion.idPublicacion = :id AND a.accion IN :acciones")
+  Long ultimaDePublicacion(@Param("id") Long idPublicacion,
+      @Param("acciones") Collection<AccionModeracionComunidad> acciones);
+
+  /** Id de la decisión más reciente de {@code acciones} sobre la respuesta. */
+  @Query("SELECT MAX(a.idAuditoria) FROM ModeracionComunidadAuditoria a"
+    + " WHERE a.respuesta.idRespuesta = :id AND a.accion IN :acciones")
+  Long ultimaDeRespuesta(@Param("id") Long idRespuesta,
+      @Param("acciones") Collection<AccionModeracionComunidad> acciones);
 
   /** Faltas del foro por autor desde {@code desde}: id de usuario, número de faltas y la más reciente. */
   @Query("SELECT COALESCE(p.autor.idUsuario, r.autor.idUsuario), COUNT(a), MAX(a.fechaEvento)"
